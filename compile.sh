@@ -45,4 +45,4 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-cmake --build build -j 4
+cmake --build build -j "$(nproc)"
