@@ -22,6 +22,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
+      - name: install clang-format
+        run: apt install clang-format
       - name: format file
         run: ./format.sh
       - name: Check for modified files
@@ -43,6 +45,18 @@ jobs:
           repository: ""
       - name: Setup environment
         run: ./compile.sh
+
+  windows_install:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout GH repository
+        uses: actions/checkout@v4
+        with:
+          repository: ""
+      - name: Setup environment
+        run: ./compile.sh
+
 
   push_to_mirror:
     needs: [linux_install]
