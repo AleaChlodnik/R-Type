@@ -37,12 +37,3 @@ arch)
     exit 1
     ;;
 esac
-
-cmake -B build
-
-if [ $? -ne 0 ]; then
-    echo "CMake failed"
-    exit 1
-fi
-
-cmake --build build -j "$(nproc)"
