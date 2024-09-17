@@ -8,6 +8,7 @@ on:
   pull_request:
     branches-ignore:
       - " ga-ignore-"
+  workflow_dispatch:
 
 jobs:
   linux_install:
