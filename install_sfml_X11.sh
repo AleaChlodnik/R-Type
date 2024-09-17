@@ -19,6 +19,11 @@ ubuntu)
 fedora)
     sudo dnf install libX11-devel libXrandr-devel libXi-devel libXcursor-devel libXinerama-devel libXrender-devel
     ;;
+nixos)
+    if [ "$(env | grep X11 -c)" -lt 3 ]; then
+        nix develop
+    fi
+    ;;
 *)
     echo "Unsupported OS"
     exit 1

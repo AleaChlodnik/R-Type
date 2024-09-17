@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+./install_sfml_X11.sh
+
 cmake -B build
 
 if [ $? -ne 0 ]; then
