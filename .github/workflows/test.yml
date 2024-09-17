@@ -17,13 +17,11 @@ jobs:
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
       contents: write
-    if: github.repository == 'JsuisSayker/Zappy'
+    if: github.repository == 'Tom-Mendy/R-Type'
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
-      - name: Install autopep8
-        run: pip install autopep8
       - name: format file
         run: ./format.sh
       - name: Check for modified files
@@ -49,7 +47,7 @@ jobs:
   push_to_mirror:
     needs: [linux_install]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
+    if: github.repository == 'Tom-Mendy/R-Type'
     steps:
       - uses: actions/checkout@v4
         with:
