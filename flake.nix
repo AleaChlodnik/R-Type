@@ -32,6 +32,13 @@
               xorg.libXinerama
               xorg.libXrender
               sfml
+              libGLU
+              libpng
+              libudev-zero
+              freetype
+              openal
+              libvorbis
+              flac
             ] ++ (if system == "aarch64-darwin" then [ ] else [ gdb ]);
           };
       });
