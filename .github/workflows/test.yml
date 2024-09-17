@@ -40,6 +40,19 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ""
+      - name: Cache cmake build
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-cmake-build
+        with:
+          path: ./build
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: compile project
         run: cmake -S . -B build
       - name: build project
@@ -53,6 +66,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ""
+      - name: Cache cmake build
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-cmake-build
+        with:
+          path: ./build
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
       - name: compile project
         run: cmake -S . -B build
       - name: build project
