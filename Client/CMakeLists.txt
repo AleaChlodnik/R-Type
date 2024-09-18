@@ -16,7 +16,7 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 add_executable(r-type_client Src/main.cpp)
-target_link_libraries(r-type_client PRIVATE sfml-graphics sfml-window sfml-system)
+target_link_libraries(r-type_client PRIVATE r-type_interfaces sfml-graphics sfml-window sfml-system)
 target_compile_features(r-type_client PRIVATE cxx_std_17)
 
 # Windows-specific custom command to copy OpenAL DLL for SFML

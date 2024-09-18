@@ -7,6 +7,7 @@ add_executable(r-type_server Src/main.cpp)
 # target_link_libraries(r-type_server PRIVATE sfml-graphics sfml-window sfml-system)
 target_compile_features(r-type_server PRIVATE cxx_std_17)
 
+target_link_libraries(r-type_server r-type_interfaces)
 
 # Copy the executable to the root directory
 add_custom_command(
