@@ -5,7 +5,17 @@
 ### Linux
 
 ```bash
-./compile.sh
+cmake -S . -B build && cmake --build build -j "$(nproc)"
+```
+
+#### NixOS
+
+deploy envirronement
+```bash
+nix develop
+```
+```bash
+cmake -S . -B build && cmake --build build -j "$(nproc)"
 ```
 
 ## Usage

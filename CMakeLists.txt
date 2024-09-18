@@ -6,12 +6,6 @@ project(
     DESCRIPTION "R-Type Game"
     LANGUAGES CXX)
 
-add_library(arcade_interfaces INTERFACE)
-
-target_include_directories(arcade_interfaces
-        INTERFACE include
-)
-
 if(LINUX)
     execute_process(COMMAND ./compile.sh)
 endif()
