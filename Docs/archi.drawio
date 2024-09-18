@@ -1,0 +1,58 @@
+<mxfile host="65bd71144e">
+    <diagram name="Page-1" id="OnYu8E4_LFuYqcuafDaF">
+        <mxGraphModel dx="1324" dy="763" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="50" value="r-type" style="swimlane;whiteSpace=wrap;html=1;gradientColor=none;labelBackgroundColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="160" width="700" height="640" as="geometry"/>
+                </mxCell>
+                <mxCell id="48" value="Client" style="swimlane;whiteSpace=wrap;html=1;gradientColor=none;labelBackgroundColor=none;" parent="50" vertex="1">
+                    <mxGeometry x="270" y="250" width="200" height="290" as="geometry"/>
+                </mxCell>
+                <mxCell id="103" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;CMakeLists.txt&lt;br&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;gradientColor=none;" vertex="1" parent="48">
+                    <mxGeometry x="40" y="40" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="117" value="Src" style="swimlane;whiteSpace=wrap;html=1;gradientColor=none;labelBackgroundColor=none;" vertex="1" parent="48">
+                    <mxGeometry x="20" y="115" width="160" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="118" value="main.cpp" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;gradientColor=none;" vertex="1" parent="117">
+                    <mxGeometry x="20" y="50" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="49" value="Server" style="swimlane;whiteSpace=wrap;html=1;gradientColor=none;labelBackgroundColor=none;" parent="50" vertex="1">
+                    <mxGeometry x="480" y="50" width="200" height="270" as="geometry"/>
+                </mxCell>
+                <mxCell id="104" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;CMakeLists.txt&lt;br&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;gradientColor=none;" vertex="1" parent="49">
+                    <mxGeometry x="40" y="40" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="119" value="Src" style="swimlane;whiteSpace=wrap;html=1;gradientColor=none;labelBackgroundColor=none;" vertex="1" parent="49">
+                    <mxGeometry x="20" y="115" width="160" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="120" value="main.cpp" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;gradientColor=none;" vertex="1" parent="119">
+                    <mxGeometry x="20" y="50" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="61" value="Docs" style="swimlane;whiteSpace=wrap;html=1;gradientColor=none;labelBackgroundColor=none;" vertex="1" parent="50">
+                    <mxGeometry x="285" y="50" width="160" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="51" value="Docs" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;gradientColor=none;" parent="61" vertex="1">
+                    <mxGeometry x="20" y="50" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" value="Interface" style="swimlane;whiteSpace=wrap;html=1;gradientColor=none;labelBackgroundColor=none;" vertex="1" parent="50">
+                    <mxGeometry x="30" y="130" width="200" height="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="67" value="include" style="swimlane;whiteSpace=wrap;html=1;gradientColor=none;labelBackgroundColor=none;" vertex="1" parent="65">
+                    <mxGeometry x="20" y="125" width="160" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="68" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;Asio&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;gradientColor=none;" vertex="1" parent="67">
+                    <mxGeometry x="20" y="50" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="70" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;CMakeLists.txt&lt;br&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;gradientColor=none;" vertex="1" parent="65">
+                    <mxGeometry x="40" y="40" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="69" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;CMakeLists.txt&lt;br&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;gradientColor=none;" vertex="1" parent="50">
+                    <mxGeometry x="60" y="40" width="120" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
