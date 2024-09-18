@@ -19,6 +19,7 @@
           }
           {
             packages = with pkgs; [
+              coreutils
               clang-tools
               cmake
               codespell

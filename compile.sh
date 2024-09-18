@@ -15,7 +15,8 @@ ubuntu)
         libflac-dev \
         libvorbis-dev \
         libgl1-mesa-dev \
-        libegl1-mesa-dev
+        libegl1-mesa-dev \
+        coreutils
     ;;
 fedora)
     # X11
@@ -25,7 +26,8 @@ fedora)
         libXcursor-devel \
         libXinerama-devel \
         libXrender-devel \
-        libgudev-devel
+        libgudev-devel \
+        coreutils
     ;;
 nixos)
     # X11
