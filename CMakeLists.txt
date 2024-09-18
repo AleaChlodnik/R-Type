@@ -6,6 +6,13 @@ project(
     DESCRIPTION "R-Type Game"
     LANGUAGES CXX)
 
+if(LINUX)
+    execute_process(COMMAND ./compile.sh)
+endif()
+# if(WIN32)
+#     ./compile.bat
+# endif()
+
 # Set C++ Standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

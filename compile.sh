@@ -6,7 +6,7 @@ case "${ID}" in
 ubuntu)
     # X11
     sudo apt update
-    sudo apt install \
+    sudo apt install -y \
         libxrandr-dev \
         libxcursor-dev \
         libudev-dev \
@@ -19,7 +19,12 @@ ubuntu)
     ;;
 fedora)
     # X11
-    sudo dnf install libX11-devel libXrandr-devel libXi-devel libXcursor-devel libXinerama-devel libXrender-devel
+    sudo dnf install -y libX11-devel \
+        libXrandr-devel \
+        libXi-devel \
+        libXcursor-devel \
+        libXinerama-devel \
+        libXrender-devel
     ;;
 nixos)
     # X11
@@ -30,19 +35,16 @@ nixos)
     ;;
 arch)
     # X11
-    sudo pacman -S libxrandr libxcursor libudev freetype2 openal flac libvorbis mesa
+    sudo pacman -Syy libxrandr \
+        libxcursor \
+        libudev \
+        freetype2 \
+        openal \
+        flac \
+        libvorbis mesa
     ;;
 *)
     echo "Unsupported OS"
     exit 1
     ;;
 esac
-
-cmake -B build
-
-if [ $? -ne 0 ]; then
-    echo "CMake failed"
-    exit 1
-fi
-
-cmake --build build -j "$(nproc)"

@@ -46,7 +46,7 @@ IndentPPDirectives: BeforeHash
 PPIndentWidth: 4
 
 # Enforce newline at the end of files
-InsertNewlineAtEOF: True
+# InsertNewlineAtEOF: True
 
 # Miscellaneous options
 FixNamespaceComments: True
