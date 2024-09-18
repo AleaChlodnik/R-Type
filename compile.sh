@@ -24,7 +24,8 @@ fedora)
         libXi-devel \
         libXcursor-devel \
         libXinerama-devel \
-        libXrender-devel
+        libXrender-devel \
+        libgudev-devel
     ;;
 nixos)
     # X11
