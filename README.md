@@ -11,3 +11,5 @@
 ## Usage
 
 ## Examples
+
+cmake -S . -B build
