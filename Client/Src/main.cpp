@@ -25,7 +25,9 @@ int main()
     //     window.display();
     // }
 
-    //test_func();
-    printf("Hello World\n");
+    test_func();
+
+    //printf("Hello World\n");
+
     return 0;
 }
