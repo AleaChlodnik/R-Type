@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2024
+** R-Type
+** File description:
+** main
+*/
+
 #include <SFML/Graphics.hpp>
 
 int main()
