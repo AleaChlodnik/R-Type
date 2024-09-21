@@ -9,26 +9,26 @@
 // #define _WIN32_WINNT 0x0A00
 // #endif
 #define ASIO_STANDALONE
-#include <chrono>
 #include <asio.hpp>
 #include <asio/ts/buffer.hpp>
 #include <asio/ts/internet.hpp>
+#include <chrono>
 #include <iostream>
 
 std::vector<char> vBuffer(20 * 1024);
 
-void grabSomeData(asio::ip::tcp::socket& socket){
+void grabSomeData(asio::ip::tcp::socket &socket)
+{
     socket.async_read_some(asio::buffer(vBuffer.data(), vBuffer.size()),
-        [&](std::error_code ec, std::size_t lenght){
-                           if (!ec){
-                           std::cout << "\n\nRead" << lenght << " bytes\n\n";
-                           for (int i = 0; i < lenght; i++){
-                           std::cout << vBuffer[i];
-                           }
-                           grabSomeData(socket);
-                           }
-                           }
-                           );
+        [&](std::error_code ec, std::size_t lenght) {
+            if (!ec) {
+                std::cout << "\n\nRead" << lenght << " bytes\n\n";
+                for (int i = 0; i < lenght; i++) {
+                    std::cout << vBuffer[i];
+                }
+                grabSomeData(socket);
+            }
+        });
 }
 
 int main()
@@ -39,14 +39,14 @@ int main()
 
     asio::io_context::work idleWork(context);
 
-    std::thread thrContext = std::thread([&] () {context.run();});
+    std::thread thrContext = std::thread([&]() { context.run(); });
 
     asio::ip::tcp::endpoint endpoint(
         asio::ip::make_address("51.38.81.49", ec), 80);
 
     asio::ip::tcp::socket socket(context);
 
-   socket.connect(endpoint, ec);
+    socket.connect(endpoint, ec);
 
     if (!ec) {
         std::cout << "Connected !" << std::endl;
@@ -67,7 +67,8 @@ int main()
         std::this_thread::sleep_for(20000ms);
 
         context.stop();
-        if (thrContext.joinable()) thrContext.join();
+        if (thrContext.joinable())
+            thrContext.join();
 
     } else {
         std::cout << "Socket is not open !" << std::endl;

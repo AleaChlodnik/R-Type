@@ -9,6 +9,8 @@
 
 #include "r_type.hpp"
 
+void simpleClient();
+
 int main()
 {
     // auto window = sf::RenderWindow{{1920u, 1080u}, "CMake SFML Project"};
@@ -25,7 +27,7 @@ int main()
     //     window.display();
     // }
 
-    test_func();
+    simpleClient();
 
     //printf("Hello World\n");
 
