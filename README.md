@@ -11,18 +11,14 @@ cmake -S . -B build && cmake --build build -j "$(nproc)"
 #### NixOS
 
 deploy environment
+
 ```bash
-nix develop
-```
-```bash
-cmake -S . -B build && cmake --build build -j "$(nproc)"
+nix develop -c 'cmake -S . -B build && cmake --build build -j "$(nproc)"'
 ```
 
 ## Usage
 
 ### Server
-
-#### Linux
 
 ```bash
 ./r-type_server
@@ -30,11 +26,8 @@ cmake -S . -B build && cmake --build build -j "$(nproc)"
 
 ### Client
 
-#### Linux
-
 ```bash
 ./r-type_client
 ```
 
 ## Examples
-
