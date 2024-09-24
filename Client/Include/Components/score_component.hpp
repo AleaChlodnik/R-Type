@@ -7,7 +7,6 @@
 #include "a_component.hpp"
 #pragma once
 
-namespace Components {
 
     class ScoreComponent: public AComponent{
         public:
@@ -22,4 +21,4 @@ namespace Components {
             int _score;
     };
 
-}
+

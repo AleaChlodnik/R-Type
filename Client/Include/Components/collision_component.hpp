@@ -9,7 +9,6 @@
 
 #pragma once
 
-namespace Components{
 
     class CollisionComponent : public AComponent {
     public:
@@ -26,4 +25,4 @@ namespace Components{
         sf::RectangleShape _hitbox;
     };
 
-}
+

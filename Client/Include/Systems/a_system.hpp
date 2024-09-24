@@ -12,7 +12,7 @@
 
 #include "i_system.hpp"
 
-namespace Systems {
+
 class ASystem : public ISystem {
     public:
         virtual ~ASystem() override = default;
@@ -21,4 +21,4 @@ class ASystem : public ISystem {
     protected:
         std::vector<std::shared_ptr<AEntity>> _entities;
 };
-};
+

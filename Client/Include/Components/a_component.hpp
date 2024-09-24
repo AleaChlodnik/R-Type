@@ -9,9 +9,7 @@
 
 #include "i_component.hpp"
 
-namespace Components {
     class AComponent : public IComponent {
         public:
             virtual ~AComponent() override = default;
     };
-};

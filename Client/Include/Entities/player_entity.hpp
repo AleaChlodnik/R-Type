@@ -9,15 +9,16 @@
 
 #include "a_entity.hpp"
 
-namespace Entities {
-    class PlayerEntity : public AEntity {
-        public:
-            PlayerEntity() {};
-        
-        private:
-            std::vector<std::shared_ptr<AComponent>> components;
+class PlayerEntity : public AEntity {
+    public:
+        PlayerEntity() {};
+
+        int getMaxHealth() const { return _maxHealth; }
     
-            int _maxHealth = 100;
-            std::string _name = "player";
-    };
+    private:
+        std::vector<std::shared_ptr<AComponent>> components;
+
+        int _maxHealth = 100;
+        std::string _name = "player";
 };
+

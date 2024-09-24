@@ -8,8 +8,6 @@
 
 #include "a_component.hpp"
 
-namespace Components {
-
     class HealthComponent : public AComponent {
         public:
             HealthComponent(int maxHealth);
@@ -22,5 +20,3 @@ namespace Components {
             int _health;
             int _maxHealth;
     };
-
-}

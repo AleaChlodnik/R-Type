@@ -11,7 +11,7 @@
 
 class AComponent;
 
-namespace Entities {
+
 
 class IEntity {
     public:
@@ -21,4 +21,4 @@ class IEntity {
         template <typename T>
         std::shared_ptr<T> getComponent();
 };
-};
+

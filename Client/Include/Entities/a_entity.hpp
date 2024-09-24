@@ -14,7 +14,7 @@
 #include "error_handling.hpp"
 #include "i_entity.hpp"
 
-namespace Entities {
+
 class AEntity : public IEntity {
     public:
         virtual void addComponent(std::shared_ptr<AComponent> component) override { components.push_back(component); }
@@ -37,4 +37,4 @@ std::shared_ptr<T> AEntity::getComponent() {
 	}
 	throw componentNotFound();
 }
-};
+

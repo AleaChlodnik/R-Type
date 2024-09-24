@@ -9,7 +9,7 @@
 
 #pragma once
 
-namespace Components {
+
 
     class MovementComponent : public AComponent{
         public:
@@ -26,4 +26,4 @@ namespace Components {
             std::pair<float, float> _direction;
     };
 
-}
+

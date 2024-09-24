@@ -9,9 +9,9 @@
 
 #include "error_handling.hpp"
 
-namespace Components {
+
 class IComponent {
     public:
         virtual ~IComponent() = default;
 };
-};
+

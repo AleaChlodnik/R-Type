@@ -4,24 +4,24 @@
 ** File description:
 ** score_component
 */
-#include "../../Include/Components/score_component.hpp"
+#include "Components/score_component.hpp"
 
-Components::ScoreComponent::ScoreComponent(int score)
+ScoreComponent::ScoreComponent(int score)
 {
     _score = score;
 }
 
-void Components::ScoreComponent::setScore(int score)
+void ScoreComponent::setScore(int score)
 {
     _score = score;
 }
 
-int Components::ScoreComponent::getScore() const
+int ScoreComponent::getScore() const
 {
     return _score;
 }
 
-int Components::ScoreComponent::operator+(int score)
+int ScoreComponent::operator+(int score)
 {
     _score += score;
     return _score;

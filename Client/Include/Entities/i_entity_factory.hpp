@@ -11,7 +11,7 @@
 
 #include "i_entity.hpp"
 
-namespace Entities {
+
 // Abstract Entity Factory
 class IEntityFactory {
     public:
@@ -22,4 +22,4 @@ class IEntityFactory {
         // virtual std::shared_ptr<IEntity> createMonster() = 0;
         // virtual std::shared_ptr<IEntity> createMissile() = 0;
 };
-};
+

@@ -9,7 +9,7 @@
 #include "a_component.hpp"
 #include <SFML/Graphics.hpp>
 
-namespace Components {
+
 
     class SpriteComponent : public AComponent {
     public:
@@ -29,4 +29,4 @@ namespace Components {
         sf::Sprite _sprite;
     };
 
-}
+

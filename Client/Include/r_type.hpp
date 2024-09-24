@@ -62,3 +62,7 @@ class Rtype {
 ** in function: addEntityToSystems(entity):
 ** use switch case to see which entity it is, and add to the correct system
 */
+
+/*
+** creat system manager to make updating easier?
+*/

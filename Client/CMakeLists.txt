@@ -17,8 +17,8 @@ FetchContent_MakeAvailable(SFML)
 
 add_subdirectory(Src)
 
-# target_link_libraries(r-type_client PRIVATE sfml-graphics sfml-window sfml-system)
 target_compile_features(r-type_client PRIVATE cxx_std_17)
+target_compile_options(r-type_client PRIVATE -Wall -Wextra)
 
 # Windows-specific custom command to copy OpenAL DLL for SFML
 if(WIN32)
