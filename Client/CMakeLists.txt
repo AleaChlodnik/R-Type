@@ -1,5 +1,5 @@
 # Client-side project
-project(Client VERSION 0.1)
+# project(Client VERSION 0.1)
 
 include_directories(${PROJECT_SOURCE_DIR}/Include)
 
@@ -15,10 +15,9 @@ FetchContent_Declare(
   EXCLUDE_FROM_ALL SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(r-type_client Src/main.cpp Src/r_type.cpp Src/client.cpp)
+add_subdirectory(Src)
 
-target_link_libraries(r-type_client PRIVATE r-type_interfaces sfml-graphics
-                                            sfml-window sfml-system)
+# target_link_libraries(r-type_client PRIVATE sfml-graphics sfml-window sfml-system)
 target_compile_features(r-type_client PRIVATE cxx_std_17)
 
 # Windows-specific custom command to copy OpenAL DLL for SFML
@@ -33,10 +32,3 @@ if(WIN32)
       $<TARGET_FILE_DIR:r-type_client>
     VERBATIM)
 endif()
-
-# Copy the executable to the root directory
-add_custom_command(
-  TARGET r-type_client
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:r-type_client>
-          ${CMAKE_SOURCE_DIR})
