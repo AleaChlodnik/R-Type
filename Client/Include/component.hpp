@@ -2,17 +2,14 @@
 ** EPITECH PROJECT, 2024
 ** R-Type
 ** File description:
-** r_type
+** component
 */
 
 #pragma once
 
 #include "error_handling.hpp"
 
-class Rtype {
+class Component {
     public:
-        Rtype();
-        void run();
-
-        // Main
+        virtual ~Component() = default;
 };
