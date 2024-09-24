@@ -37,12 +37,15 @@ class Rtype {
 
         // Setters
         void setGameMode(GameMode mode) { currentGameMode = mode; }
+        void setDaltonismMode(DaltonismMode mode) { currentDaltonismMode = mode; }
         void setMainMenuStatus(bool status) { main_menu = status; }
         // Getters
         GameMode getGameMode() const { return currentGameMode; }
+        DaltonismMode getDaltonismMode() const { return currentDaltonismMode; }
         int getMainMenuStatus() const { return main_menu; }
 
     private:
         GameMode currentGameMode;
+        DaltonismMode currentDaltonismMode;
         bool main_menu;
 };
