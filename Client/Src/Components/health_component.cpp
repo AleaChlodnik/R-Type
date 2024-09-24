@@ -4,11 +4,12 @@
 ** File description:
 ** health_component
 */
-#include "../../Include/Components/health_component.hpp"
+#include "health_component.hpp"
 
-Components::HealthComponent::HealthComponent(int health)
+Components::HealthComponent::HealthComponent(int maxHealth)
 {
-    _health = health;
+    _maxHealth = maxHealth;
+    _health = maxHealth;
 }
 
 void Components::HealthComponent::setHealth(int health)
@@ -19,16 +20,6 @@ void Components::HealthComponent::setHealth(int health)
 int Components::HealthComponent::getHealth() const
 {
     return _health;
-}
-
-void Components::HealthComponent::setMaxHealth(int maxHealth)
-{
-    _maxHealth = maxHealth;
-}
-
-int Components::HealthComponent::getMaxHealth() const
-{
-    return _maxHealth;
 }
 
 int Components::HealthComponent::operator+(int health)

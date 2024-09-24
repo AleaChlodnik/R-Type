@@ -12,11 +12,13 @@
 
 #include "i_system.hpp"
 
+namespace Systems {
 class ASystem : public ISystem {
     public:
         virtual ~ASystem() override = default;
-        void addEntity(std::shared_ptr<Entity> entity) override { _entities.push_back(entity); }
+        void addEntity(std::shared_ptr<AEntity> entity) override { _entities.push_back(entity); }
     
     protected:
-        std::vector<std::shared_ptr<Entity>> _entities;
+        std::vector<std::shared_ptr<AEntity>> _entities;
+};
 };

@@ -9,19 +9,21 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
 #include "error_handling.hpp"
 #include "i_entity.hpp"
 
+namespace Entities {
 class AEntity : public IEntity {
     public:
-        virtual void addComponent(std::shared_ptr<Component> component) override { components.push_back(component); }
+        virtual void addComponent(std::shared_ptr<AComponent> component) override { components.push_back(component); }
 
         template <typename T>
         std::shared_ptr<T> getComponent();
 
     protected:
-        std::vector<std::shared_ptr<Component>> components;
+        std::vector<std::shared_ptr<AComponent>> components;
 };
 
 template <typename T>
@@ -35,3 +37,4 @@ std::shared_ptr<T> AEntity::getComponent() {
 	}
 	throw componentNotFound();
 }
+};

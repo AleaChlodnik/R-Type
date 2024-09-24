@@ -9,13 +9,16 @@
 
 #include <memory>
 
-class Component;
+class AComponent;
+
+namespace Entities {
 
 class IEntity {
     public:
-        virtual void addComponent(std::shared_ptr<Component> component) = 0;
+        virtual void addComponent(std::shared_ptr<AComponent> component) = 0;
         virtual ~IEntity() {}
 	    
         template <typename T>
         std::shared_ptr<T> getComponent();
+};
 };

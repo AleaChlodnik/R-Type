@@ -1,2 +1,2 @@
 
-add_library(Entities temp.cpp)
+add_library(Entities entity_factory.cpp)
