@@ -15,7 +15,8 @@ FetchContent_Declare(
   EXCLUDE_FROM_ALL SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(r-type_client Src/main.cpp Src/r_type.cpp)
+add_executable(r-type_client Src/main.cpp Src/r_type.cpp Src/client.cpp)
+
 target_link_libraries(r-type_client PRIVATE r-type_interfaces sfml-graphics
                                             sfml-window sfml-system)
 target_compile_features(r-type_client PRIVATE cxx_std_17)
