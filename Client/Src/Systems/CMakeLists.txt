@@ -1,2 +1,2 @@
 
-add_library(Systems)
+add_library(Systems temp.cpp)

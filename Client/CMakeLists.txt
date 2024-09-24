@@ -1,5 +1,5 @@
 # Client-side project
-# project(Client VERSION 0.1)
+project(Client VERSION 0.1)
 
 include_directories(${PROJECT_SOURCE_DIR}/Include)
 

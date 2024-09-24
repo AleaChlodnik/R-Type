@@ -17,6 +17,13 @@ class Rtype {
         HARD
     };
 
+    enum class DaltonismMode {
+        NORMAL,
+        TRITANOPIA,
+        DEUTERANOPIA,
+        PROTANOPIA
+    };
+
     public:
         Rtype(); // This will init the background, and player. Set daltonic_mode to false, and main_menu to true. Ex: renderSystem.addEntity(player), inputSystem.addEntity(player), collisionSystem.addEntity(player), etc.
         void run(); // If main_menu variable is true, call mainMenu. While main_menu is false, call gameLoop. Get messages from the server, and store them in a queue (maybe?).
@@ -30,12 +37,9 @@ class Rtype {
 
         // Setters
         void setMainMenuStatus(bool status) { main_menu = status; }
-        void setDaltonicModeStatus(bool status) { daltonic_mode = status; }
         // Getters
         int getMainMenuStatus() const { return main_menu; }
-        int getDaltonicModeStatus() const { return daltonic_mode; }
 
     private:
         bool main_menu;
-        bool daltonic_mode;
 };
