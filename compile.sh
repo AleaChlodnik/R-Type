@@ -5,8 +5,8 @@
 case "${ID}" in
 ubuntu)
     # X11
-    echo "Please run this script as a normal user"
     if [[ $EUID -ne 1000 ]]; then
+        echo "root user"
         apt update
         apt install -y \
             git \
@@ -21,6 +21,7 @@ ubuntu)
             libegl1-mesa-dev \
             coreutils
     else
+        echo "normal user"
         sudo apt update
         sudo apt install -y \
             git \
