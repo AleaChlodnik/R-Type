@@ -25,7 +25,7 @@ class Rtype {
     };
 
     public:
-        Rtype(); // This will init the background, and player. Set daltonic_mode to false, and main_menu to true. Ex: renderSystem.addEntity(player), inputSystem.addEntity(player), collisionSystem.addEntity(player), etc.
+        Rtype(); // This will init the background, and player. Set daltonic_mode to false, and main_menu to true. Ex: renderSystem.addEntity(player), inputSystem.addEntity(player), collisionSystem.addEntity(player), etc. Default easy mode and normal daltonism mode.
         void run(); // If main_menu variable is true, call mainMenu. While main_menu is false, call gameLoop. Get messages from the server, and store them in a queue (maybe?).
         
         void mainMenu(); // Open window. (handleEvents). Display the main menu with start, help, daltonic mode, and speed selection buttons. On start, set main_menu to false, close window, and return. When active, daltonic_mode will be set to true, and draw a color filter over the screen until deactivated.
@@ -36,10 +36,13 @@ class Rtype {
         void renderGame(); // Ex: window.clear(), window.draw(background), renderSystem.render(window), window.display, etc.
 
         // Setters
+        void setGameMode(GameMode mode) { currentGameMode = mode; }
         void setMainMenuStatus(bool status) { main_menu = status; }
         // Getters
+        GameMode getGameMode() const { return currentGameMode; }
         int getMainMenuStatus() const { return main_menu; }
 
     private:
+        GameMode currentGameMode;
         bool main_menu;
 };
