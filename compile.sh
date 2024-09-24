@@ -5,37 +5,19 @@
 case "${ID}" in
 ubuntu)
     # X11
-    if [[ $EUID -ne 1000 ]]; then
-        echo "root user"
-        apt update
-        apt install -y \
-            git \
-            libxrandr-dev \
-            libxcursor-dev \
-            libudev-dev \
-            libfreetype-dev \
-            libopenal-dev \
-            libflac-dev \
-            libvorbis-dev \
-            libgl1-mesa-dev \
-            libegl1-mesa-dev \
-            coreutils
-    else
-        echo "normal user"
-        sudo apt update
-        sudo apt install -y \
-            git \
-            libxrandr-dev \
-            libxcursor-dev \
-            libudev-dev \
-            libfreetype-dev \
-            libopenal-dev \
-            libflac-dev \
-            libvorbis-dev \
-            libgl1-mesa-dev \
-            libegl1-mesa-dev \
-            coreutils
-    fi
+    sudo apt update
+    sudo apt install -y \
+        git \
+        libxrandr-dev \
+        libxcursor-dev \
+        libudev-dev \
+        libfreetype-dev \
+        libopenal-dev \
+        libflac-dev \
+        libvorbis-dev \
+        libgl1-mesa-dev \
+        libegl1-mesa-dev \
+        coreutils
     ;;
 fedora)
     # X11
