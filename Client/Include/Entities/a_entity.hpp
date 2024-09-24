@@ -18,6 +18,7 @@
 class AEntity : public IEntity {
     public:
         virtual void addComponent(std::shared_ptr<AComponent> component) override { components.push_back(component); }
+        virtual int getMaxHealth() const override = 0;
 
         template <typename T>
         std::shared_ptr<T> getComponent();
