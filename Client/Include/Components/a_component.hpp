@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "error_handling.hpp"
 #include "i_component.hpp"
 
 class AComponent : public IComponent {

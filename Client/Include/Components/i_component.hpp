@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "error_handling.hpp"
+
 class IComponent {
     public:
         virtual ~IComponent() = default;
