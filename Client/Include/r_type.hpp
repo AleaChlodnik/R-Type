@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+
 #include "error_handling.hpp"
 
 class Rtype {
@@ -22,12 +25,6 @@ class Rtype {
         TRITANOPIA,
         DEUTERANOPIA,
         PROTANOPIA
-    };
-
-    enum class gamewindow {
-        MENU,
-        SETTING,
-        GAME
     };
 
     public:
@@ -54,6 +51,7 @@ class Rtype {
         GameMode currentGameMode;
         DaltonismMode currentDaltonismMode;
         bool main_menu;
+        sf::RenderWindow _window;
 };
 
 /*
