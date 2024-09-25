@@ -30,7 +30,8 @@ int main()
     if (!ec) {
         std::cout << "Connected !" << std::endl;
     } else {
-        std::cout << "Failed to connect to address :\n" << ec.message() << std::endl;
+        std::cout << "Failed to connect to address :\n"
+                  << ec.message() << std::endl;
     }
     return 0;
 }

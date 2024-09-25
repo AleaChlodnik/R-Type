@@ -7,6 +7,7 @@ ubuntu)
     # X11
     sudo apt update
     sudo apt install -y \
+        git \
         libxrandr-dev \
         libxcursor-dev \
         libudev-dev \

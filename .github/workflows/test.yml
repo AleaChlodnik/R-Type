@@ -41,18 +41,16 @@ jobs:
         with:
           repository: ""
 
-      - name: Cache cmake build
+      - name: Cache apt install
         id: cache-apt
         uses: actions/cache@v3
         env:
           cache-name: cache-apt-install
         with:
           path: /var/cache/apt
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-install-${{ env.cache-name }}-${{ hashFiles('**/compile.sh') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ runner.os }}-install-${{ env.cache-name }}-
 
       - name: compile project
         run: cmake -S . -B build # do apt install
@@ -64,11 +62,9 @@ jobs:
           cache-name: cache-cmake-build
         with:
           path: ./build
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
       - name: build project
         run: cmake --build build -j "$(nproc)"
 
@@ -87,11 +83,9 @@ jobs:
           cache-name: cache-cmake-build
         with:
           path: ./build
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
       - name: compile project
         run: cmake -S . -B build
       - name: build project
