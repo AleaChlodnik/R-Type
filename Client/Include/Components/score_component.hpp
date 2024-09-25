@@ -19,6 +19,7 @@
             int operator+(int score);
         private:
             int _score;
+            const std::string _type = "score";
     };
 
 

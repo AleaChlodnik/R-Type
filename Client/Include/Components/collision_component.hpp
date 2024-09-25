@@ -23,6 +23,7 @@
 
     private:
         sf::RectangleShape _hitbox;
+        const std::string _type = "collision";
     };
 
 

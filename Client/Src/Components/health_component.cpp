@@ -6,12 +6,6 @@
 */
 #include "Components/health_component.hpp"
 
-HealthComponent::HealthComponent(int maxHealth)
-{
-    _maxHealth = maxHealth;
-    _health = maxHealth;
-}
-
 void HealthComponent::setHealth(int health)
 {
     _health = health;

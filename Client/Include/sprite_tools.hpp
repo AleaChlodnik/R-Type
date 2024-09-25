@@ -2,10 +2,8 @@
 ** EPITECH PROJECT, 2024
 ** R-Type
 ** File description:
-** entities
+** sprite_tools
 */
 
 #pragma once
 
-#include "a_entity.hpp"
-#include "player_entity.hpp"

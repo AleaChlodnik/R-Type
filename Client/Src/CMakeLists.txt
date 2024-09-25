@@ -1,11 +1,12 @@
 
+add_subdirectory(Tools)
 add_subdirectory(Components)
 add_subdirectory(Entities)
 add_subdirectory(Systems)
 
 add_executable(r-type_client main.cpp r_type.cpp client.cpp)
 
-target_link_libraries(r-type_client PRIVATE Components Entities Systems r-type_interfaces sfml-graphics sfml-window sfml-system)
+target_link_libraries(r-type_client PRIVATE Tools Components Entities Systems r-type_interfaces sfml-graphics sfml-window sfml-system)
 
 # Copy the executable to the root directory
 add_custom_command(

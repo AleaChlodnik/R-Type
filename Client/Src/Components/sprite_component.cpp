@@ -6,23 +6,19 @@
 */
 #include "Components/sprite_component.hpp"
 
-SpriteComponent::SpriteComponent(std::string path, std::pair<float, float> size, std::pair<float, float> position)
+SpriteComponent::SpriteComponent(const std::string &path, std::pair<float, float> size, std::pair<float, float> position)
 {
-    _texture.loadFromFile(path);
-    _sprite.setTexture(_texture);
-    _sprite.setTextureRect(sf::IntRect(0, 0, size.first, size.second));
-    _sprite.setPosition(position.first, position.second);
+    setTexture(path);
+    setSpriteSize(size);
+    setSpritePosition(position);
 }
 
-SpriteComponent::SpriteComponent(std::string path)
+void SpriteComponent::setTexture(const std::string &path)
 {
-    _texture.loadFromFile(path);
+    if (!_texture.loadFromFile(path))
+        throw failedToLoadTexture();
+    
     _sprite.setTexture(_texture);
-}
-
-const sf::Texture &SpriteComponent::getTexture() const
-{
-    return _texture;
 }
 
 void SpriteComponent::setSpritePosition(std::pair<float, float> position)
@@ -30,23 +26,22 @@ void SpriteComponent::setSpritePosition(std::pair<float, float> position)
     _sprite.setPosition(position.first, position.second);
 }
 
-std::pair<int, int> SpriteComponent::getSpritePosition() const
+std::pair<float, float> SpriteComponent::getSpritePosition()
 {
-    return std::make_pair(_sprite.getPosition().x, _sprite.getPosition().y);
+    sf::Vector2f pos = _sprite.getPosition();
+    return {pos.x, pos.y};
+}
+
+std::pair<float, float> SpriteComponent::getSpriteSize()
+{
+    sf::Vector2f scale = _sprite.getScale();
+    return {scale.x, scale.y};
 }
 
 void SpriteComponent::setSpriteSize(std::pair<float, float> size)
 {
-    _sprite.setTextureRect(sf::IntRect(0, 0, size.first, size.second));
-}
-
-std::pair<float, float> SpriteComponent::getSpriteSize() const
-{
-    return std::make_pair(_sprite.getTextureRect().width, _sprite.getTextureRect().height);
-}
-
-void SpriteComponent::setTexture(std::string path)
-{
-    _texture.loadFromFile(path);
-    _sprite.setTexture(_texture);
+    if (_texture.getSize().x > 0 && _texture.getSize().y > 0) {
+        _sprite.setScale(size.first / _texture.getSize().x,
+            size.second / _texture.getSize().y);
+    }
 }

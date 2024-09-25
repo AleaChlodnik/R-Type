@@ -5,6 +5,11 @@
 ** r_type
 */
 
+/////////////////////// temp
+#include "Components/components.hpp"
+#include "Entities/entities.hpp"
+#include "Entities/entity_factory.hpp"
+
 #include "r_type.hpp"
 
 Rtype::Rtype()
@@ -51,7 +56,29 @@ void Rtype::gameLoop()
             filter.setFillColor(sf::Color(255, 255, 100, 100));
     }
 
+    /////////////////// temp, just for testing
+    std::shared_ptr<IEntityFactory> factory = std::make_shared<EntityFactory>();
+    std::shared_ptr<AEntity> player = factory->createPlayer();
+    std::vector<std::shared_ptr<AComponent>> comps = player->getAllComponents();
+    for (auto comp : comps) {
+        std::cout << "comp: " << comp->getType() << std::endl;
+    }
+
     while (_window.isOpen()) {
         handleEvents();
+        //renderGame();
+
+        /////////////////// temp, just for testing
+    
+        // _window.clear();
+        // try {
+        //     // _window.draw(player->getComponent<SpriteComponent>()->getSprite());
+        //     //std::shared_ptr<SpriteComponent> spriteComp = player->getComponent<SpriteComponent>();
+        //     //_window.draw(spriteComp->getSprite());
+        // } catch (const std::exception &e) {
+        //     std::cerr << e.what() << std::endl;
+        // }
+        // _window.display();
+        
     }
 }

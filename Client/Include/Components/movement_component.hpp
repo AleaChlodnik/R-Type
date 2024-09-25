@@ -22,6 +22,7 @@
         private:
             std::pair<float, float> _speed;
             std::pair<float, float> _direction;
+            const std::string _type = "movement";
     };
 
 

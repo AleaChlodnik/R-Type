@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 class AComponent;
 
@@ -16,7 +17,7 @@ class AComponent;
 class IEntity {
     public:
         virtual void addComponent(std::shared_ptr<AComponent> component) = 0;
-        virtual int getMaxHealth() const = 0;
+        virtual std::vector<std::shared_ptr<AComponent>> getAllComponents() = 0;
         virtual ~IEntity() {}
 	    
         template <typename T>

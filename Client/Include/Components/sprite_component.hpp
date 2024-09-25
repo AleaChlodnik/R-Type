@@ -9,24 +9,22 @@
 #include "a_component.hpp"
 #include <SFML/Graphics.hpp>
 
-
-
-    class SpriteComponent : public AComponent {
+class SpriteComponent : public AComponent {
     public:
-        SpriteComponent(std::string path, std::pair<float, float> size, std::pair<float, float> position);
-        SpriteComponent(std::string path);
+        SpriteComponent(const std::string &path, std::pair<float, float> size, std::pair<float, float> position);
 
-        const sf::Texture &getTexture() const;
-        void setTexture(std::string path);
+        void setTexture(const std::string &path);
         void setSpritePosition(std::pair<float, float> position);
-        std::pair<int, int> getSpritePosition() const;
         void setSpriteSize(std::pair<float, float> size);
-        std::pair<float, float> getSpriteSize() const ;
+    
+        const sf::Texture &getTexture() { return _texture; }
+        std::pair<float, float> getSpritePosition();
+        std::pair<float, float> getSpriteSize();
+
+        sf::Sprite &getSprite() { return _sprite; }
 
     private:
         sf::Texture _texture;
-        std::string path;
         sf::Sprite _sprite;
-    };
-
-
+        const std::string _type = "sprite";
+};

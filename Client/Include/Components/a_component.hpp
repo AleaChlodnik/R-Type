@@ -12,4 +12,9 @@
     class AComponent : public IComponent {
         public:
             virtual ~AComponent() override = default;
+
+            std::string getType() const override { return _type; }
+        
+        private:
+            std::string _type;
     };
