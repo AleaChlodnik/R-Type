@@ -39,8 +39,6 @@ void Rtype::handleEvents()
 
 void Rtype::gameLoop()
 {
-    // If you're joining an ongoing game instead of starting one, must know which allies and enemies are already in game and init before starting the game.
-
     _window.create(sf::VideoMode(800, 600), "R-Type");
 
     if (getDaltonismMode() != DaltonismMode::NORMAL) { // must test if filters are good
