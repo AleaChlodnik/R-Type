@@ -38,3 +38,5 @@ build
 
 # makefile
 bin
+
+.vscode
