@@ -7,6 +7,7 @@ ubuntu)
     # X11
     sudo apt update
     sudo apt install -y \
+        git \
         libxrandr-dev \
         libxcursor-dev \
         libudev-dev \
@@ -20,13 +21,20 @@ ubuntu)
     ;;
 fedora)
     # X11
-    sudo dnf install -y libX11-devel \
+    sudo dnf install -y \
+        git \
+        make \
+        libX11-devel \
         libXrandr-devel \
         libXi-devel \
         libXcursor-devel \
         libXinerama-devel \
         libXrender-devel \
         libgudev-devel \
+        glew-devel glm-devel freetype-devel \
+        openal-soft-devel \
+        flac-devel \
+        libvorbis-devel \
         coreutils
     ;;
 nixos)
