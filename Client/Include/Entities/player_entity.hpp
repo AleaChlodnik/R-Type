@@ -11,14 +11,16 @@
 
 class PlayerEntity : public AEntity {
     public:
-        PlayerEntity() {};
+        PlayerEntity(int maxHealth = 100, std::pair<float, float> startingPos = std::make_pair(0, 0))
+            : _maxHealth(maxHealth), _startingPos(startingPos) {}
 
         int getMaxHealth() const { return _maxHealth; }
     
     private:
         std::vector<std::shared_ptr<AComponent>> components;
 
-        int _maxHealth = 100;
-        std::string _name = "player";
+        const int _maxHealth;
+        //const std::pair<float, float> _size;
+        const std::pair<float, float> _startingPos;
 };
 

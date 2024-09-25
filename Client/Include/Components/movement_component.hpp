@@ -9,8 +9,6 @@
 
 #pragma once
 
-
-
     class MovementComponent : public AComponent{
         public:
             MovementComponent() = default;

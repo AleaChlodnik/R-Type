@@ -13,7 +13,6 @@ Rtype::Rtype()
     currentDaltonismMode = DaltonismMode::NORMAL;
     main_menu = true;
 
-    // Init background
     // Init player
     // Add player to systems
 }
@@ -40,7 +39,19 @@ void Rtype::handleEvents()
 
 void Rtype::gameLoop()
 {
+    // If you're joining an ongoing game instead of starting one, must know which allies and enemies are already in game and init before starting the game.
+
     _window.create(sf::VideoMode(800, 600), "R-Type");
+
+    if (getDaltonismMode() != DaltonismMode::NORMAL) { // must test if filters are good
+        sf::RectangleShape filter(sf::Vector2f(_window.getSize().x, _window.getSize().y));
+        if (getDaltonismMode() == DaltonismMode::TRITANOPIA)
+            filter.setFillColor(sf::Color(255, 255, 100, 100));
+        else if (getDaltonismMode() == DaltonismMode::DEUTERANOPIA)
+            filter.setFillColor(sf::Color(255, 100, 255, 100));
+        else if (getDaltonismMode() == DaltonismMode::PROTANOPIA)
+            filter.setFillColor(sf::Color(255, 255, 100, 100));
+    }
 
     while (_window.isOpen()) {
         handleEvents();
