@@ -7,7 +7,7 @@
 namespace olc {
 namespace net {
 template <typename T> class ClientInterface {
-    ClientInterface() {}
+    ClientInterface() : m_socket(m_context) {}
     virtual ~ClientInterface() { Disconnect(); }
 
   public:
@@ -45,6 +45,24 @@ template <typename T> class ClientInterface {
         } else {
             return false;
         }
+        bool IsConnected()
+        {
+            if (m_connection) {
+                return m_connection->IsConnected();
+            } else {
+                return false;
+            }
+        }
+        ThreadSafeQueue<owned_message<T>> &Incoming() { return m_qMessagesIn; }
+
+      protected:
+        asio::io_context m_context;
+        std::thread thrContext;
+        asio::ip::tcp::socket m_socket;
+        std::unique_ptr<connection<T>> m_connection;
+
+      private:
+        ThreadSafeQueue<owned_message<T>> m_qMessagesIn;
     }
 
   public:
