@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2024
+** R-Type
+** File description:
+** netCommon
+*/
+
 #pragma once
 
 #include <algorithm>
@@ -11,11 +18,11 @@
 #include <thread>
 #include <vector>
 
-// #ifdef _WIN32
-// #define _WIN32_WINNT 0x0A00
-// #endif
+#ifdef _WIN32
+    #define _WIN32_WINNT 0x0A00
+#endif
 
 #define ASIO_STANDALONE
-#include "asio.hpp"
+#include <asio.hpp>
 #include <asio/ts/buffer.hpp>
 #include <asio/ts/internet.hpp>

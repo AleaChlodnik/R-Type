@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2024
+** R-Type
+** File description:
+** netServer
+*/
+
 #pragma once
 
 #include "netCommon.hpp"
@@ -50,15 +57,15 @@ template <typename T> class ServerInterface {
                           << socket.remote_endpoint() << std::endl;
                 std::shared_ptr<connection<T>> newConnection =
                     std::make_shared<connection<T>>(
-                        connection<T>::owner::server, asioContext,
+                        connection<T>::owner::server, m_asioContext,
                         std::move(socket), m_qMessagesIn);
                 if (OnClientConnect(newConnection)) {
-                    m_deqConnection.push_back(std::move(newConnection));
-                    m_deqConnection.back()->ConnectToClient(nIDCounter++);
-                    std::cout << "[" << m_deqConnection.back()->GetID()
+                    m_deqConnections.push_back(std::move(newConnection));
+                    m_deqConnections.back()->ConnectToClient(nIDCounter++);
+                    std::cout << "[" << m_deqConnections.back()->GetID()
                               << "] Connection Approved" << std::endl;
                 } else {
-                    std::cout << "[------] Connection Denied" << srd::endl;
+                    std::cout << "[------] Connection Denied" << std::endl;
                 }
             } else {
                 std::cout << "[SERVER] New connection Error:" << ec.message()

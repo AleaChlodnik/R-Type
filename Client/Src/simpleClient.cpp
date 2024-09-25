@@ -1,27 +1,47 @@
-#include <netClient.hpp>
-#include <netCommon.hpp>
-#include <netMessage.hpp>
+/*
+** EPITECH PROJECT, 2024
+** R-Type
+** File description:
+** simpleClient
+*/
+
+#include <iostream>
+#include <olcNet.hpp>
 
 enum class CustomMsgTypes : uint32_t
 {
-    FireBullet,
-    MovePlayer
+    ServerAccept,
+    ServerDeny,
+    ServerPing,
+    MessageAll,
+    ServerMessage,
 };
 
 class CustomClient : public olc::net::ClientInterface<CustomMsgTypes> {
   public:
-    bool FireBullet(float x, float y)
-    {
-        olc::net::message<CustomMsgTypes> msg;
-        msg.header.id = CustomMsgTypes::FireBullet;
-        msg << x << y;
-        Send(msg);
-    }
+    // void PingServer()
+    // {
+    //     olc::net::message<CustomMsgTypes> msg;
+    //     msg.header.id = CustomMsgTypes::ServerPing;
+
+    //     // Caution with this...
+    //     std::chrono::system_clock::time_point timeNow =
+    //         std::chrono::system_clock::now();
+
+    //     msg << timeNow;
+    //     Send(msg);
+    // }
+
+    // void MessageAll()
+    // {
+    //     olc::net::message<CustomMsgTypes> msg;
+    //     msg.header.id = CustomMsgTypes::MessageAll;
+    //     Send(msg);
+    // }
 };
 
 void simpleClient()
 {
     CustomClient c;
-    c.Connect("127.0.0.1", 80);
-    c.FireBullet(2.0f, 5.0f);
+    c.Connect("127.0.0.1", 60000);
 }

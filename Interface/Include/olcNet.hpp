@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2024
+** R-Type
+** File description:
+** olcNet
+*/
+
 #pragma once
 
 #include "netClient.hpp"
