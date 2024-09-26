@@ -128,10 +128,7 @@ template <typename T> class ServerInterface {
         return false;
     }
 
-    virtual void OnClientDisconnect(std::shared_ptr<connection<T>> client)
-    {
-        std::cout << "[SERVER] Client disconnected:" << std::endl;
-    }
+    virtual void OnClientDisconnect(std::shared_ptr<connection<T>> client) {}
 
     virtual void OnMessage(
         std::shared_ptr<connection<T>> client, message<T> &msg)

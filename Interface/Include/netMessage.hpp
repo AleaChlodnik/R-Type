@@ -45,7 +45,7 @@ template <typename T> struct message {
     }
 
     template <typename DataType>
-    friend message<T> &operator>>(message<T> &msg, const DataType &data)
+    friend message<T> &operator>>(message<T> &msg, DataType &data)
     {
         static_assert(std::is_standard_layout<DataType>::value,
             "Data is too complex to be pushed into vector");

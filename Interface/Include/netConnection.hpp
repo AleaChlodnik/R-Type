@@ -101,7 +101,9 @@ class connection : public std::enable_shared_from_this<connection<T>> {
                         }
                     }
                 } else {
-                    std::cout << "[" << id << "] Write Header Fail.\n";
+                    std::cout << "[" << id
+                              << "] Write Header Fail. Error: " << ec.message()
+                              << std::endl;
                     m_socket.close();
                 }
             });
@@ -121,7 +123,9 @@ class connection : public std::enable_shared_from_this<connection<T>> {
                         WriteHeader();
                     }
                 } else {
-                    std::cout << "[" << id << "] Write Body Fail.\n";
+                    std::cout << "[" << id
+                              << "] Write Body Fail. Error: " << ec.message()
+                              << std::endl;
                     m_socket.close();
                 }
             });
@@ -142,7 +146,9 @@ class connection : public std::enable_shared_from_this<connection<T>> {
                         AddToIncomingMessageQueue();
                     }
                 } else {
-                    std::cout << "[" << id << "] Read Header Fail.\n";
+                    std::cout << "[" << id
+                              << "] Read Header Fail. Error: " << ec.message()
+                              << std::endl;
                     m_socket.close();
                 }
             });
@@ -158,7 +164,10 @@ class connection : public std::enable_shared_from_this<connection<T>> {
                 if (!ec) {
                     AddToIncomingMessageQueue();
                 } else {
-                    std::cout << "[" << id << "] Read Body Fail.\n";
+                    std::cout << "[" << id
+                              << "] Read Body Fail. Error: " << ec.message()
+                              << std::endl;
+                    ;
                     m_socket.close();
                 }
             });
