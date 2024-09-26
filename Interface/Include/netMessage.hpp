@@ -6,24 +6,26 @@
 */
 
 #pragma once
-
 #include "netCommon.hpp"
+#include "netConnection.hpp"
 
 namespace olc {
 namespace net {
-template <typename T> struct message_header {
+
+template <typename T> struct MessageHeader {
     T id{};
     uint32_t size = 0;
 };
+
 template <typename T> struct message {
-    message_header<T> header{};
+    MessageHeader<T> header{};
     std::vector<uint8_t> body;
 
-    size_t size() const { return sizeof(message_header<T>) + body.size(); }
+    size_t size() const { return body.size(); }
 
     friend std::ostream &operator<<(std::ostream &os, const message<T> &msg)
     {
-        os << "ID:" << int(msg.header.id) << "Size:" << msg.header.size;
+        os << "ID:" << int(msg.header.id) << " Size:" << msg.header.size;
         return os;
     }
 
@@ -48,7 +50,7 @@ template <typename T> struct message {
     friend message<T> &operator>>(message<T> &msg, DataType &data)
     {
         static_assert(std::is_standard_layout<DataType>::value,
-            "Data is too complex to be pushed into vector");
+            "Data is too complex to be pulled from vector");
 
         size_t i = msg.body.size() - sizeof(DataType);
 
@@ -62,11 +64,12 @@ template <typename T> struct message {
     }
 };
 
-template <typename T> class connection;
+template <typename T> class Connection;
 
 template <typename T> struct owned_message {
-    std::shared_ptr<connection<T>> remote = nullptr;
+    std::shared_ptr<Connection<T>> remote = nullptr;
     message<T> msg;
+
     friend std::ostream &operator<<(
         std::ostream &os, const owned_message<T> &msg)
     {
@@ -74,5 +77,6 @@ template <typename T> struct owned_message {
         return os;
     }
 };
+
 } // namespace net
 } // namespace olc

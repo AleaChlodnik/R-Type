@@ -16,7 +16,7 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
 
   protected:
     virtual bool OnClientConnect(
-        std::shared_ptr<olc::net::connection<CustomMsgTypes>> client)
+        std::shared_ptr<olc::net::Connection<CustomMsgTypes>> client)
     {
         olc::net::message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::ServerAccept;
@@ -26,14 +26,14 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
 
     // Called when a client appears to have disconnected
     virtual void OnClientDisconnect(
-        std::shared_ptr<olc::net::connection<CustomMsgTypes>> client)
+        std::shared_ptr<olc::net::Connection<CustomMsgTypes>> client)
     {
         std::cout << "Removing client [" << client->GetID() << "]\n";
     }
 
     // Called when a message arrives
     virtual void OnMessage(
-        std::shared_ptr<olc::net::connection<CustomMsgTypes>> client,
+        std::shared_ptr<olc::net::Connection<CustomMsgTypes>> client,
         olc::net::message<CustomMsgTypes> &msg)
     {
         switch (msg.header.id) {
@@ -54,9 +54,6 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
             MessageAllClients(msg, client);
 
         } break;
-        case CustomMsgTypes::ServerDeny: {
-
-        } break;
         }
     }
 };
@@ -67,7 +64,7 @@ int main()
     server.Start();
 
     while (1) {
-        server.Update();
+        server.Update(-1, true);
     }
 
     return 0;
