@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "CustomMsgTypes.hpp"
 #include "netClient.hpp"
 #include "netCommon.hpp"
 #include "netConnection.hpp"

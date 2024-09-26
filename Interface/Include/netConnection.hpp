@@ -14,7 +14,7 @@
 namespace olc {
 namespace net {
 template <typename T>
-class connection : public std::enable_shared_from_this<connection<T>> {
+class Connection : public std::enable_shared_from_this<Connection<T>> {
   public:
     enum class owner
     {
@@ -23,7 +23,7 @@ class connection : public std::enable_shared_from_this<connection<T>> {
     };
 
   public:
-    connection(owner parent, asio::io_context &asioContext,
+    Connection(owner parent, asio::io_context &asioContext,
         asio::ip::tcp::socket socket, ThreadSafeQueue<owned_message<T>> &qIn)
         : m_asioContext(asioContext), m_socket(std::move(socket)),
           m_qMessagesIn(qIn)
@@ -31,7 +31,7 @@ class connection : public std::enable_shared_from_this<connection<T>> {
         m_nOwnerType = parent;
     }
 
-    virtual ~connection() {}
+    virtual ~Connection() {}
 
     uint32_t GetID() const { return id; }
 
@@ -49,9 +49,7 @@ class connection : public std::enable_shared_from_this<connection<T>> {
     void ConnectToServer(
         const asio::ip::tcp::resolver::results_type &endpoints)
     {
-        // Only clients can connect to servers
         if (m_nOwnerType == owner::client) {
-            // Request asio attempts to connect to an endpoint
             asio::async_connect(m_socket, endpoints,
                 [this](std::error_code ec, asio::ip::tcp::endpoint endpoint) {
                     if (!ec) {
@@ -60,6 +58,7 @@ class connection : public std::enable_shared_from_this<connection<T>> {
                 });
         }
     }
+
     void Disconnect()
     {
         if (IsConnected())
@@ -83,18 +82,17 @@ class connection : public std::enable_shared_from_this<connection<T>> {
     }
 
   private:
-    // ASYNC - Prime context to write a message header
     void WriteHeader()
     {
         asio::async_write(m_socket,
             asio::buffer(
-                &m_qMessagesOut.front().header, sizeof(message_header<T>)),
+                &m_qMessagesOut.front().header, sizeof(MessageHeader<T>)),
             [this](std::error_code ec, std::size_t length) {
                 if (!ec) {
                     if (m_qMessagesOut.front().body.size() > 0) {
                         WriteBody();
                     } else {
-                        m_qMessagesOut.popFront();
+                        m_qMessagesOut.pop_front();
 
                         if (!m_qMessagesOut.empty()) {
                             WriteHeader();
@@ -107,7 +105,6 @@ class connection : public std::enable_shared_from_this<connection<T>> {
             });
     }
 
-    // ASYNC - Prime context to write a message body
     void WriteBody()
     {
         asio::async_write(m_socket,
@@ -115,7 +112,7 @@ class connection : public std::enable_shared_from_this<connection<T>> {
                 m_qMessagesOut.front().body.size()),
             [this](std::error_code ec, std::size_t length) {
                 if (!ec) {
-                    m_qMessagesOut.popFront();
+                    m_qMessagesOut.pop_front();
 
                     if (!m_qMessagesOut.empty()) {
                         WriteHeader();
@@ -127,11 +124,10 @@ class connection : public std::enable_shared_from_this<connection<T>> {
             });
     }
 
-    // ASYNC - Prime context ready to read a message header
     void ReadHeader()
     {
         asio::async_read(m_socket,
-            asio::buffer(&m_msgTemporaryIn.header, sizeof(message_header<T>)),
+            asio::buffer(&m_msgTemporaryIn.header, sizeof(MessageHeader<T>)),
             [this](std::error_code ec, std::size_t length) {
                 if (!ec) {
                     if (m_msgTemporaryIn.header.size > 0) {
@@ -148,7 +144,6 @@ class connection : public std::enable_shared_from_this<connection<T>> {
             });
     }
 
-    // ASYNC - Prime context ready to read a message body
     void ReadBody()
     {
         asio::async_read(m_socket,
@@ -171,6 +166,7 @@ class connection : public std::enable_shared_from_this<connection<T>> {
                 {this->shared_from_this(), m_msgTemporaryIn});
         else
             m_qMessagesIn.push_back({nullptr, m_msgTemporaryIn});
+
         ReadHeader();
     }
 
