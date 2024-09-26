@@ -9,15 +9,6 @@
 #include <iostream>
 #include <olcNet.hpp>
 
-enum class CustomMsgTypes : uint32_t
-{
-    ServerAccept,
-    ServerDeny,
-    ServerPing,
-    MessageAll,
-    ServerMessage,
-};
-
 class CustomClient : public olc::net::ClientInterface<CustomMsgTypes> {
   public:
     void PingServer()
@@ -77,6 +68,12 @@ void simpleClient()
                     std::cout << "Hello from [" << clientID << "]"
                               << std::endl;
                 } break;
+                case CustomMsgTypes::ServerDeny: {
+
+                } break;
+                case CustomMsgTypes::MessageAll: {
+
+                } break;
                 }
             }
         } else {
@@ -88,7 +85,7 @@ void simpleClient()
             // Close window if the close button is pressed
             if (event.type == sf::Event::Closed)
                 window.close();
-            switch (sf::Event::KeyPressed) {
+            switch (event.key.code) {
             case sf::Keyboard::Space: {
                 c.PingServer();
                 std::cout << "space" << std::endl;

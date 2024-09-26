@@ -5,27 +5,18 @@
 ** main
 */
 
-#include <SFML/Graphics.hpp>
-
 #include "r_type.hpp"
 
 void simpleClient();
+#include <iostream>
 
 int main()
 {
-    // auto window = sf::RenderWindow{{1920u, 1080u}, "CMake SFML Project"};
-    // window.setFramerateLimit(144);
 
-    // while (window.isOpen()) {
-    //     for (auto event = sf::Event{}; window.pollEvent(event);) {
-    //         if (event.type == sf::Event::Closed) {
-    //             window.close();
-    //         }
-    //     }
+    // get client info and connect to server
 
-    //     window.clear();
-    //     window.display();
-    // }
+    // Rtype rtype;
+    // rtype.run();
 
     simpleClient();
 
