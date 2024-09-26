@@ -71,8 +71,7 @@ template <typename T> class ThreadSafeQueue {
     }
     void wait()
     {
-        while (empty())
-        {
+        while (empty()) {
             std::unique_lock<std::mutex> ul(muxBlocking);
             cvBlocking.wait(ul);
         }
