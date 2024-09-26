@@ -5,12 +5,12 @@
 ** r_type
 */
 
-/////////////////////// temp
-#include "Components/components.hpp"
-#include "Entities/entities.hpp"
-#include "Entities/entity_factory.hpp"
-
 #include "r_type.hpp"
+
+////////////////////// temp
+// #include "Entities/entity_manager.hpp"
+// #include "Components/component_manager.hpp"
+#include "Entities/entity_factory.hpp"
 
 Rtype::Rtype()
 {
@@ -56,29 +56,23 @@ void Rtype::gameLoop()
             filter.setFillColor(sf::Color(255, 255, 100, 100));
     }
 
-    /////////////////// temp, just for testing
-    std::shared_ptr<IEntityFactory> factory = std::make_shared<EntityFactory>();
-    std::shared_ptr<AEntity> player = factory->createPlayer();
-    std::vector<std::shared_ptr<AComponent>> comps = player->getAllComponents();
-    for (auto comp : comps) {
-        std::cout << "comp: " << comp->getType() << std::endl;
-    }
+    /////// temp - for testing only
+    EntityManager entityManager;
+    ComponentManager componentManager;
+    EntityFactory entityFactory;
+    Entity player = entityFactory.createPlayer(entityManager, componentManager);
 
     while (_window.isOpen()) {
         handleEvents();
-        //renderGame();
 
-        /////////////////// temp, just for testing
-    
-        // _window.clear();
-        // try {
-        //     // _window.draw(player->getComponent<SpriteComponent>()->getSprite());
-        //     //std::shared_ptr<SpriteComponent> spriteComp = player->getComponent<SpriteComponent>();
-        //     //_window.draw(spriteComp->getSprite());
-        // } catch (const std::exception &e) {
-        //     std::cerr << e.what() << std::endl;
-        // }
-        // _window.display();
-        
+        /////// temp - for testing only
+        _window.clear();
+        auto playerId = player.getId();
+        auto playerSprite = componentManager.getComponent<SpriteComponent>(playerId);
+        // Draw the sprite
+        _window.draw(playerSprite->sprite);
+        // Display the contents of the window
+        _window.display();
+
     }
 }

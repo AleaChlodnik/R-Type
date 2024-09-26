@@ -9,8 +9,7 @@
 
 #include "i_entity_factory.hpp"
 
-
 class EntityFactory : public IEntityFactory {
-    std::shared_ptr<AEntity> createPlayer() override;
+    public:
+        Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager) override;
 };
-

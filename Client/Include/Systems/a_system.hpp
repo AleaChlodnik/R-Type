@@ -7,18 +7,4 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
-
 #include "i_system.hpp"
-
-
-class ASystem : public ISystem {
-    public:
-        virtual ~ASystem() override = default;
-        void addEntity(std::shared_ptr<AEntity> entity) override { _entities.push_back(entity); }
-    
-    protected:
-        std::vector<std::shared_ptr<AEntity>> _entities;
-};
-

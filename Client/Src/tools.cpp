@@ -5,6 +5,4 @@
 ** sprite_tools
 */
 
-#include "sprite_tools.hpp"
-
-
+#include "tools.hpp"

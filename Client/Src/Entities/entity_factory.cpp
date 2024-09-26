@@ -5,20 +5,22 @@
 ** entity_factory
 */
 
-#include "Components/components.hpp"
-#include "Entities/entities.hpp"
-#include "Entities/entity_factory.hpp"
+#include <SFML/Graphics.hpp>
+#include "entity_factory.hpp"
 
-std::shared_ptr<AEntity> EntityFactory::createPlayer()
+Entity EntityFactory::createPlayer(EntityManager &entityManager, ComponentManager &componentManager)
 {
-    std::shared_ptr<AEntity> player = std::make_shared<PlayerEntity>();
-    std::shared_ptr<AComponent> health = std::make_shared<HealthComponent>(100);
-    player->addComponent(health);
+    // Init entity
+    Entity player = entityManager.createEntity();
 
-    //auto player = std::make_shared<PlayerEntity>();
-    //player->addComponent(std::make_shared<HealthComponent>(100));
-    //player->addComponent(std::make_shared<SpriteComponent>("Assets/temp_player.png", std::make_pair(2, 2), std::make_pair(0, 0)));
+    // Init all player components with all player values
+    PositionComponent start_position(0, 0);
+    SpriteComponent sprite("Client/Assets/Sprites/Player/r-typesheet1.gif",start_position);
 
+    // Add components to player entity
+    componentManager.addComponent<PositionComponent>(player.getId(), start_position.x, start_position.y);
+    componentManager.addComponent<SpriteComponent>(player.getId(), sprite);
+
+    // Return entity: player
     return player;
 }
-

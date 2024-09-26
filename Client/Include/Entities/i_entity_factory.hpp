@@ -7,15 +7,14 @@
 
 #pragma once
 
-#include <memory>
-
-#include "i_entity.hpp"
-
+#include "entity.hpp"
+#include "entity_manager.hpp"
+#include "Components/component_manager.hpp"
 
 // Abstract Entity Factory
 class IEntityFactory {
     public:
         virtual ~IEntityFactory() = default;
-        virtual std::shared_ptr<AEntity> createPlayer() = 0;
-};
 
+        virtual Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager) = 0;
+};

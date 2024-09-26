@@ -7,8 +7,6 @@
 
 #include "r_type.hpp"
 
-#include <iostream> //////////////////////////////
-
 int main()
 {
 
@@ -16,8 +14,6 @@ int main()
 
     Rtype rtype;
     rtype.run();
-
-    //printf("Hello World\n"); ///////////////////////
 
     return 0;
 }
