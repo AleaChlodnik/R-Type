@@ -65,7 +65,7 @@ template <typename T> class ServerInterface {
                 if (OnClientConnect(newconn)) {
                     m_deqConnections.push_back(std::move(newconn));
 
-                    m_deqConnections.back()->ConnectToClient(nIDCounter++);
+                    m_deqConnections.back()->ConnectToClient(this, nIDCounter++);
 
                     std::cout << "[" << m_deqConnections.back()->GetID()
                               << "] Connection Approved\n";
@@ -133,6 +133,10 @@ template <typename T> class ServerInterface {
 
             nMessageCount++;
         }
+    }
+
+    virtual void OnClientValidated(std::shared_ptr<Connection<T>> client)
+    {
     }
 
   protected:

@@ -14,6 +14,8 @@
 namespace olc {
 namespace net {
 template <typename T>
+class ServerInterface;
+template <typename T>
 class Connection : public std::enable_shared_from_this<Connection<T>> {
   public:
     enum class owner
@@ -29,6 +31,14 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
           m_qMessagesIn(qIn)
     {
         m_nOwnerType = parent;
+
+        if (m_nOwnerType == owner::server) {
+            m_nHandshakeOut = uint64_t(std::chrono::system_clock::now().time_since_epoch().count());
+            m_nHandshakeCheck = scramble(m_nHandshakeOut);
+        } else {
+            m_nHandshakeIn = 0;
+            m_nHandshakeOut = 0;
+        }
     }
 
     virtual ~Connection() {}
@@ -36,12 +46,13 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
     uint32_t GetID() const { return id; }
 
   public:
-    void ConnectToClient(uint32_t uid = 0)
+    void ConnectToClient(olc::net::ServerInterface<T>* server , uint32_t uid = 0)
     {
         if (m_nOwnerType == owner::server) {
             if (m_socket.is_open()) {
                 id = uid;
-                ReadHeader();
+                WriteValidation();
+                ReadValidation(server);
             }
         }
     }
@@ -53,7 +64,7 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
             asio::async_connect(m_socket, endpoints,
                 [this](std::error_code ec, asio::ip::tcp::endpoint endpoint) {
                     if (!ec) {
-                        ReadHeader();
+                        ReadValidation();
                     }
                 });
         }
@@ -170,6 +181,51 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
         ReadHeader();
     }
 
+    uint64_t scramble(uint64_t nInput)
+    {
+        uint64_t out = nInput ^ 0xDEADBEEFC0DECAFE;
+        out = (out & 0xF0F0F0F0DEADBEEF) << 4 | (out & 0xF0F0F0F00000000) >> 4;
+        return out ^ 0xC0DEFACE12345678;
+    }
+
+    void WriteValidation()
+    {
+        asio::async_write(m_socket, asio::buffer(&m_nHandshakeOut, sizeof(uint64_t)),
+            [this](std::error_code ec, std::size_t length) {
+                if (!ec) {
+                    if (m_nOwnerType == owner::client) {
+                        ReadHeader();
+                    }
+                } else {
+                    m_socket.close();
+                }
+            });
+    }
+
+    void ReadValidation(olc::net::ServerInterface<T> *server = nullptr)
+    {
+        asio::async_read(m_socket, asio::buffer(&m_nHandshakeIn, sizeof(uint64_t)),
+            [this, server](std::error_code ec, std::size_t length) {
+                if (!ec) {
+                    if (m_nOwnerType == owner::server) {
+                        if (m_nHandshakeIn == m_nHandshakeCheck) {
+                            std::cout << "Client Validated\n";
+                            server->OnClientValidated(this->shared_from_this());
+                            ReadHeader();
+                        } else {
+                            std::cout << "Client Disconnected (Fail Validation)\n";
+                            m_socket.close();
+                        }
+                    } else {
+                        m_nHandshakeOut = scramble(m_nHandshakeIn);
+                        WriteValidation();
+                    }
+                } else {
+                    m_socket.close();
+                }
+            });
+    }
+
   protected:
     asio::ip::tcp::socket m_socket;
 
@@ -184,6 +240,10 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
     owner m_nOwnerType = owner::server;
 
     uint32_t id = 0;
+
+    uint64_t m_nHandshakeOut = 0;
+    uint64_t m_nHandshakeIn = 0;
+    uint64_t m_nHandshakeCheck = 0;
 };
 } // namespace net
 } // namespace olc
