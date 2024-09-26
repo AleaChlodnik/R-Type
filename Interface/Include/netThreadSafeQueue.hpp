@@ -36,6 +36,9 @@ template <typename T> class ThreadSafeQueue {
     {
         std::scoped_lock lock(muxQueue);
         deqQueue.emplace_front(std::move(item));
+
+        std::unique_lock<std::mutex> ul(muxBlocking);
+        cvBlocking.notify_one();
     }
     bool empty()
     {
@@ -66,10 +69,21 @@ template <typename T> class ThreadSafeQueue {
         deqQueue.pop_back();
         return t;
     }
+    void wait()
+    {
+        while (empty())
+        {
+            std::unique_lock<std::mutex> ul(muxBlocking);
+            cvBlocking.wait(ul);
+        }
+    }
 
   protected:
     std::mutex muxQueue;
     std::deque<T> deqQueue;
+
+    std::condition_variable cvBlocking;
+    std::mutex muxBlocking;
 };
 } // namespace net
 } // namespace olc

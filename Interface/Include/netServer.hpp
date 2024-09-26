@@ -111,8 +111,10 @@ template <typename T> class ServerInterface {
                 m_deqConnections.end());
     }
 
-    void Update(size_t nMaxMessage = -1)
+    void Update(size_t nMaxMessage = -1, bool bWait = false)
     {
+        if (bWait)
+            m_qMessagesIn.wait();
         size_t nMessageCount = 0;
         while (nMessageCount < nMaxMessage && !m_qMessagesIn.empty()) {
             auto msg = m_qMessagesIn.popFront();
