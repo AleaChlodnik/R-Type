@@ -11,5 +11,7 @@
 
 class EntityFactory : public IEntityFactory {
   public:
-    Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) override;
+    Entity createPlayer(EntityManager &entityManager,
+        ComponentManager &componentManager,
+        TextureManager &textureManager) override;
 };
