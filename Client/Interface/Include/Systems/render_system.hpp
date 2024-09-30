@@ -7,22 +7,25 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include "Entities/entity_manager.hpp"
 #include "Components/component_manager.hpp"
 #include "Components/components.hpp"
+#include "Entities/entity_manager.hpp"
+#include <SFML/Graphics.hpp>
 
 class RenderSystem {
   public:
     RenderSystem(sf::RenderWindow &window) : _window(window) {}
 
-    void render(EntityManager &entityManager, ComponentManager &componentManager) {
+    void render(
+        EntityManager &entityManager, ComponentManager &componentManager)
+    {
         _window.clear();
 
         const auto &entities = entityManager.getAllEntities();
 
         for (const auto &entity : entities) {
-            auto spriteOpt = componentManager.getComponent<SpriteComponent>(entity.getId());
+            auto spriteOpt =
+                componentManager.getComponent<SpriteComponent>(entity.getId());
             if (spriteOpt) {
                 _window.draw(spriteOpt.value()->sprite);
             }
