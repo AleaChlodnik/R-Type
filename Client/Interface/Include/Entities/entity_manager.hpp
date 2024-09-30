@@ -8,7 +8,7 @@
 #pragma once
 
 #include "entity.hpp"
-#include "error_handling.hpp"
+#include "../error_handling.hpp"
 #include <vector>
 
 class EntityManager {

@@ -1,5 +1,6 @@
 project(Client VERSION 0.1)
 
+add_subdirectory(Interface)
 add_subdirectory(Src)
 
 # Windows-specific custom command to copy OpenAL DLL for SFML

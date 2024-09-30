@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "error_handling.hpp"
+#include "../error_handling.hpp"
 #include "position_component.hpp"
 #include <SFML/Graphics.hpp>
 #include <string>
