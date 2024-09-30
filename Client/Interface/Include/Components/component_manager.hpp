@@ -30,7 +30,8 @@ class ComponentManager {
             auto spriteOpt = getComponent<SpriteComponent>(entityId);
             if (spriteOpt) {
                 auto PositionOpt = getComponent<PositionComponent>(entityId);
-                spriteOpt.value()->sprite.setPosition(PositionOpt.value()->x, PositionOpt.value()->y);
+                spriteOpt.value()->sprite.setPosition(
+                    PositionOpt.value()->x, PositionOpt.value()->y);
             }
         }
     }
@@ -43,7 +44,8 @@ class ComponentManager {
         if (components.find(typeid(ComponentType)) != components.end()) {
             auto &entityComponents = components[typeid(ComponentType)];
             if (entityComponents.find(entityId) != entityComponents.end()) {
-                return std::any_cast<ComponentType>(&entityComponents[entityId]);
+                return std::any_cast<ComponentType>(
+                    &entityComponents[entityId]);
             }
         }
         return std::nullopt; // Return nullopt if not found
