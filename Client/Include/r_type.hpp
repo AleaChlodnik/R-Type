@@ -14,13 +14,15 @@
 
 class Rtype {
 
-    enum class GameMode {
+    enum class GameMode
+    {
         EASY,
         MEDIUM,
         HARD
     };
 
-    enum class DaltonismMode {
+    enum class DaltonismMode
+    {
         NORMAL,
         TRITANOPIA,
         DEUTERANOPIA,
@@ -38,20 +40,20 @@ class Rtype {
         void updateGame(); // This is where I will update the time, position of sprites, etc. Ex: inputSystem.update(deltaTime.asSeconds()), renderSystem.update(deltaTime.asSeconds()), etc.
         void renderGame(); // Ex: window.clear(), window.draw(background), renderSystem.render(window), window.display, etc.
 
-        // Setters
-        void setGameMode(GameMode mode) { currentGameMode = mode; }
-        void setDaltonismMode(DaltonismMode mode) { currentDaltonismMode = mode; }
-        void setMainMenuStatus(bool status) { main_menu = status; }
-        // Getters
-        GameMode getGameMode() const { return currentGameMode; }
-        DaltonismMode getDaltonismMode() const { return currentDaltonismMode; }
-        int getMainMenuStatus() const { return main_menu; }
+    // Setters
+    void setGameMode(GameMode mode) { currentGameMode = mode; }
+    void setDaltonismMode(DaltonismMode mode) { currentDaltonismMode = mode; }
+    void setMainMenuStatus(bool status) { main_menu = status; }
+    // Getters
+    GameMode getGameMode() const { return currentGameMode; }
+    DaltonismMode getDaltonismMode() const { return currentDaltonismMode; }
+    int getMainMenuStatus() const { return main_menu; }
 
-    private:
-        GameMode currentGameMode;
-        DaltonismMode currentDaltonismMode;
-        bool main_menu;
-        sf::RenderWindow _window;
+  private:
+    GameMode currentGameMode;
+    DaltonismMode currentDaltonismMode;
+    bool main_menu;
+    sf::RenderWindow _window;
 };
 
 /*

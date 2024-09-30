@@ -13,7 +13,7 @@ cmake -S . -B build && cmake --build build -j "$(nproc)"
 deploy environment
 
 ```bash
-nix develop -c 'cmake -S . -B build && cmake --build build -j "$(nproc)"'
+nix develop --command bash -c 'cmake -S . -B build && cmake --build build -j "$(nproc)"'
 ```
 
 ## Usage

@@ -23,11 +23,11 @@ Rtype::Rtype()
 
 void Rtype::run()
 {
-    //while(true) {
-        // if (main_menu)
-            // mainMenu();
-        // else
-            gameLoop();
+    // while(true) {
+    //  if (main_menu)
+    //  mainMenu();
+    // else
+    gameLoop();
     //}
 }
 

@@ -7,21 +7,21 @@
 
 #pragma once
 
-#include <string>
-#include <queue>
-#include <vector>
 #include <iostream>
+#include <queue>
+#include <string>
 #include <thread>
+#include <vector>
 
 class Client {
-    public:
-        Client();
-        ~Client();
+  public:
+    Client();
+    ~Client();
 
-    protected:
-        int _port;
-        int _sockedFd;
-        std::string _hostName;
-        std::string _buffer;
-        std::queue<std::vector<std::string>> _queue;
+  protected:
+    int _port;
+    int _sockedFd;
+    std::string _hostName;
+    std::string _buffer;
+    std::queue<std::vector<std::string>> _queue;
 };

@@ -5,33 +5,67 @@
 ** main
 */
 
-// #ifndef _WIN32
-// #define _WIN32_WINNT 0x0A00
-// #endif
-#define ASIO_STANDALONE
-#include <asio.hpp>
-#include <asio/ts/buffer.hpp>
-#include <asio/ts/internet.hpp>
-#include <iostream>
+#include <olcNet.hpp>
+
+class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
+  public:
+    CustomServer(uint16_t nPort)
+        : olc::net::ServerInterface<CustomMsgTypes>(nPort)
+    {
+    }
+
+  protected:
+    virtual bool OnClientConnect(
+        std::shared_ptr<olc::net::Connection<CustomMsgTypes>> client)
+    {
+        olc::net::message<CustomMsgTypes> msg;
+        msg.header.id = CustomMsgTypes::ServerAccept;
+        client->Send(msg);
+        return true;
+    }
+
+    // Called when a client appears to have disconnected
+    virtual void OnClientDisconnect(
+        std::shared_ptr<olc::net::Connection<CustomMsgTypes>> client)
+    {
+        std::cout << "Removing client [" << client->GetID() << "]\n";
+    }
+
+    // Called when a message arrives
+    virtual void OnMessage(
+        std::shared_ptr<olc::net::Connection<CustomMsgTypes>> client,
+        olc::net::message<CustomMsgTypes> &msg)
+    {
+        switch (msg.header.id) {
+        case CustomMsgTypes::ServerPing: {
+            std::cout << "[" << client->GetID() << "]: Server Ping\n";
+
+            // Simply bounce message back to client
+            client->Send(msg);
+        } break;
+
+        case CustomMsgTypes::MessageAll: {
+            std::cout << "[" << client->GetID() << "]: Message All\n";
+
+            // Construct a new message and send it to all clients
+            olc::net::message<CustomMsgTypes> msg;
+            msg.header.id = CustomMsgTypes::ServerMessage;
+            msg << client->GetID();
+            MessageAllClients(msg, client);
+
+        } break;
+        }
+    }
+};
 
 int main()
 {
-    asio::error_code ec;
+    CustomServer server(60000);
+    server.Start();
 
-    asio::io_context context;
-
-    asio::ip::tcp::endpoint endpoint(
-        asio::ip::make_address("0.0.0.0", ec), 80);
-
-    asio::ip::tcp::socket socket(context);
-
-    socket.connect(endpoint, ec);
-
-    if (!ec) {
-        std::cout << "Connected !" << std::endl;
-    } else {
-        std::cout << "Failed to connect to address :\n"
-                  << ec.message() << std::endl;
+    while (1) {
+        server.Update(-1, true);
     }
+
     return 0;
 }
