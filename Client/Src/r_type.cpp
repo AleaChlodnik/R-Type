@@ -43,7 +43,7 @@ void Rtype::handleEvents()
 
 void Rtype::gameLoop()
 {
-    _window.create(sf::VideoMode(800, 600), "R-Type");
+    _window.create(sf::VideoMode(1920, 1080), "R-Type");
 
     if (getDaltonismMode() !=
         DaltonismMode::NORMAL) { // must test if filters are good
@@ -62,23 +62,18 @@ void Rtype::gameLoop()
     TextureManager textureManager;
     EntityFactory entityFactory;
 
-    Entity player = entityFactory.createPlayer(entityManager, componentManager,
-        textureManager); ////////////////////// test
+    /////////////////////////////////////////////////////////////////// test
+    Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
 
-    // MessageHandler messageHandler(entityManager, componentManager,
-    // entityFactory); UpdateSystem updateSystem(entityManager,
-    // componentManager); // Handles position updates, physics, etc.
-    // RenderSystem renderSystem(entityManager, componentManager);
+    auto playerId = player.getId();
 
     while (_window.isOpen()) {
         handleEvents();
 
         ////////////////////////////////////////////////////////////// test
         _window.clear();
-        auto playerId = player.getId();
-        auto playerSprite =
-            componentManager.getComponent<SpriteComponent>(playerId);
-        _window.draw(playerSprite->sprite);
+        auto playerSprite = componentManager.getComponent<SpriteComponent>(playerId);
+        _window.draw(playerSprite.value()->sprite);
         _window.display();
     }
 }

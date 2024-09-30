@@ -20,7 +20,7 @@ class EntityManager {
         return entities.back();
     }
 
-    Entity &getEntity(int id)
+    Entity &getEntity(int id) // dont need for loop
     {
         for (auto &entity : entities) {
             if (entity.getId() == id) {
@@ -29,6 +29,8 @@ class EntityManager {
         }
         throw entityNotFound();
     }
+
+    const std::vector<Entity> &getEntities() const { return entities; }
 
   private:
     int entityNb = 0;
