@@ -5,6 +5,7 @@
 ** r_type
 */
 
+#include "Systems/systems.hpp"
 #include <Components/component_manager.hpp>
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
@@ -43,7 +44,7 @@ void Rtype::handleEvents()
 
 void Rtype::gameLoop()
 {
-    _window.create(sf::VideoMode(800, 600), "R-Type");
+    _window.create(sf::VideoMode(1920, 1080), "R-Type");
 
     if (getDaltonismMode() != DaltonismMode::NORMAL) { // must test if filters are good
         sf::RectangleShape filter(sf::Vector2f(_window.getSize().x, _window.getSize().y));
@@ -60,22 +61,20 @@ void Rtype::gameLoop()
     TextureManager textureManager;
     EntityFactory entityFactory;
 
-    Entity player = entityFactory.createPlayer(entityManager, componentManager,
-        textureManager); ////////////////////// test
+    /////////////////////////////////////////////////////////////////// test
+    RenderSystem renderSystem(_window);
 
-    // MessageHandler messageHandler(entityManager, componentManager,
-    // entityFactory); UpdateSystem updateSystem(entityManager,
-    // componentManager); // Handles position updates, physics, etc.
-    // RenderSystem renderSystem(entityManager, componentManager);
+    Entity player1 = entityFactory.createPlayer(entityManager, componentManager, textureManager);
+    Entity player2 = entityFactory.createPlayer(entityManager, componentManager, textureManager);
+    Entity player3 = entityFactory.createPlayer(entityManager, componentManager, textureManager);
+
+    componentManager.addComponent<PositionComponent>(player2.getId(), 300, 300);
+    componentManager.addComponent<PositionComponent>(player3.getId(), 600, 600);
 
     while (_window.isOpen()) {
         handleEvents();
 
         ////////////////////////////////////////////////////////////// test
-        _window.clear();
-        auto playerId = player.getId();
-        auto playerSprite = componentManager.getComponent<SpriteComponent>(playerId);
-        _window.draw(playerSprite->sprite);
-        _window.display();
+        renderSystem.render(entityManager, componentManager);
     }
 }
