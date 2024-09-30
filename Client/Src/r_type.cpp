@@ -77,12 +77,3 @@ void Rtype::gameLoop()
         _window.display();
     }
 }
-
-
-// Entity player = entityFactory.createPlayer(entityManager, componentManager);
-
-// _window.clear();
-// auto playerId = player.getId();
-// auto playerSprite = componentManager.getComponent<SpriteComponent>(playerId);
-// _window.draw(playerSprite->sprite);
-// _window.display();
