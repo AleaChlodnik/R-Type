@@ -10,7 +10,6 @@
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
 #include <r_type_client.hpp>
-#include <r_type_client.hpp>
 #include <texture_manager.hpp>
 
 Rtype::Rtype()
@@ -65,17 +64,12 @@ void Rtype::gameLoop()
     /////////////////////////////////////////////////////////////////// test
     RenderSystem renderSystem(_window);
 
-    Entity player1 = entityFactory.createPlayer(
-        entityManager, componentManager, textureManager);
-    Entity player2 = entityFactory.createPlayer(
-        entityManager, componentManager, textureManager);
-    Entity player3 = entityFactory.createPlayer(
-        entityManager, componentManager, textureManager);
+    Entity player1 = entityFactory.createPlayer(entityManager, componentManager, textureManager);
+    Entity player2 = entityFactory.createPlayer(entityManager, componentManager, textureManager);
+    Entity player3 = entityFactory.createPlayer(entityManager, componentManager, textureManager);
 
-    componentManager.addComponent<PositionComponent>(
-        player2.getId(), 300, 300);
-    componentManager.addComponent<PositionComponent>(
-        player3.getId(), 600, 600);
+    componentManager.addComponent<PositionComponent>(player2.getId(), 300, 300);
+    componentManager.addComponent<PositionComponent>(player3.getId(), 600, 600);
 
     while (_window.isOpen()) {
         handleEvents();

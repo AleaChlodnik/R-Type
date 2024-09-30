@@ -16,16 +16,14 @@ class RenderSystem {
   public:
     RenderSystem(sf::RenderWindow &window) : _window(window) {}
 
-    void render(
-        EntityManager &entityManager, ComponentManager &componentManager)
+    void render(EntityManager &entityManager, ComponentManager &componentManager)
     {
         _window.clear();
 
         const auto &entities = entityManager.getAllEntities();
 
         for (const auto &entity : entities) {
-            auto spriteOpt =
-                componentManager.getComponent<SpriteComponent>(entity.getId());
+            auto spriteOpt = componentManager.getComponent<SpriteComponent>(entity.getId());
             if (spriteOpt) {
                 _window.draw(spriteOpt.value()->sprite);
             }
