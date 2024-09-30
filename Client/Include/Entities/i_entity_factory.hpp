@@ -10,11 +10,12 @@
 #include "entity.hpp"
 #include "entity_manager.hpp"
 #include "Components/component_manager.hpp"
+#include "texture_manager.hpp"
 
 // Abstract Entity Factory
 class IEntityFactory {
     public:
         virtual ~IEntityFactory() = default;
 
-        virtual Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager) = 0;
+        virtual Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &TextureManager) = 0;
 };

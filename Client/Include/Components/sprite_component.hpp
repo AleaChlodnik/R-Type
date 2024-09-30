@@ -10,16 +10,13 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 #include "error_handling.hpp"
+#include "position_component.hpp"
 
 struct SpriteComponent {
     sf::Sprite sprite;
-    sf::Texture texture;
 
-    SpriteComponent(const std::string &filePath, const PositionComponent &position)
+    SpriteComponent(sf::Texture& texture, const PositionComponent& position)
     {
-        if (!texture.loadFromFile(filePath))
-            throw failedToLoadTexture();
-
         sprite.setTexture(texture);
         sprite.setPosition(position.x, position.y);
     }

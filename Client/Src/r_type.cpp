@@ -7,6 +7,7 @@
 
 #include "component_manager.hpp"
 #include "entity_manager.hpp"
+#include "texture_manager.hpp"
 #include "entity_factory.hpp"
 #include "r_type.hpp"
 
@@ -54,11 +55,12 @@ void Rtype::gameLoop()
             filter.setFillColor(sf::Color(255, 255, 100, 100));
     }
 
-    EntityManager entityManager;
     ComponentManager componentManager;
+    EntityManager entityManager;
+    TextureManager textureManager;
     EntityFactory entityFactory;
 
-    Entity player = entityFactory.createPlayer(entityManager, componentManager); ////////////////////// test
+    Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager); ////////////////////// test
 
     //MessageHandler messageHandler(entityManager, componentManager, entityFactory);
     //UpdateSystem updateSystem(entityManager, componentManager); // Handles position updates, physics, etc.
