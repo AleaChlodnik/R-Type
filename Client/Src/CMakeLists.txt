@@ -22,6 +22,19 @@ target_link_libraries(r-type_client PRIVATE Components Entities Systems r-type_i
 target_compile_features(r-type_client PRIVATE cxx_std_17)
 target_compile_options(r-type_client PRIVATE -Wall -Wextra)
 
+# Windows-specific custom command to copy OpenAL DLL for SFML
+if(WIN32)
+  add_custom_command(
+    TARGET r-type_client
+    COMMENT "Copy OpenAL DLL"
+    PRE_BUILD
+    COMMAND
+      ${CMAKE_COMMAND} -E copy
+      ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll
+      $<TARGET_FILE_DIR:r-type_client>
+    VERBATIM)
+endif()
+
 # Copy the executable to the root directory
 add_custom_command(
     TARGET r-type_client
