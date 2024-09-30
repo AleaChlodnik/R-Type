@@ -17,8 +17,7 @@ namespace net {
 template <typename T> class ServerInterface {
   public:
     ServerInterface(uint16_t port)
-        : m_asioAcceptor(m_asioContext,
-              asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port))
+        : m_asioAcceptor(m_asioContext, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port))
     {
     }
 
@@ -51,22 +50,17 @@ template <typename T> class ServerInterface {
 
     void WaitForClientConnection()
     {
-        m_asioAcceptor.async_accept([this](std::error_code ec,
-                                        asio::ip::tcp::socket socket) {
+        m_asioAcceptor.async_accept([this](std::error_code ec, asio::ip::tcp::socket socket) {
             if (!ec) {
-                std::cout << "[SERVER] New Connection: "
-                          << socket.remote_endpoint() << "\n";
+                std::cout << "[SERVER] New Connection: " << socket.remote_endpoint() << "\n";
 
-                std::shared_ptr<Connection<T>> newconn =
-                    std::make_shared<Connection<T>>(
-                        Connection<T>::owner::server, m_asioContext,
-                        std::move(socket), m_qMessagesIn);
+                std::shared_ptr<Connection<T>> newconn = std::make_shared<Connection<T>>(
+                    Connection<T>::owner::server, m_asioContext, std::move(socket), m_qMessagesIn);
 
                 if (OnClientConnect(newconn)) {
                     m_deqConnections.push_back(std::move(newconn));
 
-                    m_deqConnections.back()->ConnectToClient(
-                        this, nIDCounter++);
+                    m_deqConnections.back()->ConnectToClient(this, nIDCounter++);
 
                     std::cout << "[" << m_deqConnections.back()->GetID()
                               << "] Connection Approved\n";
@@ -74,16 +68,14 @@ template <typename T> class ServerInterface {
                     std::cout << "[-----] Connection Denied\n";
                 }
             } else {
-                std::cout << "[SERVER] New Connection Error: " << ec.message()
-                          << "\n";
+                std::cout << "[SERVER] New Connection Error: " << ec.message() << "\n";
             }
 
             WaitForClientConnection();
         });
     }
 
-    void MessageClient(
-        std::shared_ptr<Connection<T>> client, const message<T> &msg)
+    void MessageClient(std::shared_ptr<Connection<T>> client, const message<T> &msg)
     {
         if (client && client->IsConnected()) {
             client->Send(msg);
@@ -92,14 +84,14 @@ template <typename T> class ServerInterface {
 
             client.reset();
 
-            m_deqConnections.erase(std::remove(m_deqConnections.begin(),
-                                       m_deqConnections.end(), client),
+            m_deqConnections.erase(
+                std::remove(m_deqConnections.begin(), m_deqConnections.end(), client),
                 m_deqConnections.end());
         }
     }
 
-    void MessageAllClients(const message<T> &msg,
-        std::shared_ptr<Connection<T>> pIgnoreClient = nullptr)
+    void MessageAllClients(
+        const message<T> &msg, std::shared_ptr<Connection<T>> pIgnoreClient = nullptr)
     {
         bool bInvalidClientExists = false;
 
@@ -116,8 +108,8 @@ template <typename T> class ServerInterface {
         }
 
         if (bInvalidClientExists)
-            m_deqConnections.erase(std::remove(m_deqConnections.begin(),
-                                       m_deqConnections.end(), nullptr),
+            m_deqConnections.erase(
+                std::remove(m_deqConnections.begin(), m_deqConnections.end(), nullptr),
                 m_deqConnections.end());
     }
 
@@ -139,17 +131,11 @@ template <typename T> class ServerInterface {
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) {}
 
   protected:
-    virtual bool OnClientConnect(std::shared_ptr<Connection<T>> client)
-    {
-        return false;
-    }
+    virtual bool OnClientConnect(std::shared_ptr<Connection<T>> client) { return false; }
 
     virtual void OnClientDisconnect(std::shared_ptr<Connection<T>> client) {}
 
-    virtual void OnMessage(
-        std::shared_ptr<Connection<T>> client, message<T> &msg)
-    {
-    }
+    virtual void OnMessage(std::shared_ptr<Connection<T>> client, message<T> &msg) {}
 
   protected:
     ThreadSafeQueue<owned_message<T>> m_qMessagesIn;

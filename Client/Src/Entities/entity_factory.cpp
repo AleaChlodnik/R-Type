@@ -13,8 +13,8 @@ Entity EntityFactory::createPlayer(EntityManager &entityManager,
 {
     Entity player = entityManager.createEntity();
 
-    sf::Texture &texture = textureManager.getTexture(
-        "Client/Assets/Sprites/Player/r-typesheet1.gif");
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Player/r-typesheet1.gif");
 
     PositionComponent start_position(0, 0);
     SpriteComponent sprite(texture, start_position);

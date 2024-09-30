@@ -52,6 +52,5 @@ class ComponentManager {
   private:
     // unordered map of <componentType, it's unordered map of <entityId, it's
     // values for the componentType>>
-    std::unordered_map<std::type_index, std::unordered_map<int, std::any>>
-        components;
+    std::unordered_map<std::type_index, std::unordered_map<int, std::any>> components;
 };

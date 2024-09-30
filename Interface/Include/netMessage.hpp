@@ -46,8 +46,7 @@ template <typename T> struct message {
         return msg;
     }
 
-    template <typename DataType>
-    friend message<T> &operator>>(message<T> &msg, DataType &data)
+    template <typename DataType> friend message<T> &operator>>(message<T> &msg, DataType &data)
     {
         static_assert(std::is_standard_layout<DataType>::value,
             "Data is too complex to be pulled from vector");
@@ -70,8 +69,7 @@ template <typename T> struct owned_message {
     std::shared_ptr<Connection<T>> remote = nullptr;
     message<T> msg;
 
-    friend std::ostream &operator<<(
-        std::ostream &os, const owned_message<T> &msg)
+    friend std::ostream &operator<<(std::ostream &os, const owned_message<T> &msg)
     {
         os << msg.msg;
         return os;

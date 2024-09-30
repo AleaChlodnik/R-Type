@@ -14,8 +14,7 @@
 namespace olc {
 namespace net {
 template <typename T> class ServerInterface;
-template <typename T>
-class Connection : public std::enable_shared_from_this<Connection<T>> {
+template <typename T> class Connection : public std::enable_shared_from_this<Connection<T>> {
   public:
     enum class owner
     {
@@ -24,16 +23,15 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
     };
 
   public:
-    Connection(owner parent, asio::io_context &asioContext,
-        asio::ip::tcp::socket socket, ThreadSafeQueue<owned_message<T>> &qIn)
-        : m_asioContext(asioContext), m_socket(std::move(socket)),
-          m_qMessagesIn(qIn)
+    Connection(owner parent, asio::io_context &asioContext, asio::ip::tcp::socket socket,
+        ThreadSafeQueue<owned_message<T>> &qIn)
+        : m_asioContext(asioContext), m_socket(std::move(socket)), m_qMessagesIn(qIn)
     {
         m_nOwnerType = parent;
 
         if (m_nOwnerType == owner::server) {
-            m_nHandshakeOut = uint64_t(
-                std::chrono::system_clock::now().time_since_epoch().count());
+            m_nHandshakeOut =
+                uint64_t(std::chrono::system_clock::now().time_since_epoch().count());
             m_nHandshakeCheck = scramble(m_nHandshakeOut);
         } else {
             m_nHandshakeIn = 0;
@@ -46,8 +44,7 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
     uint32_t GetID() const { return id; }
 
   public:
-    void ConnectToClient(
-        olc::net::ServerInterface<T> *server, uint32_t uid = 0)
+    void ConnectToClient(olc::net::ServerInterface<T> *server, uint32_t uid = 0)
     {
         if (m_nOwnerType == owner::server) {
             if (m_socket.is_open()) {
@@ -58,12 +55,11 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
         }
     }
 
-    void ConnectToServer(
-        const asio::ip::tcp::resolver::results_type &endpoints)
+    void ConnectToServer(const asio::ip::tcp::resolver::results_type &endpoints)
     {
         if (m_nOwnerType == owner::client) {
-            asio::async_connect(m_socket, endpoints,
-                [this](std::error_code ec, asio::ip::tcp::endpoint endpoint) {
+            asio::async_connect(
+                m_socket, endpoints, [this](std::error_code ec, asio::ip::tcp::endpoint endpoint) {
                     if (!ec) {
                         ReadValidation();
                     }
@@ -97,8 +93,7 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
     void WriteHeader()
     {
         asio::async_write(m_socket,
-            asio::buffer(
-                &m_qMessagesOut.front().header, sizeof(MessageHeader<T>)),
+            asio::buffer(&m_qMessagesOut.front().header, sizeof(MessageHeader<T>)),
             [this](std::error_code ec, std::size_t length) {
                 if (!ec) {
                     if (m_qMessagesOut.front().body.size() > 0) {
@@ -120,8 +115,7 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
     void WriteBody()
     {
         asio::async_write(m_socket,
-            asio::buffer(m_qMessagesOut.front().body.data(),
-                m_qMessagesOut.front().body.size()),
+            asio::buffer(m_qMessagesOut.front().body.data(), m_qMessagesOut.front().body.size()),
             [this](std::error_code ec, std::size_t length) {
                 if (!ec) {
                     m_qMessagesOut.pop_front();
@@ -143,8 +137,7 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
             [this](std::error_code ec, std::size_t length) {
                 if (!ec) {
                     if (m_msgTemporaryIn.header.size > 0) {
-                        m_msgTemporaryIn.body.resize(
-                            m_msgTemporaryIn.header.size);
+                        m_msgTemporaryIn.body.resize(m_msgTemporaryIn.header.size);
                         ReadBody();
                     } else {
                         AddToIncomingMessageQueue();
@@ -159,8 +152,7 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
     void ReadBody()
     {
         asio::async_read(m_socket,
-            asio::buffer(
-                m_msgTemporaryIn.body.data(), m_msgTemporaryIn.body.size()),
+            asio::buffer(m_msgTemporaryIn.body.data(), m_msgTemporaryIn.body.size()),
             [this](std::error_code ec, std::size_t length) {
                 if (!ec) {
                     AddToIncomingMessageQueue();
@@ -174,8 +166,7 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
     void AddToIncomingMessageQueue()
     {
         if (m_nOwnerType == owner::server)
-            m_qMessagesIn.push_back(
-                {this->shared_from_this(), m_msgTemporaryIn});
+            m_qMessagesIn.push_back({this->shared_from_this(), m_msgTemporaryIn});
         else
             m_qMessagesIn.push_back({nullptr, m_msgTemporaryIn});
 
@@ -191,8 +182,7 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
 
     void WriteValidation()
     {
-        asio::async_write(m_socket,
-            asio::buffer(&m_nHandshakeOut, sizeof(uint64_t)),
+        asio::async_write(m_socket, asio::buffer(&m_nHandshakeOut, sizeof(uint64_t)),
             [this](std::error_code ec, std::size_t length) {
                 if (!ec) {
                     if (m_nOwnerType == owner::client) {
@@ -206,19 +196,16 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
 
     void ReadValidation(olc::net::ServerInterface<T> *server = nullptr)
     {
-        asio::async_read(m_socket,
-            asio::buffer(&m_nHandshakeIn, sizeof(uint64_t)),
+        asio::async_read(m_socket, asio::buffer(&m_nHandshakeIn, sizeof(uint64_t)),
             [this, server](std::error_code ec, std::size_t length) {
                 if (!ec) {
                     if (m_nOwnerType == owner::server) {
                         if (m_nHandshakeIn == m_nHandshakeCheck) {
                             std::cout << "Client Validated\n";
-                            server->OnClientValidated(
-                                this->shared_from_this());
+                            server->OnClientValidated(this->shared_from_this());
                             ReadHeader();
                         } else {
-                            std::cout
-                                << "Client Disconnected (Fail Validation)\n";
+                            std::cout << "Client Disconnected (Fail Validation)\n";
                             m_socket.close();
                         }
                     } else {

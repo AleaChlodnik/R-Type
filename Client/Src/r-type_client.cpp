@@ -9,6 +9,7 @@
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
 #include <r_type_client.hpp>
+#include <r_type_client.hpp>
 #include <texture_manager.hpp>
 #include "Systems/systems.hpp"
 
@@ -46,10 +47,8 @@ void Rtype::gameLoop()
 {
     _window.create(sf::VideoMode(1920, 1080), "R-Type");
 
-    if (getDaltonismMode() !=
-        DaltonismMode::NORMAL) { // must test if filters are good
-        sf::RectangleShape filter(
-            sf::Vector2f(_window.getSize().x, _window.getSize().y));
+    if (getDaltonismMode() != DaltonismMode::NORMAL) { // must test if filters are good
+        sf::RectangleShape filter(sf::Vector2f(_window.getSize().x, _window.getSize().y));
         if (getDaltonismMode() == DaltonismMode::TRITANOPIA)
             filter.setFillColor(sf::Color(255, 255, 100, 100));
         else if (getDaltonismMode() == DaltonismMode::DEUTERANOPIA)

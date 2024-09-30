@@ -20,10 +20,10 @@ class EntityManager {
         return entities.back();
     }
 
-    Entity &getEntity(int id)
+    Entity &getEntity(int entityId)
     {
         for (auto &entity : entities) {
-            if (entity.getId() == id) {
+            if (entity.getId() == entityId) {
                 return entity;
             }
         }

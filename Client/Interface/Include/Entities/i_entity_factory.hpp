@@ -17,7 +17,6 @@ class IEntityFactory {
   public:
     virtual ~IEntityFactory() = default;
 
-    virtual Entity createPlayer(EntityManager &entityManager,
-        ComponentManager &componentManager,
+    virtual Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &TextureManager) = 0;
 };
