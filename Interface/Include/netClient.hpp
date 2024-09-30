@@ -26,8 +26,7 @@ template <typename T> class ClientInterface {
             asio::ip::tcp::resolver::results_type endpoints =
                 resolver.resolve(host, std::to_string(port));
 
-            m_connection = std::make_unique<Connection<T>>(
-                Connection<T>::owner::client, m_context,
+            m_connection = std::make_unique<Connection<T>>(Connection<T>::owner::client, m_context,
                 asio::ip::tcp::socket(m_context), m_qMessagesIn);
 
             m_connection->ConnectToServer(endpoints);

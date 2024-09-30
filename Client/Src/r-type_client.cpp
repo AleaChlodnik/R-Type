@@ -5,10 +5,10 @@
 ** r_type
 */
 
-#include <r_type_client.hpp>
 #include <Components/component_manager.hpp>
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
+#include <r_type_client.hpp>
 #include <texture_manager.hpp>
 
 Rtype::Rtype()
@@ -45,10 +45,8 @@ void Rtype::gameLoop()
 {
     _window.create(sf::VideoMode(800, 600), "R-Type");
 
-    if (getDaltonismMode() !=
-        DaltonismMode::NORMAL) { // must test if filters are good
-        sf::RectangleShape filter(
-            sf::Vector2f(_window.getSize().x, _window.getSize().y));
+    if (getDaltonismMode() != DaltonismMode::NORMAL) { // must test if filters are good
+        sf::RectangleShape filter(sf::Vector2f(_window.getSize().x, _window.getSize().y));
         if (getDaltonismMode() == DaltonismMode::TRITANOPIA)
             filter.setFillColor(sf::Color(255, 255, 100, 100));
         else if (getDaltonismMode() == DaltonismMode::DEUTERANOPIA)
@@ -76,8 +74,7 @@ void Rtype::gameLoop()
         ////////////////////////////////////////////////////////////// test
         _window.clear();
         auto playerId = player.getId();
-        auto playerSprite =
-            componentManager.getComponent<SpriteComponent>(playerId);
+        auto playerSprite = componentManager.getComponent<SpriteComponent>(playerId);
         _window.draw(playerSprite->sprite);
         _window.display();
     }

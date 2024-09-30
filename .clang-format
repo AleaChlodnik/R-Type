@@ -6,7 +6,7 @@ Language: Cpp
 BasedOnStyle: LLVM
 
 # Set the maximum column limit to 80 (As per Epitech rules, think about clear code)
-ColumnLimit: 79
+ColumnLimit: 99
 
 # Use 4 spaces for indentation, no tabulations allowed
 IndentWidth: 4

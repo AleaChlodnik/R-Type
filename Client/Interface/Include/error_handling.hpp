@@ -10,10 +10,7 @@
 #include <exception>
 
 class componentNotFound : public std::exception {
-    const char *what() const noexcept override
-    {
-        return "Component not found";
-    }
+    const char *what() const noexcept override { return "Component not found"; }
 };
 
 class entityNotFound : public std::exception {
@@ -21,8 +18,5 @@ class entityNotFound : public std::exception {
 };
 
 class failedToLoadTexture : public std::exception {
-    const char *what() const noexcept override
-    {
-        return "Failed to load texture";
-    }
+    const char *what() const noexcept override { return "Failed to load texture"; }
 };

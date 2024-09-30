@@ -35,6 +35,7 @@ r-type_server
 
 # cmake
 build
+doc_doxygen
 
 # makefile
 bin

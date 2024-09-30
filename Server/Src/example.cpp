@@ -19,8 +19,8 @@ std::vector<char> vBuffer(20 * 1024);
 
 void grabSomeData(asio::ip::tcp::socket &socket)
 {
-    socket.async_read_some(asio::buffer(vBuffer.data(), vBuffer.size()),
-        [&](std::error_code ec, std::size_t lenght) {
+    socket.async_read_some(
+        asio::buffer(vBuffer.data(), vBuffer.size()), [&](std::error_code ec, std::size_t lenght) {
             if (!ec) {
                 std::cout << "\n\nRead" << lenght << " bytes\n\n";
                 for (int i = 0; i < lenght; i++) {
@@ -41,8 +41,7 @@ int example()
 
     std::thread thrContext = std::thread([&]() { context.run(); });
 
-    asio::ip::tcp::endpoint endpoint(
-        asio::ip::make_address("51.38.81.49", ec), 80);
+    asio::ip::tcp::endpoint endpoint(asio::ip::make_address("51.38.81.49", ec), 80);
 
     asio::ip::tcp::socket socket(context);
 
@@ -51,8 +50,7 @@ int example()
     if (!ec) {
         std::cout << "Connected !" << std::endl;
     } else {
-        std::cout << "Failed to connect to address :\n"
-                  << ec.message() << std::endl;
+        std::cout << "Failed to connect to address :\n" << ec.message() << std::endl;
     }
 
     if (socket.is_open()) {

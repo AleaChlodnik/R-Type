@@ -16,8 +16,7 @@ class CustomClient : public olc::net::ClientInterface<CustomMsgTypes> {
         olc::net::message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::ServerPing;
 
-        std::chrono::system_clock::time_point timeNow =
-            std::chrono::system_clock::now();
+        std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
 
         msg << timeNow;
         Send(msg);
@@ -53,17 +52,14 @@ void simpleClient()
                         std::chrono::system_clock::time_point timeThen;
                         msg >> timeThen;
                         std::cout << "Ping: "
-                                  << std::chrono::duration<double>(
-                                         timeNow - timeThen)
-                                         .count()
+                                  << std::chrono::duration<double>(timeNow - timeThen).count()
                                   << std::endl;
                     } break;
 
                     case CustomMsgTypes::ServerMessage: {
                         uint32_t clientID;
                         msg >> clientID;
-                        std::cout << "Hello from [" << clientID << "]"
-                                  << std::endl;
+                        std::cout << "Hello from [" << clientID << "]" << std::endl;
                     } break;
                     case CustomMsgTypes::ServerDeny: {
 
