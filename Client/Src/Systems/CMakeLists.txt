@@ -1,9 +1,3 @@
 
 add_library(Systems temp.cpp)
-
-target_include_directories(Systems PRIVATE
-    "../../Include"
-    "../../Include/Components"
-    "../../Include/Entities"
-    "../../Include/Systems"
-)
+target_link_libraries(Systems PRIVATE r-type_client_interfaces)

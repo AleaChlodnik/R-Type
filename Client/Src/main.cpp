@@ -5,7 +5,7 @@
 ** main
 */
 
-#include "r_type.hpp"
+#include <r_type_client.hpp>
 
 int main()
 {

@@ -5,7 +5,7 @@
 ** entity_factory
 */
 
-#include "entity_factory.hpp"
+#include <Entities/entity_factory.hpp>
 #include <SFML/Graphics.hpp>
 
 Entity EntityFactory::createPlayer(EntityManager &entityManager,
