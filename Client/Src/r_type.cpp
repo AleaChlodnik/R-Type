@@ -6,6 +6,10 @@
 */
 
 #include "r_type.hpp"
+#include "component_manager.hpp"
+#include "entity_factory.hpp"
+#include "entity_manager.hpp"
+#include "texture_manager.hpp"
 
 Rtype::Rtype()
 {
@@ -13,7 +17,6 @@ Rtype::Rtype()
     currentDaltonismMode = DaltonismMode::NORMAL;
     main_menu = true;
 
-    // Init background
     // Init player
     // Add player to systems
 }
@@ -42,7 +45,40 @@ void Rtype::gameLoop()
 {
     _window.create(sf::VideoMode(800, 600), "R-Type");
 
+    if (getDaltonismMode() !=
+        DaltonismMode::NORMAL) { // must test if filters are good
+        sf::RectangleShape filter(
+            sf::Vector2f(_window.getSize().x, _window.getSize().y));
+        if (getDaltonismMode() == DaltonismMode::TRITANOPIA)
+            filter.setFillColor(sf::Color(255, 255, 100, 100));
+        else if (getDaltonismMode() == DaltonismMode::DEUTERANOPIA)
+            filter.setFillColor(sf::Color(255, 100, 255, 100));
+        else if (getDaltonismMode() == DaltonismMode::PROTANOPIA)
+            filter.setFillColor(sf::Color(255, 255, 100, 100));
+    }
+
+    ComponentManager componentManager;
+    EntityManager entityManager;
+    TextureManager textureManager;
+    EntityFactory entityFactory;
+
+    Entity player = entityFactory.createPlayer(entityManager, componentManager,
+        textureManager); ////////////////////// test
+
+    // MessageHandler messageHandler(entityManager, componentManager,
+    // entityFactory); UpdateSystem updateSystem(entityManager,
+    // componentManager); // Handles position updates, physics, etc.
+    // RenderSystem renderSystem(entityManager, componentManager);
+
     while (_window.isOpen()) {
         handleEvents();
+
+        ////////////////////////////////////////////////////////////// test
+        _window.clear();
+        auto playerId = player.getId();
+        auto playerSprite =
+            componentManager.getComponent<SpriteComponent>(playerId);
+        _window.draw(playerSprite->sprite);
+        _window.display();
     }
 }

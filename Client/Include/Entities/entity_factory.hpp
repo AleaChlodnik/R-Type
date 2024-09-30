@@ -10,9 +10,8 @@
 #include "i_entity_factory.hpp"
 
 class EntityFactory : public IEntityFactory {
-    std::shared_ptr<IEntity> createPlayer() override;
-    // std::shared_ptr<IEntity> createAlly() override;
-    // std::shared_ptr<IEntity> createEnemy() override;
-    // std::shared_ptr<IEntity> createMonster() override;
-    // std::shared_ptr<IEntity> createMissile() override;
+  public:
+    Entity createPlayer(EntityManager &entityManager,
+        ComponentManager &componentManager,
+        TextureManager &textureManager) override;
 };

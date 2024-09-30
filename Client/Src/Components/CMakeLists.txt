@@ -1,7 +1,9 @@
 
-add_library(Components collision_component.cpp
-                      health_component.cpp
-                      movement_component.cpp
-                      score_component.cpp
-                      sprite_component.cpp
-                      )
+add_library(Components temp.cpp)
+
+target_include_directories(Components PRIVATE
+    "../../Include"
+    "../../Include/Components"
+    "../../Include/Entities"
+    "../../Include/Systems"
+)

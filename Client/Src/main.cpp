@@ -7,20 +7,13 @@
 
 #include "r_type.hpp"
 
-void simpleClient();
-#include <iostream>
-
 int main()
 {
 
     // get client info and connect to server
 
-    // Rtype rtype;
-    // rtype.run();
-
-    simpleClient();
-
-    // printf("Hello World\n");
+    Rtype rtype;
+    rtype.run();
 
     return 0;
 }

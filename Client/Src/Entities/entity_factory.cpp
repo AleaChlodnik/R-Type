@@ -5,17 +5,23 @@
 ** entity_factory
 */
 
-#include "Entities/entity_factory.hpp"
-#include "Components/components.hpp"
-#include "Entities/entities.hpp"
-#include "Entities/i_entity.hpp"
+#include "entity_factory.hpp"
+#include <SFML/Graphics.hpp>
 
-std::shared_ptr<IEntity> EntityFactory::createPlayer()
+Entity EntityFactory::createPlayer(EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager)
 {
-    auto player = std::make_shared<PlayerEntity>();
+    Entity player = entityManager.createEntity();
 
-    player->addComponent(
-        std::make_shared<HealthComponent>(player->getMaxHealth()));
+    sf::Texture &texture = textureManager.getTexture(
+        "Client/Assets/Sprites/Player/r-typesheet1.gif");
+
+    PositionComponent start_position(0, 0);
+    SpriteComponent sprite(texture, start_position);
+
+    componentManager.addComponent<PositionComponent>(
+        player.getId(), start_position.x, start_position.y);
+    componentManager.addComponent<SpriteComponent>(player.getId(), sprite);
 
     return player;
 }
