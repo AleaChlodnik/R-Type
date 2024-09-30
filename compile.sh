@@ -4,9 +4,10 @@
 . /etc/os-release
 case "${ID}" in
 ubuntu)
+    export DEBIAN_FRONTEND=noninteractive
     # X11
-    sudo apt update
-    sudo apt install -y \
+    sudo apt-get update
+    sudo apt-get install -y \
         git \
         libxrandr-dev \
         libxcursor-dev \
@@ -17,6 +18,7 @@ ubuntu)
         libvorbis-dev \
         libgl1-mesa-dev \
         libegl1-mesa-dev \
+        libsfml-dev \
         coreutils
     ;;
 fedora)
@@ -35,6 +37,7 @@ fedora)
         openal-soft-devel \
         flac-devel \
         libvorbis-devel \
+        SFML-devel \
         coreutils
     ;;
 nixos)
