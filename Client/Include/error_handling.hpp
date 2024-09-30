@@ -17,10 +17,7 @@ class componentNotFound : public std::exception {
 };
 
 class entityNotFound : public std::exception {
-    const char *what() const noexcept override
-    {
-        return "Entity not found";
-    }
+    const char *what() const noexcept override { return "Entity not found"; }
 };
 
 class failedToLoadTexture : public std::exception {

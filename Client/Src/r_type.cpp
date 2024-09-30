@@ -5,11 +5,11 @@
 ** r_type
 */
 
+#include "r_type.hpp"
 #include "component_manager.hpp"
+#include "entity_factory.hpp"
 #include "entity_manager.hpp"
 #include "texture_manager.hpp"
-#include "entity_factory.hpp"
-#include "r_type.hpp"
 
 Rtype::Rtype()
 {
@@ -45,8 +45,10 @@ void Rtype::gameLoop()
 {
     _window.create(sf::VideoMode(800, 600), "R-Type");
 
-    if (getDaltonismMode() != DaltonismMode::NORMAL) { // must test if filters are good
-        sf::RectangleShape filter(sf::Vector2f(_window.getSize().x, _window.getSize().y));
+    if (getDaltonismMode() !=
+        DaltonismMode::NORMAL) { // must test if filters are good
+        sf::RectangleShape filter(
+            sf::Vector2f(_window.getSize().x, _window.getSize().y));
         if (getDaltonismMode() == DaltonismMode::TRITANOPIA)
             filter.setFillColor(sf::Color(255, 255, 100, 100));
         else if (getDaltonismMode() == DaltonismMode::DEUTERANOPIA)
@@ -60,19 +62,22 @@ void Rtype::gameLoop()
     TextureManager textureManager;
     EntityFactory entityFactory;
 
-    Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager); ////////////////////// test
+    Entity player = entityFactory.createPlayer(entityManager, componentManager,
+        textureManager); ////////////////////// test
 
-    //MessageHandler messageHandler(entityManager, componentManager, entityFactory);
-    //UpdateSystem updateSystem(entityManager, componentManager); // Handles position updates, physics, etc.
-    //RenderSystem renderSystem(entityManager, componentManager);
+    // MessageHandler messageHandler(entityManager, componentManager,
+    // entityFactory); UpdateSystem updateSystem(entityManager,
+    // componentManager); // Handles position updates, physics, etc.
+    // RenderSystem renderSystem(entityManager, componentManager);
 
     while (_window.isOpen()) {
         handleEvents();
-        
+
         ////////////////////////////////////////////////////////////// test
         _window.clear();
         auto playerId = player.getId();
-        auto playerSprite = componentManager.getComponent<SpriteComponent>(playerId);
+        auto playerSprite =
+            componentManager.getComponent<SpriteComponent>(playerId);
         _window.draw(playerSprite->sprite);
         _window.display();
     }

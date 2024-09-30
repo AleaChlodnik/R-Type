@@ -10,6 +10,8 @@
 #include "i_entity_factory.hpp"
 
 class EntityFactory : public IEntityFactory {
-    public:
-        Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) override;
+  public:
+    Entity createPlayer(EntityManager &entityManager,
+        ComponentManager &componentManager,
+        TextureManager &textureManager) override;
 };

@@ -10,10 +10,10 @@
 #include "i_entity.hpp"
 
 class Entity : public IEntity {
-    public:
-        explicit Entity(int id) : _id(id) {}
-        int getId() const { return _id; }
+  public:
+    explicit Entity(int id) : _id(id) {}
+    int getId() const { return _id; }
 
-    private:
-        int _id;
+  private:
+    int _id;
 };

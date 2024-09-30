@@ -7,14 +7,15 @@
 
 #pragma once
 
+#include "error_handling.hpp"
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <unordered_map>
-#include "error_handling.hpp"
 
 class TextureManager {
-public:
-    sf::Texture& getTexture(const std::string& filePath) {
+  public:
+    sf::Texture &getTexture(const std::string &filePath)
+    {
         auto it = textures.find(filePath);
         if (it != textures.end()) {
             return it->second;
@@ -29,6 +30,6 @@ public:
         return textures[filePath];
     }
 
-private:
+  private:
     std::unordered_map<std::string, sf::Texture> textures;
 };
