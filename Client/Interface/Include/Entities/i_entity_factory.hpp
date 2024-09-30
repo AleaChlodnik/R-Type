@@ -8,9 +8,9 @@
 #pragma once
 
 #include "../Components/component_manager.hpp"
+#include "../texture_manager.hpp"
 #include "entity.hpp"
 #include "entity_manager.hpp"
-#include "../texture_manager.hpp"
 
 // Abstract Entity Factory
 class IEntityFactory {
