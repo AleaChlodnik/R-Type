@@ -5,12 +5,10 @@
 ** r_type
 */
 
+#include "component_manager.hpp"
+#include "entity_manager.hpp"
+#include "entity_factory.hpp"
 #include "r_type.hpp"
-
-////////////////////// temp
-// #include "Entities/entity_manager.hpp"
-// #include "Components/component_manager.hpp"
-#include "Entities/entity_factory.hpp"
 
 Rtype::Rtype()
 {
@@ -56,23 +54,33 @@ void Rtype::gameLoop()
             filter.setFillColor(sf::Color(255, 255, 100, 100));
     }
 
-    /////// temp - for testing only
     EntityManager entityManager;
     ComponentManager componentManager;
     EntityFactory entityFactory;
-    Entity player = entityFactory.createPlayer(entityManager, componentManager);
+
+    Entity player = entityFactory.createPlayer(entityManager, componentManager); ////////////////////// test
+
+    //MessageHandler messageHandler(entityManager, componentManager, entityFactory);
+    //UpdateSystem updateSystem(entityManager, componentManager); // Handles position updates, physics, etc.
+    //RenderSystem renderSystem(entityManager, componentManager);
 
     while (_window.isOpen()) {
         handleEvents();
-
-        /////// temp - for testing only
+        
+        ////////////////////////////////////////////////////////////// test
         _window.clear();
         auto playerId = player.getId();
         auto playerSprite = componentManager.getComponent<SpriteComponent>(playerId);
-        // Draw the sprite
         _window.draw(playerSprite->sprite);
-        // Display the contents of the window
         _window.display();
-
     }
 }
+
+
+// Entity player = entityFactory.createPlayer(entityManager, componentManager);
+
+// _window.clear();
+// auto playerId = player.getId();
+// auto playerSprite = componentManager.getComponent<SpriteComponent>(playerId);
+// _window.draw(playerSprite->sprite);
+// _window.display();

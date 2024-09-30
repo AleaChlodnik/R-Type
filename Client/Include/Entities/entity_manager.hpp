@@ -8,6 +8,7 @@
 #pragma once
 
 #include <vector>
+#include "error_handling.hpp"
 #include "entity.hpp"
 
 class EntityManager {
@@ -19,7 +20,15 @@ class EntityManager {
             return entities.back();
         }
 
-        Entity& getEntity(int id) { return entities.at(id); }
+        Entity &getEntity(int id)
+        {
+            for (auto& entity : entities) {
+                if (entity.getId() == id) {
+                    return entity;
+                }
+            }
+            throw entityNotFound();
+        }
 
     private:
         int entityNb = 0;
