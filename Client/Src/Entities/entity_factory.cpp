@@ -34,7 +34,8 @@ Entity EntityFactory::createPlayer(EntityManager &entityManager,
 {
     Entity player = entityManager.createEntity();
 
-    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Player/Ship3/ship3.png");
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Player/Ship3/ship3.png");
 
     PlayerComponent playerComponent;
     PositionComponent start_position(0, 0);
@@ -54,7 +55,6 @@ Entity EntityFactory::createMissle(EntityManager &entityManager,
 
     sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Missles/missle.png");
 
-    
     PositionComponent startPosition(0, 0);
     auto entities = entityManager.getAllEntities();
     for (auto &entity : entities) {
