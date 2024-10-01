@@ -7,5 +7,5 @@
 
 #pragma once
 
-#include "update_system.hpp"
 #include "render_system.hpp"
+#include "update_system.hpp"
