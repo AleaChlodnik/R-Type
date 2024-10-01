@@ -10,7 +10,6 @@
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
 #include <r_type_client.hpp>
-#include <r_type_client.hpp>
 #include <texture_manager.hpp>
 
 Rtype::Rtype()
