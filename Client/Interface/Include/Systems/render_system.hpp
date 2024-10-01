@@ -13,7 +13,7 @@
 class RenderSystem : public ISystem {
   public:
     RenderSystem(sf::RenderWindow &window) : _window(window) {}
-  
+
     void render(EntityManager &entityManager, ComponentManager &componentManager);
 
   private:
