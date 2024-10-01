@@ -65,17 +65,19 @@ void Rtype::gameLoop()
     sf::Clock clock;
 
     /////////////////////////////////////////////////////// test
+    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
+
     Entity player1 = entityFactory.createPlayer(
         entityManager, componentManager, textureManager);
-    Entity player2 = entityFactory.createPlayer(
-        entityManager, componentManager, textureManager);
-    Entity player3 = entityFactory.createPlayer(
-        entityManager, componentManager, textureManager);
+    // Entity player2 = entityFactory.createPlayer(
+    //     entityManager, componentManager, textureManager);
+    // Entity player3 = entityFactory.createPlayer(
+    //     entityManager, componentManager, textureManager);
 
-    componentManager.addComponent<PositionComponent>(
-        player2.getId(), 400, 400);
-    componentManager.addComponent<PositionComponent>(
-        player3.getId(), 800, 800);
+    // componentManager.addComponent<PositionComponent>(
+    //     player2.getId(), 400, 400);
+    // componentManager.addComponent<PositionComponent>(
+    //     player3.getId(), 800, 800);
     //////////////////////////////////////////////////////////
 
     while (_window.isOpen()) {
@@ -83,16 +85,16 @@ void Rtype::gameLoop()
 
         float deltaTime = clock.restart().asSeconds();
 
-        //renderSystem.update(entityManager, componentManager, deltaTime);
+        renderSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(entityManager, componentManager);
         
         
         /////////////////////////////////////////////////////// test
-        auto player1Pos = componentManager.getComponent<PositionComponent>(player1.getId());
-        auto player2Pos = componentManager.getComponent<PositionComponent>(player2.getId());
-        auto player3Pos = componentManager.getComponent<PositionComponent>(player3.getId());
-        componentManager.addComponent<PositionComponent>(player1.getId(), player1Pos.value()->x + 1, player1Pos.value()->y);
-        componentManager.addComponent<PositionComponent>(player2.getId(), player2Pos.value()->x + 1, player2Pos.value()->y);
-        componentManager.addComponent<PositionComponent>(player3.getId(), player3Pos.value()->x + 1, player3Pos.value()->y);
+        // auto player1Pos = componentManager.getComponent<PositionComponent>(player1.getId());
+        // auto player2Pos = componentManager.getComponent<PositionComponent>(player2.getId());
+        // auto player3Pos = componentManager.getComponent<PositionComponent>(player3.getId());
+        // componentManager.addComponent<PositionComponent>(player1.getId(), player1Pos.value()->x + 1, player1Pos.value()->y);
+        // componentManager.addComponent<PositionComponent>(player2.getId(), player2Pos.value()->x + 1, player2Pos.value()->y);
+        // componentManager.addComponent<PositionComponent>(player3.getId(), player3Pos.value()->x + 1, player3Pos.value()->y);
     }
 }
