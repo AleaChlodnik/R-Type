@@ -13,10 +13,8 @@
 class RenderSystem : public ISystem {
   public:
     RenderSystem(sf::RenderWindow &window) : _window(window) {}
-
-    void update(EntityManager &entityManager, ComponentManager &componentManager,
-        float deltaTime) override;
-    void render(EntityManager &entityManager, ComponentManager &componentManager) override;
+  
+    void render(EntityManager &entityManager, ComponentManager &componentManager);
 
   private:
     sf::RenderWindow &_window;

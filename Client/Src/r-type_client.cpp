@@ -61,6 +61,7 @@ void Rtype::gameLoop()
     EntityManager entityManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
+    UpdateSystem updateSystem(_window);
     RenderSystem renderSystem(_window);
 
     sf::Clock clock;
@@ -86,7 +87,7 @@ void Rtype::gameLoop()
 
         float deltaTime = clock.restart().asSeconds();
 
-        renderSystem.update(entityManager, componentManager, deltaTime);
+        updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(entityManager, componentManager);
 
         /////////////////////////////////////////////////////// test
