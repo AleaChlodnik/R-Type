@@ -7,31 +7,15 @@
 
 #pragma once
 
-#include "Components/component_manager.hpp"
-#include "Components/components.hpp"
-#include "Entities/entity_manager.hpp"
 #include <SFML/Graphics.hpp>
+#include "Systems/i_system.hpp"
 
-class RenderSystem {
+class RenderSystem : public ISystem {
   public:
     RenderSystem(sf::RenderWindow &window) : _window(window) {}
 
-    void render(
-        EntityManager &entityManager, ComponentManager &componentManager)
-    {
-        _window.clear();
-
-        const auto &entities = entityManager.getAllEntities();
-
-        for (const auto &entity : entities) {
-            auto spriteOpt =
-                componentManager.getComponent<SpriteComponent>(entity.getId());
-            if (spriteOpt) {
-                _window.draw(spriteOpt.value()->sprite);
-            }
-        }
-        _window.display();
-    }
+    void update(EntityManager &entityManager, ComponentManager &componentManager, float deltaTime) override;
+    void render(EntityManager &entityManager, ComponentManager &componentManager) override;
 
   private:
     sf::RenderWindow &_window;

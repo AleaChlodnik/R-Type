@@ -2,10 +2,11 @@
 ** EPITECH PROJECT, 2024
 ** R-Type
 ** File description:
-** system
+** score_component
 */
 
 #pragma once
 
-#include "render_system.hpp"
-#include "update_system.hpp"
+struct ScoreComponent {
+    int score;
+};
