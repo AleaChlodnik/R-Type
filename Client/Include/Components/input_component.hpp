@@ -7,7 +7,8 @@
 
 #pragma once
 
-enum class InputType {
+enum class InputType
+{
     UP,
     DOWN,
     LEFT,
