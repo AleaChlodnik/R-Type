@@ -14,15 +14,34 @@
 
 namespace olc {
 namespace net {
+/**
+ * @brief ServerInterface class
+ *
+ * @tparam T
+ */
 template <typename T> class ServerInterface {
   public:
+    /**
+     * @brief Construct a new Server Interface object
+     *
+     * @param port
+     */
     ServerInterface(uint16_t port)
         : m_asioAcceptor(m_asioContext, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port))
     {
     }
 
+    /**
+     * @brief Destroy the Server Interface object
+     *
+     */
     virtual ~ServerInterface() { Stop(); }
-
+    /**
+     * @brief Start the server
+     *
+     * @return true
+     * @return false
+     */
     bool Start()
     {
         try {
@@ -38,6 +57,10 @@ template <typename T> class ServerInterface {
         return true;
     }
 
+    /**
+     * @brief Stop the server
+     *
+     */
     void Stop()
     {
         m_asioContext.stop();
@@ -48,6 +71,10 @@ template <typename T> class ServerInterface {
         std::cout << "[SERVER] Stopped!\n";
     }
 
+    /**
+     * @brief wait for client connection
+     *
+     */
     void WaitForClientConnection()
     {
         m_asioAcceptor.async_accept([this](std::error_code ec, asio::ip::tcp::socket socket) {
@@ -75,7 +102,13 @@ template <typename T> class ServerInterface {
         });
     }
 
-    void MessageClient(std::shared_ptr<Connection<T>> client, const message<T> &msg)
+    /**
+     * @brief send message message to client
+     *
+     * @param client
+     * @param msg
+     */
+    void MessageClient(std::shared_ptr<Connection<T>> client, const Message<T> &msg)
     {
         if (client && client->IsConnected()) {
             client->Send(msg);
@@ -90,8 +123,14 @@ template <typename T> class ServerInterface {
         }
     }
 
+    /**
+     * @brief message all clients
+     *
+     * @param msg
+     * @param pIgnoreClient
+     */
     void MessageAllClients(
-        const message<T> &msg, std::shared_ptr<Connection<T>> pIgnoreClient = nullptr)
+        const Message<T> &msg, std::shared_ptr<Connection<T>> pIgnoreClient = nullptr)
     {
         bool bInvalidClientExists = false;
 
@@ -113,6 +152,12 @@ template <typename T> class ServerInterface {
                 m_deqConnections.end());
     }
 
+    /**
+     * @brief update server
+     *
+     * @param nMaxMessages
+     * @param bWait
+     */
     void Update(size_t nMaxMessages = -1, bool bWait = false)
     {
         if (bWait)
@@ -131,14 +176,32 @@ template <typename T> class ServerInterface {
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) {}
 
   protected:
+    /**
+     * @brief on client connect event
+     *
+     * @param client
+     * @return true
+     * @return false
+     */
     virtual bool OnClientConnect(std::shared_ptr<Connection<T>> client) { return false; }
 
+    /**
+     * @brief on client disconnect event
+     *
+     * @param client
+     */
     virtual void OnClientDisconnect(std::shared_ptr<Connection<T>> client) {}
 
-    virtual void OnMessage(std::shared_ptr<Connection<T>> client, message<T> &msg) {}
+    /**
+     * @brief on message event
+     *
+     * @param client
+     * @param msg
+     */
+    virtual void OnMessage(std::shared_ptr<Connection<T>> client, Message<T> &msg) {}
 
   protected:
-    ThreadSafeQueue<owned_message<T>> m_qMessagesIn;
+    ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
 
     std::deque<std::shared_ptr<Connection<T>>> m_deqConnections;
 

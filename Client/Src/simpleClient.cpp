@@ -13,7 +13,7 @@ class CustomClient : public olc::net::ClientInterface<CustomMsgTypes> {
   public:
     void PingServer()
     {
-        olc::net::message<CustomMsgTypes> msg;
+        olc::net::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::ServerPing;
 
         std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
@@ -24,7 +24,7 @@ class CustomClient : public olc::net::ClientInterface<CustomMsgTypes> {
 
     void MessageAll()
     {
-        olc::net::message<CustomMsgTypes> msg;
+        olc::net::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::MessageAll;
         Send(msg);
     }
