@@ -16,8 +16,7 @@ class Button {
     Button() = default;
     Button(std::string path);
     Button(std::string path, std::pair<int, int> position);
-    Button(std::string path, std::pair<int, int> position,
-        std::pair<float, float> size);
+    Button(std::string path, std::pair<int, int> position, std::pair<float, float> size);
     ~Button() = default;
 
     void setFont(std::string fontPath);

@@ -12,15 +12,16 @@
 #include "Entities/entity_manager.hpp"
 
 class UpdateSystem {
-    public:
-        UpdateSystem();
+  public:
+    UpdateSystem();
 
-        // void positions(EntityManager &entityManager, ComponentManager &componentManager)
-        // {
-        //     const auto &entities = entityManager.getAllEntities();
-        //     for (const auto &entity : entities) {
-        //         auto currPos = componentManager.getComponent<PositionComponent>(entity.getId());
-        //         componentManager.addComponent<PositionComponent>(entity.getId(), currPos.value()->x + 1, currPos.value()->y);
-        //     }
-        // }
+    // void positions(EntityManager &entityManager, ComponentManager &componentManager)
+    // {
+    //     const auto &entities = entityManager.getAllEntities();
+    //     for (const auto &entity : entities) {
+    //         auto currPos = componentManager.getComponent<PositionComponent>(entity.getId());
+    //         componentManager.addComponent<PositionComponent>(entity.getId(), currPos.value()->x
+    //         + 1, currPos.value()->y);
+    //     }
+    // }
 };

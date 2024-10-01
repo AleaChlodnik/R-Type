@@ -6,8 +6,7 @@
 */
 #include "../../Include/button.hpp"
 
-Button::Button(std::string path, std::pair<int, int> position,
-    std::pair<float, float> size)
+Button::Button(std::string path, std::pair<int, int> position, std::pair<float, float> size)
 {
     this->font.loadFromFile("Client/Src/Assets/godofwar.ttf");
     this->text.setFont(font);
@@ -24,14 +23,13 @@ Button::Button(std::string path, std::pair<int, int> position,
 void Button::setSize(std::pair<float, float>)
 {
     sf::Vector2u currentSize = this->bgImage.getSize();
-    this->sprite.setScale(currentSize.x / this->bgImage.getSize().x,
-        currentSize.y / this->bgImage.getSize().y);
+    this->sprite.setScale(
+        currentSize.x / this->bgImage.getSize().x, currentSize.y / this->bgImage.getSize().y);
 }
 
 std::pair<float, float> Button::getSize()
 {
-    return std::make_pair(
-        this->sprite.getScale().x, this->sprite.getScale().y);
+    return std::make_pair(this->sprite.getScale().x, this->sprite.getScale().y);
 }
 
 void Button::setText(std::string text) { this->text.setString(text); }
@@ -52,8 +50,7 @@ void Button::setPosition(std::pair<int, int> position)
 
 std::pair<int, int> Button::getPosition()
 {
-    return std::make_pair(
-        this->sprite.getPosition().x, this->sprite.getPosition().y);
+    return std::make_pair(this->sprite.getPosition().x, this->sprite.getPosition().y);
 }
 
 void Button::render(sf::RenderWindow &window)
@@ -62,10 +59,7 @@ void Button::render(sf::RenderWindow &window)
     window.draw(this->text);
 }
 
-void Button::setTexture(std::string texturePath)
-{
-    this->bgImage.loadFromFile(texturePath);
-}
+void Button::setTexture(std::string texturePath) { this->bgImage.loadFromFile(texturePath); }
 
 void Button::setFontSize(std::size_t fontSize)
 {
@@ -73,12 +67,6 @@ void Button::setFontSize(std::size_t fontSize)
     this->text.setCharacterSize(this->fontSize);
 }
 
-void Button::setOnClick(std::function<void(Rtype)> callback)
-{
-    this->onClick = callback;
-}
+void Button::setOnClick(std::function<void(Rtype)> callback) { this->onClick = callback; }
 
-void Button::setOnHover(std::function<void(Rtype)> callback)
-{
-    this->onHover = callback;
-}
+void Button::setOnHover(std::function<void(Rtype)> callback) { this->onHover = callback; }

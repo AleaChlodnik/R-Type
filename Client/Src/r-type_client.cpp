@@ -44,7 +44,8 @@ void Rtype::handleEvents()
 
 void Rtype::gameLoop()
 {
-    _window.create(sf::VideoMode::getDesktopMode(), "R-Type", sf::Style::Close | sf::Style::Resize);
+    _window.create(
+        sf::VideoMode::getDesktopMode(), "R-Type", sf::Style::Close | sf::Style::Resize);
 
     if (getDaltonismMode() != DaltonismMode::NORMAL) { // must test if filters are good
         sf::RectangleShape filter(sf::Vector2f(_window.getSize().x, _window.getSize().y));
@@ -87,8 +88,7 @@ void Rtype::gameLoop()
 
         renderSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(entityManager, componentManager);
-        
-        
+
         /////////////////////////////////////////////////////// test
         // auto player1Pos = componentManager.getComponent<PositionComponent>(player1.getId());
         // auto player2Pos = componentManager.getComponent<PositionComponent>(player2.getId());
