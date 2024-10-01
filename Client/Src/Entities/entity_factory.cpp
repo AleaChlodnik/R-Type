@@ -8,11 +8,13 @@
 #include "Entities/entity_factory.hpp"
 #include <SFML/Graphics.hpp>
 
-Entity EntityFactory::createBackground(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager)
+Entity EntityFactory::createBackground(EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager)
 {
     Entity background = entityManager.createEntity();
 
-    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
 
     PositionComponent start_position(0, 0);
     VelocityComponent velocity(100.0f);
