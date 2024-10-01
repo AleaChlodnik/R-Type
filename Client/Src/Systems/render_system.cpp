@@ -7,7 +7,8 @@
 
 #include "Systems/render_system.hpp"
 
-void RenderSystem::update(EntityManager &entityManager, ComponentManager &componentManager, float deltaTime)
+void RenderSystem::update(
+    EntityManager &entityManager, ComponentManager &componentManager, float deltaTime)
 {
     const auto &entities = entityManager.getAllEntities();
 
@@ -23,7 +24,9 @@ void RenderSystem::update(EntityManager &entityManager, ComponentManager &compon
             if (offsetOpt.value()->offset >= textureWidth) {
                 componentManager.addComponent<OffsetComponent>(entity.getId(), 0);
             }
-            spriteOpt.value()->sprite.setTextureRect(sf::IntRect(static_cast<int>(offsetOpt.value()->offset), 0, static_cast<int>(_window.getSize().x), static_cast<int>(_window.getSize().y)));
+            spriteOpt.value()->sprite.setTextureRect(
+                sf::IntRect(static_cast<int>(offsetOpt.value()->offset), 0,
+                    static_cast<int>(_window.getSize().x), static_cast<int>(_window.getSize().y)));
         }
     }
 }
