@@ -8,16 +8,14 @@ add_subdirectory(Systems)
 
 add_executable(r-type_client main.cpp r-type_client.cpp client.cpp)
 
-target_link_libraries(r-type_client PRIVATE Components Entities Systems r-type_interfaces r-type_client_interfaces sfml-graphics sfml-window sfml-system)
-
 target_compile_features(r-type_client PRIVATE cxx_std_17)
 
 if (MSVC)
-    # Use /W4 for MSVC to enable a higher level of warnings
-    target_compile_options(r-type_client PRIVATE /W4)
+  target_compile_options(r-type_client PRIVATE /W4)
+  target_link_libraries(r-type_client PRIVATE Components Entities Systems r-type_interfaces r-type_client_interfaces)
 else()
-    # Use -Wextra for GCC/Clang
-    target_compile_options(r-type_client PRIVATE -Wall -Wextra)
+  target_compile_options(r-type_client PRIVATE -Wall -Wextra)
+  target_link_libraries(r-type_client PRIVATE Components Entities Systems r-type_interfaces r-type_client_interfaces sfml-graphics sfml-window sfml-system)
 endif()
 
 # Windows-specific custom command to copy OpenAL DLL for SFML
