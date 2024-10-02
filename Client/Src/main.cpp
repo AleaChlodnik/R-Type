@@ -7,12 +7,12 @@
 
 #include "r_type.hpp"
 
-void simpleClient();
 #include <iostream>
+
+void simpleClient();
 
 int main()
 {
-
     // get client info and connect to server
 
     // Rtype rtype;

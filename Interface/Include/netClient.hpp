@@ -10,6 +10,8 @@
 #include "netConnection.hpp"
 #include "netThreadSafeQueue.hpp"
 
+#include <unordered_map>
+
 namespace olc {
 namespace net {
 template <typename T> class ClientInterface {
@@ -19,6 +21,7 @@ template <typename T> class ClientInterface {
     virtual ~ClientInterface() { Disconnect(); }
 
   public:
+
     bool Connect(const std::string &host, const uint16_t port)
     {
         try {
@@ -61,22 +64,29 @@ template <typename T> class ClientInterface {
             return false;
     }
 
-  public:
     void Send(const message<T> &msg)
     {
         if (IsConnected())
             m_connection->Send(msg);
     }
 
-    ThreadSafeQueue<owned_message<T>> &Incoming() { return m_qMessagesIn; }
+    virtual ThreadSafeQueue<owned_message<T>> &Incoming() {};
+    virtual void PingServer() {};
+    virtual void MessageAll() {};
 
   protected:
     asio::io_context m_context;
     std::thread thrContext;
     std::unique_ptr<Connection<T>> m_connection;
+    sPlayerInformation player;
 
   private:
     ThreadSafeQueue<owned_message<T>> m_qMessagesIn;
+
+    std::unordered_map<uint32_t, sPlayerInformation> otherPlayers;
+    uint32_t nPlayerID = 0;
+
+    bool bWaitingForConnection = true;
 };
 } // namespace net
 } // namespace olc

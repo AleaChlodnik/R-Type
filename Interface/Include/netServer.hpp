@@ -162,6 +162,8 @@ template <typename T> class ServerInterface {
     asio::ip::tcp::acceptor m_asioAcceptor;
 
     uint32_t nIDCounter = 10000;
+
+    std::vector<sPlayerInformation> m_vPlayerRoster;
 };
 } // namespace net
 } // namespace olc

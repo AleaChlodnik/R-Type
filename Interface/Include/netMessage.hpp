@@ -19,7 +19,7 @@ template <typename T> struct MessageHeader {
 
 template <typename T> struct message {
     MessageHeader<T> header{};
-    std::vector<uint8_t> body;
+    std::vector<sPlayerInformation> body;
 
     size_t size() const { return body.size(); }
 
