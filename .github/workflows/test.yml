@@ -86,10 +86,6 @@ jobs:
           key: ${{ runner.os }}-vcpkg-install-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
             ${{ runner.os }}-vcpkg-install-${{ env.cache-name }}-
-      - name: Install vcpkg
-        run: vcpkg integrate install
-      - name: Install sfml
-        run: vcpkg install sfml
       - name: Cache cmake build
         id: cache-cmake
         uses: actions/cache@v4
