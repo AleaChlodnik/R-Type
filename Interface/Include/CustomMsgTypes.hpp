@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <cstdint>
 #include "netCommon.hpp"
+#include <cstdint>
 
 enum class CustomMsgTypes : uint32_t
 {

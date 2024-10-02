@@ -21,7 +21,6 @@ template <typename T> class ClientInterface {
     virtual ~ClientInterface() { Disconnect(); }
 
   public:
-
     bool Connect(const std::string &host, const uint16_t port)
     {
         try {
@@ -70,9 +69,9 @@ template <typename T> class ClientInterface {
             m_connection->Send(msg);
     }
 
-    virtual ThreadSafeQueue<owned_message<T>> &Incoming() {};
-    virtual void PingServer() {};
-    virtual void MessageAll() {};
+    virtual ThreadSafeQueue<owned_message<T>> &Incoming(){};
+    virtual void PingServer(){};
+    virtual void MessageAll(){};
 
   protected:
     asio::io_context m_context;
