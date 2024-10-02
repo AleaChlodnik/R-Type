@@ -87,6 +87,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
       - name: Install sfml
+        run: vcpkg integrate install
+      - name: Install sfml
         run: vcpkg install sfml
       - name: compile project
         run: cmake -S . -B build
