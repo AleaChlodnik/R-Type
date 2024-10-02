@@ -86,6 +86,8 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
+      - name: Install sfml
+        run: vcpkg install sfml
       - name: compile project
         run: cmake -S . -B build
       - name: build project
