@@ -70,7 +70,7 @@ jobs:
 
   windows_install:
     runs-on: windows-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Checkout GH repository
         uses: actions/checkout@v4
