@@ -82,7 +82,7 @@ jobs:
         env:
           cache-name: cache-vcpkg-install
         with:
-          path: /vcpkg
+          path: C:/vcpkg
           key: ${{ runner.os }}-vcpkg-install-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
             ${{ runner.os }}-vcpkg-install-${{ env.cache-name }}-
