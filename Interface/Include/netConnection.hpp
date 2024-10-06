@@ -7,21 +7,21 @@
 
 #pragma once
 
-#include "CustomMsgTypes.hpp"
+#include "net_r_type_message.hpp"
 #include "netCommon.hpp"
 #include "netMessage.hpp"
 #include "netThreadSafeQueue.hpp"
 
 #define UNUSED __attribute__((unused))
 
-namespace olc {
+namespace r_type {
 namespace net {
 /**
  * @brief ServerInterface class
  *
  * @tparam T
  */
-template <typename T> class ServerInterface;
+template <typename T> class NetServerInterface;
 /**
  * @brief Connection class
  *
@@ -84,7 +84,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      * @param server
      * @param uid
      */
-    void ConnectToClient(olc::net::ServerInterface<T> *server, uint32_t uid = 0)
+    void ConnectToClient(r_type::net::NetServerInterface<T> *server, uint32_t uid = 0)
     {
         if (m_nOwnerType == owner::server) {
             if (m_socket.is_open()) {
@@ -106,7 +106,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
     {
         if (m_nOwnerType == owner::client) {
             asio::async_connect(
-                m_socket, endpoints, [this](std::error_code ec, asio::ip::udp::endpoint endpoint) {
+                m_socket, endpoints, [this](std::error_code ec, asio::ip::udp::endpoint UNUSED endpoint) {
                     if (!ec) {
                         ReadValidation();
                     }
@@ -289,7 +289,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      *
      * @param server
      */
-    void ReadValidation(olc::net::ServerInterface<T> *server = nullptr)
+    void ReadValidation(r_type::net::NetServerInterface<T> *server = nullptr)
     {
         m_socket.async_receive(asio::buffer(&m_nHandshakeIn, sizeof(uint64_t)),
             [this, server](std::error_code ec, std::size_t UNUSED length) {

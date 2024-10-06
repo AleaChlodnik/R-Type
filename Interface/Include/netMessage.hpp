@@ -9,7 +9,7 @@
 #include "netCommon.hpp"
 #include "netConnection.hpp"
 
-namespace olc {
+namespace r_type {
 namespace net {
 /**
  * @brief Message Header

@@ -9,7 +9,7 @@
 
 #include "netCommon.hpp"
 
-namespace olc {
+namespace r_type {
 namespace net {
 /**
  * @brief Thread Safe Queue

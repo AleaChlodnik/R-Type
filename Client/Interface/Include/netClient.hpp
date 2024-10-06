@@ -10,7 +10,7 @@
 #include "netConnection.hpp"
 #include "netThreadSafeQueue.hpp"
 
-namespace olc {
+namespace r_type {
 namespace net {
 template <typename T> class ClientInterface {
   public:

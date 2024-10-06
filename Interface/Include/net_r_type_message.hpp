@@ -9,7 +9,7 @@
 
 #include <cstdint>
 
-enum class CustomMsgTypes : uint32_t
+enum class NetR_TypeMessage : uint32_t
 {
     ServerAccept,
     ServerDeny,

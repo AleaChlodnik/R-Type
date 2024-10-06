@@ -9,12 +9,12 @@
 #include <iostream>
 #include <netClient.hpp>
 
-class CustomClient : public olc::net::ClientInterface<CustomMsgTypes> {
+class CustomClient : public r_type::net::ClientInterface<NetR_TypeMessage> {
   public:
     void PingServer()
     {
-        olc::net::Message<CustomMsgTypes> msg;
-        msg.header.id = CustomMsgTypes::ServerPing;
+        r_type::net::Message<NetR_TypeMessage> msg;
+        msg.header.id = NetR_TypeMessage::ServerPing;
 
         std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
 
@@ -24,8 +24,8 @@ class CustomClient : public olc::net::ClientInterface<CustomMsgTypes> {
 
     void MessageAll()
     {
-        olc::net::Message<CustomMsgTypes> msg;
-        msg.header.id = CustomMsgTypes::MessageAll;
+        r_type::net::Message<NetR_TypeMessage> msg;
+        msg.header.id = NetR_TypeMessage::MessageAll;
         Send(msg);
     }
 };
@@ -42,11 +42,11 @@ void simpleClient()
                 if (!c.Incoming().empty()) {
                     auto msg = c.Incoming().pop_front().msg;
                     switch (msg.header.id) {
-                    case CustomMsgTypes::ServerAccept: {
+                    case NetR_TypeMessage::ServerAccept: {
                         std::cout << "Server Accepted Connection" << std::endl;
                     } break;
 
-                    case CustomMsgTypes::ServerPing: {
+                    case NetR_TypeMessage::ServerPing: {
                         std::chrono::system_clock::time_point timeNow =
                             std::chrono::system_clock::now();
                         std::chrono::system_clock::time_point timeThen;
@@ -56,18 +56,18 @@ void simpleClient()
                                   << std::endl;
                     } break;
 
-                    case CustomMsgTypes::ServerMessage: {
+                    case NetR_TypeMessage::ServerMessage: {
                         uint32_t clientID;
                         msg >> clientID;
                         std::cout << "Hello from [" << clientID << "]" << std::endl;
                     } break;
-                    case CustomMsgTypes::ServerDeny: {
+                    case NetR_TypeMessage::ServerDeny: {
 
                     } break;
-                    case CustomMsgTypes::MessageAll: {
+                    case NetR_TypeMessage::MessageAll: {
 
                     } break;
-                    case CustomMsgTypes::ClientConnect: {
+                    case NetR_TypeMessage::ClientConnect: {
                     } break;
                     }
                 }
