@@ -80,8 +80,7 @@ template <typename T> class ServerInterface {
         m_asioSocket.async_receive_from(asio::buffer(m_tempBuffer.data(), m_tempBuffer.size()),
             m_clientEndpoint, [this](std::error_code ec, std::size_t bytes_recvd) {
                 if (!ec && bytes_recvd > 0) {
-                    std::cout << "[SERVER] Received message from "
-                              << m_clientEndpoint << "\n";
+                    std::cout << "[SERVER] Received message from " << m_clientEndpoint << "\n";
 
                     // // Handle the received message here, e.g., push to a message queue
                     // Message<T> msg;
