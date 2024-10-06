@@ -30,7 +30,6 @@ template <typename T> class ClientInterface {
     bool Connect(const std::string &host, const uint16_t port)
     {
         try {
-            std::cout << "Connecting to " << host << ":" << port << "\n";
             asio::ip::udp::resolver resolver(m_context);
             asio::ip::udp::resolver::results_type endpoints =
                 resolver.resolve(host, std::to_string(port));
@@ -40,7 +39,6 @@ template <typename T> class ClientInterface {
             m_connection->ConnectToServer(endpoints);
 
             thrContext = std::thread([this]() { m_context.run(); });
-            std::cout << "Connected to " << host << ":" << port << "\n";
         } catch (std::exception &e) {
             std::cerr << "Client Exception: " << e.what() << "\n";
             return false;

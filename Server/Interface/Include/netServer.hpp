@@ -79,18 +79,34 @@ template <typename T> class ServerInterface {
     {
         m_asioSocket.async_receive_from(asio::buffer(m_tempBuffer.data(), m_tempBuffer.size()),
             m_clientEndpoint, [this](std::error_code ec, std::size_t bytes_recvd) {
-                if (!ec && bytes_recvd > 0) {
-                    std::cout << "[SERVER] Received message from " << m_clientEndpoint << "\n";
+                if (m_clientEndpoint.protocol() != asio::ip::udp::v4())
+                    return WaitForClientMessage();
+                if (!ec) {
+                    std::cout << "[SERVER] New Connection: "
+                              << m_clientEndpoint.address().to_string() << ":"
+                              << m_clientEndpoint.port() << std::endl;
+                    // create client socket
+                    asio::ip::udp::socket newClientSocket(m_asioContext);
+                    newClientSocket.open(m_clientEndpoint.protocol());
+                    newClientSocket.bind(asio::ip::udp::endpoint(asio::ip::udp::v4(), 0));
 
-                    // // Handle the received message here, e.g., push to a message queue
-                    // Message<T> msg;
-                    // // Deserialize message from buffer
-                    // OnMessage(m_clientEndpoint, msg);
+                    std::cout << newClientSocket.local_endpoint().address().to_string() << ":"
+                              << newClientSocket.local_endpoint().port() << std::endl;
 
-                    // Wait for the next client message
-                    WaitForClientMessage();
+                    std::shared_ptr<Connection<T>> newConn =
+                        std::make_shared<Connection<T>>(Connection<T>::owner::server,
+                            m_asioContext, std::move(newClientSocket), m_qMessagesIn);
+
+                    if (OnClientConnect(newConn)) {
+                        m_deqConnections.push_back(std::move(newConn));
+                        m_deqConnections.back()->ConnectToClient(this, nIDCounter++);
+                        std::cout << "[" << m_deqConnections.back()->GetID()
+                                  << "] Connection Approved\n";
+                    } else {
+                        std::cout << "[-----] Connection Denied\n";
+                    }
                 } else {
-                    std::cout << "[SERVER] Receive Error: " << ec.message() << "\n";
+                    std::cout << "[SERVER] New Connection Error: " << ec.message() << "\n";
                 }
             });
     }

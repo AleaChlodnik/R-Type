@@ -5,7 +5,7 @@
 ** main
 */
 
-#include <olcNet.hpp>
+#include <netServer.hpp>
 
 class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
   public:

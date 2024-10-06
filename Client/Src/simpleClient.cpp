@@ -7,7 +7,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <olcNet.hpp>
+#include <netClient.hpp>
 
 class CustomClient : public olc::net::ClientInterface<CustomMsgTypes> {
   public:
