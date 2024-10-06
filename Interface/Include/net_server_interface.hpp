@@ -28,13 +28,13 @@ template <typename T> class NetServerInterface {
      */
 
     NetServerInterface(uint16_t port)
-        : m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)) {};
+        : m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)){};
 
     /**
      * @brief Destroy the Server Interface object
      *
      */
-    virtual ~NetServerInterface() {};
+    virtual ~NetServerInterface(){};
     /**
      * @brief Start the server
      *

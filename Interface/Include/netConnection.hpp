@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "net_r_type_message.hpp"
 #include "netCommon.hpp"
 #include "netMessage.hpp"
 #include "netThreadSafeQueue.hpp"
+#include "net_r_type_message.hpp"
 
 #define UNUSED __attribute__((unused))
 
@@ -105,8 +105,8 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
     void ConnectToServer(const asio::ip::udp::resolver::results_type &endpoints)
     {
         if (m_nOwnerType == owner::client) {
-            asio::async_connect(
-                m_socket, endpoints, [this](std::error_code ec, asio::ip::udp::endpoint UNUSED endpoint) {
+            asio::async_connect(m_socket, endpoints,
+                [this](std::error_code ec, asio::ip::udp::endpoint UNUSED endpoint) {
                     if (!ec) {
                         ReadValidation();
                     }
@@ -332,4 +332,4 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
     uint64_t m_nHandshakeCheck = 0;
 };
 } // namespace net
-} // namespace olc
+} // namespace r_type

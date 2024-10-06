@@ -105,4 +105,4 @@ template <typename T> class ClientInterface {
     ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
 };
 } // namespace net
-} // namespace olc
+} // namespace r_type
