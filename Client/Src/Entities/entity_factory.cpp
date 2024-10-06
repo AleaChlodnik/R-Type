@@ -13,7 +13,8 @@ Entity EntityFactory::createBackground(EntityManager &entityManager,
 {
     Entity background = entityManager.createEntity();
 
-    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0f, 1.0f);
 
     BackgroundComponent backgroundComponent;
@@ -59,7 +60,7 @@ Entity EntityFactory::createMissile(int playerId, EntityManager &entityManager,
     sf::Vector2f scale(0.1f, 0.1f);
 
     auto playerPosition = componentManager.getComponent<PositionComponent>(playerId);
-    
+
     MissileComponent missileComponent;
     PositionComponent startPosition(playerPosition.value()->x + 105, playerPosition.value()->y + 49);
     VelocityComponent velocity(200.0f);

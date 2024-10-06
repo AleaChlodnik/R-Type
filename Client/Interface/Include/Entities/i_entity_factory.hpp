@@ -17,7 +17,10 @@ class IEntityFactory {
   public:
     virtual ~IEntityFactory() = default;
 
-    virtual Entity createBackground(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &TextureManager) = 0;
-    virtual Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &TextureManager) = 0;
-    virtual Entity createMissile(int playerId, EntityManager &entityManager, ComponentManager &componentManager, TextureManager &TextureManager) = 0;
+    virtual Entity createBackground(EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &TextureManager) = 0;
+    virtual Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &TextureManager) = 0;
+    virtual Entity createMissile(int playerId, EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &TextureManager) = 0;
 };

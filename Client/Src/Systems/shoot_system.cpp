@@ -7,7 +7,8 @@
 
 #include "Systems/shoot_system.hpp"
 
-void ShootSystem::fireMissle(EntityFactory entityFactory, EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager, float deltaTime)
+void ShootSystem::fireMissle(EntityFactory entityFactory, EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager, float deltaTime)
 {
     this->_lastShotTime += deltaTime;
     if (this->_lastShotTime >= this->_fireRate) {

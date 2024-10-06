@@ -28,7 +28,8 @@ void UpdateSystem::update(
     }
 }
 
-bool UpdateSystem::updateMissile(int entityId, EntityManager &entityManager, ComponentManager &componentManager, float deltaTime)
+bool UpdateSystem::updateMissile(int entityId, EntityManager &entityManager,
+    ComponentManager &componentManager, float deltaTime)
 {
     auto posOpt = componentManager.getComponent<PositionComponent>(entityId);
     auto velOpt = componentManager.getComponent<VelocityComponent>(entityId);
@@ -43,7 +44,8 @@ bool UpdateSystem::updateMissile(int entityId, EntityManager &entityManager, Com
     return false;
 }
 
-void UpdateSystem::updateBackground(int entityId, ComponentManager &componentManager, float deltaTime)
+void UpdateSystem::updateBackground(
+    int entityId, ComponentManager &componentManager, float deltaTime)
 {
     auto offsetOpt = componentManager.getComponent<OffsetComponent>(entityId);
     auto velOpt = componentManager.getComponent<VelocityComponent>(entityId);
@@ -56,6 +58,7 @@ void UpdateSystem::updateBackground(int entityId, ComponentManager &componentMan
         }
         spriteOpt.value()->sprite.setTextureRect(
             sf::IntRect(static_cast<int>(offsetOpt.value()->offset), 0,
-                static_cast<int>(this->_window.getSize().x), static_cast<int>(this->_window.getSize().y)));
+                static_cast<int>(this->_window.getSize().x),
+                static_cast<int>(this->_window.getSize().y)));
     }
 }
