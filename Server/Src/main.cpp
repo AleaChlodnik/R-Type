@@ -48,6 +48,9 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
             MessageAllClients(msg, client);
 
         } break;
+        case CustomMsgTypes::ClientConnect: {
+            std::cout << "[" << client->GetID() << "]: Client Connect\n";
+        } break;
         }
     }
 };

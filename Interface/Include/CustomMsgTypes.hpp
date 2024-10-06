@@ -16,4 +16,5 @@ enum class CustomMsgTypes : uint32_t
     ServerPing,
     MessageAll,
     ServerMessage,
+    ClientConnect
 };

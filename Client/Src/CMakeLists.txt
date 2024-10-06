@@ -6,7 +6,7 @@ add_subdirectory(Components)
 add_subdirectory(Entities)
 add_subdirectory(Systems)
 
-add_executable(r-type_client main.cpp r-type_client.cpp client.cpp)
+add_executable(r-type_client main.cpp r-type_client.cpp client.cpp simpleClient.cpp)
 
 target_compile_features(r-type_client PRIVATE cxx_std_17)
 

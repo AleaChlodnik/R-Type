@@ -67,10 +67,13 @@ void simpleClient()
                     case CustomMsgTypes::MessageAll: {
 
                     } break;
+                    case CustomMsgTypes::ClientConnect: {
+                    } break;
                     }
                 }
             } else {
                 std::cout << "Server Down" << std::endl;
+                window.close();
                 break;
             }
 

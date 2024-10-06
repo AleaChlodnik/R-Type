@@ -27,7 +27,7 @@ template <typename T> class ServerInterface {
      * @param port
      */
     ServerInterface(uint16_t port)
-        : m_asioAcceptor(m_asioContext, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port))
+        : m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
     {
     }
 
@@ -45,7 +45,7 @@ template <typename T> class ServerInterface {
     bool Start()
     {
         try {
-            WaitForClientConnection();
+            WaitForClientMessage();
 
             m_threadContext = std::thread([this]() { m_asioContext.run(); });
         } catch (std::exception &e) {
@@ -75,31 +75,25 @@ template <typename T> class ServerInterface {
      * @brief wait for client connection
      *
      */
-    void WaitForClientConnection()
+    void WaitForClientMessage()
     {
-        m_asioAcceptor.async_accept([this](std::error_code ec, asio::ip::tcp::socket socket) {
-            if (!ec) {
-                std::cout << "[SERVER] New Connection: " << socket.remote_endpoint() << "\n";
+        m_asioSocket.async_receive_from(asio::buffer(m_tempBuffer.data(), m_tempBuffer.size()),
+            m_clientEndpoint, [this](std::error_code ec, std::size_t bytes_recvd) {
+                if (!ec && bytes_recvd > 0) {
+                    std::cout << "[SERVER] Received message from "
+                              << m_clientEndpoint << "\n";
 
-                std::shared_ptr<Connection<T>> newconn = std::make_shared<Connection<T>>(
-                    Connection<T>::owner::server, m_asioContext, std::move(socket), m_qMessagesIn);
+                    // // Handle the received message here, e.g., push to a message queue
+                    // Message<T> msg;
+                    // // Deserialize message from buffer
+                    // OnMessage(m_clientEndpoint, msg);
 
-                if (OnClientConnect(newconn)) {
-                    m_deqConnections.push_back(std::move(newconn));
-
-                    m_deqConnections.back()->ConnectToClient(this, nIDCounter++);
-
-                    std::cout << "[" << m_deqConnections.back()->GetID()
-                              << "] Connection Approved\n";
+                    // Wait for the next client message
+                    WaitForClientMessage();
                 } else {
-                    std::cout << "[-----] Connection Denied\n";
+                    std::cout << "[SERVER] Receive Error: " << ec.message() << "\n";
                 }
-            } else {
-                std::cout << "[SERVER] New Connection Error: " << ec.message() << "\n";
-            }
-
-            WaitForClientConnection();
-        });
+            });
     }
 
     /**
@@ -208,7 +202,10 @@ template <typename T> class ServerInterface {
     asio::io_context m_asioContext;
     std::thread m_threadContext;
 
-    asio::ip::tcp::acceptor m_asioAcceptor;
+    asio::ip::udp::socket m_asioSocket;
+    asio::ip::udp::endpoint m_clientEndpoint;
+    // std::shared_ptr<olc::net::Connection<T>> m_clientEndpoint;
+    std::array<uint8_t, 1024> m_tempBuffer;
 
     uint32_t nIDCounter = 10000;
 };

@@ -7,9 +7,12 @@
 
 #pragma once
 
+#include "CustomMsgTypes.hpp"
 #include "netCommon.hpp"
 #include "netMessage.hpp"
 #include "netThreadSafeQueue.hpp"
+
+#define UNUSED __attribute__((unused))
 
 namespace olc {
 namespace net {
@@ -40,12 +43,12 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
     /**
      * @brief Construct a new Connection object
      *
-     * @param parent
-     * @param asioContext
-     * @param socket
+     * @param parent owner of the connection
+     * @param asioContext asio context of the connection
+     * @param socket socket of the connection
      * @param qIn
      */
-    Connection(owner parent, asio::io_context &asioContext, asio::ip::tcp::socket socket,
+    Connection(owner parent, asio::io_context &asioContext, asio::ip::udp::socket socket,
         ThreadSafeQueue<OwnedMessage<T>> &qIn)
         : m_asioContext(asioContext), m_socket(std::move(socket)), m_qMessagesIn(qIn)
     {
@@ -88,6 +91,8 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
                 id = uid;
                 WriteValidation();
                 ReadValidation(server);
+            } else {
+                std::cout << "Error: Connection is not open\n";
             }
         }
     }
@@ -97,11 +102,11 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      *
      * @param endpoints
      */
-    void ConnectToServer(const asio::ip::tcp::resolver::results_type &endpoints)
+    void ConnectToServer(const asio::ip::udp::resolver::results_type &endpoints)
     {
         if (m_nOwnerType == owner::client) {
             asio::async_connect(
-                m_socket, endpoints, [this](std::error_code ec, asio::ip::tcp::endpoint endpoint) {
+                m_socket, endpoints, [this](std::error_code ec, asio::ip::udp::endpoint endpoint) {
                     if (!ec) {
                         ReadValidation();
                     }
@@ -153,9 +158,8 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     void WriteHeader()
     {
-        asio::async_write(m_socket,
-            asio::buffer(&m_qMessagesOut.front().header, sizeof(MessageHeader<T>)),
-            [this](std::error_code ec, std::size_t length) {
+        m_socket.async_send(asio::buffer(&m_qMessagesOut.front().header, sizeof(MessageHeader<T>)),
+            [this](std::error_code ec, std::size_t UNUSED length) {
                 if (!ec) {
                     if (m_qMessagesOut.front().body.size() > 0) {
                         WriteBody();
@@ -179,9 +183,9 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     void WriteBody()
     {
-        asio::async_write(m_socket,
+        m_socket.async_send(
             asio::buffer(m_qMessagesOut.front().body.data(), m_qMessagesOut.front().body.size()),
-            [this](std::error_code ec, std::size_t length) {
+            [this](std::error_code ec, std::size_t UNUSED length) {
                 if (!ec) {
                     m_qMessagesOut.pop_front();
 
@@ -201,9 +205,8 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     void ReadHeader()
     {
-        asio::async_read(m_socket,
-            asio::buffer(&m_msgTemporaryIn.header, sizeof(MessageHeader<T>)),
-            [this](std::error_code ec, std::size_t length) {
+        m_socket.async_receive(asio::buffer(&m_msgTemporaryIn.header, sizeof(MessageHeader<T>)),
+            [this](std::error_code ec, std::size_t UNUSED length) {
                 if (!ec) {
                     if (m_msgTemporaryIn.header.size > 0) {
                         m_msgTemporaryIn.body.resize(m_msgTemporaryIn.header.size);
@@ -224,9 +227,9 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     void ReadBody()
     {
-        asio::async_read(m_socket,
+        m_socket.async_receive(
             asio::buffer(m_msgTemporaryIn.body.data(), m_msgTemporaryIn.body.size()),
-            [this](std::error_code ec, std::size_t length) {
+            [this](std::error_code ec, std::size_t UNUSED length) {
                 if (!ec) {
                     AddToIncomingMessageQueue();
                 } else {
@@ -269,8 +272,8 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     void WriteValidation()
     {
-        asio::async_write(m_socket, asio::buffer(&m_nHandshakeOut, sizeof(uint64_t)),
-            [this](std::error_code ec, std::size_t length) {
+        m_socket.async_send(asio::buffer(&m_nHandshakeOut, sizeof(uint64_t)),
+            [this](std::error_code ec, std::size_t UNUSED length) {
                 if (!ec) {
                     if (m_nOwnerType == owner::client) {
                         ReadHeader();
@@ -288,16 +291,15 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     void ReadValidation(olc::net::ServerInterface<T> *server = nullptr)
     {
-        asio::async_read(m_socket, asio::buffer(&m_nHandshakeIn, sizeof(uint64_t)),
-            [this, server](std::error_code ec, std::size_t length) {
+        m_socket.async_receive(asio::buffer(&m_nHandshakeIn, sizeof(uint64_t)),
+            [this, server](std::error_code ec, std::size_t UNUSED length) {
                 if (!ec) {
-                    if (m_nOwnerType == owner::server) {
+                    if (m_nOwnerType == owner::client) {
                         if (m_nHandshakeIn == m_nHandshakeCheck) {
-                            std::cout << "Client Validated\n";
-                            server->OnClientValidated(this->shared_from_this());
+                            std::cout << "Server Validated\n";
                             ReadHeader();
                         } else {
-                            std::cout << "Client Disconnected (Fail Validation)\n";
+                            std::cout << "Server Disconnected (Fail Validation)\n";
                             m_socket.close();
                         }
                     } else {
@@ -311,7 +313,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
     }
 
   protected:
-    asio::ip::tcp::socket m_socket;
+    asio::ip::udp::socket m_socket;
 
     asio::io_context &m_asioContext;
 
