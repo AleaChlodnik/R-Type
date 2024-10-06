@@ -9,7 +9,10 @@ project(
 if(LINUX)
   execute_process(COMMAND ./compile.sh)
 endif()
-# if(WIN32) ./compile.bat endif()
+if(WIN32)
+  execute_process(COMMAND vcpkg integrate install)
+  execute_process(COMMAND vcpkg install sfml)
+endif()
 
 # Set C++ Standard
 set(CMAKE_CXX_STANDARD 20)
@@ -24,9 +27,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #     "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 
 # # Add debug flags
-if(CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")
-endif()
+# if(CMAKE_COMPILER_IS_GNUCXX)
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")
+# endif()
 
 add_subdirectory(Interface)
 add_subdirectory(Client)

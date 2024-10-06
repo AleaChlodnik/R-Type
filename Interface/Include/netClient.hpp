@@ -19,6 +19,14 @@ template <typename T> class ClientInterface {
     virtual ~ClientInterface() { Disconnect(); }
 
   public:
+    /**
+     * @brief Connect to server
+     *
+     * @param host
+     * @param port
+     * @return true
+     * @return false
+     */
     bool Connect(const std::string &host, const uint16_t port)
     {
         try {
@@ -39,6 +47,10 @@ template <typename T> class ClientInterface {
         return true;
     }
 
+    /**
+     * @brief Disconnect from server
+     *
+     */
     void Disconnect()
     {
         if (IsConnected()) {
@@ -52,6 +64,12 @@ template <typename T> class ClientInterface {
         m_connection.release();
     }
 
+    /**
+     * @brief return status of connection
+     *
+     * @return true
+     * @return false
+     */
     bool IsConnected()
     {
         if (m_connection)
@@ -61,13 +79,23 @@ template <typename T> class ClientInterface {
     }
 
   public:
-    void Send(const message<T> &msg)
+    /**
+     * @brief Send message to server
+     *
+     * @param msg
+     */
+    void Send(const Message<T> &msg)
     {
         if (IsConnected())
             m_connection->Send(msg);
     }
 
-    ThreadSafeQueue<owned_message<T>> &Incoming() { return m_qMessagesIn; }
+    /**
+     * @brief get incoming messages
+     *
+     * @return ThreadSafeQueue<OwnedMessage<T>>&
+     */
+    ThreadSafeQueue<OwnedMessage<T>> &Incoming() { return m_qMessagesIn; }
 
   protected:
     asio::io_context m_context;
@@ -75,7 +103,7 @@ template <typename T> class ClientInterface {
     std::unique_ptr<Connection<T>> m_connection;
 
   private:
-    ThreadSafeQueue<owned_message<T>> m_qMessagesIn;
+    ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
 };
 } // namespace net
 } // namespace olc
