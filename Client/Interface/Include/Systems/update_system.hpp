@@ -19,7 +19,8 @@ class UpdateSystem : public ISystem {
     void update(EntityManager &entityManager, ComponentManager &componentManager, float deltaTime);
 
     void updateBackground(int entityId, ComponentManager &componentManager, float deltaTime);
-    bool updateMissile(int entityId, EntityManager &entityManager, ComponentManager &componentManager, float deltaTime);
+    bool updateMissile(int entityId, EntityManager &entityManager,
+        ComponentManager &componentManager, float deltaTime);
 
   private:
     sf::RenderWindow &_window;
