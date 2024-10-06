@@ -18,3 +18,4 @@
 #include "sprite_component.hpp"
 #include "velocity_component.hpp"
 #include "weapon_component.hpp"
+#include "missile_component.hpp"

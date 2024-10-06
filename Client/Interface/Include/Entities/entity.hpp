@@ -12,7 +12,7 @@
 class Entity : public IEntity {
   public:
     explicit Entity(int id) : _id(id) {}
-    int getId() const { return _id; }
+    int getId() const override { return _id; }
 
   private:
     int _id;

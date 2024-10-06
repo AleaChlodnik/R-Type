@@ -2,9 +2,9 @@
 ** EPITECH PROJECT, 2024
 ** R-Type
 ** File description:
-** background_component
+** missile_component
 */
 
 #pragma once
 
-struct BackgroundComponent {};
+struct MissileComponent {};
