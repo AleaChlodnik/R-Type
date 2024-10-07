@@ -1,5 +1,5 @@
 # Server-side project
-add_executable(r-type_server main.cpp net_server_abstract.cpp)
+add_executable(r-type_server main.cpp)
 # target_link_libraries(r-type_server PRIVATE sfml-graphics sfml-window
 # sfml-system)
 target_compile_features(r-type_server PRIVATE cxx_std_17)

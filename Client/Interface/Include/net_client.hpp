@@ -6,9 +6,9 @@
 */
 
 #pragma once
-#include "netCommon.hpp"
-#include "netConnection.hpp"
-#include "netThreadSafeQueue.hpp"
+#include "net_common.hpp"
+#include "net_connection.hpp"
+#include "net_thread_safe_queue.hpp"
 
 namespace r_type {
 namespace net {

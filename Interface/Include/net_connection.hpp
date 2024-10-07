@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "netCommon.hpp"
-#include "netMessage.hpp"
-#include "netThreadSafeQueue.hpp"
+#include "net_common.hpp"
+#include "net_message.hpp"
+#include "net_thread_safe_queue.hpp"
 #include "net_r_type_message.hpp"
 
 #define UNUSED __attribute__((unused))

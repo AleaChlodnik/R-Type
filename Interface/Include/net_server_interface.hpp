@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "netCommon.hpp"
-#include "netConnection.hpp"
-#include "netMessage.hpp"
-#include "netThreadSafeQueue.hpp"
+#include "net_common.hpp"
+#include "net_connection.hpp"
+#include "net_message.hpp"
+#include "net_thread_safe_queue.hpp"
 
 namespace r_type {
 namespace net {
@@ -26,15 +26,14 @@ template <typename T> class NetServerInterface {
      *
      * @param port
      */
-
     NetServerInterface(uint16_t port)
-        : m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)){};
+        : m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)) {};
 
     /**
      * @brief Destroy the Server Interface object
      *
      */
-    virtual ~NetServerInterface(){};
+    virtual ~NetServerInterface() {};
     /**
      * @brief Start the server
      *

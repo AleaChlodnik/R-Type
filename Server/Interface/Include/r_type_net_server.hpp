@@ -9,7 +9,8 @@
 
 class R_TypeNetServer : virtual public r_type::net::NetServerAbstract<NetR_TypeMessage> {
   public:
-    R_TypeNetServer(uint16_t nPort) : r_type::net::NetServerAbstract<NetR_TypeMessage>(nPort) {}
+    R_TypeNetServer(uint16_t nPort) : r_type::net::NetServerAbstract<NetR_TypeMessage>(nPort), r_type::net::NetServerInterface<NetR_TypeMessage>(nPort) {}
+    ~R_TypeNetServer() {}
 
   protected:
     virtual bool OnClientConnect(std::shared_ptr<r_type::net::Connection<NetR_TypeMessage>> client)

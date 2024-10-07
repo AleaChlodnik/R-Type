@@ -7,7 +7,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <netClient.hpp>
+#include <net_client.hpp>
 
 class CustomClient : public r_type::net::ClientInterface<NetR_TypeMessage> {
   public:
