@@ -31,3 +31,7 @@ auto-format:
 
 - use git-auto-commit-action:
   - documentation: [git-auto-commit-action](https://github.com/stefanzweifel/git-auto-commit-action)
+
+## Communication Protocol
+
+TODO

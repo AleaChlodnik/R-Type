@@ -95,12 +95,12 @@ template <typename T> class NetServerAbstract : virtual public r_type::net::NetS
                         m_deqConnections.push_back(std::move(newConn));
                         m_deqConnections.back()->ConnectToClient(this, nIDCounter++);
                         std::cout << "[" << m_deqConnections.back()->GetID()
-                                  << "] Connection Approved\n";
+                                  << "] Connection Approved" << std::endl;
                     } else {
-                        std::cout << "[-----] Connection Denied\n";
+                        std::cout << "[-----] Connection Denied" << std::endl;
                     }
                 } else {
-                    std::cout << "[SERVER] New Connection Error: " << ec.message() << "\n";
+                    std::cout << "[SERVER] New Connection Error: " << ec.message() << std::endl;
                 }
             });
     }

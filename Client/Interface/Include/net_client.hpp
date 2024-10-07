@@ -40,7 +40,7 @@ template <typename T> class ClientInterface {
 
             thrContext = std::thread([this]() { m_context.run(); });
         } catch (std::exception &e) {
-            std::cerr << "Client Exception: " << e.what() << "\n";
+            std::cerr << "Client Exception: " << e.what() << std::endl;
             return false;
         }
         return true;
