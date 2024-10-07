@@ -4,7 +4,7 @@
 ** File description:
 ** button
 */
-#include "r_type.hpp"
+#include "r_type_client.hpp"
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <iostream>
@@ -15,6 +15,7 @@ class Button {
   public:
     Button() = default;
     Button(std::string path);
+    Button(sf::Color color, std::pair<int, int> position, std::pair<float, float> size);
     Button(std::string path, std::pair<int, int> position);
     Button(std::string path, std::pair<int, int> position, std::pair<float, float> size);
     ~Button() = default;
@@ -37,9 +38,9 @@ class Button {
     std::function<void(Rtype)> onHover;
 
   private:
-    sf::Texture bgImage;
-    sf::Sprite sprite;
-    sf::Text text;
-    sf::Font font;
+    sf::Texture *bgImage = new sf::Texture();
+    sf::RectangleShape rect = sf::RectangleShape();
+    sf::Text text = sf::Text();
+    sf::Font font = sf::Font();
     std::size_t fontSize = 12;
 };

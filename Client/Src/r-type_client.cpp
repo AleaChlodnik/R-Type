@@ -46,6 +46,7 @@ void Rtype::gameLoop()
 {
     _window.create(
         sf::VideoMode::getDesktopMode(), "R-Type", sf::Style::Close | sf::Style::Resize);
+    _window.setFramerateLimit(60);
 
     if (getDaltonismMode() != DaltonismMode::NORMAL) { // must test if filters are good
         sf::RectangleShape filter(sf::Vector2f(_window.getSize().x, _window.getSize().y));
@@ -72,6 +73,8 @@ void Rtype::gameLoop()
 
     while (_window.isOpen()) {
         handleEvents();
+
+        MainMenu(_window);
 
         float deltaTime = clock.restart().asSeconds();
 
