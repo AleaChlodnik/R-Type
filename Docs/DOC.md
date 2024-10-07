@@ -34,4 +34,75 @@ auto-format:
 
 ## Communication Protocol
 
-TODO
+## Client-Server Protocol Overview
+
+### 1. Introduction
+
+This document outlines the protocol used for communication between the Client and the Server. It details the request and response messages, including the format, message types, and the flow of communication.
+
+## 2. Architecture Overview
+
+```cpp
+struct vf2d {
+    float x, y;
+};
+struct entityInfo_s {
+    uint32_t nUniqueID;
+    uint32_t nAvatarID;
+
+    // uint32_t nHealth;
+    // uint32_t nAmmo;
+    // uint32_t nKills;
+    // uint32_t nDeaths;
+
+    // uint32_t Ping;
+
+    // float fRadius;
+
+    vf2d vPosition;
+    vf2d vVel;
+}entityInfo_t;
+```
+
+Headers
+Body (optional)
+
+```plaintext
++---------------------------+                  +---------------------------+
+|         Client            |                  |          Server           |
++---------------------------+------------------+---------------------------+
+|                           |       Send       |                           |
+|  process message          | <--------------- | header: DeadEntityMessage |
+|                           |                  | body: entityInfo_t        |
+|                           |                  |                           |
+|                           |     Response     |                           |
+| header: DeadEntityMessage | ---------------> |                           |
+| body: entityInfo_t        |                  |                           |
++---------------------------+------------------+---------------------------+
+|                           |       Send       |                           |
+|  process message          | <--------------- | header: InfoEntityMessage |
+|                           |                  | body: entityInfo_t        |
+|                           |                  |                           |
+|                           | NO FOR OPTIMIZATION |                        |
+|                           |     Response     |                           |
+| header: InfoEntityMessage | ---------------> |                           |
+| body: entityInfo_t        |                  |                           |
++---------------------------+------------------+---------------------------+
+|                           |       Send       |                           |
+| header: FireBulletMessage | ---------------> |  process message          |
+| body: entityInfo_t        |                  |                           |
+|                           |                  |                           |
+|                           |     Response     |                           |
+|                           | <--------------- | header: FireBulletMessage |
+|                           |                  | body: entityInfo_t        |
++---------------------------+------------------+---------------------------+
+|                           |       Send       |                           |
+| header: MovePlayerMessage | ---------------> |  process message          |
+| body: entityInfo_t        |                  |                           |
+|                           |                  |                           |
+|                           | NO FOR OPTIMIZATION |                        |
+|                           |     Response     |                           |
+|                           | <--------------- | header: MovePlayerMessage |
+|                           |                  | body: entityInfo_t        |
++---------------------------+------------------+---------------------------+
+```
