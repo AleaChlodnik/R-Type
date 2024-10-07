@@ -193,7 +193,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
                         WriteHeader();
                     }
                 } else {
-                    std::cout << "[" << id << "] Write Body Fail."<< std::endl;
+                    std::cout << "[" << id << "] Write Body Fail." << std::endl;
                     m_socket.close();
                 }
             });
@@ -215,7 +215,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
                         AddToIncomingMessageQueue();
                     }
                 } else {
-                    std::cout << "[" << id << "] Read Header Fail."<< std::endl;
+                    std::cout << "[" << id << "] Read Header Fail." << std::endl;
                     m_socket.close();
                 }
             });
