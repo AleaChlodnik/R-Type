@@ -69,10 +69,10 @@ void Rtype::gameLoop()
 
     /////////////////////////////////////////////////////// test
     // Entity background =
-        // entityFactory.createBackground(entityManager, componentManager, textureManager);
+    // entityFactory.createBackground(entityManager, componentManager, textureManager);
 
-    // Entity player1 = entityFactory.createPlayer(entityManager, componentManager, textureManager);
-    // Entity player2 = entityFactory.createPlayer(
+    // Entity player1 = entityFactory.createPlayer(entityManager, componentManager,
+    // textureManager); Entity player2 = entityFactory.createPlayer(
     //     entityManager, componentManager, textureManager);
     // Entity player3 = entityFactory.createPlayer(
     //     entityManager, componentManager, textureManager);
