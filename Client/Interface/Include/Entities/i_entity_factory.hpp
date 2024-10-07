@@ -21,6 +21,6 @@ class IEntityFactory {
         ComponentManager &componentManager, TextureManager &TextureManager) = 0;
     virtual Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &TextureManager) = 0;
-    virtual Entity createMissle(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &TextureManager) = 0;
+    virtual Entity createMissile(int playerId, EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &TextureManager) = 0;
 };

@@ -14,7 +14,7 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
   protected:
     virtual bool OnClientConnect(std::shared_ptr<olc::net::Connection<CustomMsgTypes>> client)
     {
-        olc::net::message<CustomMsgTypes> msg;
+        olc::net::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::ServerAccept;
         client->Send(msg);
         return true;
@@ -28,7 +28,7 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
 
     // Called when a message arrives
     virtual void OnMessage(std::shared_ptr<olc::net::Connection<CustomMsgTypes>> client,
-        olc::net::message<CustomMsgTypes> &msg)
+        olc::net::Message<CustomMsgTypes> &msg)
     {
         switch (msg.header.id) {
         case CustomMsgTypes::ServerPing: {
@@ -42,7 +42,7 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
             std::cout << "[" << client->GetID() << "]: Message All\n";
 
             // Construct a new message and send it to all clients
-            olc::net::message<CustomMsgTypes> msg;
+            olc::net::Message<CustomMsgTypes> msg;
             msg.header.id = CustomMsgTypes::ServerMessage;
             msg << client->GetID();
             MessageAllClients(msg, client);

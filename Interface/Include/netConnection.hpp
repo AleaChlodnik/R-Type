@@ -13,9 +13,23 @@
 
 namespace olc {
 namespace net {
+/**
+ * @brief ServerInterface class
+ *
+ * @tparam T
+ */
 template <typename T> class ServerInterface;
+/**
+ * @brief Connection class
+ *
+ * @tparam T
+ */
 template <typename T> class Connection : public std::enable_shared_from_this<Connection<T>> {
   public:
+    /**
+     * @brief Connection owner
+     *
+     */
     enum class owner
     {
         server,
@@ -23,8 +37,16 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
     };
 
   public:
+    /**
+     * @brief Construct a new Connection object
+     *
+     * @param parent
+     * @param asioContext
+     * @param socket
+     * @param qIn
+     */
     Connection(owner parent, asio::io_context &asioContext, asio::ip::tcp::socket socket,
-        ThreadSafeQueue<owned_message<T>> &qIn)
+        ThreadSafeQueue<OwnedMessage<T>> &qIn)
         : m_asioContext(asioContext), m_socket(std::move(socket)), m_qMessagesIn(qIn)
     {
         m_nOwnerType = parent;
@@ -39,11 +61,26 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
         }
     }
 
+    /**
+     * @brief Destroy the Connection object
+     *
+     */
     virtual ~Connection() {}
 
+    /**
+     * @brief get the ID of the connection
+     *
+     * @return uint32_t
+     */
     uint32_t GetID() const { return id; }
 
   public:
+    /**
+     * @brief Connect to client
+     *
+     * @param server
+     * @param uid
+     */
     void ConnectToClient(olc::net::ServerInterface<T> *server, uint32_t uid = 0)
     {
         if (m_nOwnerType == owner::server) {
@@ -55,6 +92,11 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
         }
     }
 
+    /**
+     * @brief Connect to server
+     *
+     * @param endpoints
+     */
     void ConnectToServer(const asio::ip::tcp::resolver::results_type &endpoints)
     {
         if (m_nOwnerType == owner::client) {
@@ -67,18 +109,33 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
         }
     }
 
+    /**
+     * @brief Disconnect from server
+     *
+     */
     void Disconnect()
     {
         if (IsConnected())
             asio::post(m_asioContext, [this]() { m_socket.close(); });
     }
 
+    /**
+     * @brief return status of connection
+     *
+     * @return true
+     * @return false
+     */
     bool IsConnected() const { return m_socket.is_open(); }
 
     void StartListening() {}
 
   public:
-    void Send(const message<T> &msg)
+    /**
+     * @brief Send message to client
+     *
+     * @param msg
+     */
+    void Send(const Message<T> &msg)
     {
         asio::post(m_asioContext, [this, msg]() {
             bool bWritingMessage = !m_qMessagesOut.empty();
@@ -90,6 +147,10 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
     }
 
   private:
+    /**
+     * @brief write header message to client or server
+     *
+     */
     void WriteHeader()
     {
         asio::async_write(m_socket,
@@ -112,6 +173,10 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
             });
     }
 
+    /**
+     * @brief write body message to client or server
+     *
+     */
     void WriteBody()
     {
         asio::async_write(m_socket,
@@ -130,6 +195,10 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
             });
     }
 
+    /**
+     * @brief read header message from client or server
+     *
+     */
     void ReadHeader()
     {
         asio::async_read(m_socket,
@@ -149,6 +218,10 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
             });
     }
 
+    /**
+     * @brief read body message from client or server
+     *
+     */
     void ReadBody()
     {
         asio::async_read(m_socket,
@@ -163,6 +236,10 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
             });
     }
 
+    /**
+     * @brief add message to message queue
+     *
+     */
     void AddToIncomingMessageQueue()
     {
         if (m_nOwnerType == owner::server)
@@ -173,6 +250,12 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
         ReadHeader();
     }
 
+    /**
+     * @brief scramble the input
+     *
+     * @param nInput
+     * @return uint64_t
+     */
     uint64_t scramble(uint64_t nInput)
     {
         uint64_t out = nInput ^ 0xDEADBEEFC0DECAFE;
@@ -180,6 +263,10 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
         return out ^ 0xC0DEFACE12345678;
     }
 
+    /**
+     * @brief write validation to client
+     *
+     */
     void WriteValidation()
     {
         asio::async_write(m_socket, asio::buffer(&m_nHandshakeOut, sizeof(uint64_t)),
@@ -194,6 +281,11 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
             });
     }
 
+    /**
+     * @brief read validation from client
+     *
+     * @param server
+     */
     void ReadValidation(olc::net::ServerInterface<T> *server = nullptr)
     {
         asio::async_read(m_socket, asio::buffer(&m_nHandshakeIn, sizeof(uint64_t)),
@@ -223,11 +315,11 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
 
     asio::io_context &m_asioContext;
 
-    ThreadSafeQueue<message<T>> m_qMessagesOut;
+    ThreadSafeQueue<Message<T>> m_qMessagesOut;
 
-    ThreadSafeQueue<owned_message<T>> &m_qMessagesIn;
+    ThreadSafeQueue<OwnedMessage<T>> &m_qMessagesIn;
 
-    message<T> m_msgTemporaryIn;
+    Message<T> m_msgTemporaryIn;
 
     owner m_nOwnerType = owner::server;
 

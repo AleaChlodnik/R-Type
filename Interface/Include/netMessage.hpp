@@ -11,26 +11,45 @@
 
 namespace olc {
 namespace net {
-
+/**
+ * @brief Message Header
+ * to be sent over the network
+ * to send Body size and ID
+ *
+ * @tparam T
+ */
 template <typename T> struct MessageHeader {
     T id{};
     uint32_t size = 0;
 };
 
-template <typename T> struct message {
+/**
+ * @brief Message
+ *
+ * @tparam T
+ */
+template <typename T> struct Message {
     MessageHeader<T> header{};
     std::vector<uint8_t> body;
 
     size_t size() const { return body.size(); }
 
-    friend std::ostream &operator<<(std::ostream &os, const message<T> &msg)
+    friend std::ostream &operator<<(std::ostream &os, const Message<T> &msg)
     {
         os << "ID:" << int(msg.header.id) << " Size:" << msg.header.size;
         return os;
     }
 
+    /**
+     * @brief pile data in message
+     *
+     * @tparam DataType
+     * @param msg
+     * @param data
+     * @return Message<T>&
+     */
     template <typename DataType>
-    friend message<T> &operator<<(message<T> &msg, const DataType &data)
+    friend Message<T> &operator<<(Message<T> &msg, const DataType &data)
     {
         static_assert(std::is_standard_layout<DataType>::value,
             "Data is too complex to be pushed into vector");
@@ -46,7 +65,15 @@ template <typename T> struct message {
         return msg;
     }
 
-    template <typename DataType> friend message<T> &operator>>(message<T> &msg, DataType &data)
+    /**
+     * @brief unpile data from message
+     *
+     * @tparam DataType
+     * @param msg
+     * @param data
+     * @return Message<T>&
+     */
+    template <typename DataType> friend Message<T> &operator>>(Message<T> &msg, DataType &data)
     {
         static_assert(std::is_standard_layout<DataType>::value,
             "Data is too complex to be pulled from vector");
@@ -65,11 +92,16 @@ template <typename T> struct message {
 
 template <typename T> class Connection;
 
-template <typename T> struct owned_message {
+/**
+ * @brief
+ *
+ * @tparam T
+ */
+template <typename T> struct OwnedMessage {
     std::shared_ptr<Connection<T>> remote = nullptr;
-    message<T> msg;
+    Message<T> msg;
 
-    friend std::ostream &operator<<(std::ostream &os, const owned_message<T> &msg)
+    friend std::ostream &operator<<(std::ostream &os, const OwnedMessage<T> &msg)
     {
         os << msg.msg;
         return os;

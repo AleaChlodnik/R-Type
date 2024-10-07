@@ -11,6 +11,7 @@
 #include "health_component.hpp"
 #include "hitbox_component.hpp"
 #include "input_component.hpp"
+#include "missile_component.hpp"
 #include "offset_component.hpp"
 #include "player_component.hpp"
 #include "position_component.hpp"

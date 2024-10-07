@@ -43,7 +43,7 @@ jobs:
 
       - name: Cache apt install
         id: cache-apt
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-apt-install
         with:
@@ -57,7 +57,7 @@ jobs:
 
       - name: Cache cmake build
         id: cache-cmake
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-cmake-build
         with:
@@ -70,15 +70,25 @@ jobs:
 
   windows_install:
     runs-on: windows-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Checkout GH repository
         uses: actions/checkout@v4
         with:
           repository: ""
+      - name: Cache vcpkg Install
+        id: cache-vcpkg
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-vcpkg-install
+        with:
+          path: C:/vcpkg
+          key: ${{ runner.os }}-vcpkg-install-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-install-${{ env.cache-name }}-
       - name: Cache cmake build
-        id: cache-npm
-        uses: actions/cache@v3
+        id: cache-cmake
+        uses: actions/cache@v4
         env:
           cache-name: cache-cmake-build
         with:

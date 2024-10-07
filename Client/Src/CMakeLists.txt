@@ -9,10 +9,15 @@ add_subdirectory(MainMenu)
 
 add_executable(r-type_client main.cpp r-type_client.cpp client.cpp)
 
-target_link_libraries(r-type_client PRIVATE Components Entities Systems r-type_interfaces r-type_client_interfaces sfml-graphics sfml-window sfml-system)
-
 target_compile_features(r-type_client PRIVATE cxx_std_17)
-target_compile_options(r-type_client PRIVATE -Wall -Wextra)
+
+if (MSVC)
+  target_compile_options(r-type_client PRIVATE /W4)
+  target_link_libraries(r-type_client PRIVATE Components Entities Systems r-type_interfaces r-type_client_interfaces)
+else()
+  target_compile_options(r-type_client PRIVATE -Wall -Wextra)
+  target_link_libraries(r-type_client PRIVATE Components Entities Systems r-type_interfaces r-type_client_interfaces sfml-graphics sfml-window sfml-system)
+endif()
 
 # Windows-specific custom command to copy OpenAL DLL for SFML
 if(WIN32)
