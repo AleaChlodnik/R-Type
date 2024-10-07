@@ -46,6 +46,7 @@ void Rtype::gameLoop()
 {
     _window.create(
         sf::VideoMode::getDesktopMode(), "R-Type", sf::Style::Close | sf::Style::Resize);
+    _window.setFramerateLimit(60);
 
     if (getDaltonismMode() != DaltonismMode::NORMAL) { // must test if filters are good
         sf::RectangleShape filter(sf::Vector2f(_window.getSize().x, _window.getSize().y));
@@ -57,20 +58,20 @@ void Rtype::gameLoop()
             filter.setFillColor(sf::Color(255, 255, 100, 100));
     }
 
-    ComponentManager componentManager;
-    EntityManager entityManager;
-    TextureManager textureManager;
-    EntityFactory entityFactory;
-    UpdateSystem updateSystem(_window);
-    RenderSystem renderSystem(_window);
+    // ComponentManager componentManager;
+    // EntityManager entityManager;
+    // TextureManager textureManager;
+    // EntityFactory entityFactory;
+    // UpdateSystem updateSystem(_window);
+    // RenderSystem renderSystem(_window);
 
     sf::Clock clock;
 
     /////////////////////////////////////////////////////// test
-    Entity background =
-        entityFactory.createBackground(entityManager, componentManager, textureManager);
+    // Entity background =
+        // entityFactory.createBackground(entityManager, componentManager, textureManager);
 
-    Entity player1 = entityFactory.createPlayer(entityManager, componentManager, textureManager);
+    // Entity player1 = entityFactory.createPlayer(entityManager, componentManager, textureManager);
     // Entity player2 = entityFactory.createPlayer(
     //     entityManager, componentManager, textureManager);
     // Entity player3 = entityFactory.createPlayer(
@@ -85,10 +86,12 @@ void Rtype::gameLoop()
     while (_window.isOpen()) {
         handleEvents();
 
+        MainMenu(_window);
+
         float deltaTime = clock.restart().asSeconds();
 
-        updateSystem.update(entityManager, componentManager, deltaTime);
-        renderSystem.render(entityManager, componentManager);
+        // updateSystem.update(entityManager, componentManager, deltaTime);
+        // renderSystem.render(entityManager, componentManager);
 
         /////////////////////////////////////////////////////// test
         // auto player1Pos = componentManager.getComponent<PositionComponent>(player1.getId());
