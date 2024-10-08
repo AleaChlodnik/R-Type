@@ -5,17 +5,19 @@
 ** main
 */
 
-#include "net_server_abstract.hpp"
+#include "net_a_server.hpp"
 
-class R_TypeNetServer : virtual public r_type::net::NetServerAbstract<NetR_TypeMessage> {
+namespace r_type {
+namespace net {
+class Server : virtual public r_type::net::AServer<NetR_TypeMessage> {
   public:
-    R_TypeNetServer(uint16_t nPort)
-        : r_type::net::NetServerInterface<NetR_TypeMessage>(),
-          r_type::net::NetServerAbstract<NetR_TypeMessage>(nPort)
+    Server(uint16_t nPort)
+        : r_type::net::IServer<NetR_TypeMessage>(),
+          r_type::net::AServer<NetR_TypeMessage>(nPort)
     {
     }
 
-    ~R_TypeNetServer() {}
+    ~Server() {}
 
   protected:
     virtual bool OnClientConnect(std::shared_ptr<r_type::net::Connection<NetR_TypeMessage>> client)
@@ -61,3 +63,5 @@ class R_TypeNetServer : virtual public r_type::net::NetServerAbstract<NetR_TypeM
         }
     }
 };
+} // namespace net
+} // namespace r_type

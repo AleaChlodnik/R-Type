@@ -7,24 +7,24 @@
 
 #pragma once
 
-#include <net_server_interface.hpp>
+#include <net_i_server.hpp>
 
 namespace r_type {
 namespace net {
 /**
- * @brief NetServerAbstract class
+ * @brief AServer class
  *
  * @tparam T
  */
-template <typename T> class NetServerAbstract : virtual public r_type::net::NetServerInterface<T> {
+template <typename T> class AServer : virtual public r_type::net::IServer<T> {
   public:
     /**
      * @brief Construct a new Server Interface object
      *
      * @param port
      */
-    NetServerAbstract(uint16_t port)
-        : r_type::net::NetServerInterface<T>(),
+    AServer(uint16_t port)
+        : r_type::net::IServer<T>(),
           m_asioEndpoint(asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
           m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
     {
@@ -34,7 +34,7 @@ template <typename T> class NetServerAbstract : virtual public r_type::net::NetS
      * @brief Destroy the Server Interface object
      *
      */
-    ~NetServerAbstract() { Stop(); }
+    ~AServer() { Stop(); }
     /**
      * @brief Start the server
      *
@@ -48,11 +48,11 @@ template <typename T> class NetServerAbstract : virtual public r_type::net::NetS
 
             m_threadContext = std::thread([this]() { m_asioContext.run(); });
         } catch (std::exception &e) {
-            std::cerr << "[SERVER] Exception: " << e.what() << "\n";
+            std::cerr << "[SERVER] Exception: " << e.what() << std::endl;
             return false;
         }
 
-        std::cout << "[SERVER] Started!\n";
+        std::cout << "[SERVER] Started!" << std::endl;
         return true;
     }
 

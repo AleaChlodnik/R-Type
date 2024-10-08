@@ -5,12 +5,12 @@
 ** main
 */
 
-#include <r_type_net_server.hpp>
+#include <net_server.hpp>
 #include <iostream>
 
 int main()
 {
-    R_TypeNetServer server(60000);
+    r_type::net::Server server(60000);
     server.Start();
 
     while (1) {

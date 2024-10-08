@@ -21,7 +21,7 @@ namespace net {
  *
  * @tparam T
  */
-template <typename T> class NetServerInterface;
+template <typename T> class IServer;
 /**
  * @brief Connection class
  *
@@ -84,7 +84,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      * @param server
      * @param uid
      */
-    void ConnectToClient(r_type::net::NetServerInterface<T> *server, uint32_t uid = 0)
+    void ConnectToClient(r_type::net::IServer<T> *server, uint32_t uid = 0)
     {
         if (m_nOwnerType == owner::server) {
             if (m_socket.is_open()) {
@@ -291,7 +291,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      *
      * @param server
      */
-    void ReadValidation(r_type::net::NetServerInterface<T> *server = nullptr)
+    void ReadValidation(r_type::net::IServer<T> *server = nullptr)
     {
         m_socket.async_receive_from(asio::buffer(&m_nHandshakeIn, sizeof(uint64_t)), m_endpoint,
             [this, server](std::error_code ec, std::size_t UNUSED length) {

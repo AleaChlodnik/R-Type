@@ -9,30 +9,9 @@
 #include <iostream>
 #include <net_client.hpp>
 
-class CustomClient : public r_type::net::ClientInterface<NetR_TypeMessage> {
-  public:
-    void PingServer()
-    {
-        r_type::net::Message<NetR_TypeMessage> msg;
-        msg.header.id = NetR_TypeMessage::ServerPing;
-
-        std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
-
-        msg << timeNow;
-        Send(msg);
-    }
-
-    void MessageAll()
-    {
-        r_type::net::Message<NetR_TypeMessage> msg;
-        msg.header.id = NetR_TypeMessage::MessageAll;
-        Send(msg);
-    }
-};
-
 void simpleClient()
 {
-    CustomClient c;
+    r_type::net::Client c;
     c.Connect("127.0.0.1", 60000);
     sf::RenderWindow window(sf::VideoMode(800, 600), "Preferences");
     sf::Event event;

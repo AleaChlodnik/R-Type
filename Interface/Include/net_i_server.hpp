@@ -15,24 +15,24 @@
 namespace r_type {
 namespace net {
 /**
- * @brief NetServerInterface class
+ * @brief IServer class
  *
  * @tparam T
  */
-template <typename T> class NetServerInterface {
+template <typename T> class IServer {
   public:
     /**
      * @brief Construct a new Server Interface object
      *
      * @param port
      */
-    NetServerInterface() {};
+    IServer() {};
 
     /**
      * @brief Destroy the Server Interface object
      *
      */
-    virtual ~NetServerInterface() {};
+    virtual ~IServer() {};
     /**
      * @brief Start the server
      *
