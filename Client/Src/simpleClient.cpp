@@ -49,8 +49,6 @@ class CustomClient : public olc::net::ClientInterface<CustomMsgTypes> {
 
     void UpdatePlayerInformation(sPlayerInformation desc)
     {
-        std::cout << "Update Player [" << desc.nUniqueID << "] at ("
-                  << desc.vPos.x << "," << desc.vPos.y << ")" << std::endl;
         if (Players.find(desc.nUniqueID) == Players.end())
             AddPlayer(desc);
         Players[desc.nUniqueID] = desc;
@@ -61,7 +59,6 @@ class CustomClient : public olc::net::ClientInterface<CustomMsgTypes> {
         std::cout << "Add Player [" << desc.nUniqueID << "] at ("
                   << desc.vPos.x << "," << desc.vPos.y << ")" << std::endl;
         Players.insert_or_assign(desc.nUniqueID, desc);
-        nPlayerID = desc.nUniqueID;
     }
 
     void GameServerInformaton(olc::net::message<CustomMsgTypes> &msg)
@@ -70,8 +67,6 @@ class CustomClient : public olc::net::ClientInterface<CustomMsgTypes> {
         case CustomMsgTypes::Game_UpdateEntity: {
             sPlayerInformation desc;
             msg >> desc;
-            std::cout << "Player [" << desc.nUniqueID << "] updated at ("
-                      << desc.vPos.x << "," << desc.vPos.y << ")" << std::endl;
         } break;
         }
         return;
@@ -116,156 +111,127 @@ void simpleClient()
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
-            if (c.IsConnected()) {
-                if (!c.Incoming().empty()) {
-                    auto msg = c.Incoming().pop_front().msg;
-                    switch (msg.header.id) {
-                    case CustomMsgTypes::ServerAccept: {
-                        sPlayerInformation desc;
-                        msg >> desc;
-                        c.AddPlayer(desc);
-                        std::cout
-                            << "Server Accepted Connection"
-                            << "\nPlayer Position ["
-                            << c.GetAPlayer(c.GetPlayerID()).vPos.x << ", "
-                            << c.GetAPlayer(c.GetPlayerID()).vPos.y << "]"
-                            << std::endl;
-                    } break;
-
-                    case CustomMsgTypes::ServerPing: {
-                        std::chrono::system_clock::time_point timeNow =
-                            std::chrono::system_clock::now();
-                        std::chrono::system_clock::time_point timeThen;
-                        msg >> timeThen;
-                        std::cout << "Ping: "
-                                  << std::chrono::duration<double>(
-                                         timeNow - timeThen)
-                                         .count()
-                                  << std::endl;
-                    } break;
-
-                    case CustomMsgTypes::ServerMessage: {
-                        uint32_t clientID;
-                        msg >> clientID;
-                        std::cout << "Hello from [" << clientID << "]"
-                                  << std::endl;
-                    } break;
-                    case CustomMsgTypes::ServerDeny: {
-
-                    } break;
-                    case CustomMsgTypes::Game_UpdateEntity: {
-                        sPlayerInformation desc;
-                        msg >> desc;
-                        c.UpdatePlayerInformation(desc);
-                        std::cout << "Player [" << desc.nUniqueID
-                                  << "] updated at ("
-                                  << c.GetAPlayer(desc.nUniqueID).vPos.x << ","
-                                  << c.GetAPlayer(desc.nUniqueID).vPos.y << ")"
-                                  << std::endl;
-                    } break;
-                    case CustomMsgTypes::Game_AddEntity: {
-                        sPlayerInformation desc;
-                        msg >> desc;
-                        c.AddPlayer(desc);
-                        std::cout << "Player [" << desc.nUniqueID
-                                  << "] add at ("
-                                  << c.GetAPlayer(desc.nUniqueID).vPos.x << ","
-                                  << c.GetAPlayer(desc.nUniqueID).vPos.y << ")"
-                                  << std::endl;
-                        olc::net::message<CustomMsgTypes> reponse;
-                        reponse.header.id =
-                            CustomMsgTypes::Client_EntityReceveid;
-                        c.Send(msg);
-                    }
-                    }
+            if (event.type == sf::Event::Closed)
+                window.close();
+            if (event.type == sf::Event::KeyPressed) {
+                switch (event.key.code) {
+                case sf::Keyboard::Up: {
+                    sPlayerInformation desc = c.GetAPlayer(c.GetPlayerID());
+                    desc.vPos.y -= 10;
+                    olc::net::message<CustomMsgTypes> msg;
+                    msg.header.id = CustomMsgTypes::Game_UpdatePositionEntity;
+                    msg << desc;
+                    c.Send(msg);
+                } break;
+                case sf::Keyboard::Down: {
+                    sPlayerInformation desc = c.GetAPlayer(c.GetPlayerID());
+                    desc.vPos.y += 10;
+                    olc::net::message<CustomMsgTypes> msg;
+                    msg.header.id = CustomMsgTypes::Game_UpdatePositionEntity;
+                    msg << desc;
+                    c.Send(msg);
+                } break;
+                case sf::Keyboard::Left: {
+                    sPlayerInformation desc = c.GetAPlayer(c.GetPlayerID());
+                    desc.vPos.x -= 10;
+                    olc::net::message<CustomMsgTypes> msg;
+                    msg.header.id = CustomMsgTypes::Game_UpdatePositionEntity;
+                    msg << desc;
+                    c.Send(msg);
+                } break;
+                case sf::Keyboard::Right: {
+                    sPlayerInformation desc = c.GetAPlayer(c.GetPlayerID());
+                    desc.vPos.x += 10;
+                    olc::net::message<CustomMsgTypes> msg;
+                    msg.header.id = CustomMsgTypes::Game_UpdatePositionEntity;
+                    msg << desc;
+                    c.Send(msg);
+                } break;
+                default:
+                    break;
                 }
-                if (event.type == sf::Event::KeyPressed) {
-                    std::cout << "Key Pressed" << std::endl;
-                    switch (event.key.code) {
-                    case sf::Keyboard::Space: {
-                        std::cout << "space" << std::endl;
-                        c.PingServer();
-                    } break;
-                    case sf::Keyboard::Q: {
-                        std::cout << "Q" << std::endl;
-                        window.close();
-                    } break;
-                    case sf::Keyboard::V: {
-                        std::cout << "V" << std::endl;
-                        c.MessageAll();
-                    } break;
-                    case sf::Keyboard::Up: {
-                        sPlayerInformation desc =
-                            c.GetAPlayer(c.GetPlayerID());
-                        desc.vPos.y -= 10;
-                        olc::net::message<CustomMsgTypes> msg;
-                        msg.header.id =
-                            CustomMsgTypes::Game_UpdatePositionEntity;
-                        msg << desc;
-                        std::cout << "Update Player [" << desc.nUniqueID
-                                  << "] at (" << desc.vPos.x << ","
-                                  << desc.vPos.y << ")" << std::endl;
-                        c.Send(msg);
-                    } break;
-                    case sf::Keyboard::Down: {
-                        sPlayerInformation desc =
-                            c.GetAPlayer(c.GetPlayerID());
-                        desc.vPos.y += 10;
-                        olc::net::message<CustomMsgTypes> msg;
-                        msg.header.id =
-                            CustomMsgTypes::Game_UpdatePositionEntity;
-                        msg << desc;
-                        std::cout << "Update Player [" << desc.nUniqueID
-                                  << "] at (" << desc.vPos.x << ","
-                                  << desc.vPos.y << ")" << std::endl;
-                        c.Send(msg);
-                    } break;
-                    case sf::Keyboard::Left: {
-                        sPlayerInformation desc =
-                            c.GetAPlayer(c.GetPlayerID());
-                        desc.vPos.x -= 10;
-                        olc::net::message<CustomMsgTypes> msg;
-                        msg.header.id =
-                            CustomMsgTypes::Game_UpdatePositionEntity;
-                        msg << desc;
-                        std::cout << "Update Player [" << desc.nUniqueID
-                                  << "] at (" << desc.vPos.x << ","
-                                  << desc.vPos.y << ")" << std::endl;
-                        c.Send(msg);
-                    } break;
-                    case sf::Keyboard::Right: {
-                        sPlayerInformation desc =
-                            c.GetAPlayer(c.GetPlayerID());
-                        desc.vPos.x += 10;
-                        olc::net::message<CustomMsgTypes> msg;
-                        msg.header.id =
-                            CustomMsgTypes::Game_UpdatePositionEntity;
-                        msg << desc;
-                        std::cout << "Update Player [" << desc.nUniqueID
-                                  << "] at (" << desc.vPos.x << ","
-                                  << desc.vPos.y << ")" << std::endl;
-                        c.Send(msg);
-                    } break;
-                    default:
-                        break;
-                    }
-                }
-                if (event.type == sf::Event::Closed)
-                    window.close();
-                olc::net::message<CustomMsgTypes> msg;
-                msg.header.id = CustomMsgTypes::Game_UpdateEntity;
-                c.Send(msg);
-                window.clear();
-                for (auto &player : c.getPlayers()) {
-                    carre.setPosition(
-                        player.second.vPos.x, player.second.vPos.y);
-                    carre.setFillColor(sf::Color::White);
-                    window.draw(carre);
-                    window.display();
-                }
-            } else {
-                std::cout << "Not Connected" << std::endl;
             }
+        }
+        if (c.IsConnected()) {
+            if (!c.Incoming().empty()) {
+                auto msg = c.Incoming().pop_front().msg;
+                switch (msg.header.id) {
+                case CustomMsgTypes::ServerAccept: {
+                    sPlayerInformation desc;
+                    msg >> desc;
+                    c.AddPlayer(desc);
+                    c.SetPlayerID(desc.nUniqueID);
+                    std::cout << "Server Accepted Connection"
+                              << "\nPlayer Position ["
+                              << c.GetAPlayer(c.GetPlayerID()).vPos.x << ", "
+                              << c.GetAPlayer(c.GetPlayerID()).vPos.y << "]"
+                              << std::endl;
+                } break;
+
+                case CustomMsgTypes::ServerPing: {
+                    std::chrono::system_clock::time_point timeNow =
+                        std::chrono::system_clock::now();
+                    std::chrono::system_clock::time_point timeThen;
+                    msg >> timeThen;
+                    std::cout
+                        << "Ping: "
+                        << std::chrono::duration<double>(timeNow - timeThen)
+                               .count()
+                        << std::endl;
+                } break;
+
+                case CustomMsgTypes::ServerMessage: {
+                    uint32_t clientID;
+                    msg >> clientID;
+                    std::cout << "Hello from [" << clientID << "]"
+                              << std::endl;
+                } break;
+
+                case CustomMsgTypes::ServerDeny: {
+
+                } break;
+
+                case CustomMsgTypes::Game_UpdateEntity: {
+                    sPlayerInformation desc;
+                    msg >> desc;
+                    c.UpdatePlayerInformation(desc);
+
+                    olc::net::message<CustomMsgTypes> reponse;
+                    reponse.header.id = CustomMsgTypes::Client_EntityReceveid;
+                    c.Send(reponse);
+
+                } break;
+
+                case CustomMsgTypes::Game_AddEntity: {
+                    sPlayerInformation desc;
+                    msg >> desc;
+                    c.AddPlayer(desc);
+                    std::cout << "Player [" << desc.nUniqueID << "] add at ("
+                              << c.GetAPlayer(desc.nUniqueID).vPos.x << ","
+                              << c.GetAPlayer(desc.nUniqueID).vPos.y << ")"
+                              << std::endl;
+                    olc::net::message<CustomMsgTypes> reponse;
+                    reponse.header.id = CustomMsgTypes::Client_EntityReceveid;
+                    c.Send(msg);
+                }
+                }
+            }
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            olc::net::message<CustomMsgTypes> msg;
+            msg.header.id = CustomMsgTypes::Game_UpdateEntity;
+            c.Send(msg);
+
+            window.clear();
+            for (auto &player : c.getPlayers()) {
+                carre.setPosition(player.second.vPos.x, player.second.vPos.y);
+                carre.setFillColor(sf::Color::White);
+                window.draw(carre);
+            }
+            window.display();
+        } else {
+            std::cout << "Not Connected" << std::endl;
         }
     }
 }

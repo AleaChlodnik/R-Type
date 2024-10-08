@@ -187,6 +187,8 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
         case CustomMsgTypes::Game_UpdatePositionEntity: {
             sPlayerInformation desc;
             msg >> desc;
+            std::cout << "Update Player [" << desc.nUniqueID << "] at ("
+                      << desc.vPos.x << "," << desc.vPos.y << ")" << std::endl;
             PlayerPositionUpdate(desc);
             break;
         }
