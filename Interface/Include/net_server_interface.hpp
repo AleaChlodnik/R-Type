@@ -26,14 +26,13 @@ template <typename T> class NetServerInterface {
      *
      * @param port
      */
-    NetServerInterface(uint16_t port)
-        : m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)){};
+    NetServerInterface() {};
 
     /**
      * @brief Destroy the Server Interface object
      *
      */
-    virtual ~NetServerInterface(){};
+    virtual ~NetServerInterface() {};
     /**
      * @brief Start the server
      *
@@ -106,20 +105,6 @@ template <typename T> class NetServerInterface {
      */
     virtual void OnMessage(std::shared_ptr<Connection<T>> client, Message<T> &msg) = 0;
 
-  public:
-    ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
-
-    std::deque<std::shared_ptr<Connection<T>>> m_deqConnections;
-
-    asio::io_context m_asioContext;
-    std::thread m_threadContext;
-
-    asio::ip::udp::socket m_asioSocket;
-    asio::ip::udp::endpoint m_clientEndpoint;
-    // std::shared_ptr<r_type::net::Connection<T>> m_clientEndpoint;
-    std::array<uint8_t, 1024> m_tempBuffer;
-
-    uint32_t nIDCounter = 10000;
 };
 } // namespace net
 } // namespace r_type

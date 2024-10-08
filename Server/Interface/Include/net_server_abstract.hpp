@@ -23,7 +23,12 @@ template <typename T> class NetServerAbstract : virtual public r_type::net::NetS
      *
      * @param port
      */
-    NetServerAbstract(uint16_t port) : r_type::net::NetServerInterface<T>(port) {}
+    NetServerAbstract(uint16_t port)
+        : r_type::net::NetServerInterface<T>(),
+          m_asioEndpoint(asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
+          m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
+    {
+    }
 
     /**
      * @brief Destroy the Server Interface object
@@ -72,16 +77,16 @@ template <typename T> class NetServerAbstract : virtual public r_type::net::NetS
     void WaitForClientMessage()
     {
         m_asioSocket.async_receive_from(asio::buffer(m_tempBuffer.data(), m_tempBuffer.size()),
-            m_clientEndpoint, [this](std::error_code ec, std::size_t bytes_recvd) {
-                if (m_clientEndpoint.protocol() != asio::ip::udp::v4())
+            m_asioEndpoint, [this](std::error_code ec, std::size_t bytes_recvd) {
+                if (m_asioEndpoint.protocol() != asio::ip::udp::v4())
                     return WaitForClientMessage();
                 if (!ec) {
                     std::cout << "[SERVER] New Connection: "
-                              << m_clientEndpoint.address().to_string() << ":"
-                              << m_clientEndpoint.port() << std::endl;
+                              << m_asioEndpoint.address().to_string() << ":"
+                              << m_asioEndpoint.port() << std::endl;
                     // create client socket
                     asio::ip::udp::socket newClientSocket(m_asioContext);
-                    newClientSocket.open(m_clientEndpoint.protocol());
+                    newClientSocket.open(m_asioEndpoint.protocol());
                     newClientSocket.bind(asio::ip::udp::endpoint(asio::ip::udp::v4(), 0));
 
                     std::cout << newClientSocket.local_endpoint().address().to_string() << ":"
@@ -203,15 +208,20 @@ template <typename T> class NetServerAbstract : virtual public r_type::net::NetS
      */
     virtual void OnMessage(std::shared_ptr<Connection<T>> client, Message<T> &msg) {}
 
-  protected:
-    using r_type::net::NetServerInterface<T>::m_qMessagesIn;
-    using r_type::net::NetServerInterface<T>::m_deqConnections;
-    using r_type::net::NetServerInterface<T>::m_asioContext;
-    using r_type::net::NetServerInterface<T>::m_threadContext;
-    using r_type::net::NetServerInterface<T>::m_asioSocket;
-    using r_type::net::NetServerInterface<T>::m_clientEndpoint;
-    using r_type::net::NetServerInterface<T>::m_tempBuffer;
-    using r_type::net::NetServerInterface<T>::nIDCounter;
+ public:
+    ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
+
+    std::deque<std::shared_ptr<Connection<T>>> m_deqConnections;
+
+    asio::io_context m_asioContext;
+    std::thread m_threadContext;
+
+    asio::ip::udp::socket m_asioSocket;
+    asio::ip::udp::endpoint m_asioEndpoint;
+
+    std::array<uint8_t, 1024> m_tempBuffer;
+
+    uint32_t nIDCounter = 10000;
 };
 } // namespace net
 } // namespace r_type
