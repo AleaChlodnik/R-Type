@@ -63,6 +63,7 @@ template <typename T> class ServerInterface {
                         std::move(socket), m_qMessagesIn);
 
                 if (OnClientConnect(newconn)) {
+                    std::cout << "[-----] Connection Approved\n";
                     m_deqConnections.push_back(std::move(newconn));
 
                     m_deqConnections.back()->ConnectToClient(
@@ -150,6 +151,8 @@ template <typename T> class ServerInterface {
         std::shared_ptr<Connection<T>> client, message<T> &msg)
     {
     }
+
+    virtual void OnUpdate(size_t nMaxMessages) {}
 
   protected:
     ThreadSafeQueue<owned_message<T>> m_qMessagesIn;

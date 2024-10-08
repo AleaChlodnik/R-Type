@@ -52,23 +52,36 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
                 static_cast<float>(rand() % 600)};
         }
         msg << desc;
+        std::cout << desc.nUniqueID << "or struct" << std::endl;
+        std::cout << msg.body.front() << "on struct" << std::endl;
         pushPlayer(desc);
     }
+
+    virtual void InitListEntities(
+        std::shared_ptr<olc::net::Connection<CustomMsgTypes>> client,
+        sPlayerInformation desc)
+    {
+        olc::net::message<CustomMsgTypes> msgAddPlayer;
+        msgAddPlayer.header.id = CustomMsgTypes::Game_AddEntity;
+        for (auto &player : m_vPlayerRoster) {
+            if (desc.nUniqueID != player.nUniqueID) {
+                msgAddPlayer << player;
+                client->Send(msgAddPlayer);
+            }
+        }
+    }
+
     virtual bool OnClientConnect(
         std::shared_ptr<olc::net::Connection<CustomMsgTypes>> client)
     {
         olc::net::message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::ServerAccept;
         InitiatePlayers(msg);
+        std::cout << "Client [" << client->GetID() << "] Connected\n";
         client->Send(msg);
-        for (auto &player : m_vPlayerRoster) {
-            olc::net::message<CustomMsgTypes> msgAddPlayer;
-            if (msg.body.front().nUniqueID != player.nUniqueID) {
-                msgAddPlayer.header.id = CustomMsgTypes::Game_GetListEntities;
-                msgAddPlayer << player;
-                MessageClient(client, msgAddPlayer);
-            }
-        }
+        sPlayerInformation desc;
+        msg >> desc;
+        InitListEntities(client, desc);
         return true;
     }
 
@@ -85,6 +98,26 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
                         std::to_string(pd.nUniqueID) + "\n";
                 m_mapPlayerRoster.erase(client->GetID());
                 m_vGarbageIDs.push_back(client->GetID());
+            }
+        }
+    }
+
+    virtual void PlayersUpdate(
+        std::shared_ptr<olc::net::Connection<CustomMsgTypes>> client)
+    {
+        olc::net::message<CustomMsgTypes> msg;
+        for (auto &player : m_vPlayerRoster) {
+            msg.header.id = CustomMsgTypes::Game_UpdateEntity;
+            msg << player;
+            client->Send(msg);
+        }
+    }
+
+    virtual void PlayerPositionUpdate(sPlayerInformation desc)
+    {
+        for (auto &player : m_vPlayerRoster) {
+            if (player.nUniqueID == desc.nUniqueID) {
+                player.vPos = desc.vPos;
             }
         }
     }
@@ -147,13 +180,18 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
 
             break;
         }
-
-        case CustomMsgTypes::Client_UnregisterWithServer: {
+        case CustomMsgTypes::Game_UpdateEntity: {
+            PlayersUpdate(client);
+            break;
+        }
+        case CustomMsgTypes::Game_UpdatePositionEntity: {
+            sPlayerInformation desc;
+            msg >> desc;
+            PlayerPositionUpdate(desc);
             break;
         }
 
-        case CustomMsgTypes::Game_UpdateEntity: {
-            MessageAllClients(msg, client);
+        case CustomMsgTypes::Client_UnregisterWithServer: {
             break;
         }
         }

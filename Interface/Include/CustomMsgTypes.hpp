@@ -30,5 +30,5 @@ enum class CustomMsgTypes : uint32_t
     Game_AddEntity,
     Game_RemoveEntity,
     Game_UpdateEntity,
-    Game_GetListEntities,
+    Game_UpdatePositionEntity,
 };

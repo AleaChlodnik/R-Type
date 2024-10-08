@@ -130,7 +130,6 @@ class Connection : public std::enable_shared_from_this<Connection<T>> {
                         WriteHeader();
                     }
                 } else {
-                    std::cout << "[" << id << "] Write Body Fail.\n";
                     m_socket.close();
                 }
             });

@@ -42,6 +42,8 @@ struct sPlayerInformation {
     uint32_t nKills = 0;
     uint32_t nDeaths = 0;
 
+    uint32_t Ping = 0;
+
     float fRadius = 20;
 
     olc::vf2d vPos;
