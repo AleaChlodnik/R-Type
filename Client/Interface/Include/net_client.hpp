@@ -5,9 +5,9 @@
 ** simpleClient
 */
 
+#include "net_a_client.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "net_a_client.hpp"
 
 namespace r_type {
 namespace net {

@@ -26,13 +26,13 @@ template <typename T> class IServer {
      *
      * @param port
      */
-    IServer() {};
+    IServer(){};
 
     /**
      * @brief Destroy the Server Interface object
      *
      */
-    virtual ~IServer() {};
+    virtual ~IServer(){};
     /**
      * @brief Start the server
      *

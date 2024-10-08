@@ -16,7 +16,7 @@ template <typename T> class IClient {
   public:
     IClient() {}
 
-    virtual ~IClient() { }
+    virtual ~IClient() {}
 
   public:
     /**

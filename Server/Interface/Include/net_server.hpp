@@ -12,8 +12,7 @@ namespace net {
 class Server : virtual public r_type::net::AServer<NetR_TypeMessage> {
   public:
     Server(uint16_t nPort)
-        : r_type::net::IServer<NetR_TypeMessage>(),
-          r_type::net::AServer<NetR_TypeMessage>(nPort)
+        : r_type::net::IServer<NetR_TypeMessage>(), r_type::net::AServer<NetR_TypeMessage>(nPort)
     {
     }
 
