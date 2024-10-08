@@ -5,8 +5,8 @@
 ** main
 */
 
-#include <r_type_net_server.hpp>
 #include <iostream>
+#include <r_type_net_server.hpp>
 
 int main()
 {

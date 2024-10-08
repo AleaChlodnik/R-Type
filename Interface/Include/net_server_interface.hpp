@@ -26,13 +26,13 @@ template <typename T> class NetServerInterface {
      *
      * @param port
      */
-    NetServerInterface() {};
+    NetServerInterface(){};
 
     /**
      * @brief Destroy the Server Interface object
      *
      */
-    virtual ~NetServerInterface() {};
+    virtual ~NetServerInterface(){};
     /**
      * @brief Start the server
      *
@@ -104,7 +104,6 @@ template <typename T> class NetServerInterface {
      * @param msg
      */
     virtual void OnMessage(std::shared_ptr<Connection<T>> client, Message<T> &msg) = 0;
-
 };
 } // namespace net
 } // namespace r_type

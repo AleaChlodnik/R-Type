@@ -208,7 +208,7 @@ template <typename T> class NetServerAbstract : virtual public r_type::net::NetS
      */
     virtual void OnMessage(std::shared_ptr<Connection<T>> client, Message<T> &msg) {}
 
- public:
+  public:
     ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
 
     std::deque<std::shared_ptr<Connection<T>>> m_deqConnections;
