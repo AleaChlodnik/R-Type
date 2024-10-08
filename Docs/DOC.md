@@ -50,59 +50,95 @@ struct entityInfo_s {
     uint32_t nUniqueID;
     uint32_t nAvatarID;
 
-    // uint32_t nHealth;
-    // uint32_t nAmmo;
-    // uint32_t nKills;
-    // uint32_t nDeaths;
-
-    // uint32_t Ping;
-
-    // float fRadius;
-
     vf2d vPosition;
     vf2d vVel;
 }entityInfo_t;
 ```
 
-Headers
-Body (optional)
+| Message Part | Description        |
+|--------------|--------------------|
+| **Headers**  | Required headers   |
+| **Body**     | Optional body text |
 
-```plaintext
-+---------------------------+                  +---------------------------+
-|         Client            |                  |          Server           |
-+---------------------------+------------------+---------------------------+
+### Dead Entity Message Exchange
+
+This table represents a communication where the client sends and receives a message about a dead entity:
+
+|         Client            | Transmission     |          Server           |
+|---------------------------|------------------|---------------------------|
 |                           |       Send       |                           |
-|  process message          | <--------------- | header: DeadEntityMessage |
-|                           |                  | body: entityInfo_t        |
-|                           |                  |                           |
+|  process message          | <--------------- | header: `DeadEntityMessage` |
+|                           |                  | body: `entityInfo_t`        |
 |                           |     Response     |                           |
-| header: DeadEntityMessage | ---------------> |                           |
-| body: entityInfo_t        |                  |                           |
-+---------------------------+------------------+---------------------------+
+| header: `DeadEntityMessage` | ---------------> |                           |
+| body: `entityInfo_t`        |                  |                           |
+
+**Transmission**: The server sends a `DeadEntityMessage` to the client, containing information about an entity (in `entityInfo_t` format) that is dead.
+**Response**: The client processes the message and responds back to the server with the same type of message to confirm reception.
+
+---
+
+### Create Entity Message Exchange
+
+This table depicts a communication where the server requests the creation of an entity:
+
+|         Client            | Transmission     |          Server           |
+|---------------------------|------------------|---------------------------|
 |                           |       Send       |                           |
-|  process message          | <--------------- | header: InfoEntityMessage |
-|                           |                  | body: entityInfo_t        |
-|                           |                  |                           |
-|                           | NO FOR OPTIMIZATION |                        |
+|  process message          | <--------------- | header: `CreateEntityMessage`|
+|                           |                  | body: `entityInfo_t`        |
 |                           |     Response     |                           |
-| header: InfoEntityMessage | ---------------> |                           |
-| body: entityInfo_t        |                  |                           |
-+---------------------------+------------------+---------------------------+
+| header: `CreateEntityMessage`| --------------->|                           |
+| body: `entityInfo_t`        |                  |                           |
+
+**Transmission**: The server sends a `CreateEntityMessage` to the client, which includes entity creation data in `entityInfo_t`.
+**Response**: The client processes the message and sends a confirmation response back with the same message type and entity data.
+
+---
+
+### Move Entity Message Exchange
+
+This table outlines the communication flow for moving an entity:
+
+|         Client            | Transmission     |          Server           |
+|---------------------------|------------------|---------------------------|
+|                           |       Send       |                           |
+|  process message          | <--------------- | header: `MoveEntityMessage` |
+|                           |                  | body: `entityInfo_t`        |
+
+**Transmission**: The server sends a `MoveEntityMessage` to the client, containing data (in `entityInfo_t` format) about an entity that needs to be moved.
+**Response**: The client processes the message but does not send a response back in this table.
+
+---
+
+### Fire Bullet Message Exchange
+
+This table represents the process for handling bullet firing events between the client and server:
+
+|         Client            | Transmission     |          Server           |
+|---------------------------|------------------|---------------------------|
 |                           |       Send       |                           |
 | header: FireBulletMessage | ---------------> |  process message          |
-| body: entityInfo_t        |                  |                           |
-|                           |                  |                           |
+| body: `entityInfo_t`        |                  |                           |
 |                           |     Response     |                           |
 |                           | <--------------- | header: FireBulletMessage |
-|                           |                  | body: entityInfo_t        |
-+---------------------------+------------------+---------------------------+
+|                           |                  | body: `entityInfo_t`        |
+
+**Transmission**: The client sends a `FireBulletMessage` with data about a bullet (in `entityInfo_t` format) to the server.
+**Response**: The server processes the message and responds with a confirmation `FireBulletMessage`, which the client then receives.
+
+---
+
+### Move Player Message Exchange
+
+This table shows the process for updating the player's position:
+
+|         Client            | Transmission     |          Server           |
+|---------------------------|------------------|---------------------------|
 |                           |       Send       |                           |
-| header: MovePlayerMessage | ---------------> |  process message          |
-| body: entityInfo_t        |                  |                           |
-|                           |                  |                           |
-|                           | NO FOR OPTIMIZATION |                        |
-|                           |     Response     |                           |
-|                           | <--------------- | header: MovePlayerMessage |
-|                           |                  | body: entityInfo_t        |
-+---------------------------+------------------+---------------------------+
-```
+| header: `MovePlayerMessage` | ---------------> |  process message          |
+| body: `entityInfo_t`        |                  |                           |
+
+**Transmission**: The client sends a `MovePlayerMessage` to the server to update the server with the new player position.
+
+**Response**: The server processes the message, but there is no response from the server shown in this table.
