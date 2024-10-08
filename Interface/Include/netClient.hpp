@@ -70,8 +70,8 @@ template <typename T> class ClientInterface {
             m_connection->Send(msg);
     }
 
-    virtual void PingServer() {};
-    virtual void MessageAll() {};
+    virtual void PingServer(){};
+    virtual void MessageAll(){};
 
   protected:
     asio::io_context m_context;
