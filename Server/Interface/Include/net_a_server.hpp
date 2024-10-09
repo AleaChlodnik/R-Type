@@ -92,9 +92,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     std::cout << newClientSocket.local_endpoint().address().to_string() << ":"
                               << newClientSocket.local_endpoint().port() << std::endl;
 
-                    std::shared_ptr<Connection<T>> newConn =
-                        std::make_shared<Connection<T>>(Connection<T>::owner::server,
-                            m_asioContext, std::move(newClientSocket), m_clientEndpoint, m_qMessagesIn);
+                    std::shared_ptr<Connection<T>> newConn = std::make_shared<Connection<T>>(
+                        Connection<T>::owner::server, m_asioContext, std::move(newClientSocket),
+                        m_clientEndpoint, m_qMessagesIn);
 
                     if (OnClientConnect(newConn)) {
                         m_deqConnections.push_back(std::move(newConn));
