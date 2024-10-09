@@ -25,7 +25,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     AServer(uint16_t port)
         : r_type::net::IServer<T>(),
-          m_asioEndpoint(asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
+          m_clientEndpoint(asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
           m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
     {
     }
@@ -77,16 +77,16 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     void WaitForClientMessage()
     {
         m_asioSocket.async_receive_from(asio::buffer(m_tempBuffer.data(), m_tempBuffer.size()),
-            m_asioEndpoint, [this](std::error_code ec, std::size_t bytes_recvd) {
-                if (m_asioEndpoint.protocol() != asio::ip::udp::v4())
+            m_clientEndpoint, [this](std::error_code ec, std::size_t bytes_recvd) {
+                if (m_clientEndpoint.protocol() != asio::ip::udp::v4())
                     return WaitForClientMessage();
                 if (!ec) {
                     std::cout << "[SERVER] New Connection: "
-                              << m_asioEndpoint.address().to_string() << ":"
-                              << m_asioEndpoint.port() << std::endl;
+                              << m_clientEndpoint.address().to_string() << ":"
+                              << m_clientEndpoint.port() << std::endl;
                     // create client socket
                     asio::ip::udp::socket newClientSocket(m_asioContext);
-                    newClientSocket.open(m_asioEndpoint.protocol());
+                    newClientSocket.open(m_clientEndpoint.protocol());
                     newClientSocket.bind(asio::ip::udp::endpoint(asio::ip::udp::v4(), 0));
 
                     std::cout << newClientSocket.local_endpoint().address().to_string() << ":"
@@ -94,7 +94,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
                     std::shared_ptr<Connection<T>> newConn =
                         std::make_shared<Connection<T>>(Connection<T>::owner::server,
-                            m_asioContext, std::move(newClientSocket), m_qMessagesIn);
+                            m_asioContext, std::move(newClientSocket), m_clientEndpoint, m_qMessagesIn);
 
                     if (OnClientConnect(newConn)) {
                         m_deqConnections.push_back(std::move(newConn));
@@ -217,7 +217,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     std::thread m_threadContext;
 
     asio::ip::udp::socket m_asioSocket;
-    asio::ip::udp::endpoint m_asioEndpoint;
+    asio::ip::udp::endpoint m_clientEndpoint;
 
     std::array<uint8_t, 1024> m_tempBuffer;
 

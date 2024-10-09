@@ -6,6 +6,7 @@
 */
 
 #pragma once
+
 #include "net_i_client.hpp"
 
 namespace r_type {
@@ -29,12 +30,14 @@ template <typename T> class AClient : virtual public IClient<T> {
     {
         try {
             asio::ip::udp::resolver resolver(m_context);
-            asio::ip::udp::resolver::results_type endpoints =
+            asio::ip::udp::resolver::results_type results_type_endpoints =
                 resolver.resolve(host, std::to_string(port));
 
+            asio::ip::udp::endpoint endpoint = *results_type_endpoints.begin();
+
             m_connection = std::make_unique<Connection<T>>(Connection<T>::owner::client, m_context,
-                asio::ip::udp::socket(m_context), m_qMessagesIn);
-            m_connection->ConnectToServer(endpoints);
+                asio::ip::udp::socket(m_context), endpoint, m_qMessagesIn);
+            m_connection->ConnectToServer(results_type_endpoints);
 
             thrContext = std::thread([this]() { m_context.run(); });
         } catch (std::exception &e) {

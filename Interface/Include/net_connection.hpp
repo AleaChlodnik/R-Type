@@ -11,6 +11,7 @@
 #include "net_message.hpp"
 #include "net_r_type_message.hpp"
 #include "net_thread_safe_queue.hpp"
+#include "net_i_server.hpp"
 
 #define UNUSED __attribute__((unused))
 
@@ -49,8 +50,9 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      * @param qIn
      */
     Connection(owner parent, asio::io_context &asioContext, asio::ip::udp::socket socket,
-        ThreadSafeQueue<OwnedMessage<T>> &qIn)
-        : m_asioContext(asioContext), m_socket(std::move(socket)), m_qMessagesIn(qIn)
+        asio::ip::udp::endpoint endpoint, ThreadSafeQueue<OwnedMessage<T>> &qIn)
+        : m_asioContext(asioContext), m_socket(std::move(socket)),
+            m_endpoint(std::move(endpoint)),m_qMessagesIn(qIn)
     {
         m_nOwnerType = parent;
 
@@ -158,6 +160,13 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     void WriteHeader()
     {
+        std::cout << "[" << id << "] Attempting to write header..." << std::endl;
+        // Check the endpoint validity
+        std::cout << "Sending to endpoint: " << m_endpoint.address().to_string() << ":"
+                  << m_endpoint.port() << std::endl;
+        // Check if the header is valid
+        std::cout << "Header size: " << sizeof(MessageHeader<T>) << std::endl;
+
         m_socket.async_send_to(
             asio::buffer(&m_qMessagesOut.front().header, sizeof(MessageHeader<T>)), m_endpoint,
             [this](std::error_code ec, std::size_t UNUSED length) {
