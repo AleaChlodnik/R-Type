@@ -97,6 +97,8 @@ template <typename T> class AClient : virtual public IClient<T> {
      */
     ThreadSafeQueue<OwnedMessage<T>> &Incoming() { return m_qMessagesIn; }
 
+    const std::unique_ptr<Connection<T>> &getConnection() { return m_connection; }
+
   protected:
     asio::io_context m_context;
     std::thread thrContext;

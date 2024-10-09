@@ -13,12 +13,15 @@ void simpleClient()
 {
     r_type::net::Client c;
     c.Connect("127.0.0.1", 60000);
+    std::cout << "Socket: " <<  c.getConnection()->getSocket() << std::endl;
+    std::cout << "Endpoint: " <<  c.getConnection()->getEndpoint() << std::endl;
     sf::RenderWindow window(sf::VideoMode(800, 600), "Preferences");
     sf::Event event;
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             if (c.IsConnected()) {
                 if (!c.Incoming().empty()) {
+                    std::cout << "Incoming" << std::endl;
                     auto msg = c.Incoming().pop_front().msg;
                     switch (msg.header.id) {
                     case NetR_TypeMessage::ServerAccept: {

@@ -14,10 +14,16 @@
 
 namespace r_type {
 namespace net {
+
 /**
- * @brief IServer class
+ * @class IServer
+ * @brief Interface for a server.
  *
- * @tparam T
+ * This class provides an interface for a server implementation.
+ * It defines methods for starting and stopping the server, waiting for client connections,
+ * sending messages to clients, updating the server, and handling client events.
+ *
+ * @tparam T The type of the connection.
  */
 template <typename T> class IServer {
   public:
@@ -26,7 +32,7 @@ template <typename T> class IServer {
      *
      * @param port
      */
-    IServer(){};
+    IServer() {};
 
     /**
      * @brief Destroy the Server Interface object
@@ -54,18 +60,21 @@ template <typename T> class IServer {
     virtual void WaitForClientMessage() = 0;
 
     /**
-     * @brief send message message to client
+     * @brief Sends a message to a client.
      *
-     * @param client
-     * @param msg
+     * This function is responsible for sending a message to a specific client.
+     *
+     * @param client A shared pointer to the client connection.
+     * @param msg The message to be sent.
      */
     virtual void MessageClient(std::shared_ptr<Connection<T>> client, const Message<T> &msg) = 0;
 
+
     /**
-     * @brief message all clients
+     * @brief Sends a message to all clients connected to the server.
      *
-     * @param msg
-     * @param pIgnoreClient
+     * @param msg The message to be sent.
+     * @param pIgnoreClient An optional pointer to a client connection to ignore when sending the message.
      */
     virtual void MessageAllClients(
         const Message<T> &msg, std::shared_ptr<Connection<T>> pIgnoreClient = nullptr) = 0;

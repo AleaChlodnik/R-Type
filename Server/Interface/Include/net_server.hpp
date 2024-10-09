@@ -21,6 +21,13 @@ class Server : virtual public r_type::net::AServer<NetR_TypeMessage> {
     ~Server() {}
 
   protected:
+    /**
+     * @brief Called when a client is validated
+     *
+     * @param client
+     * @return true
+     * @return false
+     */
     virtual bool OnClientConnect(std::shared_ptr<r_type::net::Connection<NetR_TypeMessage>> client)
     {
         r_type::net::Message<NetR_TypeMessage> msg;
@@ -29,17 +36,27 @@ class Server : virtual public r_type::net::AServer<NetR_TypeMessage> {
         return true;
     }
 
-    // Called when a client appears to have disconnected
+    /**
+     * @brief Called when a client appears to have disconnected
+     *
+     * @param client
+     */
     virtual void OnClientDisconnect(
         std::shared_ptr<r_type::net::Connection<NetR_TypeMessage>> client)
     {
         std::cout << "Removing client [" << client->GetID() << "]\n";
     }
 
-    // Called when a message arrives
+    /**
+     * @brief Called when a message is received from a client
+     *
+     * @param client
+     * @param msg
+     */
     virtual void OnMessage(std::shared_ptr<r_type::net::Connection<NetR_TypeMessage>> client,
         r_type::net::Message<NetR_TypeMessage> &msg)
     {
+        std::cout << "Received a message from [" << client->GetID() << "]" << std::endl;
         switch (msg.header.id) {
         case NetR_TypeMessage::ServerPing: {
             std::cout << "[" << client->GetID() << "]: Server Ping\n";
