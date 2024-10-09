@@ -21,7 +21,6 @@ void simpleClient()
         while (window.pollEvent(event)) {
             if (c.IsConnected()) {
                 if (!c.Incoming().empty()) {
-                    std::cout << "Incoming" << std::endl;
                     auto msg = c.Incoming().pop_front().msg;
                     switch (msg.header.id) {
                     case NetR_TypeMessage::ServerAccept: {

@@ -56,7 +56,6 @@ class Server : virtual public r_type::net::AServer<NetR_TypeMessage> {
     virtual void OnMessage(std::shared_ptr<r_type::net::Connection<NetR_TypeMessage>> client,
         r_type::net::Message<NetR_TypeMessage> &msg)
     {
-        std::cout << "Received a message from [" << client->GetID() << "]" << std::endl;
         switch (msg.header.id) {
         case NetR_TypeMessage::ServerPing: {
             std::cout << "[" << client->GetID() << "]: Server Ping\n";

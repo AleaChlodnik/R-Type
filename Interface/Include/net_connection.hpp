@@ -181,12 +181,6 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     void WriteHeader()
     {
-        std::cout << "[" << id << "] Attempting to write header..." << std::endl;
-        // Check the endpoint validity
-        std::cout << "Sending to endpoint: " << m_endpoint << std::endl;
-        // Check if the header is valid
-        std::cout << "Header size: " << sizeof(MessageHeader<T>) << std::endl;
-
         m_socket.async_send_to(
             asio::buffer(&m_qMessagesOut.front().header, sizeof(MessageHeader<T>)), m_endpoint,
             [this](std::error_code ec, std::size_t UNUSED length) {
@@ -215,12 +209,6 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     void WriteBody()
     {
-        std::cout << "[" << id << "] Attempting to write body..." << std::endl;
-        // Check the endpoint validity
-        std::cout << "Sending to endpoint: " << m_endpoint << std::endl;
-        // Check if the header is valid
-        std::cout << "Body size: " << m_qMessagesOut.front().body.size() << std::endl;
-
         m_socket.async_send_to(
             asio::buffer(m_qMessagesOut.front().body.data(), m_qMessagesOut.front().body.size()),
             m_endpoint, [this](std::error_code ec, std::size_t UNUSED length) {
@@ -242,14 +230,9 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     void ReadHeader()
     {
-        std::cout << "[" << id << "] Attempting to read header..." << std::endl;
-        // Check the endpoint validity
         m_socket.async_receive_from(
             asio::buffer(&m_msgTemporaryIn.header, sizeof(MessageHeader<T>)), m_endpoint,
             [this](std::error_code ec, std::size_t UNUSED length) {
-                std::cout << "Reading from endpoint: " << m_endpoint << std::endl;
-                // Check if the header is valid
-                std::cout << "Header size: " << sizeof(MessageHeader<T>) << std::endl;
                 if (!ec) {
                     if (m_msgTemporaryIn.header.size > 0) {
                         m_msgTemporaryIn.body.resize(m_msgTemporaryIn.header.size);
@@ -270,14 +253,9 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     void ReadBody()
     {
-        std::cout << "[" << id << "] Attempting to read body..." << std::endl;
         m_socket.async_receive_from(
             asio::buffer(m_msgTemporaryIn.body.data(), m_msgTemporaryIn.body.size()), m_endpoint,
             [this](std::error_code ec, std::size_t UNUSED length) {
-                std::cout << "Reading from endpoint: " << m_endpoint << std::endl;
-                // Check if the header is valid
-                std::cout << "Body size: " << m_msgTemporaryIn.body.size() << std::endl;
-
                 if (!ec) {
                     AddToIncomingMessageQueue();
                 } else {
