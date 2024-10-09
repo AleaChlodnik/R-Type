@@ -51,7 +51,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     Connection(owner parent, asio::io_context &asioContext, asio::ip::udp::socket socket,
         asio::ip::udp::endpoint endpoint, ThreadSafeQueue<OwnedMessage<T>> &qIn)
-        : m_asioContext(asioContext), m_socket(std::move(socket)), m_endpoint(std::move(endpoint)),
+        : m_socket(std::move(socket)), m_endpoint(std::move(endpoint)), m_asioContext(asioContext),
           m_qMessagesIn(qIn)
     {
         m_nOwnerType = parent;
