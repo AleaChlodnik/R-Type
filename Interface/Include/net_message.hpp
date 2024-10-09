@@ -44,8 +44,9 @@ template <typename T> struct Message {
     /**
      * @brief Overloaded insertion operator for adding data to a message.
      *
-     * This function allows adding data of any type to a message object using the insertion operator (<<).
-     * The data is copied into the message's body vector, and the message's size is updated accordingly.
+     * This function allows adding data of any type to a message object using the insertion
+     * operator (<<). The data is copied into the message's body vector, and the message's size is
+     * updated accordingly.
      *
      * @tparam DataType The type of data being added to the message.
      * @param msg The message object to which the data is being added.
@@ -72,10 +73,11 @@ template <typename T> struct Message {
     /**
      * @brief Overloaded stream extraction operator for deserializing data from a Message object.
      *
-     * This function allows extracting data of type DataType from a Message object using the stream extraction operator (>>).
-     * The DataType must be a standard layout type, otherwise a static_assert will be triggered.
-     * The function retrieves the data from the body of the Message object and resizes the body accordingly.
-     * Finally, it updates the size of the header in the Message object.
+     * This function allows extracting data of type DataType from a Message object using the stream
+     * extraction operator (>>). The DataType must be a standard layout type, otherwise a
+     * static_assert will be triggered. The function retrieves the data from the body of the
+     * Message object and resizes the body accordingly. Finally, it updates the size of the header
+     * in the Message object.
      *
      * @tparam DataType The type of data to be extracted.
      * @param msg The Message object from which to extract the data.

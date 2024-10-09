@@ -32,7 +32,7 @@ template <typename T> class IServer {
      *
      * @param port
      */
-    IServer() {};
+    IServer(){};
 
     /**
      * @brief Destroy the Server Interface object
@@ -69,12 +69,12 @@ template <typename T> class IServer {
      */
     virtual void MessageClient(std::shared_ptr<Connection<T>> client, const Message<T> &msg) = 0;
 
-
     /**
      * @brief Sends a message to all clients connected to the server.
      *
      * @param msg The message to be sent.
-     * @param pIgnoreClient An optional pointer to a client connection to ignore when sending the message.
+     * @param pIgnoreClient An optional pointer to a client connection to ignore when sending the
+     * message.
      */
     virtual void MessageAllClients(
         const Message<T> &msg, std::shared_ptr<Connection<T>> pIgnoreClient = nullptr) = 0;
