@@ -17,9 +17,6 @@ Rtype::Rtype()
     currentGameMode = GameMode::EASY;
     currentDaltonismMode = DaltonismMode::NORMAL;
     main_menu = true;
-
-    // Init player
-    // Add player to systems
 }
 
 void Rtype::run()
@@ -62,8 +59,7 @@ void Rtype::gameLoop()
     EntityManager entityManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    Entity background =
-        entityFactory.createBackground(entityManager, componentManager, textureManager);
+    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
     Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
     UpdateSystem updateSystem(_window);
     ShootSystem shootSystem(player.getId(), 0.5f);
@@ -74,12 +70,11 @@ void Rtype::gameLoop()
     while (_window.isOpen()) {
         handleEvents();
 
-        MainMenu(_window);
+        // MainMenu(_window);
 
         float deltaTime = clock.restart().asSeconds();
 
-        shootSystem.fireMissle(
-            entityFactory, entityManager, componentManager, textureManager, deltaTime);
+        //shootSystem.fireMissle(entityFactory, entityManager, componentManager, textureManager, deltaTime); call only when specific key is pressed
         updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(entityManager, componentManager);
     }

@@ -7,7 +7,7 @@
 
 #pragma once
 
-struct health_component {
-    int health;
+struct HealthComponent {
     int max_health;
+    int health;
 };

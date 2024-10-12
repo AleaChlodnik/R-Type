@@ -8,6 +8,7 @@
 #pragma once
 
 #include "background_component.hpp"
+#include "basic_monster_component.hpp"
 #include "health_component.hpp"
 #include "hitbox_component.hpp"
 #include "input_component.hpp"

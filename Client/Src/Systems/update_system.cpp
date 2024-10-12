@@ -44,21 +44,19 @@ bool UpdateSystem::updateMissile(int entityId, EntityManager &entityManager,
     return false;
 }
 
-void UpdateSystem::updateBackground(
-    int entityId, ComponentManager &componentManager, float deltaTime)
+void UpdateSystem::updateBackground(int entityId, ComponentManager &componentManager, float deltaTime)
 {
+    auto spriteOpt = componentManager.getComponent<SpriteComponent>(entityId);
     auto offsetOpt = componentManager.getComponent<OffsetComponent>(entityId);
     auto velOpt = componentManager.getComponent<VelocityComponent>(entityId);
-    if (offsetOpt && velOpt) {
+    if (spriteOpt && offsetOpt && velOpt) {
         offsetOpt.value()->offset += velOpt.value()->speed * deltaTime;
-        auto spriteOpt = componentManager.getComponent<SpriteComponent>(entityId);
         float textureWidth = spriteOpt.value()->sprite.getTexture()->getSize().x;
-        if (offsetOpt.value()->offset >= textureWidth) {
+        if (offsetOpt.value()->offset > (textureWidth * 0.35)) {
             offsetOpt.value()->offset = 0;
         }
-        spriteOpt.value()->sprite.setTextureRect(
-            sf::IntRect(static_cast<int>(offsetOpt.value()->offset), 0,
-                static_cast<int>(this->_window.getSize().x),
-                static_cast<int>(this->_window.getSize().y)));
+        sf::IntRect textureRect = spriteOpt.value()->sprite.getTextureRect();
+        textureRect.left = static_cast<int>(offsetOpt.value()->offset);
+        spriteOpt.value()->sprite.setTextureRect(textureRect);
     }
 }

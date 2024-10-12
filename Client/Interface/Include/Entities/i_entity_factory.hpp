@@ -23,4 +23,6 @@ class IEntityFactory {
         TextureManager &TextureManager) = 0;
     virtual Entity createMissile(int playerId, EntityManager &entityManager,
         ComponentManager &componentManager, TextureManager &TextureManager) = 0;
+    virtual Entity createBasicMonster(EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &TextureManager) = 0;
 };
