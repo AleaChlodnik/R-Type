@@ -67,10 +67,13 @@ void Rtype::gameLoop()
 
     sf::Clock clock;
 
+    //////////////////// testing //////////////////////////
+
+
+    ////////////////////////////////////////////////////////
+
     while (_window.isOpen()) {
         handleEvents();
-
-        // MainMenu(_window);
 
         float deltaTime = clock.restart().asSeconds();
 

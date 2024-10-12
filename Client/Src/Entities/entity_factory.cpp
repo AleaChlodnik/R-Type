@@ -84,6 +84,31 @@ Entity EntityFactory::createMissile(int playerId, EntityManager &entityManager,
     return missle;
 }
 
+Entity EntityFactory::createBasicEnemy(EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager)
+{
+    Entity enemy = entityManager.createEntity();
+
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Enemies/enemy5.png");
+    sf::Vector2f scale(0.5f, 0.5f);
+
+    EnemyComponent enemyComponent;
+    PositionComponent startPosition(0, 0);
+    VelocityComponent velocity(100.0f);
+    SpriteComponent sprite(texture, startPosition, scale);
+    HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
+    HealthComponent health(100, 100);
+
+    componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
+    componentManager.addComponent<PositionComponent>(enemy.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(enemy.getId(), velocity);
+    componentManager.addComponent<SpriteComponent>(enemy.getId(), sprite);
+    componentManager.addComponent<HitboxComponent>(enemy.getId(), hitbox);
+    componentManager.addComponent<HealthComponent>(enemy.getId(), health);
+
+    return enemy;
+}
+
 Entity EntityFactory::createBasicMonster(EntityManager &entityManager,
     ComponentManager &componentManager, TextureManager &textureManager)
 {
@@ -110,13 +135,21 @@ Entity EntityFactory::createBasicMonster(EntityManager &entityManager,
     }
 
     sf::Texture &texture = textureManager.getTexture(texturePath);
-    sf::Vector2f scale(1.0f, 1.0f);
+    sf::Vector2f scale(0.25f, 0.25f);
 
     BasicMonsterComponent monsterComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity(100.0f);
     SpriteComponent sprite(texture, startPosition, scale);
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
+    HealthComponent health(100, 100);
+
+    componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
+    componentManager.addComponent<PositionComponent>(monster.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(monster.getId(), velocity);
+    componentManager.addComponent<SpriteComponent>(monster.getId(), sprite);
+    componentManager.addComponent<HitboxComponent>(monster.getId(), hitbox);
+    componentManager.addComponent<HealthComponent>(monster.getId(), health);
 
     return monster;
 }

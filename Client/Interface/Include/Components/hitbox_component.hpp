@@ -8,9 +8,8 @@
 #pragma once
 
 struct HitboxComponent {
-    // origin of the hitbox is the top left corner
-    int x;
-    int y;
-    int w;
-    int h;
+    float x;
+    float y;
+    float w;
+    float h;
 };
