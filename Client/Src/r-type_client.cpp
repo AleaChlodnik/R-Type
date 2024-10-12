@@ -59,7 +59,8 @@ void Rtype::gameLoop()
     EntityManager entityManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
+    Entity background =
+        entityFactory.createBackground(entityManager, componentManager, textureManager);
     Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
     UpdateSystem updateSystem(_window);
     ShootSystem shootSystem(player.getId(), 0.5f);
@@ -68,7 +69,6 @@ void Rtype::gameLoop()
     sf::Clock clock;
 
     //////////////////// testing //////////////////////////
-
 
     ////////////////////////////////////////////////////////
 

@@ -17,6 +17,8 @@ class EntityFactory : public IEntityFactory {
         TextureManager &textureManager) override;
     Entity createMissile(int playerId, EntityManager &entityManager,
         ComponentManager &componentManager, TextureManager &textureManager) override;
-    Entity createBasicEnemy(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) override;
-    Entity createBasicMonster(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) override;
+    Entity createBasicEnemy(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &textureManager) override;
+    Entity createBasicMonster(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &textureManager) override;
 };
