@@ -71,7 +71,8 @@ Entity EntityFactory::createMissile(int playerId, EntityManager &entityManager,
     auto playerPosition = componentManager.getComponent<PositionComponent>(playerId);
 
     MissileComponent missileComponent;
-    PositionComponent startPosition(playerPosition.value()->x + 105, playerPosition.value()->y + 49);
+    PositionComponent startPosition(
+        playerPosition.value()->x + 105, playerPosition.value()->y + 49);
     VelocityComponent velocity(200.0f);
     SpriteComponent sprite(texture, startPosition, scale);
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
@@ -116,8 +117,7 @@ Entity EntityFactory::createBasicMonster(EntityManager &entityManager,
 
     std::string texturePath;
     int monsterSprite = (std::rand() % 4) + 1;
-    switch (monsterSprite)
-    {
+    switch (monsterSprite) {
     case 1:
         texturePath = "Client/Assets/Sprites/Monsters/monster1.png";
         break;

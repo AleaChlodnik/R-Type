@@ -44,7 +44,8 @@ bool UpdateSystem::updateMissile(int entityId, EntityManager &entityManager,
     return false;
 }
 
-void UpdateSystem::updateBackground(int entityId, ComponentManager &componentManager, float deltaTime)
+void UpdateSystem::updateBackground(
+    int entityId, ComponentManager &componentManager, float deltaTime)
 {
     auto spriteOpt = componentManager.getComponent<SpriteComponent>(entityId);
     auto offsetOpt = componentManager.getComponent<OffsetComponent>(entityId);
