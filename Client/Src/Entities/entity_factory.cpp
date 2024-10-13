@@ -233,7 +233,8 @@ Entity EntityFactory::createPlayerMissile(int playerId, EntityManager &entityMan
     SpriteComponent sprite(texture, startPosition, scale);
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
 
-    componentManager.addComponent<PlayerMissileComponent>(playerMissle.getId(), playerMissileComponent);
+    componentManager.addComponent<PlayerMissileComponent>(
+        playerMissle.getId(), playerMissileComponent);
     componentManager.addComponent<PositionComponent>(playerMissle.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(playerMissle.getId(), velocity);
     componentManager.addComponent<SpriteComponent>(playerMissle.getId(), sprite);
@@ -277,7 +278,8 @@ Entity EntityFactory::createEnemyMissile(EntityManager &entityManager,
     SpriteComponent sprite(texture, startPosition, scale);
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
 
-    componentManager.addComponent<EnemyMissileComponent>(enemyMissile.getId(), enemyMissileComponent);
+    componentManager.addComponent<EnemyMissileComponent>(
+        enemyMissile.getId(), enemyMissileComponent);
     componentManager.addComponent<PositionComponent>(enemyMissile.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(enemyMissile.getId(), velocity);
     componentManager.addComponent<SpriteComponent>(enemyMissile.getId(), sprite);

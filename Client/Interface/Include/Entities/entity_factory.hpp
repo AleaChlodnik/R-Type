@@ -23,6 +23,8 @@ class EntityFactory : public IEntityFactory {
         TextureManager &textureManager) override;
     Entity createPlayerMissile(int playerId, EntityManager &entityManager,
         ComponentManager &componentManager, TextureManager &textureManager) override;
-    Entity createAllyMissile(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) override;
-    Entity createEnemyMissile(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) override;
+    Entity createAllyMissile(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &textureManager) override;
+    Entity createEnemyMissile(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &textureManager) override;
 };
