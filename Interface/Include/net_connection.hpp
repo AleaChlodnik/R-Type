@@ -10,7 +10,7 @@
 #include "net_common.hpp"
 #include "net_i_server.hpp"
 #include "net_message.hpp"
-#include "net_r_type_message.hpp"
+#include "net_type_message.hpp"
 #include "net_thread_safe_queue.hpp"
 
 #define UNUSED __attribute__((unused))
@@ -129,8 +129,8 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
                     if (!ec) {
                         // ReadValidation();
                         ReadHeader();
-                        r_type::net::Message<NetR_TypeMessage> msg;
-                        msg.header.id = NetR_TypeMessage::ServerAccept;
+                        r_type::net::Message<TypeMessage> msg;
+                        msg.header.id = TypeMessage::ServerAccept;
                         Send(msg);
                     }
                 });
@@ -188,8 +188,6 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
                     if (m_qMessagesOut.front().body.size() > 0) {
                         WriteBody();
                     } else {
-                        std::cout << "No body to write" << std::endl;
-
                         m_qMessagesOut.pop_front();
 
                         if (!m_qMessagesOut.empty()) {

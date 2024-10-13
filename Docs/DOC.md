@@ -70,11 +70,11 @@ This table represents a communication where the client sends and receives a mess
 |  process message          | <--------------- | header: `DeadEntityMessage` |
 |                           |                  | body: `entityInfo_t`        |
 |                           |     Response     |                           |
-| header: `DeadEntityMessage` | ---------------> |                           |
+| header: `DeadEntityResponse` | ---------------> |                           |
 | body: `entityInfo_t`        |                  |                           |
 
 **Transmission**: The server sends a `DeadEntityMessage` to the client, containing information about an entity (in `entityInfo_t` format) that is dead.
-**Response**: The client processes the message and responds back to the server with the same type of message to confirm reception.
+**Response**: The client processes the message and responds back to the server with the `DeadEntityResponse` type of message to confirm reception.
 
 ---
 
@@ -88,11 +88,11 @@ This table depicts a communication where the server requests the creation of an 
 |  process message          | <--------------- | header: `CreateEntityMessage`|
 |                           |                  | body: `entityInfo_t`        |
 |                           |     Response     |                           |
-| header: `CreateEntityMessage`| --------------->|                           |
+| header: `CreateEntityResponse`| --------------->|                           |
 | body: `entityInfo_t`        |                  |                           |
 
 **Transmission**: The server sends a `CreateEntityMessage` to the client, which includes entity creation data in `entityInfo_t`.
-**Response**: The client processes the message and sends a confirmation response back with the same message type and entity data.
+**Response**: The client processes the message and sends a confirmation response back with the `CreateEntityResponse` message type and the same entity data.
 
 ---
 
@@ -111,21 +111,21 @@ This table outlines the communication flow for moving an entity:
 
 ---
 
-### Fire Bullet Message Exchange
+<!-- ### Fire Bullet Message Exchange -->
 
-This table represents the process for handling bullet firing events between the client and server:
+<!-- This table represents the process for handling bullet firing events between the client and server: -->
 
-|         Client            | Transmission     |          Server           |
-|---------------------------|------------------|---------------------------|
-|                           |       Send       |                           |
-| header: FireBulletMessage | ---------------> |  process message          |
-| body: `entityInfo_t`        |                  |                           |
-|                           |     Response     |                           |
-|                           | <--------------- | header: FireBulletMessage |
-|                           |                  | body: `entityInfo_t`        |
+<!-- |         Client            | Transmission     |          Server           | -->
+<!-- |---------------------------|------------------|---------------------------| -->
+<!-- |                           |       Send       |                           | -->
+<!-- | header: `FireBulletMessage` | ---------------> |  process message          | -->
+<!-- | body: `entityInfo_t`        |                  |                           | -->
+<!-- |                           |     Response     |                           | -->
+<!-- |                           | <--------------- | header: `FireBulletResponse` | -->
+<!-- |                           |                  | body: `entityInfo_t`        | -->
 
-**Transmission**: The client sends a `FireBulletMessage` with data about a bullet (in `entityInfo_t` format) to the server.
-**Response**: The server processes the message and responds with a confirmation `FireBulletMessage`, which the client then receives.
+<!-- **Transmission**: The client sends a `FireBulletMessage` with data about a bullet (in `entityInfo_t` format) to the server. -->
+<!-- **Response**: The server processes the message and responds with a confirmation `FireBulletResponse`, which the client then receives. -->
 
 ---
 

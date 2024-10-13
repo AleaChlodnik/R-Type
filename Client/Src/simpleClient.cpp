@@ -23,11 +23,10 @@ void simpleClient()
                 if (!c.Incoming().empty()) {
                     auto msg = c.Incoming().pop_front().msg;
                     switch (msg.header.id) {
-                    case NetR_TypeMessage::ServerAccept: {
+                    case TypeMessage::ServerAccept: {
                         std::cout << "Server Accepted Connection" << std::endl;
                     } break;
-
-                    case NetR_TypeMessage::ServerPing: {
+                    case TypeMessage::ServerPing: {
                         std::chrono::system_clock::time_point timeNow =
                             std::chrono::system_clock::now();
                         std::chrono::system_clock::time_point timeThen;
@@ -36,19 +35,26 @@ void simpleClient()
                                   << std::chrono::duration<double>(timeNow - timeThen).count()
                                   << std::endl;
                     } break;
-
-                    case NetR_TypeMessage::ServerMessage: {
+                    case TypeMessage::ServerMessage: {
                         uint32_t clientID;
                         msg >> clientID;
                         std::cout << "Hello from [" << clientID << "]" << std::endl;
                     } break;
-                    case NetR_TypeMessage::ServerDeny: {
-
+                    case TypeMessage::ServerDeny: {
                     } break;
-                    case NetR_TypeMessage::MessageAll: {
-
+                    case TypeMessage::MessageAll: {
                     } break;
-                    case NetR_TypeMessage::ClientConnect: {
+                    case TypeMessage::ClientConnect: {
+                    } break;
+                    case TypeMessage::CreateEntityMessage: {
+                    } break;
+                    case TypeMessage::CreateEntityResponse: {
+                    } break;
+                    case TypeMessage::DestroyEntityMessage: {
+                    } break;
+                    case TypeMessage::DestroyEntityResponse: {
+                    } break;
+                    case TypeMessage::MoveEntityMessage: {
                     } break;
                     }
                 }

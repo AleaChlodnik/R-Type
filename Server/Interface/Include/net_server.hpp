@@ -11,10 +11,10 @@
 
 namespace r_type {
 namespace net {
-class Server : virtual public r_type::net::AServer<NetR_TypeMessage> {
+class Server : virtual public r_type::net::AServer<TypeMessage> {
   public:
     Server(uint16_t nPort)
-        : r_type::net::IServer<NetR_TypeMessage>(), r_type::net::AServer<NetR_TypeMessage>(nPort)
+        : r_type::net::IServer<TypeMessage>(), r_type::net::AServer<TypeMessage>(nPort)
     {
     }
 
@@ -28,10 +28,10 @@ class Server : virtual public r_type::net::AServer<NetR_TypeMessage> {
      * @return true
      * @return false
      */
-    virtual bool OnClientConnect(std::shared_ptr<r_type::net::Connection<NetR_TypeMessage>> client)
+    virtual bool OnClientConnect(std::shared_ptr<r_type::net::Connection<TypeMessage>> client)
     {
-        r_type::net::Message<NetR_TypeMessage> msg;
-        msg.header.id = NetR_TypeMessage::ServerAccept;
+        r_type::net::Message<TypeMessage> msg;
+        msg.header.id = TypeMessage::ServerAccept;
         client->Send(msg);
         return true;
     }
@@ -41,8 +41,7 @@ class Server : virtual public r_type::net::AServer<NetR_TypeMessage> {
      *
      * @param client
      */
-    virtual void OnClientDisconnect(
-        std::shared_ptr<r_type::net::Connection<NetR_TypeMessage>> client)
+    virtual void OnClientDisconnect(std::shared_ptr<r_type::net::Connection<TypeMessage>> client)
     {
         std::cout << "Removing client [" << client->GetID() << "]\n";
     }
@@ -53,28 +52,28 @@ class Server : virtual public r_type::net::AServer<NetR_TypeMessage> {
      * @param client
      * @param msg
      */
-    virtual void OnMessage(std::shared_ptr<r_type::net::Connection<NetR_TypeMessage>> client,
-        r_type::net::Message<NetR_TypeMessage> &msg)
+    virtual void OnMessage(std::shared_ptr<r_type::net::Connection<TypeMessage>> client,
+        r_type::net::Message<TypeMessage> &msg)
     {
         switch (msg.header.id) {
-        case NetR_TypeMessage::ServerPing: {
+        case TypeMessage::ServerPing: {
             std::cout << "[" << client->GetID() << "]: Server Ping\n";
 
             // Simply bounce message back to client
             client->Send(msg);
         } break;
 
-        case NetR_TypeMessage::MessageAll: {
+        case TypeMessage::MessageAll: {
             std::cout << "[" << client->GetID() << "]: Message All\n";
 
             // Construct a new message and send it to all clients
-            r_type::net::Message<NetR_TypeMessage> msg;
-            msg.header.id = NetR_TypeMessage::ServerMessage;
+            r_type::net::Message<TypeMessage> msg;
+            msg.header.id = TypeMessage::ServerMessage;
             msg << client->GetID();
             MessageAllClients(msg, client);
 
         } break;
-        case NetR_TypeMessage::ClientConnect: {
+        case TypeMessage::ClientConnect: {
             std::cout << "[" << client->GetID() << "]: Client Connect\n";
         } break;
         }
