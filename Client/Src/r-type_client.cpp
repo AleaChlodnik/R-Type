@@ -60,16 +60,17 @@ void Rtype::gameLoop()
     TextureManager textureManager;
     EntityFactory entityFactory;
     // Get starting info from server & create all entities of new or in progress game.
-    Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
-    ShootSystem shootSystem(player.getId(), 0.5f);
+    // Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
+    // ShootSystem shootSystem(player.getId(), 0.5f);
     UpdateSystem updateSystem(_window);
     RenderSystem renderSystem(_window);
 
     /////////////////////////////////// temp for testing
     //////////////////////////////////////////////////
 
-    Entity background =
-        entityFactory.createBackground(entityManager, componentManager, textureManager);
+    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
+    Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
+    ShootSystem shootSystem(player.getId(), 0.5f);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 

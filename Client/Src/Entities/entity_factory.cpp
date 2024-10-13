@@ -138,7 +138,7 @@ Entity EntityFactory::createAlly(EntityManager &entityManager, ComponentManager 
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
     HealthComponent health(100, 100);
 
-    componentManager.addComponent<PlayerComponent>(ally.getId(), allyComponent);
+    componentManager.addComponent<AllyComponent>(ally.getId(), allyComponent);
     componentManager.addComponent<PositionComponent>(ally.getId(), startPosition);
     componentManager.addComponent<SpriteComponent>(ally.getId(), sprite);
     componentManager.addComponent<HitboxComponent>(ally.getId(), hitbox);
