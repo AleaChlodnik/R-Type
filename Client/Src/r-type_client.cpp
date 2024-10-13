@@ -59,19 +59,23 @@ void Rtype::gameLoop()
     EntityManager entityManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
+    // Get starting info from server & create all entities of new or in progress game.
     Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
-    UpdateSystem updateSystem(_window);
     ShootSystem shootSystem(player.getId(), 0.5f);
+    UpdateSystem updateSystem(_window);
     RenderSystem renderSystem(_window);
+
+    /////////////////////////////////// temp for testing ///////////////////////////////////////////////
+
+    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     sf::Clock clock;
 
     while (_window.isOpen()) {
         handleEvents();
-
         float deltaTime = clock.restart().asSeconds();
-
         // shootSystem.fireMissle(entityFactory, entityManager, componentManager, textureManager, deltaTime); call only when specific key is pressed
         updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(entityManager, componentManager);
