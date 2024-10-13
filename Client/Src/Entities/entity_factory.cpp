@@ -216,27 +216,71 @@ Entity EntityFactory::createBasicMonster(EntityManager &entityManager,
     return monster;
 }
 
-Entity EntityFactory::createMissile(int playerId, EntityManager &entityManager,
+Entity EntityFactory::createPlayerMissile(int playerId, EntityManager &entityManager,
     ComponentManager &componentManager, TextureManager &textureManager)
 {
-    Entity missle = entityManager.createEntity();
+    Entity playerMissle = entityManager.createEntity();
 
     sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Missiles/missile.png");
     sf::Vector2f scale(0.1f, 0.1f);
 
     auto playerPosition = componentManager.getComponent<PositionComponent>(playerId);
 
-    MissileComponent missileComponent;
+    PlayerMissileComponent playerMissileComponent;
     PositionComponent startPosition(
         playerPosition.value()->x + 105, playerPosition.value()->y + 49);
     VelocityComponent velocity(200.0f);
     SpriteComponent sprite(texture, startPosition, scale);
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
 
-    componentManager.addComponent<MissileComponent>(missle.getId(), missileComponent);
-    componentManager.addComponent<PositionComponent>(missle.getId(), startPosition);
-    componentManager.addComponent<VelocityComponent>(missle.getId(), velocity);
-    componentManager.addComponent<SpriteComponent>(missle.getId(), sprite);
+    componentManager.addComponent<PlayerMissileComponent>(playerMissle.getId(), playerMissileComponent);
+    componentManager.addComponent<PositionComponent>(playerMissle.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(playerMissle.getId(), velocity);
+    componentManager.addComponent<SpriteComponent>(playerMissle.getId(), sprite);
 
-    return missle;
+    return playerMissle;
+}
+
+Entity EntityFactory::createAllyMissile(EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager)
+{
+    Entity allyMissile = entityManager.createEntity();
+
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Missiles/missile.png");
+    sf::Vector2f scale(0.1f, 0.1f);
+
+    AllyMissileComponent allyMissileComponent;
+    PositionComponent startPosition(0, 0);
+    VelocityComponent velocity(200.0f);
+    SpriteComponent sprite(texture, startPosition, scale);
+    HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
+
+    componentManager.addComponent<AllyMissileComponent>(allyMissile.getId(), allyMissileComponent);
+    componentManager.addComponent<PositionComponent>(allyMissile.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(allyMissile.getId(), velocity);
+    componentManager.addComponent<SpriteComponent>(allyMissile.getId(), sprite);
+
+    return allyMissile;
+}
+
+Entity EntityFactory::createEnemyMissile(EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager)
+{
+    Entity enemyMissile = entityManager.createEntity();
+
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Missiles/missile.png");
+    sf::Vector2f scale(0.1f, 0.1f);
+
+    EnemyMissileComponent enemyMissileComponent;
+    PositionComponent startPosition(0, 0);
+    VelocityComponent velocity(200.0f);
+    SpriteComponent sprite(texture, startPosition, scale);
+    HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
+
+    componentManager.addComponent<EnemyMissileComponent>(enemyMissile.getId(), enemyMissileComponent);
+    componentManager.addComponent<PositionComponent>(enemyMissile.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(enemyMissile.getId(), velocity);
+    componentManager.addComponent<SpriteComponent>(enemyMissile.getId(), sprite);
+
+    return enemyMissile;
 }

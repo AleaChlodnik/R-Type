@@ -27,6 +27,10 @@ class IEntityFactory {
         ComponentManager &componentManager, TextureManager &TextureManager) = 0;
     virtual Entity createBasicMonster(EntityManager &entityManager,
         ComponentManager &componentManager, TextureManager &TextureManager) = 0;
-    virtual Entity createMissile(int playerId, EntityManager &entityManager,
+    virtual Entity createPlayerMissile(int playerId, EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &TextureManager) = 0;
+    virtual Entity createAllyMissile(EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &TextureManager) = 0;
+    virtual Entity createEnemyMissile(EntityManager &entityManager,
         ComponentManager &componentManager, TextureManager &TextureManager) = 0;
 };

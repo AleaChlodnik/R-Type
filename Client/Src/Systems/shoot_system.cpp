@@ -12,7 +12,7 @@ void ShootSystem::fireMissle(EntityFactory entityFactory, EntityManager &entityM
 {
     this->_lastShotTime += deltaTime;
     if (this->_lastShotTime >= this->_fireRate) {
-        entityFactory.createMissile(_playerId, entityManager, componentManager, textureManager);
+        entityFactory.createPlayerMissile(_playerId, entityManager, componentManager, textureManager);
         this->_lastShotTime = 0;
     }
 }

@@ -7,4 +7,4 @@
 
 #pragma once
 
-struct MissileComponent {};
+struct PlayerMissileComponent {};

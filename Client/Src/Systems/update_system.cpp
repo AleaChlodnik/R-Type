@@ -18,8 +18,8 @@ void UpdateSystem::update(
         if (componentManager.getComponent<BackgroundComponent>(entityId)) {
             updateBackground(entityId, componentManager, deltaTime);
         }
-        if (componentManager.getComponent<MissileComponent>(entityId)) {
-            if (updateMissile(entityId, entityManager, componentManager, deltaTime))
+        if (componentManager.getComponent<PlayerMissileComponent>(entityId)) {
+            if (updatePlayerMissile(entityId, entityManager, componentManager, deltaTime))
                 entitiesToRemove.push_back(entityId);
         }
     }
@@ -28,7 +28,7 @@ void UpdateSystem::update(
     }
 }
 
-bool UpdateSystem::updateMissile(int entityId, EntityManager &entityManager,
+bool UpdateSystem::updatePlayerMissile(int entityId, EntityManager &entityManager,
     ComponentManager &componentManager, float deltaTime)
 {
     auto posOpt = componentManager.getComponent<PositionComponent>(entityId);
