@@ -25,8 +25,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     AServer(uint16_t port)
         : r_type::net::IServer<T>(),
-          m_clientEndpoint(asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
           m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
+        //   m_clientEndpoint(asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
     {
     }
 
@@ -91,24 +91,30 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     void WaitForClientMessage()
     {
         m_asioSocket.async_receive_from(asio::buffer(m_tempBuffer.data(), m_tempBuffer.size()),
-            m_clientEndpoint, [this](std::error_code ec, std::size_t bytes_recvd) {
+            m_clientEndpoint, [this](std::error_code ec, std::size_t UNUSED bytes_recvd) {
                 if (m_clientEndpoint.protocol() != asio::ip::udp::v4())
                     return WaitForClientMessage();
                 if (!ec) {
                     std::cout << "[SERVER] New Connection: " << m_clientEndpoint << std::endl;
                     // check if connection already exists
                     for (std::shared_ptr<Connection<T>> &conn : m_deqConnections) {
+                        std::cout << "Connection endpoint" << conn->getEndpoint() << std::endl;
+                        std::cout << "Client endpoint" << m_clientEndpoint << std::endl;
                         if (conn->getEndpoint() == m_clientEndpoint) {
                             std::cout << "[SERVER] Connection already exists" << std::endl;
                             return;
                         }
                     }
-                    // create client socket
+                    // // create client socket
+
+
                     std::shared_ptr<Connection<T>> newConn = std::make_shared<Connection<T>>(
                         Connection<T>::owner::server, m_asioContext, std::move(m_asioSocket),
                         m_clientEndpoint, m_qMessagesIn);
+                    std::cout << "new connection: " << *(newConn.get()) << std::endl;
 
                     if (OnClientConnect(newConn)) {
+                        // m_deqSockets.push_back(std::move(newSocket));
                         m_deqConnections.push_back(std::move(newConn));
                         m_deqConnections.back()->ConnectToClient(this, nIDCounter++);
                         std::cout << "[" << m_deqConnections.back()->GetID()
@@ -117,7 +123,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                         std::cout << "[-----] Connection Denied" << std::endl;
                     }
                 } else {
-                    std::cout << "[SERVER] New Connection Error: " << ec.message() << std::endl;
+                    std::cout << "[SERVER] New Connection Error: "<< ec.value() << "; " << ec.message() << std::endl;
                 }
             });
     }
@@ -154,7 +160,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         bool bInvalidClientExists = false;
 
-        for (auto &client : m_deqConnections) {
+        for (std::shared_ptr<Connection<T>> &client : m_deqConnections) {
+            std::cout << "send message to a client" << std::endl;
             if (client && client->IsConnected()) {
                 if (client != pIgnoreClient)
                     client->Send(msg);
@@ -183,9 +190,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         if (bWait)
             m_qMessagesIn.wait();
 
+        WaitForClientMessage();
+
         size_t nMessageCount = 0;
         while (nMessageCount < nMaxMessages && !m_qMessagesIn.empty()) {
-            auto msg = m_qMessagesIn.pop_front();
+            OwnedMessage<T> msg = m_qMessagesIn.pop_front();
 
             OnMessage(msg.remote, msg.msg);
 
@@ -193,7 +202,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
     }
 
-    virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) {}
+    virtual void OnClientValidated(std::shared_ptr<Connection<T>> UNUSED client) {}
 
   protected:
     /**
@@ -203,14 +212,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @return true
      * @return false
      */
-    virtual bool OnClientConnect(std::shared_ptr<Connection<T>> client) { return false; }
+    virtual bool OnClientConnect(std::shared_ptr<Connection<T>> UNUSED client) { return false; }
 
     /**
      * @brief on client disconnect event
      *
      * @param client
      */
-    virtual void OnClientDisconnect(std::shared_ptr<Connection<T>> client) {}
+    virtual void OnClientDisconnect(std::shared_ptr<Connection<T>> UNUSED client) {}
 
     /**
      * @brief on message event
@@ -218,12 +227,13 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param client
      * @param msg
      */
-    virtual void OnMessage(std::shared_ptr<Connection<T>> client, Message<T> &msg) {}
+    virtual void OnMessage(std::shared_ptr<Connection<T>> UNUSED client, Message<T> UNUSED &msg) {}
 
   public:
     ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
 
     std::deque<std::shared_ptr<Connection<T>>> m_deqConnections;
+    std::deque<asio::ip::udp::socket> m_deqSockets;
 
     asio::io_context m_asioContext;
     std::thread m_threadContext;

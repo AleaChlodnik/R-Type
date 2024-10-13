@@ -8,6 +8,8 @@ target_link_libraries(r-type_server r-type_interfaces r-type_server_interfaces)
 
 if(WIN32)
   target_compile_definitions(r-type_server PRIVATE _WIN32)
+else()
+  target_compile_options(r-type_server PRIVATE -Wall -Wextra)
 endif()
 
 # Copy the executable to the root directory

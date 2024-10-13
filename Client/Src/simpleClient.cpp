@@ -24,7 +24,13 @@ void simpleClient()
                     auto msg = c.Incoming().pop_front().msg;
                     switch (msg.header.id) {
                     case TypeMessage::ServerAccept: {
+                        uint16_t newPort = 0;
+                        msg >> newPort;
                         std::cout << "Server Accepted Connection" << std::endl;
+                        std::cout << newPort << std::endl;
+                        c.getConnection().get()->setEndpoint(
+                            asio::ip::udp::endpoint(asio::ip::udp::v4(), newPort));
+                        asio::ip::udp::endpoint newEndpoint;
                     } break;
                     case TypeMessage::ServerPing: {
                         std::chrono::system_clock::time_point timeNow =

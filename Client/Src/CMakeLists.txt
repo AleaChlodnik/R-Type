@@ -11,7 +11,6 @@ add_executable(r-type_client main.cpp r-type_client.cpp client.cpp simpleClient.
 target_compile_features(r-type_client PRIVATE cxx_std_17)
 
 if (MSVC)
-  target_compile_options(r-type_client PRIVATE /W4)
   target_link_libraries(r-type_client PRIVATE Components Entities Systems r-type_interfaces r-type_client_interfaces)
 else()
   target_compile_options(r-type_client PRIVATE -Wall -Wextra)

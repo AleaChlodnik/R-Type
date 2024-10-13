@@ -10,8 +10,8 @@
 #include "net_common.hpp"
 #include "net_i_server.hpp"
 #include "net_message.hpp"
-#include "net_type_message.hpp"
 #include "net_thread_safe_queue.hpp"
+#include "net_type_message.hpp"
 
 #define UNUSED __attribute__((unused))
 
@@ -84,6 +84,13 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     virtual ~Connection() {}
 
+    friend std::ostream &operator<<(std::ostream &os, const Connection<T> &connection)
+    {
+        os << "id:" << connection.GetID() << "; socket: " << connection.getSocket()
+           << "; entrypoint: " << connection.getEndpoint();
+        return os;
+    }
+
     /**
      * @brief get the ID of the connection
      *
@@ -93,7 +100,15 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
 
     const asio::ip::udp::endpoint &getEndpoint() const { return m_endpoint; }
 
+    void setEndpoint(const asio::ip::udp::endpoint &endpoint) {
+        m_endpoint = endpoint;
+    }
+
     const asio::ip::udp::socket &getSocket() const { return m_socket; }
+
+    void setSocket(asio::ip::udp::socket &&socket) {
+        m_socket = std::move(socket);
+    }
 
   public:
     /**
@@ -102,7 +117,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      * @param server
      * @param uid
      */
-    void ConnectToClient(r_type::net::IServer<T> *server, uint32_t uid = 0)
+    void ConnectToClient(r_type::net::IServer<T> UNUSED *server, uint32_t uid = 0)
     {
         if (m_nOwnerType == owner::server) {
             if (m_socket.is_open()) {
@@ -181,6 +196,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     void WriteHeader()
     {
+        // std::cout << "write header to " << m_endpoint << "from " << m_socket << std::endl;
         m_socket.async_send_to(
             asio::buffer(&m_qMessagesOut.front().header, sizeof(MessageHeader<T>)), m_endpoint,
             [this](std::error_code ec, std::size_t UNUSED length) {
