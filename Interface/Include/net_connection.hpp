@@ -10,8 +10,8 @@
 #include "net_common.hpp"
 #include "net_i_server.hpp"
 #include "net_message.hpp"
-#include "net_type_message.hpp"
 #include "net_thread_safe_queue.hpp"
+#include "net_type_message.hpp"
 
 #define UNUSED __attribute__((unused))
 
