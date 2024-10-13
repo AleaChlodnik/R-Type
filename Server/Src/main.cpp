@@ -6,6 +6,7 @@
 */
 
 #include "netCommon.hpp"
+#include <cmath>
 #include <olcNet.hpp>
 
 class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
@@ -14,26 +15,25 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
         : olc::net::ServerInterface<CustomMsgTypes>(nPort)
     {
     }
-    std::unordered_map<uint32_t, sPlayerInformation> m_mapPlayerRoster;
     std::vector<uint32_t> m_vGarbageIDs;
 
     int getNbrPlayer() { return m_vPlayerRoster.size(); }
 
     void pushPlayer(sPlayerInformation desc)
     {
-        m_vPlayerRoster.push_back(desc);
+        m_vPlayerRoster.insert_or_assign(desc.nUniqueID, desc);
     }
-
-    std::vector<sPlayerInformation> getPlayers() { return m_vPlayerRoster; }
 
   protected:
     virtual bool checkPlayerPosition(sPlayerInformation desc)
     {
-        std::vector<sPlayerInformation> players = getPlayers();
-        for (auto &player : players) {
-            if (player.nUniqueID != desc.nUniqueID) {
-                if (player.vPos.x =
-                        desc.vPos.x && player.vPos.y == desc.vPos.y) {
+
+        for (const auto &other : m_vPlayerRoster) {
+            if (desc.nUniqueID != other.first) {
+                float dx = desc.vPos.x - other.second.vPos.x;
+                float dy = desc.vPos.y - other.second.vPos.y;
+                float distance = std::sqrt(dx * dx + dy * dy);
+                if (distance <= (desc.fRadius)) {
                     return false;
                 }
             }
@@ -45,6 +45,7 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
     {
         sPlayerInformation desc;
         desc.nUniqueID = getNbrPlayer();
+        desc.fRadius = 10;
         desc.vPos = {static_cast<float>(rand() % 800),
             static_cast<float>(rand() % 600)};
         while (checkPlayerPosition(desc) == false) {
@@ -52,8 +53,6 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
                 static_cast<float>(rand() % 600)};
         }
         msg << desc;
-        std::cout << desc.nUniqueID << "or struct" << std::endl;
-        std::cout << msg.body.front() << "on struct" << std::endl;
         pushPlayer(desc);
     }
 
@@ -63,9 +62,9 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
     {
         olc::net::message<CustomMsgTypes> msgAddPlayer;
         msgAddPlayer.header.id = CustomMsgTypes::Game_AddEntity;
-        for (auto &player : m_vPlayerRoster) {
-            if (desc.nUniqueID != player.nUniqueID) {
-                msgAddPlayer << player;
+        for (const auto &player : m_vPlayerRoster) {
+            if (player.first != desc.nUniqueID) {
+                msgAddPlayer << player.second;
                 client->Send(msgAddPlayer);
             }
         }
@@ -75,11 +74,12 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
         std::shared_ptr<olc::net::Connection<CustomMsgTypes>> client)
     {
         olc::net::message<CustomMsgTypes> msg;
-        msg.header.id = CustomMsgTypes::ServerAccept;
+        sPlayerInformation desc;
         InitiatePlayers(msg);
         std::cout << "Client [" << client->GetID() << "] Connected\n";
         client->Send(msg);
-        sPlayerInformation desc;
+        msg.header.id = CustomMsgTypes::Game_UpdateEntity;
+        MessageAllClients(msg);
         msg >> desc;
         InitListEntities(client, desc);
         return true;
@@ -90,13 +90,11 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
     {
         std::cout << "Removing client [" << client->GetID() << "]\n";
         if (client) {
-            if (m_mapPlayerRoster.find(client->GetID()) ==
-                m_mapPlayerRoster.end()) {
+            if (m_vPlayerRoster.find(client->GetID()) ==
+                m_vPlayerRoster.end()) {
             } else {
-                auto &pd = m_mapPlayerRoster[client->GetID()];
-                std::cout << "[UNGRACEFUL REMOVAL]:" +
-                        std::to_string(pd.nUniqueID) + "\n";
-                m_mapPlayerRoster.erase(client->GetID());
+                auto &pd = m_vPlayerRoster[client->GetID()];
+                m_vPlayerRoster.erase(client->GetID());
                 m_vGarbageIDs.push_back(client->GetID());
             }
         }
@@ -108,18 +106,16 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
         olc::net::message<CustomMsgTypes> msg;
         for (auto &player : m_vPlayerRoster) {
             msg.header.id = CustomMsgTypes::Game_UpdateEntity;
-            msg << player;
+            msg << player.second;
             client->Send(msg);
         }
     }
 
     virtual void PlayerPositionUpdate(sPlayerInformation desc)
     {
-        for (auto &player : m_vPlayerRoster) {
-            if (player.nUniqueID == desc.nUniqueID) {
-                player.vPos = desc.vPos;
-            }
-        }
+        sPlayerInformation pd;
+        olc::net::message<CustomMsgTypes> msg;
+        m_vPlayerRoster[desc.nUniqueID].vPos = desc.vPos;
     }
 
     // Called when a message arrives
@@ -141,14 +137,12 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
         case CustomMsgTypes::ServerPing: {
             std::cout << "[" << client->GetID() << "]: Server Ping\n";
 
-            // Simply bounce message back to client
             client->Send(msg);
         } break;
 
         case CustomMsgTypes::MessageAll: {
             std::cout << "[" << client->GetID() << "]: Message All\n";
 
-            // Construct a new message and send it to all clients
             olc::net::message<CustomMsgTypes> msg;
             msg.header.id = CustomMsgTypes::ServerMessage;
             msg << client->GetID();
@@ -159,7 +153,7 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
             sPlayerInformation desc;
             msg >> desc;
             desc.nUniqueID = client->GetID();
-            m_mapPlayerRoster.insert_or_assign(desc.nUniqueID, desc);
+            m_vPlayerRoster.insert_or_assign(desc.nUniqueID, desc);
 
             olc::net::message<CustomMsgTypes> msgSendID;
             msgSendID.header.id = CustomMsgTypes::Client_AssignID;
@@ -171,7 +165,7 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
             msgAddPlayer << desc;
             MessageAllClients(msgAddPlayer);
 
-            for (const auto &player : m_mapPlayerRoster) {
+            for (const auto &player : m_vPlayerRoster) {
                 olc::net::message<CustomMsgTypes> msgAddOtherPlayers;
                 msgAddOtherPlayers.header.id = CustomMsgTypes::Game_AddEntity;
                 msgAddOtherPlayers << player.second;
@@ -185,11 +179,15 @@ class CustomServer : public olc::net::ServerInterface<CustomMsgTypes> {
             break;
         }
         case CustomMsgTypes::Game_UpdatePositionEntity: {
+            olc::net::message<CustomMsgTypes> reponse;
             sPlayerInformation desc;
             msg >> desc;
-            std::cout << "Update Player [" << desc.nUniqueID << "] at ("
-                      << desc.vPos.x << "," << desc.vPos.y << ")" << std::endl;
-            PlayerPositionUpdate(desc);
+            if (checkPlayerPosition(desc) == true) {
+                PlayerPositionUpdate(desc);
+                reponse.header.id = CustomMsgTypes::Game_UpdateEntity;
+                reponse << desc;
+                MessageAllClients(reponse);
+            }
             break;
         }
 
