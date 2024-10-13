@@ -48,26 +48,26 @@ Entity EntityFactory::createPlayer(EntityManager &entityManager,
         }
     }
     switch (allies) {
-        case 0:
-            texturePath = "Client/Assets/Sprites/Ships/ship1.png";
-            break;
-        case 1:
-            texturePath = "Client/Assets/Sprites/Ships/ship2.png";
-            break;
-        case 2:
-            texturePath = "Client/Assets/Sprites/Ships/ship3.png";
-            break;
-        case 3:
-            texturePath = "Client/Assets/Sprites/Ships/ship4.png";
-            break;
-        case 4:
-            texturePath = "Client/Assets/Sprites/Ships/ship5.png";
-            break;
-        case 5:
-            texturePath = "Client/Assets/Sprites/Ships/ship6.png";
-            break;
-        default:
-            break;
+    case 0:
+        texturePath = "Client/Assets/Sprites/Ships/ship1.png";
+        break;
+    case 1:
+        texturePath = "Client/Assets/Sprites/Ships/ship2.png";
+        break;
+    case 2:
+        texturePath = "Client/Assets/Sprites/Ships/ship3.png";
+        break;
+    case 3:
+        texturePath = "Client/Assets/Sprites/Ships/ship4.png";
+        break;
+    case 4:
+        texturePath = "Client/Assets/Sprites/Ships/ship5.png";
+        break;
+    case 5:
+        texturePath = "Client/Assets/Sprites/Ships/ship6.png";
+        break;
+    default:
+        break;
     }
 
     sf::Texture &texture = textureManager.getTexture(texturePath);
@@ -91,41 +91,43 @@ Entity EntityFactory::createPlayer(EntityManager &entityManager,
     return player;
 }
 
-Entity EntityFactory::createAlly(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager)
+Entity EntityFactory::createAlly(EntityManager &entityManager, ComponentManager &componentManager,
+    TextureManager &textureManager)
 {
     std::string texturePath;
     int ships = 0;
     const auto &entities = entityManager.getAllEntities();
     for (const auto &entity : entities) {
-        if (componentManager.getComponent<AllyComponent>(entity.getId()) || componentManager.getComponent<PlayerComponent>(entity.getId())) {
+        if (componentManager.getComponent<AllyComponent>(entity.getId()) ||
+            componentManager.getComponent<PlayerComponent>(entity.getId())) {
             ships += 1;
         }
     }
     switch (ships) {
-        case 0:
-            texturePath = "Client/Assets/Sprites/Ships/ship1.png";
-            break;
-        case 1:
-            texturePath = "Client/Assets/Sprites/Ships/ship2.png";
-            break;
-        case 2:
-            texturePath = "Client/Assets/Sprites/Ships/ship3.png";
-            break;
-        case 3:
-            texturePath = "Client/Assets/Sprites/Ships/ship4.png";
-            break;
-        case 4:
-            texturePath = "Client/Assets/Sprites/Ships/ship5.png";
-            break;
-        case 5:
-            texturePath = "Client/Assets/Sprites/Ships/ship6.png";
-            break;
-        default:
-            break;
+    case 0:
+        texturePath = "Client/Assets/Sprites/Ships/ship1.png";
+        break;
+    case 1:
+        texturePath = "Client/Assets/Sprites/Ships/ship2.png";
+        break;
+    case 2:
+        texturePath = "Client/Assets/Sprites/Ships/ship3.png";
+        break;
+    case 3:
+        texturePath = "Client/Assets/Sprites/Ships/ship4.png";
+        break;
+    case 4:
+        texturePath = "Client/Assets/Sprites/Ships/ship5.png";
+        break;
+    case 5:
+        texturePath = "Client/Assets/Sprites/Ships/ship6.png";
+        break;
+    default:
+        break;
     }
 
     Entity ally = entityManager.createEntity();
-    
+
     sf::Texture &texture = textureManager.getTexture(texturePath);
     sf::Vector2f scale(1.3f, 1.3f);
 

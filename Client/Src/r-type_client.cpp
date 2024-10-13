@@ -65,9 +65,11 @@ void Rtype::gameLoop()
     UpdateSystem updateSystem(_window);
     RenderSystem renderSystem(_window);
 
-    /////////////////////////////////// temp for testing ///////////////////////////////////////////////
+    /////////////////////////////////// temp for testing
+    //////////////////////////////////////////////////
 
-    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
+    Entity background =
+        entityFactory.createBackground(entityManager, componentManager, textureManager);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -76,7 +78,8 @@ void Rtype::gameLoop()
     while (_window.isOpen()) {
         handleEvents();
         float deltaTime = clock.restart().asSeconds();
-        // shootSystem.fireMissle(entityFactory, entityManager, componentManager, textureManager, deltaTime); call only when specific key is pressed
+        // shootSystem.fireMissle(entityFactory, entityManager, componentManager, textureManager,
+        // deltaTime); call only when specific key is pressed
         updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(entityManager, componentManager);
     }

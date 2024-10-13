@@ -21,9 +21,12 @@ class IEntityFactory {
         ComponentManager &componentManager, TextureManager &TextureManager) = 0;
     virtual Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &TextureManager) = 0;
-    virtual Entity createAlly(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &TextureManager) = 0;
-    virtual Entity createBasicEnemy(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &TextureManager) = 0;
+    virtual Entity createAlly(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &TextureManager) = 0;
+    virtual Entity createBasicEnemy(EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &TextureManager) = 0;
     virtual Entity createBasicMonster(EntityManager &entityManager,
         ComponentManager &componentManager, TextureManager &TextureManager) = 0;
-    virtual Entity createMissile(int playerId, EntityManager &entityManager, ComponentManager &componentManager, TextureManager &TextureManager) = 0;
+    virtual Entity createMissile(int playerId, EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &TextureManager) = 0;
 };
