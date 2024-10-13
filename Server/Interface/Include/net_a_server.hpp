@@ -26,7 +26,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     AServer(uint16_t port)
         : r_type::net::IServer<T>(),
           m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
-        //   m_clientEndpoint(asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
+    //   m_clientEndpoint(asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
     {
     }
 
@@ -107,7 +107,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     }
                     // // create client socket
 
-
                     std::shared_ptr<Connection<T>> newConn = std::make_shared<Connection<T>>(
                         Connection<T>::owner::server, m_asioContext, std::move(m_asioSocket),
                         m_clientEndpoint, m_qMessagesIn);
@@ -123,7 +122,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                         std::cout << "[-----] Connection Denied" << std::endl;
                     }
                 } else {
-                    std::cout << "[SERVER] New Connection Error: "<< ec.value() << "; " << ec.message() << std::endl;
+                    std::cout << "[SERVER] New Connection Error: " << ec.value() << "; "
+                              << ec.message() << std::endl;
                 }
             });
     }

@@ -100,15 +100,11 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
 
     const asio::ip::udp::endpoint &getEndpoint() const { return m_endpoint; }
 
-    void setEndpoint(const asio::ip::udp::endpoint &endpoint) {
-        m_endpoint = endpoint;
-    }
+    void setEndpoint(const asio::ip::udp::endpoint &endpoint) { m_endpoint = endpoint; }
 
     const asio::ip::udp::socket &getSocket() const { return m_socket; }
 
-    void setSocket(asio::ip::udp::socket &&socket) {
-        m_socket = std::move(socket);
-    }
+    void setSocket(asio::ip::udp::socket &&socket) { m_socket = std::move(socket); }
 
   public:
     /**
