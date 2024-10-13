@@ -67,18 +67,12 @@ void Rtype::gameLoop()
 
     sf::Clock clock;
 
-    //////////////////// testing //////////////////////////
-
-
-    ////////////////////////////////////////////////////////
-
     while (_window.isOpen()) {
         handleEvents();
 
         float deltaTime = clock.restart().asSeconds();
 
-        // shootSystem.fireMissle(entityFactory, entityManager, componentManager, textureManager,
-        // deltaTime); call only when specific key is pressed
+        // shootSystem.fireMissle(entityFactory, entityManager, componentManager, textureManager, deltaTime); call only when specific key is pressed
         updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(entityManager, componentManager);
     }

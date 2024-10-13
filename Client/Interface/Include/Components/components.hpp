@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "ally_component.hpp"
 #include "background_component.hpp"
 #include "basic_monster_component.hpp"
 #include "enemy_component.hpp"

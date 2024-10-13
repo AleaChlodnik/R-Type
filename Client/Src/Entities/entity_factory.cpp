@@ -6,6 +6,7 @@
 */
 
 #include "Entities/entity_factory.hpp"
+#include "Components/components.hpp"
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 
@@ -38,8 +39,38 @@ Entity EntityFactory::createPlayer(EntityManager &entityManager,
 {
     Entity player = entityManager.createEntity();
 
-    sf::Texture &texture =
-        textureManager.getTexture("Client/Assets/Sprites/Player/Ship3/ship3.png");
+    std::string texturePath;
+    int allies = 0;
+    const auto &entities = entityManager.getAllEntities();
+    for (const auto &entity : entities) {
+        if (componentManager.getComponent<AllyComponent>(entity.getId())) {
+            allies += 1;
+        }
+    }
+    switch (allies) {
+        case 0:
+            texturePath = "Client/Assets/Sprites/Ships/ship1.png";
+            break;
+        case 1:
+            texturePath = "Client/Assets/Sprites/Ships/ship2.png";
+            break;
+        case 2:
+            texturePath = "Client/Assets/Sprites/Ships/ship3.png";
+            break;
+        case 3:
+            texturePath = "Client/Assets/Sprites/Ships/ship4.png";
+            break;
+        case 4:
+            texturePath = "Client/Assets/Sprites/Ships/ship5.png";
+            break;
+        case 5:
+            texturePath = "Client/Assets/Sprites/Ships/ship6.png";
+            break;
+        default:
+            break;
+    }
+
+    sf::Texture &texture = textureManager.getTexture(texturePath);
     sf::Vector2f scale(1.3f, 1.3f);
 
     PlayerComponent playerComponent;
@@ -60,29 +91,58 @@ Entity EntityFactory::createPlayer(EntityManager &entityManager,
     return player;
 }
 
-Entity EntityFactory::createMissile(int playerId, EntityManager &entityManager,
-    ComponentManager &componentManager, TextureManager &textureManager)
+Entity EntityFactory::createAlly(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager)
 {
-    Entity missle = entityManager.createEntity();
+    std::string texturePath;
+    int ships = 0;
+    const auto &entities = entityManager.getAllEntities();
+    for (const auto &entity : entities) {
+        if (componentManager.getComponent<AllyComponent>(entity.getId()) || componentManager.getComponent<PlayerComponent>(entity.getId())) {
+            ships += 1;
+        }
+    }
+    switch (ships) {
+        case 0:
+            texturePath = "Client/Assets/Sprites/Ships/ship1.png";
+            break;
+        case 1:
+            texturePath = "Client/Assets/Sprites/Ships/ship2.png";
+            break;
+        case 2:
+            texturePath = "Client/Assets/Sprites/Ships/ship3.png";
+            break;
+        case 3:
+            texturePath = "Client/Assets/Sprites/Ships/ship4.png";
+            break;
+        case 4:
+            texturePath = "Client/Assets/Sprites/Ships/ship5.png";
+            break;
+        case 5:
+            texturePath = "Client/Assets/Sprites/Ships/ship6.png";
+            break;
+        default:
+            break;
+    }
 
-    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Missiles/missile.png");
-    sf::Vector2f scale(0.1f, 0.1f);
+    Entity ally = entityManager.createEntity();
+    
+    sf::Texture &texture = textureManager.getTexture(texturePath);
+    sf::Vector2f scale(1.3f, 1.3f);
 
-    auto playerPosition = componentManager.getComponent<PositionComponent>(playerId);
-
-    MissileComponent missileComponent;
-    PositionComponent startPosition(
-        playerPosition.value()->x + 105, playerPosition.value()->y + 49);
-    VelocityComponent velocity(200.0f);
+    AllyComponent allyComponent;
+    PositionComponent startPosition(0, 0);
+    VelocityComponent velocity(100.0f);
     SpriteComponent sprite(texture, startPosition, scale);
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
+    HealthComponent health(100, 100);
 
-    componentManager.addComponent<MissileComponent>(missle.getId(), missileComponent);
-    componentManager.addComponent<PositionComponent>(missle.getId(), startPosition);
-    componentManager.addComponent<VelocityComponent>(missle.getId(), velocity);
-    componentManager.addComponent<SpriteComponent>(missle.getId(), sprite);
+    componentManager.addComponent<PlayerComponent>(ally.getId(), allyComponent);
+    componentManager.addComponent<PositionComponent>(ally.getId(), startPosition);
+    componentManager.addComponent<SpriteComponent>(ally.getId(), sprite);
+    componentManager.addComponent<HitboxComponent>(ally.getId(), hitbox);
+    componentManager.addComponent<HealthComponent>(ally.getId(), health);
 
-    return missle;
+    return ally;
 }
 
 Entity EntityFactory::createBasicEnemy(EntityManager &entityManager,
@@ -152,4 +212,29 @@ Entity EntityFactory::createBasicMonster(EntityManager &entityManager,
     componentManager.addComponent<HealthComponent>(monster.getId(), health);
 
     return monster;
+}
+
+Entity EntityFactory::createMissile(int playerId, EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager)
+{
+    Entity missle = entityManager.createEntity();
+
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Missiles/missile.png");
+    sf::Vector2f scale(0.1f, 0.1f);
+
+    auto playerPosition = componentManager.getComponent<PositionComponent>(playerId);
+
+    MissileComponent missileComponent;
+    PositionComponent startPosition(
+        playerPosition.value()->x + 105, playerPosition.value()->y + 49);
+    VelocityComponent velocity(200.0f);
+    SpriteComponent sprite(texture, startPosition, scale);
+    HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
+
+    componentManager.addComponent<MissileComponent>(missle.getId(), missileComponent);
+    componentManager.addComponent<PositionComponent>(missle.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(missle.getId(), velocity);
+    componentManager.addComponent<SpriteComponent>(missle.getId(), sprite);
+
+    return missle;
 }
