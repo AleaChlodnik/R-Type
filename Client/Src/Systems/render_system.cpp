@@ -36,4 +36,3 @@ void RenderSystem::render(EntityManager &entityManager, ComponentManager &compon
     }
     _window.display();
 }
-

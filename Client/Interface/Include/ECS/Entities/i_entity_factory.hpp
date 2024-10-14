@@ -9,10 +9,10 @@
 
 #include "entity.hpp"
 #include "entity_manager.hpp"
-#include "texture_manager.hpp"
 #include "scenes.hpp"
-#include <functional>
+#include "texture_manager.hpp"
 #include <Components/component_manager.hpp>
+#include <functional>
 
 // Abstract Entity Factory
 class IEntityFactory {
