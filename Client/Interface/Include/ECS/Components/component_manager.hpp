@@ -37,7 +37,7 @@ class ComponentManager {
                 return std::any_cast<ComponentType>(&entityComponents[entityId]);
             }
         }
-        return std::nullopt; // Return nullopt if not found
+        return std::nullopt;
     }
 
     template <typename ComponentType>
