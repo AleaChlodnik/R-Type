@@ -62,16 +62,16 @@ void Scenes::mainMenu()
 void Scenes::gameLoop()
 {
     ComponentManager componentManager;
-    EntityManager entityManager;
     TextureManager textureManager;
+
     EntityFactory entityFactory;
     UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
-    // Create all the necessary entities
-    Entity background =
-        entityFactory.createBackground(entityManager, componentManager, textureManager);
+
+    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
     Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
     ShootSystem shootSystem(player.getId(), 0.5f);
+
     sf::Clock clock;
     sf::Event event;
 

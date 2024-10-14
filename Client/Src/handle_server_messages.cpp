@@ -5,9 +5,10 @@
 ** handle_server_messages
 */
 
-void addEntitySprite() // arg will me entity info sent by server, texture manager
+void addEntitySprite() // arg will be info sent by server, texture manager
 {
-    // sf::
-    // Add a sprite component to the entity
-    // Add the entity to the entity manager
+    // sf:: Texture &texture = textureManager.getTexture(arg.texturePath);
+    // sf::Vector2f scale = {arg.scaleX, arg.scaleY};
+    // SpriteComponent spriteComponent(texture, arg.posX, arg.posY, scale);
+    // componentManager.addComponent<SpriteComponent>(arg.entityId, spriteComponent);
 }
