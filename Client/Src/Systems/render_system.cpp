@@ -17,6 +17,12 @@ void RenderSystem::render(EntityManager &entityManager, ComponentManager &compon
         if (spriteOpt) {
             _window.draw(spriteOpt.value()->sprite);
         }
+        auto textOpt = componentManager.getComponent<TextComponent>(entity.getId());
+        sf::Font font;
+        font.loadFromFile("Client/Assets/Fonts/GODOFWAR.TTF");
+        if (textOpt) {
+            _window.draw(sf::Text(textOpt.value()->_text, font));
+        }
     }
     _window.display();
 }
