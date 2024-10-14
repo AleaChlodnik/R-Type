@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include <cmath>
 #include <entity_struct.hpp>
 #include <net_i_server.hpp>
 #include <unordered_map>
-#include <cmath>
 
 namespace r_type {
 namespace net {
@@ -233,11 +233,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         EntityInformation desc;
         desc.uniqueID = getNbrPlayer();
         desc.hitbox = {10, 10};
-        desc.vPos = {100,
-            static_cast<float>(rand() % 600)};
+        desc.vPos = {100, static_cast<float>(rand() % 600)};
         while (CheckPlayerPosition(desc) == false) {
-            desc.vPos = {100,
-                static_cast<float>(rand() % 600)};
+            desc.vPos = {100, static_cast<float>(rand() % 600)};
         }
         msg << desc;
         PushEntity(desc);
@@ -249,8 +247,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param desc
      */
     void InitListEntities(
-        std::shared_ptr<r_type::net::Connection<T>> client,
-        EntityInformation desc)
+        std::shared_ptr<r_type::net::Connection<T>> client, EntityInformation desc)
     {
         r_type::net::Message<T> msgAddPlayer;
         msgAddPlayer.header.id = T::Game_AddEntity;
@@ -261,7 +258,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             }
         }
     }
-
 
     /**
      * @brief check player position to avoid collision

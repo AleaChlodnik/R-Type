@@ -7,7 +7,7 @@
 
 #include <cstdint>
 #ifndef ENTITIES_STRUCT_HPP_
-#define ENTITIES_STRUCT_HPP_
+    #define ENTITIES_STRUCT_HPP_
 
 struct vf2d {
     float x = 0;
@@ -18,7 +18,6 @@ struct hbf2d {
     float width = 0;
     float height = 0;
 };
-
 
 struct EntityInformation {
     uint32_t uniqueID = 0;

@@ -87,10 +87,7 @@ template <typename T> class AClient : virtual public IClient<T> {
         Entities.insert_or_assign(entity.uniqueID, entity);
     }
 
-    void RemoveEntity(uint32_t id)
-    {
-        Entities.erase(id);
-    }
+    void RemoveEntity(uint32_t id) { Entities.erase(id); }
 
     void UpdateEntity(EntityInformation entity)
     {
@@ -99,15 +96,9 @@ template <typename T> class AClient : virtual public IClient<T> {
         Entities[entity.uniqueID] = entity;
     }
 
-    std::unordered_map<uint32_t, EntityInformation> GetPlayers()
-    {
-        return Entities;
-    }
+    std::unordered_map<uint32_t, EntityInformation> GetPlayers() { return Entities; }
 
-    EntityInformation GetAPlayer(uint32_t id)
-    {
-        return Entities[id];
-    }
+    EntityInformation GetAPlayer(uint32_t id) { return Entities[id]; }
 
     void SetEntityID(int id) { EntityID = id; }
     int GetEntityID() { return EntityID; }
