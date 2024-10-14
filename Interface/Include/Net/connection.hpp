@@ -15,17 +15,17 @@
 
 #define UNUSED __attribute__((unused))
 
-std::ostream &operator<<(std::ostream &os, const asio::ip::udp::socket &socket)
-{
-    os << socket.local_endpoint().address().to_string() << ":" << socket.local_endpoint().port();
-    return os;
-}
+// std::ostream &operator<<(std::ostream &os, const asio::ip::udp::socket &socket)
+// {
+//     os << socket.local_endpoint().address().to_string() << ":" << socket.local_endpoint().port();
+//     return os;
+// }
 
-std::ostream &operator<<(std::ostream &os, const asio::ip::udp::endpoint &endpoint)
-{
-    os << endpoint.address().to_string() << ":" << endpoint.port();
-    return os;
-}
+// std::ostream &operator<<(std::ostream &os, const asio::ip::udp::endpoint &endpoint)
+// {
+//     os << endpoint.address().to_string() << ":" << endpoint.port();
+//     return os;
+// }
 
 namespace r_type {
 namespace net {
@@ -84,12 +84,12 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     virtual ~Connection() {}
 
-    friend std::ostream &operator<<(std::ostream &os, const Connection<T> &connection)
-    {
-        os << "ID: " << connection.GetID() << "; socket: " << connection.getSocket()
-           << "; endpoint: " << connection.getEndpoint();
-        return os;
-    }
+    // friend std::ostream &operator<<(std::ostream &os, const Connection<T> &connection)
+    // {
+    //     os << "ID: " << connection.GetID() << "; socket: " << connection.getSocket()
+    //        << "; endpoint: " << connection.getEndpoint();
+    //     return os;
+    // }
 
     /**
      * @brief get the ID of the connection

@@ -33,7 +33,7 @@ template <typename T> class AClient : virtual public IClient<T> {
         try {
             asio::ip::udp::endpoint remote_endpoint =
                 asio::ip::udp::endpoint(asio::ip::address::from_string(host), port);
-            std::cout << "Remote endpoint: " << remote_endpoint << std::endl;
+            // std::cout << "Remote endpoint: " << remote_endpoint << std::endl;
 
             asio::ip::udp::socket socket(
                 m_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0));
@@ -41,7 +41,7 @@ template <typename T> class AClient : virtual public IClient<T> {
                 std::move(socket), std::move(remote_endpoint), m_qMessagesIn);
             m_connection->ConnectToServer();
 
-            std::cout << "Connection: " << *(m_connection.get()) << std::endl;
+            // std::cout << "Connection: " << *(m_connection.get()) << std::endl;
 
             thrContext = std::thread([this]() { m_context.run(); });
         } catch (std::exception &e) {
