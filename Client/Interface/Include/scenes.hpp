@@ -6,9 +6,22 @@
 */
 
 #pragma once
+
+#include "Entities/entity.hpp"
 #include <SFML/Graphics.hpp>
 
 class Scenes {
+
+    enum class Scene
+    {
+        MAIN_MENU,
+        GAME_LOOP,
+        SETTINGS_MENU,
+        IN_GAME_MENU,
+        EXIT
+    };
+
+  public:
     enum class GameMode
     {
         EASY,
@@ -24,16 +37,6 @@ class Scenes {
         PROTANOPIA
     };
 
-    enum class Scene
-    {
-        MAIN_MENU,
-        GAME_LOOP,
-        SETTINGS_MENU,
-        IN_GAME_MENU,
-        EXIT
-    };
-
-  public:
     Scenes(sf::RenderWindow *window);
     ~Scenes() = default;
 
@@ -68,24 +71,40 @@ class Scenes {
      *
      * @param mode
      */
-    void setDaltonism(DaltonismMode mode);
+    void setDaltonism(DaltonismMode mode) { currentDaltonismMode = mode; }
     /**
      * @brief Set the Game Mode object
      *
      * @param mode
      */
-    void setGameMode(GameMode mode);
+    void setGameMode(GameMode mode) { currentGameMode = mode; }
     /**
      * @brief Set the Scene object
      *
      * @param scene
      */
     void setScene(Scene scene);
+    /**
+     * @brief Get the Previous Scene object
+     *
+     * @return Scene
+     */
+    Scene getPreviousScene() { return previousScene; }
+    /**
+     * @brief check if game should stop running
+     *
+     * @return true
+     * @return false
+     */
     bool shouldQuit() { return currentScene == Scene::EXIT; }
 
   private:
     GameMode currentGameMode = GameMode::MEDIUM;
     DaltonismMode currentDaltonismMode = DaltonismMode::NORMAL;
     Scene currentScene = Scene::MAIN_MENU;
+    Scene previousScene = Scene::MAIN_MENU;
+    bool displayDaltonismChoice = false;
+    bool displayGameModeChoice = false;
     sf::RenderWindow *_window;
+    std::vector<Entity *> buttons;
 };
