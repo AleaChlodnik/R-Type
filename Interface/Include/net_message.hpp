@@ -6,11 +6,12 @@
 */
 
 #pragma once
-#include "netCommon.hpp"
-#include "netConnection.hpp"
+#include "net_common.hpp"
+#include "net_connection.hpp"
 
-namespace olc {
+namespace r_type {
 namespace net {
+
 /**
  * @brief Message Header
  * to be sent over the network
@@ -41,12 +42,16 @@ template <typename T> struct Message {
     }
 
     /**
-     * @brief pile data in message
+     * @brief Overloaded insertion operator for adding data to a message.
      *
-     * @tparam DataType
-     * @param msg
-     * @param data
-     * @return Message<T>&
+     * This function allows adding data of any type to a message object using the insertion
+     * operator (<<). The data is copied into the message's body vector, and the message's size is
+     * updated accordingly.
+     *
+     * @tparam DataType The type of data being added to the message.
+     * @param msg The message object to which the data is being added.
+     * @param data The data being added to the message.
+     * @return A reference to the modified message object.
      */
     template <typename DataType>
     friend Message<T> &operator<<(Message<T> &msg, const DataType &data)
@@ -66,12 +71,18 @@ template <typename T> struct Message {
     }
 
     /**
-     * @brief unpile data from message
+     * @brief Overloaded stream extraction operator for deserializing data from a Message object.
      *
-     * @tparam DataType
-     * @param msg
-     * @param data
-     * @return Message<T>&
+     * This function allows extracting data of type DataType from a Message object using the stream
+     * extraction operator (>>). The DataType must be a standard layout type, otherwise a
+     * static_assert will be triggered. The function retrieves the data from the body of the
+     * Message object and resizes the body accordingly. Finally, it updates the size of the header
+     * in the Message object.
+     *
+     * @tparam DataType The type of data to be extracted.
+     * @param msg The Message object from which to extract the data.
+     * @param data The variable to store the extracted data.
+     * @return A reference to the modified Message object.
      */
     template <typename DataType> friend Message<T> &operator>>(Message<T> &msg, DataType &data)
     {
@@ -93,9 +104,12 @@ template <typename T> struct Message {
 template <typename T> class Connection;
 
 /**
- * @brief
+ * @brief A struct representing an owned message.
  *
- * @tparam T
+ * This struct holds a shared pointer to a Connection object and a Message object.
+ * It is used to represent a message that is owned by a specific connection.
+ *
+ * @tparam T The type of the message.
  */
 template <typename T> struct OwnedMessage {
     std::shared_ptr<Connection<T>> remote = nullptr;
@@ -109,4 +123,4 @@ template <typename T> struct OwnedMessage {
 };
 
 } // namespace net
-} // namespace olc
+} // namespace r_type

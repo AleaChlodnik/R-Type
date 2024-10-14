@@ -6,17 +6,16 @@
 */
 
 #pragma once
-#include "netCommon.hpp"
-#include "netConnection.hpp"
-#include "netThreadSafeQueue.hpp"
 
-namespace olc {
+#include "net_i_client.hpp"
+
+namespace r_type {
 namespace net {
-template <typename T> class ClientInterface {
+template <typename T> class AClient : virtual public IClient<T> {
   public:
-    ClientInterface() {}
+    AClient() {}
 
-    virtual ~ClientInterface() { Disconnect(); }
+    virtual ~AClient() { Disconnect(); }
 
   public:
     /**
@@ -30,18 +29,21 @@ template <typename T> class ClientInterface {
     bool Connect(const std::string &host, const uint16_t port)
     {
         try {
-            asio::ip::tcp::resolver resolver(m_context);
-            asio::ip::tcp::resolver::results_type endpoints =
-                resolver.resolve(host, std::to_string(port));
+            asio::ip::udp::endpoint remote_endpoint =
+                asio::ip::udp::endpoint(asio::ip::address::from_string(host), port);
+            std::cout << "Remote endpoint: " << remote_endpoint << std::endl;
 
+            asio::ip::udp::socket socket(
+                m_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0));
             m_connection = std::make_unique<Connection<T>>(Connection<T>::owner::client, m_context,
-                asio::ip::tcp::socket(m_context), m_qMessagesIn);
+                std::move(socket), std::move(remote_endpoint), m_qMessagesIn);
+            m_connection->ConnectToServer();
 
-            m_connection->ConnectToServer(endpoints);
+            std::cout << "Connection: " << *(m_connection.get()) << std::endl;
 
             thrContext = std::thread([this]() { m_context.run(); });
         } catch (std::exception &e) {
-            std::cerr << "Client Exception: " << e.what() << "\n";
+            std::cerr << "Client Exception: " << e.what() << std::endl;
             return false;
         }
         return true;
@@ -97,6 +99,8 @@ template <typename T> class ClientInterface {
      */
     ThreadSafeQueue<OwnedMessage<T>> &Incoming() { return m_qMessagesIn; }
 
+    const std::unique_ptr<Connection<T>> &getConnection() { return m_connection; }
+
   protected:
     asio::io_context m_context;
     std::thread thrContext;
@@ -106,4 +110,4 @@ template <typename T> class ClientInterface {
     ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
 };
 } // namespace net
-} // namespace olc
+} // namespace r_type
