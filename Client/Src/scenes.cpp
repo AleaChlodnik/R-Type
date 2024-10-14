@@ -153,7 +153,7 @@ void Scenes::gameLoop()
                     std::cout << "space" << std::endl;
                     c.PingServer();
                     ////////////////////////////////////////// change space to shoot & ping server
-                    ///to something else
+                    /// to something else
                 } break;
                 case sf::Keyboard::Q: {
                     _window->close();
