@@ -4,11 +4,11 @@
 ** File description:
 ** button
 */
-#include "button.hpp"
+#include <button.hpp>
 
 Button::Button(std::string path, std::pair<int, int> position, std::pair<float, float> size)
 {
-    this->font.loadFromFile("Client/Src/Assets/godofwar.ttf");
+    this->font.loadFromFile("Client/Assets/Fonts/GODOFWAR.TTF");
     this->text.setFont(font);
     this->text.setString("Button");
     this->text.setPosition(position.first, position.second);
@@ -24,13 +24,12 @@ Button::Button(std::string path) { this->bgImage->loadFromFile(path); }
 
 Button::Button(sf::Color color, std::pair<int, int> position, std::pair<float, float> size)
 {
-    this->font.loadFromFile("Client/Src/Assets/godofwar.ttf");
+    this->font.loadFromFile("Client/Assets/Fonts/GODOFWAR.TTF");
     this->text.setFont(font);
     this->text.setString("Button");
     this->text.setPosition(position.first, position.second);
     this->text.setCharacterSize(this->fontSize);
     this->rect.setPosition(position.first, position.second);
-    this->rect.setScale(size.first, size.second);
     this->rect.setSize(sf::Vector2f(size.first, size.second));
     this->rect.setFillColor(color);
     double luminance = (0.299 * color.r + 0.587 * color.g + 0.114 * color.b) / 255.0;
@@ -85,6 +84,11 @@ void Button::setFontSize(std::size_t fontSize)
     this->text.setCharacterSize(this->fontSize);
 }
 
-void Button::setOnClick(std::function<void(Rtype)> callback) { this->onClick = callback; }
+void Button::setOnClick(std::function<void(Scenes *)> callback) { this->onClick = callback; }
 
-void Button::setOnHover(std::function<void(Rtype)> callback) { this->onHover = callback; }
+void Button::setOnHover(std::function<void(Scenes *)> callback) { this->onHover = callback; }
+
+bool Button::isHovered(std::pair<int, int> mousePos)
+{
+    return this->rect.getGlobalBounds().contains(mousePos.first, mousePos.second);
+}

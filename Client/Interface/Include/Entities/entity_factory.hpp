@@ -8,6 +8,8 @@
 #pragma once
 
 #include "i_entity_factory.hpp"
+#include "scenes.hpp"
+#include <functional>
 
 class EntityFactory : public IEntityFactory {
   public:
@@ -17,4 +19,6 @@ class EntityFactory : public IEntityFactory {
         TextureManager &textureManager) override;
     Entity createMissile(int playerId, EntityManager &entityManager,
         ComponentManager &componentManager, TextureManager &textureManager) override;
+    Entity createButton(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &textureManager, std::string text, std::function<Scenes *(Scenes *)> onClick);
 };

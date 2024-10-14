@@ -75,3 +75,24 @@ Entity EntityFactory::createMissile(int playerId, EntityManager &entityManager,
 
     return missle;
 }
+
+Entity EntityFactory::createButton(EntityManager &entityManager, ComponentManager &componentManager,
+    TextureManager &textureManager, std::string text, std::function<Scenes *(Scenes *)> onClick)
+{
+    Entity button = entityManager.createEntity();
+
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
+    sf::Vector2f scale(1.0f, 1.0f);
+
+    PositionComponent start_position(0, 0);
+    SpriteComponent sprite(texture, start_position, scale);
+    TextComponent textComponent(text);
+    OnClickComponent onClickfunction(onClick);
+
+    componentManager.addComponent<PositionComponent>(button.getId(), start_position);
+    componentManager.addComponent<SpriteComponent>(button.getId(), sprite);
+    componentManager.addComponent<OnClickComponent>(button.getId(), onClickfunction);
+    componentManager.addComponent<TextComponent>(button.getId(), textComponent);
+
+    return button;
+}

@@ -9,25 +9,10 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
-
+#include "scenes.hpp"
 #include "error_handling.hpp"
 
 class Rtype {
-
-    enum class GameMode
-    {
-        EASY,
-        MEDIUM,
-        HARD
-    };
-
-    enum class DaltonismMode
-    {
-        NORMAL,
-        TRITANOPIA,
-        DEUTERANOPIA,
-        PROTANOPIA
-    };
 
   public:
     /**
@@ -40,8 +25,8 @@ class Rtype {
     Rtype();
 
     /**
-     * @brief If main_menu variable is true, call mainMenu. While
-     * main_menu is false, call gameLoop.
+     * @brief If _mainMenu variable is true, call mainMenu. While
+     * _mainMenu is false, call gameLoop.
      *
      */
     void run();
@@ -49,7 +34,7 @@ class Rtype {
     /**
      * @brief Open window. (handleEvents). Display the main menu with
      * start, help, daltonic mode, and speed selection buttons. On
-     * start, set main_menu to false, close window, and return.
+     * start, set _mainMenu to false, close window, and return.
      * When active, daltonic_mode will be set to true, and draw a
      * color filter over the screen until deactivated. Can set
      * keybindings as well, either default or customized
@@ -95,43 +80,9 @@ class Rtype {
      *
      * @param mode
      */
-    void setGameMode(GameMode mode) { currentGameMode = mode; }
-    /**
-     * @brief Set the Daltonism Mode object
-     *
-     * @param mode
-     */
-    void setDaltonismMode(DaltonismMode mode) { currentDaltonismMode = mode; }
-    /**
-     * @brief Set the Main Menu Status object
-     *
-     * @param status
-     */
-    void setMainMenuStatus(bool status) { main_menu = status; }
-    // Getters
-    /**
-     * @brief Get the Game Mode object
-     *
-     * @return GameMode
-     */
-    GameMode getGameMode() const { return currentGameMode; }
-    /**
-     * @brief Get the Daltonism Mode object
-     *
-     * @return DaltonismMode
-     */
-    DaltonismMode getDaltonismMode() const { return currentDaltonismMode; }
-    /**
-     * @brief Get the Main Menu Status object
-     *
-     * @return int
-     */
-    int getMainMenuStatus() const { return main_menu; }
 
   private:
-    GameMode currentGameMode;
-    DaltonismMode currentDaltonismMode;
-    bool main_menu;
+    Scenes *_scenes;
     sf::RenderWindow _window;
 };
 
