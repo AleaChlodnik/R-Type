@@ -114,9 +114,6 @@ void Scenes::mainMenu()
             }
         }
 
-        float deltaTime = clock.restart().asSeconds();
-
-        updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(entityManager, componentManager);
     }
 }
@@ -124,21 +121,13 @@ void Scenes::mainMenu()
 void Scenes::gameLoop()
 {
     ComponentManager componentManager;
-    EntityManager entityManager;
     TextureManager textureManager;
-    EntityFactory entityFactory;
-    UpdateSystem updateSystem(*_window);
+
     RenderSystem renderSystem(*_window);
-    // Create all the necessary entities
-    Entity background =
-        entityFactory.createBackground(entityManager, componentManager, textureManager);
-    Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
-    ShootSystem shootSystem(player.getId(), 0.5f);
-    sf::Clock clock;
+
     sf::Event event;
 
     while (_window->isOpen()) {
-        float deltaTime = clock.restart().asSeconds();
 
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed)
@@ -146,37 +135,23 @@ void Scenes::gameLoop()
 
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Space) {
-                    shootSystem.fireMissle(
-                        entityFactory, entityManager, componentManager, textureManager, deltaTime);
+                    // send to server: shoot
                 };
                 if (event.key.code == sf::Keyboard::Up) {
-                    auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
-                    if (posOpt) {
-                        posOpt.value()->y -= 5;
-                    }
+                    // send to server: player move up
                 }
                 if (event.key.code == sf::Keyboard::Down) {
-                    auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
-                    if (posOpt) {
-                        posOpt.value()->y += 5;
-                    }
+                    // send to server: player move down
                 }
                 if (event.key.code == sf::Keyboard::Left) {
-                    auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
-                    if (posOpt) {
-                        posOpt.value()->x -= 5;
-                    }
+                    // send to server: player move left
                 }
                 if (event.key.code == sf::Keyboard::Right) {
-                    auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
-                    if (posOpt) {
-                        posOpt.value()->x += 5;
-                    }
+                    // send to server: player move right
                 }
             }
         }
 
-        updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(entityManager, componentManager);
     }
 }

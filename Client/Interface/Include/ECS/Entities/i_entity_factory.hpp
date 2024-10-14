@@ -21,6 +21,6 @@ class IEntityFactory {
 
     virtual Entity createBackground(EntityManager &entityManager,
         ComponentManager &componentManager, TextureManager &TextureManager) = 0;
-    virtual Entity createButtonEntityManager &entityManager, ComponentManager &componentManager,
+    virtual Entity createButtonEntityManager(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &textureManager, std::string text, std::function<Scenes *(Scenes *)> onClick) = 0;
 };
