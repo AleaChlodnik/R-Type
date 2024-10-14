@@ -8,10 +8,8 @@
 #pragma once
 #include <iostream>
 
-struct TextComponent
-{
+struct TextComponent {
     std::string _text;
 
     TextComponent(std::string text) : _text(text) {}
 };
-

@@ -5,15 +5,15 @@
 ** scenes
 */
 
-#include <Systems/systems.hpp>
 #include <Components/component_manager.hpp>
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
-#include <r_type_client.hpp>
-#include <texture_manager.hpp>
-#include <scenes.hpp>
+#include <Systems/systems.hpp>
 #include <functional>
 #include <iostream>
+#include <r_type_client.hpp>
+#include <scenes.hpp>
+#include <texture_manager.hpp>
 
 Scenes::Scenes(sf::RenderWindow *window)
 {
@@ -21,10 +21,7 @@ Scenes::Scenes(sf::RenderWindow *window)
     this->currentScene = Scenes::Scene::GAME_LOOP;
 }
 
-void Scenes::setScene(Scenes::Scene scene)
-{
-    this->currentScene = scene;
-}
+void Scenes::setScene(Scenes::Scene scene) { this->currentScene = scene; }
 
 void Scenes::mainMenu()
 {
@@ -35,14 +32,16 @@ void Scenes::mainMenu()
     UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
     // Create all the necessary entities
-    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
+    Entity background =
+        entityFactory.createBackground(entityManager, componentManager, textureManager);
     // Create the buttons
-    std::function<Scenes *(Scenes*)> onClickPlay = [](Scenes* currentScene) {
+    std::function<Scenes *(Scenes *)> onClickPlay = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
         return currentScene;
     };
 
-    Entity playButton = entityFactory.createButton(entityManager, componentManager, textureManager, "Play", onClickPlay);
+    Entity playButton = entityFactory.createButton(
+        entityManager, componentManager, textureManager, "Play", onClickPlay);
     sf::Clock clock;
     sf::Event event;
 
@@ -69,7 +68,8 @@ void Scenes::gameLoop()
     UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
     // Create all the necessary entities
-    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
+    Entity background =
+        entityFactory.createBackground(entityManager, componentManager, textureManager);
     Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
     ShootSystem shootSystem(player.getId(), 0.5f);
     sf::Clock clock;
@@ -119,32 +119,26 @@ void Scenes::gameLoop()
     }
 }
 
-void Scenes::inGameMenu()
-{
-    return;
-}
+void Scenes::inGameMenu() { return; }
 
-void Scenes::settingsMenu ()
-{
-    return;
-}
+void Scenes::settingsMenu() { return; }
 
 void Scenes::render()
 {
     switch (this->currentScene) {
-        case Scenes::Scene::MAIN_MENU:
-            this->mainMenu();
-            break;
-        case Scenes::Scene::GAME_LOOP:
-            this->gameLoop();
-            break;
-        case Scenes::Scene::SETTINGS_MENU:
-            this->settingsMenu();
-            break;
-        case Scenes::Scene::IN_GAME_MENU:
-            this->inGameMenu();
-            break;
-        default:
-            break;
-        }
+    case Scenes::Scene::MAIN_MENU:
+        this->mainMenu();
+        break;
+    case Scenes::Scene::GAME_LOOP:
+        this->gameLoop();
+        break;
+    case Scenes::Scene::SETTINGS_MENU:
+        this->settingsMenu();
+        break;
+    case Scenes::Scene::IN_GAME_MENU:
+        this->inGameMenu();
+        break;
+    default:
+        break;
+    }
 }
