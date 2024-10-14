@@ -15,7 +15,8 @@ void UpdateSystem::update(
 
     for (const auto &entity : entities) {
         int entityId = entity.getId();
-        if (componentManager.getComponent<PositionComponent>(entityId) && componentManager.getComponent<SpriteComponent>(entityId)) {
+        if (componentManager.getComponent<PositionComponent>(entityId) &&
+            componentManager.getComponent<SpriteComponent>(entityId)) {
             auto posOpt = componentManager.getComponent<PositionComponent>(entityId);
             auto spriteOpt = componentManager.getComponent<SpriteComponent>(entityId);
             if (posOpt && spriteOpt) {
