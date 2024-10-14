@@ -5,7 +5,7 @@
 ** update_system
 */
 
-#include "Systems/update_system.hpp"
+#include <Systems/update_system.hpp>
 
 void UpdateSystem::update(
     EntityManager &entityManager, ComponentManager &componentManager, float deltaTime)

@@ -1,13 +1,10 @@
-cmake_minimum_required(VERSION 3.10)
 
-project(R-TypeECSInterfaces
-        VERSION 1.0
-        DESCRIPTION "Interfaces for the ECS R-type project"
-        LANGUAGES CXX
-)
+add_library(r-type_ecs_src)
 
-add_library(r-type_ecs_interfaces INTERFACE)
+target_include_directories(r-type_ecs_src PRIVATE r-type_ecs_interfaces)
 
-target_include_directories(r-type_ecs_interfaces
-        INTERFACE Include
+target_sources(r-type_ecs_src PRIVATE
+        Entities/entity_factory.cpp
+        Systems/render_system.cpp
+        Systems/update_system.cpp
 )

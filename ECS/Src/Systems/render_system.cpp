@@ -5,7 +5,7 @@
 ** render_system
 */
 
-#include "Systems/render_system.hpp"
+#include <Systems/render_system.hpp>
 
 void RenderSystem::render(EntityManager &entityManager, ComponentManager &componentManager)
 {

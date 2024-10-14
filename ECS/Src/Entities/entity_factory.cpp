@@ -5,7 +5,7 @@
 ** entity_factory
 */
 
-#include "Entities/entity_factory.hpp"
+#include <Entities/entity_factory.hpp>
 #include "Components/components.hpp"
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
