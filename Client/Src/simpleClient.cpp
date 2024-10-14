@@ -5,9 +5,9 @@
 ** simpleClient
 */
 
+#include <Net/client.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <Net/client.hpp>
 
 void simpleClient()
 {

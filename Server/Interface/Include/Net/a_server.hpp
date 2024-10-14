@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include <Net/i_server.hpp>
 #include <cmath>
 #include <entity_struct.hpp>
-#include <Net/i_server.hpp>
 #include <unordered_map>
 
 namespace r_type {
