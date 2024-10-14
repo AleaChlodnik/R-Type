@@ -2,7 +2,9 @@
 ** EPITECH PROJECT, 2024
 ** R-Type
 ** File description:
-** client
+** r_type_server
 */
 
-#include "client.hpp"
+#pragma once
+
+#include <iostream>

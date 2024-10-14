@@ -7,33 +7,14 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <olcNet.hpp>
-
-class CustomClient : public olc::net::ClientInterface<CustomMsgTypes> {
-  public:
-    void PingServer()
-    {
-        olc::net::Message<CustomMsgTypes> msg;
-        msg.header.id = CustomMsgTypes::ServerPing;
-
-        std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
-
-        msg << timeNow;
-        Send(msg);
-    }
-
-    void MessageAll()
-    {
-        olc::net::Message<CustomMsgTypes> msg;
-        msg.header.id = CustomMsgTypes::MessageAll;
-        Send(msg);
-    }
-};
+#include <net_client.hpp>
 
 void simpleClient()
 {
-    CustomClient c;
+    r_type::net::Client c;
     c.Connect("127.0.0.1", 60000);
+    std::cout << "Socket: " << c.getConnection()->getSocket() << std::endl;
+    std::cout << "Endpoint: " << c.getConnection()->getEndpoint() << std::endl;
     sf::RenderWindow window(sf::VideoMode(800, 600), "Preferences");
     sf::Event event;
     while (window.isOpen()) {
@@ -42,11 +23,10 @@ void simpleClient()
                 if (!c.Incoming().empty()) {
                     auto msg = c.Incoming().pop_front().msg;
                     switch (msg.header.id) {
-                    case CustomMsgTypes::ServerAccept: {
+                    case TypeMessage::ServerAccept: {
                         std::cout << "Server Accepted Connection" << std::endl;
                     } break;
-
-                    case CustomMsgTypes::ServerPing: {
+                    case TypeMessage::ServerPing: {
                         std::chrono::system_clock::time_point timeNow =
                             std::chrono::system_clock::now();
                         std::chrono::system_clock::time_point timeThen;
@@ -55,22 +35,32 @@ void simpleClient()
                                   << std::chrono::duration<double>(timeNow - timeThen).count()
                                   << std::endl;
                     } break;
-
-                    case CustomMsgTypes::ServerMessage: {
+                    case TypeMessage::ServerMessage: {
                         uint32_t clientID;
                         msg >> clientID;
                         std::cout << "Hello from [" << clientID << "]" << std::endl;
                     } break;
-                    case CustomMsgTypes::ServerDeny: {
-
+                    case TypeMessage::ServerDeny: {
                     } break;
-                    case CustomMsgTypes::MessageAll: {
-
+                    case TypeMessage::MessageAll: {
+                    } break;
+                    case TypeMessage::ClientConnect: {
+                    } break;
+                    case TypeMessage::CreateEntityMessage: {
+                    } break;
+                    case TypeMessage::CreateEntityResponse: {
+                    } break;
+                    case TypeMessage::DestroyEntityMessage: {
+                    } break;
+                    case TypeMessage::DestroyEntityResponse: {
+                    } break;
+                    case TypeMessage::MoveEntityMessage: {
                     } break;
                     }
                 }
             } else {
                 std::cout << "Server Down" << std::endl;
+                window.close();
                 break;
             }
 
