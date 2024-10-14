@@ -26,6 +26,3 @@
 #include "text_component.hpp"
 #include "velocity_component.hpp"
 #include "weapon_component.hpp"
-#include "on_click_component.hpp"
-#include "on_hover_component.hpp"
-#include "text_component.hpp"
