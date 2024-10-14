@@ -32,7 +32,8 @@ void Scenes::mainMenu()
     EntityFactory entityFactory;
     RenderSystem renderSystem(*_window);
     // Create all the necessary entities
-    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
+    Entity background =
+        entityFactory.createBackground(entityManager, componentManager, textureManager);
     // Create the buttons
     std::function<Scenes *(Scenes *)> onPlayButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
@@ -151,7 +152,8 @@ void Scenes::gameLoop()
                 case sf::Keyboard::Space: {
                     std::cout << "space" << std::endl;
                     c.PingServer();
-                    ////////////////////////////////////////// change space to shoot & ping server to something else
+                    ////////////////////////////////////////// change space to shoot & ping server
+                    ///to something else
                 } break;
                 case sf::Keyboard::Q: {
                     _window->close();
