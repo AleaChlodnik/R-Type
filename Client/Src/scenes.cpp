@@ -66,8 +66,6 @@ void Scenes::gameLoop()
 
     sf::Event event;
 
-    
-
     while (_window->isOpen()) {
 
         while (_window->pollEvent(event)) {
