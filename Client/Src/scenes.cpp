@@ -32,9 +32,7 @@ void Scenes::mainMenu()
     EntityFactory entityFactory;
     RenderSystem renderSystem(*_window);
     // Create all the necessary entities
-    Entity background =
-        entityFactory.createBackground(entityManager, componentManager, textureManager);
-
+    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
     // Create the buttons
     std::function<Scenes *(Scenes *)> onPlayButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
@@ -119,7 +117,7 @@ void Scenes::mainMenu()
 
 void Scenes::gameLoop()
 {
-    CustomClient c;
+    r_type::net::Client c;
     c.Connect("127.0.0.1", 60000);
 
     ComponentManager componentManager;
@@ -153,13 +151,12 @@ void Scenes::gameLoop()
                 case sf::Keyboard::Space: {
                     std::cout << "space" << std::endl;
                     c.PingServer();
+                    ////////////////////////////////////////// change space to shoot & ping server to something else
                 } break;
                 case sf::Keyboard::Q: {
-                    std::cout << "Q" << std::endl;
                     _window->close();
                 } break;
                 case sf::Keyboard::V: {
-                    std::cout << "V" << std::endl;
                     c.MessageAll();
                 } break;
                 case sf::Keyboard::Up: {

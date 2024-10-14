@@ -11,7 +11,7 @@
 #include <cstdlib>
 
 Entity EntityFactory::createBackground(EntityManager &entityManager,
-    ComponentManager &componentManager, TextureManager &textureManager)
+    ComponentManager &componentManager)
 {
     Entity background = entityManager.createEntity();
 
@@ -29,7 +29,7 @@ Entity EntityFactory::createBackground(EntityManager &entityManager,
 }
 
 Entity EntityFactory::createPlayer(EntityManager &entityManager,
-    ComponentManager &componentManager, TextureManager &textureManager)
+    ComponentManager &componentManager)
 {
     Entity player = entityManager.createEntity();
 
@@ -69,7 +69,7 @@ Entity EntityFactory::createAlly(EntityManager &entityManager, ComponentManager 
 }
 
 Entity EntityFactory::createBasicEnemy(EntityManager &entityManager,
-    ComponentManager &componentManager, TextureManager &textureManager)
+    ComponentManager &componentManager)
 {
     Entity enemy = entityManager.createEntity();
 
@@ -89,7 +89,7 @@ Entity EntityFactory::createBasicEnemy(EntityManager &entityManager,
 }
 
 Entity EntityFactory::createBasicMonster(EntityManager &entityManager,
-    ComponentManager &componentManager, TextureManager &textureManager)
+    ComponentManager &componentManager)
 {
     Entity monster = entityManager.createEntity();
 
@@ -109,7 +109,7 @@ Entity EntityFactory::createBasicMonster(EntityManager &entityManager,
 }
 
 Entity EntityFactory::createPlayerMissile(int playerId, EntityManager &entityManager,
-    ComponentManager &componentManager, TextureManager &textureManager)
+    ComponentManager &componentManager)
 {
     Entity playerMissle = entityManager.createEntity();
 
@@ -130,7 +130,7 @@ Entity EntityFactory::createPlayerMissile(int playerId, EntityManager &entityMan
 }
 
 Entity EntityFactory::createAllyMissile(EntityManager &entityManager,
-    ComponentManager &componentManager, TextureManager &textureManager)
+    ComponentManager &componentManager)
 {
     Entity allyMissile = entityManager.createEntity();
 
@@ -147,7 +147,7 @@ Entity EntityFactory::createAllyMissile(EntityManager &entityManager,
 }
 
 Entity EntityFactory::createEnemyMissile(EntityManager &entityManager,
-    ComponentManager &componentManager, TextureManager &textureManager)
+    ComponentManager &componentManager)
 {
     Entity enemyMissile = entityManager.createEntity();
 
