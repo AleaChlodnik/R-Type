@@ -17,65 +17,25 @@ void simpleClient()
     std::cout << "Endpoint: " << c.getConnection()->getEndpoint() << std::endl;
     sf::RenderWindow window(sf::VideoMode(800, 600), "Preferences");
     sf::Event event;
+    auto updatePlayerPosition = [&](const vf2d &delta) {
+        EntityInformation desc = c.GetAPlayer(c.GetEntityID());
+        r_type::net::Message<TypeMessage> msg;
+        desc.vPos.x += delta.x;
+        desc.vPos.y += delta.y;
+        msg.header.id = TypeMessage::MoveEntityMessage;
+        msg << desc;
+        c.Send(msg);
+    };
+
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
-            if (c.IsConnected()) {
-                if (!c.Incoming().empty()) {
-                    auto msg = c.Incoming().pop_front().msg;
-                    switch (msg.header.id) {
-                    case TypeMessage::ServerAccept: {
-                        std::cout << "Server Accepted Connection" << std::endl;
-                        EntityInformation entity;
-                        msg >> entity;
-                        c.AddEntity(entity);
-                        c.SetEntityID(entity.uniqueID);
-                    } break;
-                    case TypeMessage::ServerPing: {
-                        std::chrono::system_clock::time_point timeNow =
-                            std::chrono::system_clock::now();
-                        std::chrono::system_clock::time_point timeThen;
-                        msg >> timeThen;
-                        std::cout << "Ping: "
-                                  << std::chrono::duration<double>(timeNow - timeThen).count()
-                                  << std::endl;
-                    } break;
-                    case TypeMessage::ServerMessage: {
-                        uint32_t clientID;
-                        msg >> clientID;
-                        std::cout << "Hello from [" << clientID << "]" << std::endl;
-                    } break;
-                    case TypeMessage::ServerDeny: {
-                    } break;
-                    case TypeMessage::MessageAll: {
-                    } break;
-                    case TypeMessage::ClientConnect: {
-                    } break;
-                    case TypeMessage::CreateEntityMessage: {
-                    } break;
-                    case TypeMessage::CreateEntityResponse: {
-                    } break;
-                    case TypeMessage::DestroyEntityMessage: {
-                    } break;
-                    case TypeMessage::DestroyEntityResponse: {
-                    } break;
-                    case TypeMessage::UpdateEntity: {
-                        std::cout << "UpdateEntity" << std::endl;
-                        r_type::net::Message<TypeMessage> reponse;
-                        reponse.header.id = TypeMessage::UpdateEntityResponse;
-                        EntityInformation entity;
-                        msg >> entity;
-                        c.UpdateEntity(entity);
-                    } break;
-                    }
-                }
-            } else {
-                std::cout << "Server Down" << std::endl;
+            if (event.type == sf::Event::Closed) {
+                r_type::net::Message<TypeMessage> msg;
+                msg.header.id = TypeMessage::DestroyEntityMessage;
+                msg << c.GetEntityID();
+                c.Send(msg);
                 window.close();
-                break;
             }
-
-            if (event.type == sf::Event::Closed)
-                window.close();
             if (event.type == sf::Event::KeyPressed) {
                 switch (event.key.code) {
                 case sf::Keyboard::Space: {
@@ -91,45 +51,81 @@ void simpleClient()
                     c.MessageAll();
                 } break;
                 case sf::Keyboard::Up: {
-                    std::cout << "Up" << std::endl;
-                    r_type::net::Message<TypeMessage> msg;
-                    EntityInformation entity = c.GetAPlayer(c.GetEntityID());
-                    entity.vPos.y -= 10;
-                    msg.header.id = TypeMessage::MoveEntityMessage;
-                    msg << entity;
-                    c.Send(msg);
+                    updatePlayerPosition(vf2d(0, -5));
                 } break;
                 case sf::Keyboard::Down: {
-                    std::cout << "Down" << std::endl;
-                    r_type::net::Message<TypeMessage> msg;
-                    EntityInformation entity = c.GetAPlayer(c.GetEntityID());
-                    entity.vPos.y += 10;
-                    msg.header.id = TypeMessage::MoveEntityMessage;
-                    msg << entity;
-                    c.Send(msg);
+                    updatePlayerPosition(vf2d(0, 5));
                 } break;
                 case sf::Keyboard::Left: {
-                    std::cout << "Left" << std::endl;
-                    r_type::net::Message<TypeMessage> msg;
-                    EntityInformation entity = c.GetAPlayer(c.GetEntityID());
-                    entity.vPos.x -= 10;
-                    msg.header.id = TypeMessage::MoveEntityMessage;
-                    msg << entity;
-                    c.Send(msg);
+                    updatePlayerPosition(vf2d(-5, 0));
                 } break;
                 case sf::Keyboard::Right: {
-                    std::cout << "Right" << std::endl;
-                    r_type::net::Message<TypeMessage> msg;
-                    EntityInformation entity = c.GetAPlayer(c.GetEntityID());
-                    entity.vPos.x += 10;
-                    msg.header.id = TypeMessage::MoveEntityMessage;
-                    msg << entity;
-                    c.Send(msg);
+                    updatePlayerPosition(vf2d(5, 0));
                 } break;
                 default:
                     break;
                 }
             }
+        }
+        if (c.IsConnected()) {
+            if (!c.Incoming().empty()) {
+                auto msg = c.Incoming().pop_front().msg;
+                switch (msg.header.id) {
+                case TypeMessage::ServerAccept: {
+                    std::cout << "Server Accepted Connection" << std::endl;
+                    EntityInformation entity;
+                    msg >> entity;
+                    c.AddEntity(entity);
+                    c.SetEntityID(entity.uniqueID);
+                } break;
+                case TypeMessage::ServerPing: {
+                    std::chrono::system_clock::time_point timeNow =
+                        std::chrono::system_clock::now();
+                    std::chrono::system_clock::time_point timeThen;
+                    msg >> timeThen;
+                    std::cout << "Ping: "
+                              << std::chrono::duration<double>(timeNow - timeThen).count()
+                              << std::endl;
+                } break;
+                case TypeMessage::ServerMessage: {
+                    uint32_t clientID;
+                    msg >> clientID;
+                    std::cout << "Hello from [" << clientID << "]" << std::endl;
+                } break;
+                case TypeMessage::ServerDeny: {
+                } break;
+                case TypeMessage::MessageAll: {
+                } break;
+                case TypeMessage::ClientConnect: {
+                } break;
+                case TypeMessage::CreateEntityMessage: {
+                    EntityInformation entity;
+                    msg >> entity;
+                    c.AddEntity(entity);
+                } break;
+                case TypeMessage::CreateEntityResponse: {
+                } break;
+                case TypeMessage::DestroyEntityMessage: {
+                    r_type::net::Message<TypeMessage> reponse;
+                    uint32_t id;
+                    msg >> id;
+                    c.RemoveEntity(id);
+                    reponse.header.id = TypeMessage::DestroyEntityResponse;
+                    c.Send(reponse);
+                } break;
+                case TypeMessage::UpdateEntity: {
+                    r_type::net::Message<TypeMessage> reponse;
+                    reponse.header.id = TypeMessage::UpdateEntityResponse;
+                    EntityInformation entity;
+                    msg >> entity;
+                    c.UpdateEntity(entity);
+                } break;
+                }
+            }
+        } else {
+            std::cout << "Server Down" << std::endl;
+            window.close();
+            break;
         }
 
         window.clear();

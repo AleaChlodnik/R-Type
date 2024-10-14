@@ -31,10 +31,15 @@ class Server : virtual public r_type::net::AServer<TypeMessage> {
     virtual bool OnClientConnect(std::shared_ptr<r_type::net::Connection<TypeMessage>> client)
     {
         r_type::net::Message<TypeMessage> msg;
+        EntityInformation entity;
         msg.header.id = TypeMessage::ServerAccept;
         InitiatePlayers(msg);
         nbr_of_player++;
-        client->Send(msg);
+        MessageClient(client, msg);
+        msg.header.id = TypeMessage::CreateEntityMessage;
+        MessageAllClients(msg, client);
+        msg >> entity;
+        InitListEntities(client, entity);
         return true;
     }
 
@@ -43,9 +48,16 @@ class Server : virtual public r_type::net::AServer<TypeMessage> {
      *
      * @param client
      */
-    virtual void OnClientDisconnect(std::shared_ptr<r_type::net::Connection<TypeMessage>> client)
+    virtual void OnClientDisconnect(std::shared_ptr<r_type::net::Connection<TypeMessage>> client,
+        r_type::net::Message<TypeMessage> &msg)
     {
+        int entityId;
         std::cout << "Removing client [" << client->GetID() << "]\n";
+        msg >> entityId;
+        RemoveEntity(entityId);
+        msg << entityId;
+        MessageAllClients(msg, client);
+        client->Disconnect();
     }
 
     /**
@@ -79,19 +91,19 @@ class Server : virtual public r_type::net::AServer<TypeMessage> {
             std::cout << "[" << client->GetID() << "]: Client Connect\n";
         } break;
         case TypeMessage::MoveEntityMessage: {
-            std::cout << "MoveEntityMessage" << std::endl;
             EntityInformation entity;
             msg >> entity;
             if (CheckPlayerPosition(entity)) {
-                std::cout << "Player " << entity.uniqueID << " moved to " << entity.vPos.x << " "
-                          << entity.vPos.y << std::endl;
                 UpdateEntity(entity);
                 r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::UpdateEntity;
                 msg << entity;
-                client->Send(msg);
+                MessageAllClients(msg);
             }
-        }
+        } break;
+        case TypeMessage::DestroyEntityMessage: {
+            OnClientDisconnect(client, msg);
+        } break;
         }
     }
 };
