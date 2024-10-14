@@ -4,12 +4,13 @@
 ** File description:
 ** button
 */
-#include "r_type_client.hpp"
+
+#pragma once
+
+#include "scenes.hpp"
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <iostream>
-
-#pragma once
 
 class Button {
   public:
@@ -29,13 +30,14 @@ class Button {
     std::string getText();
     void setTexture(std::string texturePath);
     void setFontSize(std::size_t fontSize);
-    void setOnClick(std::function<void(Rtype)> callback);
-    void setOnHover(std::function<void(Rtype)> callback);
+    void setOnClick(std::function<void(Scenes *)> callback);
+    void setOnHover(std::function<void(Scenes *)> callback);
+    bool isHovered(std::pair<int, int> mousePos);
 
     void render(sf::RenderWindow &window);
 
-    std::function<void(Rtype)> onClick;
-    std::function<void(Rtype)> onHover;
+    std::function<void(Scenes *)> onClick;
+    std::function<void(Scenes *)> onHover;
 
   private:
     sf::Texture *bgImage = new sf::Texture();

@@ -9,6 +9,7 @@
 
 #include "../error_handling.hpp"
 #include "entity.hpp"
+#include <algorithm>
 #include <vector>
 
 class EntityManager {

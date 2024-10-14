@@ -32,6 +32,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 add_subdirectory(Interface)
+add_subdirectory(ECS)
 add_subdirectory(Client)
 add_subdirectory(Server)
 

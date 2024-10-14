@@ -40,6 +40,16 @@ class ComponentManager {
         return std::nullopt; // Return nullopt if not found
     }
 
+    template <typename ComponentType>
+    std::optional<std::unordered_map<int, std::any> *> getComponentMap()
+    {
+        auto it = components.find(typeid(ComponentType));
+        if (it != components.end()) {
+            return &it->second;
+        }
+        return std::nullopt;
+    }
+
   private:
     // unordered map of <componentType, it's unordered map of <entityId, it's
     // values for the componentType>>

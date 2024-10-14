@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** R-Type
 ** File description:
-** client
+** button_system
 */
 
-#include "client.hpp"
+#pragma once

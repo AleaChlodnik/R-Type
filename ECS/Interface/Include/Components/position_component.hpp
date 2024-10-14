@@ -10,4 +10,6 @@
 struct PositionComponent {
     float x;
     float y;
+
+    PositionComponent(float x, float y) : x(x), y(y) {}
 };
