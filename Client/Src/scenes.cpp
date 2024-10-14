@@ -27,7 +27,8 @@ void Scenes::setScene(Scenes::Scene scene)
     this->currentScene = scene;
 }
 
-void handleEvents(sf::Event event, ComponentManager &componentManager, sf::RenderWindow *_window, std::vector<Entity *> buttons, Scenes *scenes)
+void handleEvents(sf::Event event, ComponentManager &componentManager, sf::RenderWindow *_window,
+    std::vector<Entity *> buttons, Scenes *scenes)
 {
     while (_window->pollEvent(event)) {
         if (event.type == sf::Event::Closed)
@@ -36,20 +37,21 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
             event.mouseButton.button == sf::Mouse::Left) {
             auto pos = sf::Mouse::getPosition(*_window);
             for (auto button : buttons) {
-                auto posComp =
-                    componentManager.getComponent<PositionComponent>(button->getId());
+                auto posComp = componentManager.getComponent<PositionComponent>(button->getId());
                 auto sprite = componentManager.getComponent<SpriteComponent>(button->getId());
                 if (sprite)
-                if (posComp && sprite) {
-                sf::Vector2u spriteSize = sprite.value()->sprite.getTexture()->getSize();
-                    if (pos.x >= posComp.value()->x && pos.x <= posComp.value()->x + spriteSize.x &&
-                        pos.y >= posComp.value()->y && pos.y <= posComp.value()->y + spriteSize.y) {
-                        auto onClick =
-                            componentManager.getComponent<OnClickComponent>(button->getId());
-                        if (onClick)
-                            onClick.value()->onClick(scenes);
+                    if (posComp && sprite) {
+                        sf::Vector2u spriteSize = sprite.value()->sprite.getTexture()->getSize();
+                        if (pos.x >= posComp.value()->x &&
+                            pos.x <= posComp.value()->x + spriteSize.x &&
+                            pos.y >= posComp.value()->y &&
+                            pos.y <= posComp.value()->y + spriteSize.y) {
+                            auto onClick =
+                                componentManager.getComponent<OnClickComponent>(button->getId());
+                            if (onClick)
+                                onClick.value()->onClick(scenes);
+                        }
                     }
-                }
             }
         }
     }
@@ -257,7 +259,9 @@ void Scenes::inGameMenu()
     }
 }
 
-void createDaltonismChoiceButtons(std::vector<Entity *> buttons, ComponentManager &componentManager, EntityManager &entityManager, TextureManager &textureManager, EntityFactory &entityFactory)
+void createDaltonismChoiceButtons(std::vector<Entity *> buttons,
+    ComponentManager &componentManager, EntityManager &entityManager,
+    TextureManager &textureManager, EntityFactory &entityFactory)
 {
     std::function<Scenes *(Scenes *)> onNormalButtonClicked = [](Scenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::NORMAL);
@@ -275,8 +279,8 @@ void createDaltonismChoiceButtons(std::vector<Entity *> buttons, ComponentManage
         currentScene->setDaltonism(Scenes::DaltonismMode::TRITANOPIA);
         return currentScene;
     };
-    Entity tritanopiaButton = entityFactory.createButton(entityManager, componentManager,
-        textureManager, "Tritanopia", &onTritanopiaButtonClicked);
+    Entity tritanopiaButton = entityFactory.createButton(
+        entityManager, componentManager, textureManager, "Tritanopia", &onTritanopiaButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(tritanopiaButton.getId());
     if (pos) {
         pos.value()->x = 1260;
@@ -299,8 +303,8 @@ void createDaltonismChoiceButtons(std::vector<Entity *> buttons, ComponentManage
         currentScene->setDaltonism(Scenes::DaltonismMode::PROTANOPIA);
         return currentScene;
     };
-    Entity protanopiaButton = entityFactory.createButton(entityManager, componentManager,
-        textureManager, "Protanopia", &onProtanopiaButtonClicked);
+    Entity protanopiaButton = entityFactory.createButton(
+        entityManager, componentManager, textureManager, "Protanopia", &onProtanopiaButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(protanopiaButton.getId());
     if (pos) {
         pos.value()->x = 1260;
@@ -313,14 +317,15 @@ void createDaltonismChoiceButtons(std::vector<Entity *> buttons, ComponentManage
     buttons.push_back(&protanopiaButton);
 }
 
-void createGameModeChoiceButtons(std::vector<Entity *> buttons, ComponentManager &componentManager, EntityManager &entityManager, TextureManager &textureManager, EntityFactory &entityFactory)
+void createGameModeChoiceButtons(std::vector<Entity *> buttons, ComponentManager &componentManager,
+    EntityManager &entityManager, TextureManager &textureManager, EntityFactory &entityFactory)
 {
     std::function<Scenes *(Scenes *)> easyButtonClicked = [](Scenes *currentScene) {
         currentScene->setGameMode(Scenes::GameMode::EASY);
         return currentScene;
     };
-    Entity easyButton = entityFactory.createButton(entityManager, componentManager,
-        textureManager, "Easy", &easyButtonClicked);
+    Entity easyButton = entityFactory.createButton(
+        entityManager, componentManager, textureManager, "Easy", &easyButtonClicked);
     auto pos = componentManager.getComponent<PositionComponent>(easyButton.getId());
     if (pos) {
         pos.value()->x = 1260;
@@ -331,8 +336,8 @@ void createGameModeChoiceButtons(std::vector<Entity *> buttons, ComponentManager
         currentScene->setGameMode(Scenes::GameMode::MEDIUM);
         return currentScene;
     };
-    Entity mediumButton = entityFactory.createButton(entityManager, componentManager,
-        textureManager, "Medium", &mediumButtonClicked);
+    Entity mediumButton = entityFactory.createButton(
+        entityManager, componentManager, textureManager, "Medium", &mediumButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(mediumButton.getId());
     if (pos) {
         pos.value()->x = 1260;
@@ -343,8 +348,8 @@ void createGameModeChoiceButtons(std::vector<Entity *> buttons, ComponentManager
         currentScene->setGameMode(Scenes::GameMode::HARD);
         return currentScene;
     };
-    Entity hardButton = entityFactory.createButton(entityManager, componentManager,
-        textureManager, "Hard", &hardButtonClicked);
+    Entity hardButton = entityFactory.createButton(
+        entityManager, componentManager, textureManager, "Hard", &hardButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(hardButton.getId());
     if (pos) {
         pos.value()->x = 1260;
@@ -416,9 +421,11 @@ void Scenes::settingsMenu()
     buttons.push_back(&backButton);
 
     if (displayDaltonismChoice)
-        createDaltonismChoiceButtons(buttons, componentManager, entityManager, textureManager, entityFactory);
+        createDaltonismChoiceButtons(
+            buttons, componentManager, entityManager, textureManager, entityFactory);
     if (displayGameModeChoice)
-        createGameModeChoiceButtons(buttons, componentManager, entityManager, textureManager, entityFactory);
+        createGameModeChoiceButtons(
+            buttons, componentManager, entityManager, textureManager, entityFactory);
 
     sf::Clock clock;
     sf::Event event;
@@ -433,7 +440,6 @@ void Scenes::settingsMenu()
         renderSystem.render(entityManager, componentManager);
     }
 }
-
 
 void Scenes::render()
 {
