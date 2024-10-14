@@ -84,6 +84,13 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      */
     virtual ~Connection() {}
 
+    friend std::ostream &operator<<(std::ostream &os, const Connection<T> &connection)
+    {
+        os << "ID: " << connection.GetID() << "; socket: " << connection.getSocket()
+           << "; endpoint: " << connection.getEndpoint();
+        return os;
+    }
+
     /**
      * @brief get the ID of the connection
      *
@@ -121,19 +128,19 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      *
      * @param endpoints
      */
-    void ConnectToServer(const asio::ip::udp::resolver::results_type &endpoints)
+    void ConnectToServer()
     {
         if (m_nOwnerType == owner::client) {
-            asio::async_connect(m_socket, endpoints,
-                [this](std::error_code ec, asio::ip::udp::endpoint UNUSED endpoint) {
-                    if (!ec) {
-                        // ReadValidation();
-                        ReadHeader();
-                        r_type::net::Message<TypeMessage> msg;
-                        msg.header.id = TypeMessage::ServerAccept;
-                        Send(msg);
-                    }
-                });
+            ReadHeader();
+            r_type::net::Message<TypeMessage> msg;
+            msg.header.id = TypeMessage::ServerAccept;
+            Send(msg);
+            // asio::async_connect(m_socket, endpoints,
+            //     [this](std::error_code ec, asio::ip::udp::endpoint UNUSED endpoint) {
+            //         if (!ec) {
+            //             // ReadValidation();
+            //         }
+            //     });
         }
     }
 

@@ -31,15 +31,17 @@ template <typename T> class AClient : virtual public IClient<T> {
     bool Connect(const std::string &host, const uint16_t port)
     {
         try {
-            asio::ip::udp::resolver resolver(m_context);
-            asio::ip::udp::resolver::results_type results_type_endpoints =
-                resolver.resolve(host, std::to_string(port));
+            asio::ip::udp::endpoint remote_endpoint =
+                asio::ip::udp::endpoint(asio::ip::address::from_string(host), port);
+            std::cout << "Remote endpoint: " << remote_endpoint << std::endl;
 
-            asio::ip::udp::endpoint endpoint = *results_type_endpoints.begin();
-
+            asio::ip::udp::socket socket(
+                m_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0));
             m_connection = std::make_unique<Connection<T>>(Connection<T>::owner::client, m_context,
-                asio::ip::udp::socket(m_context), endpoint, m_qMessagesIn);
-            m_connection->ConnectToServer(results_type_endpoints);
+                std::move(socket), std::move(remote_endpoint), m_qMessagesIn);
+            m_connection->ConnectToServer();
+
+            std::cout << "Connection: " << *(m_connection.get()) << std::endl;
 
             thrContext = std::thread([this]() { m_context.run(); });
         } catch (std::exception &e) {
