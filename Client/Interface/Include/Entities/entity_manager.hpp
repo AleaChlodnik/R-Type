@@ -20,6 +20,17 @@ class EntityManager {
         return entities.back();
     }
 
+    void removeEntity(int entityId)
+    {
+        auto it = std::remove_if(entities.begin(), entities.end(),
+            [entityId](const Entity &entity) { return entity.getId() == entityId; });
+
+        if (it != entities.end()) {
+            entities.erase(it, entities.end());
+        } else
+            throw entityNotFound();
+    }
+
     Entity &getEntity(int entityId)
     {
         for (auto &entity : entities) {

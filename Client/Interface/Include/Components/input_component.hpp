@@ -14,7 +14,6 @@ enum class InputType
     LEFT,
     RIGHT,
     SHOOT,
-    PAUSE,
     QUIT,
     NONE
 };

@@ -5,8 +5,8 @@
 ** main
 */
 
+#include <Net/server.hpp>
 #include <iostream>
-#include <net_server.hpp>
 
 int main()
 {

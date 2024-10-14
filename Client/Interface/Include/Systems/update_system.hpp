@@ -10,18 +10,18 @@
 #include "Components/component_manager.hpp"
 #include "Components/components.hpp"
 #include "Entities/entity_manager.hpp"
+#include "Systems/i_system.hpp"
 
-class UpdateSystem {
+class UpdateSystem : public ISystem {
   public:
-    UpdateSystem();
+    UpdateSystem(sf::RenderWindow &window) : _window(window) {}
 
-    // void positions(EntityManager &entityManager, ComponentManager &componentManager)
-    // {
-    //     const auto &entities = entityManager.getAllEntities();
-    //     for (const auto &entity : entities) {
-    //         auto currPos = componentManager.getComponent<PositionComponent>(entity.getId());
-    //         componentManager.addComponent<PositionComponent>(entity.getId(), currPos.value()->x
-    //         + 1, currPos.value()->y);
-    //     }
-    // }
+    void update(EntityManager &entityManager, ComponentManager &componentManager, float deltaTime);
+
+    void updateBackground(int entityId, ComponentManager &componentManager, float deltaTime);
+    bool updatePlayerMissile(int entityId, EntityManager &entityManager,
+        ComponentManager &componentManager, float deltaTime);
+
+  private:
+    sf::RenderWindow &_window;
 };

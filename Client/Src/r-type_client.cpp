@@ -17,9 +17,6 @@ Rtype::Rtype()
     currentGameMode = GameMode::EASY;
     currentDaltonismMode = DaltonismMode::NORMAL;
     main_menu = true;
-
-    // Init player
-    // Add player to systems
 }
 
 void Rtype::run()
@@ -46,6 +43,7 @@ void Rtype::gameLoop()
 {
     _window.create(
         sf::VideoMode::getDesktopMode(), "R-Type", sf::Style::Close | sf::Style::Resize);
+    _window.setFramerateLimit(60);
 
     if (getDaltonismMode() != DaltonismMode::NORMAL) { // must test if filters are good
         sf::RectangleShape filter(sf::Vector2f(_window.getSize().x, _window.getSize().y));
@@ -61,43 +59,30 @@ void Rtype::gameLoop()
     EntityManager entityManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
+    // Get starting info from server & create all entities of new or in progress game.
+    // Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
+    // ShootSystem shootSystem(player.getId(), 0.5f);
+    UpdateSystem updateSystem(_window);
     RenderSystem renderSystem(_window);
+
+    /////////////////////////////////// temp for testing
+    //////////////////////////////////////////////////
+
+    Entity background =
+        entityFactory.createBackground(entityManager, componentManager, textureManager);
+    Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
+    ShootSystem shootSystem(player.getId(), 0.5f);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     sf::Clock clock;
 
-    /////////////////////////////////////////////////////// test
-    Entity background =
-        entityFactory.createBackground(entityManager, componentManager, textureManager);
-
-    Entity player1 = entityFactory.createPlayer(entityManager, componentManager, textureManager);
-    // Entity player2 = entityFactory.createPlayer(
-    //     entityManager, componentManager, textureManager);
-    // Entity player3 = entityFactory.createPlayer(
-    //     entityManager, componentManager, textureManager);
-
-    // componentManager.addComponent<PositionComponent>(
-    //     player2.getId(), 400, 400);
-    // componentManager.addComponent<PositionComponent>(
-    //     player3.getId(), 800, 800);
-    //////////////////////////////////////////////////////////
-
     while (_window.isOpen()) {
         handleEvents();
-
         float deltaTime = clock.restart().asSeconds();
-
-        renderSystem.update(entityManager, componentManager, deltaTime);
+        // shootSystem.fireMissle(entityFactory, entityManager, componentManager, textureManager,
+        // deltaTime); call only when specific key is pressed
+        updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(entityManager, componentManager);
-
-        /////////////////////////////////////////////////////// test
-        // auto player1Pos = componentManager.getComponent<PositionComponent>(player1.getId());
-        // auto player2Pos = componentManager.getComponent<PositionComponent>(player2.getId());
-        // auto player3Pos = componentManager.getComponent<PositionComponent>(player3.getId());
-        // componentManager.addComponent<PositionComponent>(player1.getId(), player1Pos.value()->x
-        // + 1, player1Pos.value()->y);
-        // componentManager.addComponent<PositionComponent>(player2.getId(), player2Pos.value()->x
-        // + 1, player2Pos.value()->y);
-        // componentManager.addComponent<PositionComponent>(player3.getId(), player3Pos.value()->x
-        // + 1, player3Pos.value()->y);
     }
 }

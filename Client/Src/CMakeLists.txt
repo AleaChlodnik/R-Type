@@ -5,6 +5,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 add_subdirectory(Components)
 add_subdirectory(Entities)
 add_subdirectory(Systems)
+add_subdirectory(MainMenu)
 
 add_executable(r-type_client main.cpp r-type_client.cpp client.cpp simpleClient.cpp)
 
