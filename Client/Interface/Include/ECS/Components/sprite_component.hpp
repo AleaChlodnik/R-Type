@@ -14,8 +14,7 @@
 struct SpriteComponent {
     sf::Sprite sprite;
 
-    SpriteComponent(
-        sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale)
+    SpriteComponent(sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale)
     {
         sprite.setTexture(texture);
         sprite.setPosition(posX, posY);

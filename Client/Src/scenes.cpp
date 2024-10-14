@@ -66,7 +66,8 @@ void Scenes::gameLoop()
     UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
 
-    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
+    Entity background =
+        entityFactory.createBackground(entityManager, componentManager, textureManager);
     Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
     ShootSystem shootSystem(player.getId(), 0.5f);
 
