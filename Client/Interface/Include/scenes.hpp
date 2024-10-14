@@ -29,7 +29,8 @@ class Scenes {
         MAIN_MENU,
         GAME_LOOP,
         SETTINGS_MENU,
-        IN_GAME_MENU
+        IN_GAME_MENU,
+        EXIT
     };
 
   public:
@@ -80,6 +81,7 @@ class Scenes {
      * @param scene
      */
     void setScene(Scene scene);
+    bool shouldQuit() { return currentScene == Scene::EXIT; }
 
   private:
     GameMode currentGameMode = GameMode::MEDIUM;
