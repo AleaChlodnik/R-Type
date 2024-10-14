@@ -15,6 +15,16 @@ void UpdateSystem::update(
 
     for (const auto &entity : entities) {
         int entityId = entity.getId();
+        if (componentManager.getComponent<PositionComponent>(entityId) && componentManager.getComponent<SpriteComponent>(entityId)) {
+            auto posOpt = componentManager.getComponent<PositionComponent>(entityId);
+            auto spriteOpt = componentManager.getComponent<SpriteComponent>(entityId);
+            if (posOpt && spriteOpt) {
+                sf::Vector2f spritePos = spriteOpt.value()->sprite.getPosition();
+                if (spritePos.x != posOpt.value()->x || spritePos.y != posOpt.value()->y) {
+                    spriteOpt.value()->sprite.setPosition(posOpt.value()->x, posOpt.value()->y);
+                }
+            }
+        }
         if (componentManager.getComponent<BackgroundComponent>(entityId)) {
             updateBackground(entityId, componentManager, deltaTime);
         }

@@ -90,25 +90,25 @@ void Scenes::gameLoop()
                 if (event.key.code == sf::Keyboard::Up) {
                     auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
                     if (posOpt) {
-                        posOpt.value()->y -= 10;
+                        posOpt.value()->y -= 5;
                     }
                 }
                 if (event.key.code == sf::Keyboard::Down) {
                     auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
                     if (posOpt) {
-                        posOpt.value()->y += 10;
+                        posOpt.value()->y += 5;
                     }
                 }
                 if (event.key.code == sf::Keyboard::Left) {
                     auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
                     if (posOpt) {
-                        posOpt.value()->x -= 10;
+                        posOpt.value()->x -= 5;
                     }
                 }
                 if (event.key.code == sf::Keyboard::Right) {
                     auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
                     if (posOpt) {
-                        posOpt.value()->x += 10;
+                        posOpt.value()->x += 5;
                     }
                 }
             }
