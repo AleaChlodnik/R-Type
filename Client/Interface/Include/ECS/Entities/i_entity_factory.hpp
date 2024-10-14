@@ -11,7 +11,7 @@
 #include "entity_manager.hpp"
 #include "scenes.hpp"
 #include "texture_manager.hpp"
-#include <Components/component_manager.hpp>
+#include <ECS/Components/component_manager.hpp>
 #include <functional>
 
 // Abstract Entity Factory

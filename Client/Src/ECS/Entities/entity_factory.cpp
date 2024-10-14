@@ -5,8 +5,8 @@
 ** entity_factory
 */
 
-#include "Entities/entity_factory.hpp"
-#include "Components/components.hpp"
+#include "ECS/Entities/entity_factory.hpp"
+#include "ECS/Components/components.hpp"
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 

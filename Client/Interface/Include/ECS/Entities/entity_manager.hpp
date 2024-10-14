@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "../error_handling.hpp"
+#include <error_handling.hpp>
 #include "entity.hpp"
 #include <algorithm>
 #include <vector>
