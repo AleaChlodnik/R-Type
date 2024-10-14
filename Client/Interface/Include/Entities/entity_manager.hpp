@@ -11,7 +11,6 @@
 #include "entity.hpp"
 #include <algorithm>
 #include <vector>
-#include <algorithm>
 
 class EntityManager {
   public:
