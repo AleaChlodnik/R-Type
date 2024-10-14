@@ -33,7 +33,8 @@ template <typename T> class AClient : virtual public IClient<T> {
                 asio::ip::udp::endpoint(asio::ip::address::from_string(host), port);
             std::cout << "Remote endpoint: " << remote_endpoint << std::endl;
 
-            asio::ip::udp::socket socket(m_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0));
+            asio::ip::udp::socket socket(
+                m_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0));
             m_connection = std::make_unique<Connection<T>>(Connection<T>::owner::client, m_context,
                 std::move(socket), std::move(remote_endpoint), m_qMessagesIn);
             m_connection->ConnectToServer();
