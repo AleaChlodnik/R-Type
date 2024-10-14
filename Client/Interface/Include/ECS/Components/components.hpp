@@ -23,7 +23,7 @@
 #include "player_missile_component.hpp"
 #include "position_component.hpp"
 #include "score_component.hpp"
+#include "sprite_component.hpp"
 #include "text_component.hpp"
 #include "velocity_component.hpp"
 #include "weapon_component.hpp"
-#include "sprite_component.hpp"
