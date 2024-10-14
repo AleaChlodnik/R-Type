@@ -32,6 +32,8 @@ class Server : virtual public r_type::net::AServer<TypeMessage> {
     {
         r_type::net::Message<TypeMessage> msg;
         msg.header.id = TypeMessage::ServerAccept;
+        InitiatePlayers(msg);
+        nbr_of_player++;
         client->Send(msg);
         return true;
     }
@@ -76,6 +78,20 @@ class Server : virtual public r_type::net::AServer<TypeMessage> {
         case TypeMessage::ClientConnect: {
             std::cout << "[" << client->GetID() << "]: Client Connect\n";
         } break;
+        case TypeMessage::MoveEntityMessage: {
+            std::cout << "MoveEntityMessage" << std::endl;
+            EntityInformation entity;
+            msg >> entity;
+            if (CheckPlayerPosition(entity)) {
+                std::cout << "Player " << entity.uniqueID << " moved to " << entity.vPos.x << " "
+                          << entity.vPos.y << std::endl;
+                UpdateEntity(entity);
+                r_type::net::Message<TypeMessage> msg;
+                msg.header.id = TypeMessage::UpdateEntity;
+                msg << entity;
+                client->Send(msg);
+            }
+        }
         }
     }
 };

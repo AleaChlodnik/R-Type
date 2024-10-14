@@ -11,6 +11,7 @@
 #include "net_connection.hpp"
 #include "net_message.hpp"
 #include "net_thread_safe_queue.hpp"
+#include <entity_struct.hpp>
 
 namespace r_type {
 namespace net {
@@ -89,6 +90,8 @@ template <typename T> class IServer {
 
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) = 0;
 
+    virtual bool CheckPlayerPosition(EntityInformation desc) = 0;
+
   protected:
     /**
      * @brief on client connect event
@@ -113,6 +116,7 @@ template <typename T> class IServer {
      * @param msg
      */
     virtual void OnMessage(std::shared_ptr<Connection<T>> client, Message<T> &msg) = 0;
+
 };
 } // namespace net
 } // namespace r_type

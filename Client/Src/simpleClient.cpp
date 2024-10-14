@@ -25,6 +25,10 @@ void simpleClient()
                     switch (msg.header.id) {
                     case TypeMessage::ServerAccept: {
                         std::cout << "Server Accepted Connection" << std::endl;
+                        EntityInformation entity;
+                        msg >> entity;
+                        c.AddEntity(entity);
+                        c.SetEntityID(entity.uniqueID);
                     } break;
                     case TypeMessage::ServerPing: {
                         std::chrono::system_clock::time_point timeNow =
@@ -54,7 +58,13 @@ void simpleClient()
                     } break;
                     case TypeMessage::DestroyEntityResponse: {
                     } break;
-                    case TypeMessage::MoveEntityMessage: {
+                    case TypeMessage::UpdateEntity: {
+                        std::cout << "UpdateEntity" << std::endl;
+                        r_type::net::Message<TypeMessage> reponse;
+                        reponse.header.id = TypeMessage::UpdateEntityResponse;
+                        EntityInformation entity;
+                        msg >> entity;
+                        c.UpdateEntity(entity);
                     } break;
                     }
                 }
@@ -80,6 +90,42 @@ void simpleClient()
                     std::cout << "V" << std::endl;
                     c.MessageAll();
                 } break;
+                case sf::Keyboard::Up: {
+                    std::cout << "Up" << std::endl;
+                    r_type::net::Message<TypeMessage> msg;
+                    EntityInformation entity = c.GetAPlayer(c.GetEntityID());
+                    entity.vPos.y -= 10;
+                    msg.header.id = TypeMessage::MoveEntityMessage;
+                    msg << entity;
+                    c.Send(msg);
+                } break;
+                case sf::Keyboard::Down: {
+                    std::cout << "Down" << std::endl;
+                    r_type::net::Message<TypeMessage> msg;
+                    EntityInformation entity = c.GetAPlayer(c.GetEntityID());
+                    entity.vPos.y += 10;
+                    msg.header.id = TypeMessage::MoveEntityMessage;
+                    msg << entity;
+                    c.Send(msg);
+                } break;
+                case sf::Keyboard::Left: {
+                    std::cout << "Left" << std::endl;
+                    r_type::net::Message<TypeMessage> msg;
+                    EntityInformation entity = c.GetAPlayer(c.GetEntityID());
+                    entity.vPos.x -= 10;
+                    msg.header.id = TypeMessage::MoveEntityMessage;
+                    msg << entity;
+                    c.Send(msg);
+                } break;
+                case sf::Keyboard::Right: {
+                    std::cout << "Right" << std::endl;
+                    r_type::net::Message<TypeMessage> msg;
+                    EntityInformation entity = c.GetAPlayer(c.GetEntityID());
+                    entity.vPos.x += 10;
+                    msg.header.id = TypeMessage::MoveEntityMessage;
+                    msg << entity;
+                    c.Send(msg);
+                } break;
                 default:
                     break;
                 }
@@ -87,6 +133,12 @@ void simpleClient()
         }
 
         window.clear();
+        for (const auto &player : c.GetPlayers()) {
+            sf::RectangleShape carre({player.second.hitbox.width, player.second.hitbox.height});
+            carre.setPosition(player.second.vPos.x, player.second.vPos.y);
+            carre.setFillColor(sf::Color::White);
+            window.draw(carre);
+        }
         window.display();
     }
 }
