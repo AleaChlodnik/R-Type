@@ -9,7 +9,7 @@
 
 #include <cmath>
 #include <entity_struct.hpp>
-#include <net_i_server.hpp>
+#include <Net/i_server.hpp>
 #include <unordered_map>
 
 namespace r_type {

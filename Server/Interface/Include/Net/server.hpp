@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "net_a_server.hpp"
+#include "a_server.hpp"
 
 namespace r_type {
 namespace net {

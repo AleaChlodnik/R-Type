@@ -7,7 +7,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <net_client.hpp>
+#include <Net/client.hpp>
 
 void simpleClient()
 {

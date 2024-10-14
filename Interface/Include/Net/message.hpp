@@ -6,8 +6,8 @@
 */
 
 #pragma once
-#include "net_common.hpp"
-#include "net_connection.hpp"
+#include "common.hpp"
+#include "connection.hpp"
 
 namespace r_type {
 namespace net {

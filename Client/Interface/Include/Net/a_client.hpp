@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "net_i_client.hpp"
+#include "i_client.hpp"
 #include <entity_struct.hpp>
 #include <unordered_map>
 
