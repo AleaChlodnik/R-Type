@@ -11,11 +11,8 @@ void simpleClient();
 int main()
 {
 
-    // get client info and connect to server
-
     Rtype rtype;
     rtype.run();
 
-    // simpleClient();
     return 0;
 }

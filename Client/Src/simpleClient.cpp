@@ -15,8 +15,10 @@ void simpleClient()
     c.Connect("127.0.0.1", 60000);
     std::cout << "Socket: " << c.getConnection()->getSocket() << std::endl;
     std::cout << "Endpoint: " << c.getConnection()->getEndpoint() << std::endl;
+
     sf::RenderWindow window(sf::VideoMode(800, 600), "Preferences");
     sf::Event event;
+
     auto updatePlayerPosition = [&](const vf2d &delta) {
         EntityInformation desc = c.GetAPlayer(c.GetEntityID());
         r_type::net::Message<TypeMessage> msg;
