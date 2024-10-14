@@ -13,9 +13,9 @@ int main()
 
     // get client info and connect to server
 
-    Rtype rtype;
-    rtype.run();
+    // Rtype rtype;
+    // rtype.run();
 
-    // simpleClient();
+    simpleClient();
     return 0;
 }
