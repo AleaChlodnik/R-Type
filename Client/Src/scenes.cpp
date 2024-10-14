@@ -34,19 +34,45 @@ void Scenes::mainMenu()
     // Create all the necessary entities
     Entity background =
         entityFactory.createBackground(entityManager, componentManager, textureManager);
+
     // Create the buttons
-    std::function<Scenes *(Scenes *)> onClickPlay = [](Scenes *currentScene) {
+    std::function<Scenes *(Scenes *)> onPlayButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
         return currentScene;
     };
-
     Entity playButton = entityFactory.createButton(
-        entityManager, componentManager, textureManager, "Play", onClickPlay);
+        entityManager, componentManager, textureManager, "Play", &onPlayButtonClicked);
     auto pos = componentManager.getComponent<PositionComponent>(playButton.getId());
     if (pos) {
-        pos.value()->x = 100;
+        pos.value()->x = 760;
         pos.value()->y = 100;
     }
+
+    std::function<Scenes *(Scenes *)> onSettingsButtonClicked = [](Scenes *currentScene) {
+        currentScene->setScene(Scenes::Scene::SETTINGS_MENU);
+        return currentScene;
+    };
+    Entity settingsButton = entityFactory.createButton(
+        entityManager, componentManager, textureManager, "Settings", &onSettingsButtonClicked);
+    pos = componentManager.getComponent<PositionComponent>(settingsButton.getId());
+    if (pos) {
+        pos.value()->x = 760;
+        pos.value()->y = 250;
+    }
+
+    std::function<Scenes *(Scenes *)> onQuitButtonClicked = [](Scenes *currentScene) {
+        currentScene->setScene(Scenes::Scene::EXIT);
+        return currentScene;
+    };
+    Entity quitButton = entityFactory.createButton(
+        entityManager, componentManager, textureManager, "Quit", &onQuitButtonClicked);
+    pos = componentManager.getComponent<PositionComponent>(quitButton.getId());
+    if (pos) {
+        pos.value()->x = 760;
+        pos.value()->y = 500;
+    }
+
+    std::vector<Entity *> buttons = {&playButton, &settingsButton, &quitButton};
     sf::Clock clock;
     sf::Event event;
 
@@ -57,17 +83,17 @@ void Scenes::mainMenu()
                 _window->close();
             if (event.type == sf::Event::MouseButtonPressed and event.mouseButton.button == sf::Mouse::Left) {
                 auto pos = sf::Mouse::getPosition(*_window);
-                auto posComp =
-                    componentManager.getComponent<PositionComponent>(playButton.getId());
-                auto sprite = componentManager.getComponent<SpriteComponent>(playButton.getId());
-                auto size = sprite.value()->sprite.getTexture()->getSize();
-                if (posComp && sprite) {
-                    if (pos.x >= posComp.value()->x && pos.x <= posComp.value()->x + size.x &&
-                        pos.y >= posComp.value()->y && pos.y <= posComp.value()->y + size.y) {
-                        auto onClick = componentManager.getComponent<OnClickComponent>(playButton.getId());
-                        if (onClick) {
-                            std::cout << "Button clicked" << std::endl;
-                            onClick.value()->onClick(this);
+                for (auto button : buttons) {
+                    auto posComp =
+                        componentManager.getComponent<PositionComponent>(button->getId());
+                    auto sprite = componentManager.getComponent<SpriteComponent>(button->getId());
+                    auto size = sprite.value()->sprite.getTexture()->getSize();
+                    if (posComp && sprite) {
+                        if (pos.x >= posComp.value()->x && pos.x <= posComp.value()->x + size.x &&
+                            pos.y >= posComp.value()->y && pos.y <= posComp.value()->y + size.y) {
+                            auto onClick = componentManager.getComponent<OnClickComponent>(button->getId());
+                            if (onClick)
+                                onClick.value()->onClick(this);
                         }
                     }
                 }

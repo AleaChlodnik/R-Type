@@ -28,7 +28,7 @@ void RenderSystem::render(EntityManager &entityManager, ComponentManager &compon
                 sf::FloatRect textBounds = text.getGlobalBounds();
                 text.setPosition(
                     spriteBounds.left + (spriteBounds.width / 2.0f) - (textBounds.width / 2.0f),
-                    spriteBounds.top + (spriteBounds.height / 2.0f) - (textBounds.height / 2.0f)
+                    spriteBounds.top + (spriteBounds.height / 2.0f) - textBounds.height
                 );
                 _window.draw(text);
             } else

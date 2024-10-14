@@ -289,7 +289,7 @@ Entity EntityFactory::createEnemyMissile(EntityManager &entityManager,
 
 Entity EntityFactory::createButton(EntityManager &entityManager,
     ComponentManager &componentManager, TextureManager &textureManager, std::string text,
-    std::function<Scenes *(Scenes *)> onClick)
+    std::function<Scenes *(Scenes *)> *onClick)
 {
     Entity button = entityManager.createEntity();
 
@@ -299,7 +299,7 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
     PositionComponent start_position(0, 0);
     SpriteComponent sprite(texture, start_position, scale);
     TextComponent textComponent(text);
-    OnClickComponent onClickfunction(onClick);
+    OnClickComponent onClickfunction(*onClick);
 
     componentManager.addComponent<PositionComponent>(button.getId(), start_position);
     componentManager.addComponent<SpriteComponent>(button.getId(), sprite);
