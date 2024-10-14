@@ -32,6 +32,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # endif()
 
 add_subdirectory(Interface)
+add_subdirectory(ECS)
 add_subdirectory(Client)
 add_subdirectory(Server)
 
