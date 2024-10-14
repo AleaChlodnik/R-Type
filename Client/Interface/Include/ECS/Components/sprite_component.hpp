@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <error_handling.hpp>
 #include <SFML/Graphics.hpp>
+#include <error_handling.hpp>
 #include <string>
 
 struct SpriteComponent {
