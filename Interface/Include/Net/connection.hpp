@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "net_common.hpp"
-#include "net_i_server.hpp"
-#include "net_message.hpp"
-#include "net_thread_safe_queue.hpp"
-#include "net_type_message.hpp"
+#include "common.hpp"
+#include "i_server.hpp"
+#include "message.hpp"
+#include "thread_safe_queue.hpp"
+#include "type_message.hpp"
 
 #define UNUSED __attribute__((unused))
 

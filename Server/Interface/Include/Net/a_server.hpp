@@ -7,7 +7,10 @@
 
 #pragma once
 
-#include <net_i_server.hpp>
+#include <Net/i_server.hpp>
+#include <cmath>
+#include <entity_struct.hpp>
+#include <unordered_map>
 
 namespace r_type {
 namespace net {
@@ -197,6 +200,90 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
     }
 
+    void UpdateEntity(EntityInformation desc)
+    {
+        if (Entities.find(desc.uniqueID) == Entities.end())
+            PushEntity(desc);
+        Entities[desc.uniqueID] = desc;
+    }
+
+    /**
+     * @brief push entity on a undordered map
+     *
+     * @param desc
+     */
+
+    void PushEntity(EntityInformation desc) { Entities.insert_or_assign(desc.uniqueID, desc); }
+
+    /**
+     * @brief remove entity from a undordered map
+     *
+     * @param id
+     */
+    void RemoveEntity(uint32_t id) { Entities.erase(id); }
+
+    /**
+     * @brief init player
+     *
+     * @param msg
+     */
+
+    void InitiatePlayers(r_type::net::Message<T> &msg)
+    {
+        EntityInformation desc;
+        desc.uniqueID = getNbrPlayer();
+        desc.hitbox = {10, 10};
+        desc.vPos = {100, static_cast<float>(rand() % 600)};
+        while (CheckPlayerPosition(desc) == false) {
+            desc.vPos = {100, static_cast<float>(rand() % 600)};
+        }
+        msg << desc;
+        PushEntity(desc);
+    }
+
+    /**
+     * @brief push player
+     *
+     * @param desc
+     */
+    void InitListEntities(
+        std::shared_ptr<r_type::net::Connection<T>> client, EntityInformation desc)
+    {
+        r_type::net::Message<T> msgAddPlayer;
+        msgAddPlayer.header.id = T::CreateEntityMessage;
+        for (const auto &player : Entities) {
+            if (player.first != desc.uniqueID) {
+                msgAddPlayer << player.second;
+                MessageClient(client, msgAddPlayer);
+            }
+        }
+    }
+
+    /**
+     * @brief check player position to avoid collision
+     *
+     * @param desc
+     * @return true
+     * @return false
+     */
+    bool CheckPlayerPosition(EntityInformation desc)
+    {
+
+        for (const auto &other : Entities) {
+            if (desc.uniqueID != other.first) {
+                float dx = desc.vPos.x - other.second.vPos.x;
+                float dy = desc.vPos.y - other.second.vPos.y;
+                float distance = std::sqrt(dx * dx + dy * dy);
+                if (distance <= (desc.hitbox.width)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    int getNbrPlayer() { return nbr_of_player; }
+
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) {}
 
   protected:
@@ -238,6 +325,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     std::array<uint8_t, 1024> m_tempBuffer;
 
     uint32_t nIDCounter = 10000;
+    std::unordered_map<uint32_t, EntityInformation> Entities;
+    int nbr_of_player = 0;
 };
 } // namespace net
 } // namespace r_type

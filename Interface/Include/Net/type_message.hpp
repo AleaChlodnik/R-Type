@@ -42,6 +42,16 @@ enum class TypeMessage : uint32_t
      */
     ServerMessage,
     /**
+     * @brief Server message.
+     *
+     */
+    UpdateEntity,
+    /**
+     * @brief Client message.
+     *
+     */
+    UpdateEntityResponse,
+    /**
      * @brief Client connect message.
      *
      */
@@ -65,10 +75,16 @@ enum class TypeMessage : uint32_t
      * @brief Client message.
      *
      */
+    MoveEntityResponse,
+    /**
+     * @brief Client message.
+     *
+     */
     DestroyEntityMessage,
     /**
      * @brief Client message.
      *
      */
     DestroyEntityResponse,
+
 };

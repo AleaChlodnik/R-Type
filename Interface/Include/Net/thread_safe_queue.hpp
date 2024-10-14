@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "net_common.hpp"
+#include "common.hpp"
 
 namespace r_type {
 namespace net {
