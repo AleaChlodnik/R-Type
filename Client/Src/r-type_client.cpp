@@ -68,10 +68,9 @@ void Rtype::gameLoop()
     /////////////////////////////////// temp for testing
     //////////////////////////////////////////////////
 
-    Entity background =
-        entityFactory.createBackground(entityManager, componentManager, textureManager);
+    Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
     Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
-    ShootSystem shootSystem(player.getId(), 0.5f);
+    // ShootSystem shootSystem(player.getId(), 0.5f);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
