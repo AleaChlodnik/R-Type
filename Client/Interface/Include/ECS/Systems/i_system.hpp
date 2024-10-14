@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "ECS/Components/component_manager.hpp"
-#include "ECS/Components/components.hpp"
+#include <ECS/Components/component_manager.hpp>
+#include <ECS/Components/components.hpp>
 
 class ISystem {
   public:
