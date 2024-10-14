@@ -29,7 +29,6 @@ void Scenes::mainMenu()
     EntityManager entityManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
     // Create all the necessary entities
     Entity background =
@@ -85,7 +84,6 @@ void Scenes::mainMenu()
     componentManager.addComponent<SpriteComponent>(quitButton.getId(), sprite);
 
     std::vector<Entity *> buttons = {&playButton, &settingsButton, &quitButton};
-    sf::Clock clock;
     sf::Event event;
 
     while (_window->isOpen() && this->currentScene == Scenes::Scene::MAIN_MENU) {
@@ -114,32 +112,23 @@ void Scenes::mainMenu()
             }
         }
 
-        float deltaTime = clock.restart().asSeconds();
-
-        updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(entityManager, componentManager);
     }
 }
 
 void Scenes::gameLoop()
 {
+    CustomClient c;
+    c.Connect("127.0.0.1", 60000);
+
     ComponentManager componentManager;
-    EntityManager entityManager;
     TextureManager textureManager;
-    EntityFactory entityFactory;
-    UpdateSystem updateSystem(*_window);
+
     RenderSystem renderSystem(*_window);
-    // Create all the necessary entities
-    Entity background =
-        entityFactory.createBackground(entityManager, componentManager, textureManager);
-    Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
-    ShootSystem shootSystem(player.getId(), 0.5f);
-    sf::Clock clock;
+
     sf::Event event;
 
     while (_window->isOpen()) {
-        float deltaTime = clock.restart().asSeconds();
-
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 _window->close();

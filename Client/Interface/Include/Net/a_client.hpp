@@ -6,17 +6,18 @@
 */
 
 #pragma once
-#include "netCommon.hpp"
-#include "netConnection.hpp"
-#include "netThreadSafeQueue.hpp"
 
-namespace olc {
+#include "i_client.hpp"
+#include <entity_struct.hpp>
+#include <unordered_map>
+
+namespace r_type {
 namespace net {
-template <typename T> class ClientInterface {
+template <typename T> class AClient : virtual public IClient<T> {
   public:
-    ClientInterface() {}
+    AClient() {}
 
-    virtual ~ClientInterface() { Disconnect(); }
+    virtual ~AClient() { Disconnect(); }
 
   public:
     /**
@@ -30,18 +31,21 @@ template <typename T> class ClientInterface {
     bool Connect(const std::string &host, const uint16_t port)
     {
         try {
-            asio::ip::tcp::resolver resolver(m_context);
-            asio::ip::tcp::resolver::results_type endpoints =
-                resolver.resolve(host, std::to_string(port));
+            asio::ip::udp::endpoint remote_endpoint =
+                asio::ip::udp::endpoint(asio::ip::address::from_string(host), port);
+            std::cout << "Remote endpoint: " << remote_endpoint << std::endl;
 
+            asio::ip::udp::socket socket(
+                m_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0));
             m_connection = std::make_unique<Connection<T>>(Connection<T>::owner::client, m_context,
-                asio::ip::tcp::socket(m_context), m_qMessagesIn);
+                std::move(socket), std::move(remote_endpoint), m_qMessagesIn);
+            m_connection->ConnectToServer();
 
-            m_connection->ConnectToServer(endpoints);
+            std::cout << "Connection: " << *(m_connection.get()) << std::endl;
 
             thrContext = std::thread([this]() { m_context.run(); });
         } catch (std::exception &e) {
-            std::cerr << "Client Exception: " << e.what() << "\n";
+            std::cerr << "Client Exception: " << e.what() << std::endl;
             return false;
         }
         return true;
@@ -78,6 +82,27 @@ template <typename T> class ClientInterface {
             return false;
     }
 
+    void AddEntity(EntityInformation entity)
+    {
+        Entities.insert_or_assign(entity.uniqueID, entity);
+    }
+
+    void RemoveEntity(uint32_t id) { Entities.erase(id); }
+
+    void UpdateEntity(EntityInformation entity)
+    {
+        if (Entities.find(entity.uniqueID) == Entities.end())
+            AddEntity(entity);
+        Entities[entity.uniqueID] = entity;
+    }
+
+    std::unordered_map<uint32_t, EntityInformation> GetPlayers() { return Entities; }
+
+    EntityInformation GetAPlayer(uint32_t id) { return Entities[id]; }
+
+    void SetEntityID(int id) { EntityID = id; }
+    int GetEntityID() { return EntityID; }
+
   public:
     /**
      * @brief Send message to server
@@ -97,6 +122,8 @@ template <typename T> class ClientInterface {
      */
     ThreadSafeQueue<OwnedMessage<T>> &Incoming() { return m_qMessagesIn; }
 
+    const std::unique_ptr<Connection<T>> &getConnection() { return m_connection; }
+
   protected:
     asio::io_context m_context;
     std::thread thrContext;
@@ -104,6 +131,8 @@ template <typename T> class ClientInterface {
 
   private:
     ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
+    std::unordered_map<uint32_t, EntityInformation> Entities;
+    int EntityID = 0;
 };
 } // namespace net
-} // namespace olc
+} // namespace r_type

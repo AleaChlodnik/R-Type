@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "netCommon.hpp"
+#include "common.hpp"
 
-namespace olc {
+namespace r_type {
 namespace net {
 /**
  * @brief Thread Safe Queue
@@ -164,4 +164,4 @@ template <typename T> class ThreadSafeQueue {
     std::mutex muxBlocking;
 };
 } // namespace net
-} // namespace olc
+} // namespace r_type

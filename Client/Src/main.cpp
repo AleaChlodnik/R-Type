@@ -6,6 +6,7 @@
 */
 
 #include <r_type_client.hpp>
+void simpleClient();
 
 int main()
 {
@@ -15,5 +16,6 @@ int main()
     Rtype rtype;
     rtype.run();
 
+    // simpleClient();
     return 0;
 }
