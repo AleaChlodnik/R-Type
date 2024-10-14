@@ -116,7 +116,6 @@ template <typename T> class IServer {
      * @param msg
      */
     virtual void OnMessage(std::shared_ptr<Connection<T>> client, Message<T> &msg) = 0;
-
 };
 } // namespace net
 } // namespace r_type
