@@ -7,10 +7,9 @@
 
 #pragma once
 
-#include "Components/component_manager.hpp"
-#include "Components/components.hpp"
-#include "Entities/entity_manager.hpp"
-#include "Systems/i_system.hpp"
+#include "ECS/Components/component_manager.hpp"
+#include "ECS/Components/components.hpp"
+#include "ECS/Systems/i_system.hpp"
 
 class UpdateSystem : public ISystem {
   public:

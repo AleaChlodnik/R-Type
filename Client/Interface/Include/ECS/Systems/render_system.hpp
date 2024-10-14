@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "Systems/i_system.hpp"
+#include "ECS/Systems/i_system.hpp"
 #include <SFML/Graphics.hpp>
 
 class RenderSystem : public ISystem {

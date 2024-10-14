@@ -5,10 +5,8 @@
 ** scenes
 */
 
-#include <Components/component_manager.hpp>
-#include <Entities/entity_factory.hpp>
-#include <Entities/entity_manager.hpp>
-#include <Systems/systems.hpp>
+#include <ECS/Components/component_manager.hpp>
+#include <ECS/Systems/systems.hpp>
 #include <functional>
 #include <iostream>
 #include <r_type_client.hpp>
