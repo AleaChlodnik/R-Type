@@ -85,7 +85,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * adds the new connection to the list of connections, connects it to the client, and prints
      * the connection ID. If the connection is denied, it prints a message indicating the
      * connection was denied. If there is an error during the receive operation, it prints the
-     * error message.
+     * error message../
      */
     void WaitForClientMessage()
     {
@@ -122,7 +122,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 } else {
                     std::cout << "[SERVER] New Connection Error: " << ec.message() << std::endl;
                 }
-                m_clientEndpoint = asio::ip::udp::endpoint(asio::ip::udp::v4(), 0);
                 WaitForClientMessage();
             });
     }
