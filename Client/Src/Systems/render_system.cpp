@@ -13,6 +13,7 @@ void RenderSystem::render(EntityManager &entityManager, ComponentManager &compon
     const auto &entities = entityManager.getAllEntities();
     for (const auto &entity : entities) {
         auto spriteOpt = componentManager.getComponent<SpriteComponent>(entity.getId());
+
         if (spriteOpt) {
             _window.draw(spriteOpt.value()->sprite);
         }

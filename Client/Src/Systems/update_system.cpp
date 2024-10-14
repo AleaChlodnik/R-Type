@@ -18,8 +18,8 @@ void UpdateSystem::update(
         if (componentManager.getComponent<BackgroundComponent>(entityId)) {
             updateBackground(entityId, componentManager, deltaTime);
         }
-        if (componentManager.getComponent<MissileComponent>(entityId)) {
-            if (updateMissile(entityId, entityManager, componentManager, deltaTime))
+        if (componentManager.getComponent<PlayerMissileComponent>(entityId)) {
+            if (updatePlayerMissile(entityId, entityManager, componentManager, deltaTime))
                 entitiesToRemove.push_back(entityId);
         }
     }
@@ -28,7 +28,7 @@ void UpdateSystem::update(
     }
 }
 
-bool UpdateSystem::updateMissile(int entityId, EntityManager &entityManager,
+bool UpdateSystem::updatePlayerMissile(int entityId, EntityManager &entityManager,
     ComponentManager &componentManager, float deltaTime)
 {
     auto posOpt = componentManager.getComponent<PositionComponent>(entityId);
@@ -47,18 +47,17 @@ bool UpdateSystem::updateMissile(int entityId, EntityManager &entityManager,
 void UpdateSystem::updateBackground(
     int entityId, ComponentManager &componentManager, float deltaTime)
 {
+    auto spriteOpt = componentManager.getComponent<SpriteComponent>(entityId);
     auto offsetOpt = componentManager.getComponent<OffsetComponent>(entityId);
     auto velOpt = componentManager.getComponent<VelocityComponent>(entityId);
-    if (offsetOpt && velOpt) {
+    if (spriteOpt && offsetOpt && velOpt) {
         offsetOpt.value()->offset += velOpt.value()->speed * deltaTime;
-        auto spriteOpt = componentManager.getComponent<SpriteComponent>(entityId);
         float textureWidth = spriteOpt.value()->sprite.getTexture()->getSize().x;
-        if (offsetOpt.value()->offset >= textureWidth) {
+        if (offsetOpt.value()->offset > (textureWidth * 0.35)) {
             offsetOpt.value()->offset = 0;
         }
-        spriteOpt.value()->sprite.setTextureRect(
-            sf::IntRect(static_cast<int>(offsetOpt.value()->offset), 0,
-                static_cast<int>(this->_window.getSize().x),
-                static_cast<int>(this->_window.getSize().y)));
+        sf::IntRect textureRect = spriteOpt.value()->sprite.getTextureRect();
+        textureRect.left = static_cast<int>(offsetOpt.value()->offset);
+        spriteOpt.value()->sprite.setTextureRect(textureRect);
     }
 }

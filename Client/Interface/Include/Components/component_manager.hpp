@@ -25,15 +25,6 @@ class ComponentManager {
         ComponentType component(std::forward<Args>(args)...);
         components[typeid(ComponentType)][entityId] =
             std::make_any<ComponentType>(std::move(component));
-
-        // if constexpr (std::is_same_v<ComponentType, PositionComponent>) {
-        //     auto spriteOpt = getComponent<SpriteComponent>(entityId);
-        //     if (spriteOpt) {
-        //         auto PositionOpt = getComponent<PositionComponent>(entityId);
-        //         spriteOpt.value()->sprite.setPosition(
-        //             PositionOpt.value()->x, PositionOpt.value()->y);
-        //     }
-        // }
     }
 
     // Usage ex: auto componentName =

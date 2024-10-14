@@ -21,7 +21,7 @@ Rtype::Rtype()
     _scenes = new Scenes(&_window);
     // Init player
     // Add player to systems
-}
+};
 
 void Rtype::run()
 {
@@ -39,42 +39,5 @@ void Rtype::handleEvents()
             if (event.key.code == sf::Keyboard::Escape)
                 _window.close();
         }
-    }
-}
-
-void Rtype::gameLoop()
-{
-    // if (getDaltonismMode() != DaltonismMode::NORMAL) { // must test if filters are good
-    //     sf::RectangleShape filter(sf::Vector2f(_window.getSize().x, _window.getSize().y));
-    //     if (getDaltonismMode() == DaltonismMode::TRITANOPIA)
-    //         filter.setFillColor(sf::Color(255, 255, 100, 100));
-    //     else if (getDaltonismMode() == DaltonismMode::DEUTERANOPIA)
-    //         filter.setFillColor(sf::Color(255, 100, 255, 100));
-    //     else if (getDaltonismMode() == DaltonismMode::PROTANOPIA)
-    //         filter.setFillColor(sf::Color(255, 255, 100, 100));
-    // }
-
-    ComponentManager componentManager;
-    EntityManager entityManager;
-    TextureManager textureManager;
-    EntityFactory entityFactory;
-    Entity background =
-        entityFactory.createBackground(entityManager, componentManager, textureManager);
-    Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
-    UpdateSystem updateSystem(_window);
-    ShootSystem shootSystem(player.getId(), 0.5f);
-    RenderSystem renderSystem(_window);
-
-    sf::Clock clock;
-
-    while (_window.isOpen()) {
-        handleEvents();
-
-        float deltaTime = clock.restart().asSeconds();
-
-        shootSystem.fireMissle(
-            entityFactory, entityManager, componentManager, textureManager, deltaTime);
-        updateSystem.update(entityManager, componentManager, deltaTime);
-        renderSystem.render(entityManager, componentManager);
     }
 }

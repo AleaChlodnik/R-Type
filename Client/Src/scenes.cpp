@@ -71,18 +71,48 @@ void Scenes::gameLoop()
     // Create all the necessary entities
     Entity background = entityFactory.createBackground(entityManager, componentManager, textureManager);
     Entity player = entityFactory.createPlayer(entityManager, componentManager, textureManager);
-    Entity missile = entityFactory.createMissile(0, entityManager, componentManager, textureManager);
+    ShootSystem shootSystem(player.getId(), 0.5f);
     sf::Clock clock;
     sf::Event event;
 
     while (_window->isOpen()) {
+        float deltaTime = clock.restart().asSeconds();
 
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 _window->close();
-        }
 
-        float deltaTime = clock.restart().asSeconds();
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Space) {
+                    shootSystem.fireMissle(
+                        entityFactory, entityManager, componentManager, textureManager, deltaTime);
+                };
+                if (event.key.code == sf::Keyboard::Up) {
+                    auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
+                    if (posOpt) {
+                        posOpt.value()->y -= 10;
+                    }
+                }
+                if (event.key.code == sf::Keyboard::Down) {
+                    auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
+                    if (posOpt) {
+                        posOpt.value()->y += 10;
+                    }
+                }
+                if (event.key.code == sf::Keyboard::Left) {
+                    auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
+                    if (posOpt) {
+                        posOpt.value()->x -= 10;
+                    }
+                }
+                if (event.key.code == sf::Keyboard::Right) {
+                    auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
+                    if (posOpt) {
+                        posOpt.value()->x += 10;
+                    }
+                }
+            }
+        }
 
         updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(entityManager, componentManager);
@@ -94,7 +124,7 @@ void Scenes::inGameMenu()
     return;
 }
 
-void Scenes::settingsMenu()
+void Scenes::settingsMenu ()
 {
     return;
 }
