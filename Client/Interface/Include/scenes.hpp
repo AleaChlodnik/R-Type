@@ -9,28 +9,28 @@
 #include <SFML/Graphics.hpp>
 
 class Scenes {
-  enum class GameMode
-  {
-    EASY,
-    MEDIUM,
-    HARD
-  };
+    enum class GameMode
+    {
+        EASY,
+        MEDIUM,
+        HARD
+    };
 
-  enum class DaltonismMode
-  {
-    NORMAL,
-    TRITANOPIA,
-    DEUTERANOPIA,
-    PROTANOPIA
-  };
+    enum class DaltonismMode
+    {
+        NORMAL,
+        TRITANOPIA,
+        DEUTERANOPIA,
+        PROTANOPIA
+    };
 
-  enum class Scene
-  {
-    MAIN_MENU,
-    GAME_LOOP,
-    SETTINGS_MENU,
-    IN_GAME_MENU
-  };
+    enum class Scene
+    {
+        MAIN_MENU,
+        GAME_LOOP,
+        SETTINGS_MENU,
+        IN_GAME_MENU
+    };
 
   public:
     Scenes(sf::RenderWindow *window);

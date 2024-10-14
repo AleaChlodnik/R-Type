@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include "error_handling.hpp"
+#include "scenes.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
-#include "scenes.hpp"
-#include "error_handling.hpp"
 
 class Rtype {
 

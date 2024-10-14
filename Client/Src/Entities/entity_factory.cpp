@@ -287,8 +287,9 @@ Entity EntityFactory::createEnemyMissile(EntityManager &entityManager,
     return enemyMissile;
 }
 
-Entity EntityFactory::createButton(EntityManager &entityManager, ComponentManager &componentManager,
-    TextureManager &textureManager, std::string text, std::function<Scenes *(Scenes *)> onClick)
+Entity EntityFactory::createButton(EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager, std::string text,
+    std::function<Scenes *(Scenes *)> onClick)
 {
     Entity button = entityManager.createEntity();
 

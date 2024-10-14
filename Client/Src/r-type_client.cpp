@@ -5,13 +5,13 @@
 ** r_type
 */
 
-#include <Systems/systems.hpp>
 #include <Components/component_manager.hpp>
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
+#include <Systems/systems.hpp>
+#include <iostream>
 #include <r_type_client.hpp>
 #include <texture_manager.hpp>
-#include <iostream>
 
 Rtype::Rtype()
 {
@@ -23,10 +23,7 @@ Rtype::Rtype()
     // Add player to systems
 };
 
-void Rtype::run()
-{
-    _scenes->render();
-}
+void Rtype::run() { _scenes->render(); }
 
 void Rtype::handleEvents()
 {

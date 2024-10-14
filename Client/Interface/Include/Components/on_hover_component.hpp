@@ -8,10 +8,9 @@
 #pragma once
 #include <functional>
 
-struct OnHoverComponent
-{
+struct OnHoverComponent {
     bool isHovered = false;
     std::function<void()> onHover;
 
-    OnHoverComponent(std::function<void()> onHoverFunction) : onHover(onHoverFunction) {};
+    OnHoverComponent(std::function<void()> onHoverFunction) : onHover(onHoverFunction){};
 };
