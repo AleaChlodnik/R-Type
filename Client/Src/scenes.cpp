@@ -81,7 +81,8 @@ void Scenes::mainMenu()
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 _window->close();
-            if (event.type == sf::Event::MouseButtonPressed and event.mouseButton.button == sf::Mouse::Left) {
+            if (event.type == sf::Event::MouseButtonPressed and
+                event.mouseButton.button == sf::Mouse::Left) {
                 auto pos = sf::Mouse::getPosition(*_window);
                 for (auto button : buttons) {
                     auto posComp =
@@ -91,7 +92,8 @@ void Scenes::mainMenu()
                     if (posComp && sprite) {
                         if (pos.x >= posComp.value()->x && pos.x <= posComp.value()->x + size.x &&
                             pos.y >= posComp.value()->y && pos.y <= posComp.value()->y + size.y) {
-                            auto onClick = componentManager.getComponent<OnClickComponent>(button->getId());
+                            auto onClick =
+                                componentManager.getComponent<OnClickComponent>(button->getId());
                             if (onClick)
                                 onClick.value()->onClick(this);
                         }
