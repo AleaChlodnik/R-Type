@@ -23,7 +23,12 @@ Rtype::Rtype()
     // Add player to systems
 };
 
-void Rtype::run() { _scenes->render(); }
+void Rtype::run()
+{
+    while (!_scenes->shouldQuit() && _window.isOpen()) {
+        _scenes->render();
+    }
+}
 
 void Rtype::handleEvents()
 {

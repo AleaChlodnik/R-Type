@@ -21,7 +21,18 @@ void RenderSystem::render(EntityManager &entityManager, ComponentManager &compon
         sf::Font font;
         font.loadFromFile("Client/Assets/Fonts/GODOFWAR.TTF");
         if (textOpt) {
-            _window.draw(sf::Text(textOpt.value()->_text, font));
+            auto spriteOpt = componentManager.getComponent<SpriteComponent>(entity.getId());
+            if (spriteOpt) {
+                sf::FloatRect spriteBounds = spriteOpt.value()->sprite.getGlobalBounds();
+                sf::Text text = sf::Text(textOpt.value()->_text, font);
+                sf::FloatRect textBounds = text.getGlobalBounds();
+                text.setPosition(
+                    spriteBounds.left + (spriteBounds.width / 2.0f) - (textBounds.width / 2.0f),
+                    spriteBounds.top + (spriteBounds.height / 2.0f) - (textBounds.height / 2.0f)
+                );
+                _window.draw(text);
+            } else
+                _window.draw(sf::Text(textOpt.value()->_text, font));
         }
     }
     _window.display();
