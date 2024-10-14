@@ -8,13 +8,13 @@
 #include <Components/component_manager.hpp>
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
+#include <Net/client.hpp>
 #include <Systems/systems.hpp>
 #include <functional>
 #include <iostream>
 #include <r_type_client.hpp>
 #include <scenes.hpp>
 #include <texture_manager.hpp>
-#include <Net/client.hpp>
 
 Scenes::Scenes(sf::RenderWindow *window)
 {
