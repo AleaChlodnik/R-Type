@@ -14,6 +14,7 @@
 #include <r_type_client.hpp>
 #include <scenes.hpp>
 #include <texture_manager.hpp>
+#include <Net/client.hpp>
 
 Scenes::Scenes(sf::RenderWindow *window)
 {
@@ -128,45 +129,118 @@ void Scenes::gameLoop()
 
     sf::Event event;
 
+    auto updatePlayerPosition = [&](const vf2d &delta) {
+        EntityInformation desc = c.GetAPlayer(c.GetEntityID());
+        r_type::net::Message<TypeMessage> msg;
+        desc.vPos.x += delta.x;
+        desc.vPos.y += delta.y;
+        msg.header.id = TypeMessage::MoveEntityMessage;
+        msg << desc;
+        c.Send(msg);
+    };
+
     while (_window->isOpen()) {
         while (_window->pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed) {
+                r_type::net::Message<TypeMessage> msg;
+                msg.header.id = TypeMessage::DestroyEntityMessage;
+                msg << c.GetEntityID();
+                c.Send(msg);
                 _window->close();
-
+            }
             if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Space) {
-                    shootSystem.fireMissle(
-                        entityFactory, entityManager, componentManager, textureManager, deltaTime);
-                };
-                if (event.key.code == sf::Keyboard::Up) {
-                    auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
-                    if (posOpt) {
-                        posOpt.value()->y -= 5;
-                    }
-                }
-                if (event.key.code == sf::Keyboard::Down) {
-                    auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
-                    if (posOpt) {
-                        posOpt.value()->y += 5;
-                    }
-                }
-                if (event.key.code == sf::Keyboard::Left) {
-                    auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
-                    if (posOpt) {
-                        posOpt.value()->x -= 5;
-                    }
-                }
-                if (event.key.code == sf::Keyboard::Right) {
-                    auto posOpt = componentManager.getComponent<PositionComponent>(player.getId());
-                    if (posOpt) {
-                        posOpt.value()->x += 5;
-                    }
+                switch (event.key.code) {
+                case sf::Keyboard::Space: {
+                    std::cout << "space" << std::endl;
+                    c.PingServer();
+                } break;
+                case sf::Keyboard::Q: {
+                    std::cout << "Q" << std::endl;
+                    _window->close();
+                } break;
+                case sf::Keyboard::V: {
+                    std::cout << "V" << std::endl;
+                    c.MessageAll();
+                } break;
+                case sf::Keyboard::Up: {
+                    updatePlayerPosition(vf2d(0, -5));
+                } break;
+                case sf::Keyboard::Down: {
+                    updatePlayerPosition(vf2d(0, 5));
+                } break;
+                case sf::Keyboard::Left: {
+                    updatePlayerPosition(vf2d(-5, 0));
+                } break;
+                case sf::Keyboard::Right: {
+                    updatePlayerPosition(vf2d(5, 0));
+                } break;
+                default:
+                    break;
                 }
             }
         }
+        if (c.IsConnected()) {
+            if (!c.Incoming().empty()) {
+                auto msg = c.Incoming().pop_front().msg;
+                switch (msg.header.id) {
+                case TypeMessage::ServerAccept: {
+                    std::cout << "Server Accepted Connection" << std::endl;
+                    EntityInformation entity;
+                    msg >> entity;
+                    c.AddEntity(entity);
+                    c.SetEntityID(entity.uniqueID);
+                } break;
+                case TypeMessage::ServerPing: {
+                    std::chrono::system_clock::time_point timeNow =
+                        std::chrono::system_clock::now();
+                    std::chrono::system_clock::time_point timeThen;
+                    msg >> timeThen;
+                    std::cout << "Ping: "
+                              << std::chrono::duration<double>(timeNow - timeThen).count()
+                              << std::endl;
+                } break;
+                case TypeMessage::ServerMessage: {
+                    uint32_t clientID;
+                    msg >> clientID;
+                    std::cout << "Hello from [" << clientID << "]" << std::endl;
+                } break;
+                case TypeMessage::ServerDeny: {
+                } break;
+                case TypeMessage::MessageAll: {
+                } break;
+                case TypeMessage::ClientConnect: {
+                } break;
+                case TypeMessage::CreateEntityMessage: {
+                    EntityInformation entity;
+                    msg >> entity;
+                    c.AddEntity(entity);
+                } break;
+                case TypeMessage::CreateEntityResponse: {
+                } break;
+                case TypeMessage::DestroyEntityMessage: {
+                    r_type::net::Message<TypeMessage> reponse;
+                    uint32_t id;
+                    msg >> id;
+                    c.RemoveEntity(id);
+                    reponse.header.id = TypeMessage::DestroyEntityResponse;
+                    c.Send(reponse);
+                } break;
+                case TypeMessage::UpdateEntity: {
+                    r_type::net::Message<TypeMessage> reponse;
+                    reponse.header.id = TypeMessage::UpdateEntityResponse;
+                    EntityInformation entity;
+                    msg >> entity;
+                    c.UpdateEntity(entity);
+                } break;
+                }
+            }
+        } else {
+            std::cout << "Server Down" << std::endl;
+            _window->close();
+            break;
+        }
 
-        updateSystem.update(entityManager, componentManager, deltaTime);
-        renderSystem.render(entityManager, componentManager);
+        renderSystem.render(componentManager);
     }
 }
 
