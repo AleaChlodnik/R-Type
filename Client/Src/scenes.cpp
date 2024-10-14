@@ -42,11 +42,15 @@ void Scenes::mainMenu()
     };
     Entity playButton = entityFactory.createButton(
         entityManager, componentManager, textureManager, "Play", &onPlayButtonClicked);
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
+    sf::Vector2u scale(1.0f, 1.0f);
     auto pos = componentManager.getComponent<PositionComponent>(playButton.getId());
     if (pos) {
         pos.value()->x = 760;
         pos.value()->y = 100;
     }
+    SpriteComponent sprite(texture, pos.value()->x, pos.value()->y, scale);
+    componentManager.addComponent<SpriteComponent>(playButton.getId(), sprite);
 
     std::function<Scenes *(Scenes *)> onSettingsButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::SETTINGS_MENU);
@@ -54,11 +58,15 @@ void Scenes::mainMenu()
     };
     Entity settingsButton = entityFactory.createButton(
         entityManager, componentManager, textureManager, "Settings", &onSettingsButtonClicked);
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
+    sf::Vector2u scale(1.0f, 1.0f);
     pos = componentManager.getComponent<PositionComponent>(settingsButton.getId());
     if (pos) {
         pos.value()->x = 760;
         pos.value()->y = 250;
     }
+    SpriteComponent sprite(texture, pos.value()->x, pos.value()->y, scale);
+    componentManager.addComponent<SpriteComponent>(settingsButton.getId(), sprite);
 
     std::function<Scenes *(Scenes *)> onQuitButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::EXIT);
@@ -66,11 +74,15 @@ void Scenes::mainMenu()
     };
     Entity quitButton = entityFactory.createButton(
         entityManager, componentManager, textureManager, "Quit", &onQuitButtonClicked);
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
+    sf::Vector2u scale(1.0f, 1.0f);
     pos = componentManager.getComponent<PositionComponent>(quitButton.getId());
     if (pos) {
         pos.value()->x = 760;
         pos.value()->y = 500;
     }
+    SpriteComponent sprite(texture, pos.value()->x, pos.value()->y, scale);
+    componentManager.addComponent<SpriteComponent>(quitButton.getId(), sprite);
 
     std::vector<Entity *> buttons = {&playButton, &settingsButton, &quitButton};
     sf::Clock clock;
