@@ -9,8 +9,8 @@
 
 #include "../error_handling.hpp"
 #include "entity.hpp"
-#include <vector>
 #include <algorithm>
+#include <vector>
 
 class EntityManager {
   public:
