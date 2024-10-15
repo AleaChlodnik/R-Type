@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "a_client.hpp"
+#include <Net/a_client.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -39,6 +39,30 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         r_type::net::Message<TypeMessage> msg;
         msg.header.id = TypeMessage::MessageAll;
         Send(msg);
+    }
+
+    void addEntity(EntityInformation entity, ComponentManager &componentManager,
+        TextureManager &textureManager)
+    {
+        sf::Texture &texture = textureManager.getTexture(entity.spriteData.spritePath);
+        sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
+        SpriteComponent sprite(texture, entity.vPos.x, entity.vPos.y, scale);
+        componentManager.addComponent<SpriteComponent>(entity.uniqueID, sprite);
+    }
+
+    void removeEntity(int entityId, ComponentManager &componentManager)
+    {
+        componentManager.removeEntityFromComponent<SpriteComponent>(entityId);
+    }
+
+    void updateEntity(EntityInformation entity, ComponentManager &componentManager)
+    {
+        if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
+            auto &sprites = **spritesOpt;
+            auto entitySprite = sprites[entity.uniqueID];
+            auto spriteComponent = std::any_cast<SpriteComponent>(&entitySprite);
+            spriteComponent->sprite.setPosition(entity.vPos.x, entity.vPos.y);
+        }
     }
 };
 } // namespace net
