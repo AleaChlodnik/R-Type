@@ -109,7 +109,7 @@ template <typename T> class AClient : virtual public IClient<T> {
     const std::unique_ptr<Connection<T>> &getConnection() { return m_connection; }
 
     void setPlayerId(int id) { playerId = id; }
-    int getPlayerId() { return playerId; }
+    uint32_t getPlayerId() { return playerId; }
 
     void addEntity(EntityInformation entity, ComponentManager &componentManager,
         TextureManager &textureManager);
@@ -123,7 +123,7 @@ template <typename T> class AClient : virtual public IClient<T> {
 
   private:
     ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
-    int playerId = 0;
+    uint32_t playerId = 0;
 };
 } // namespace net
 } // namespace r_type
