@@ -78,6 +78,16 @@ class ComponentManager {
         return std::nullopt;
     }
 
+    template <typename ComponentType>
+    void removeComponent(int entityId)
+    {
+        auto it = components.find(typeid(ComponentType));
+        if (it != components.end()) {
+            auto &entityComponents = it->second;
+            entityComponents.erase(entityId);
+        }
+    }
+
   private:
     // unordered map of <componentType, it's unordered map of <entityId, it's
     // values for the componentType>>

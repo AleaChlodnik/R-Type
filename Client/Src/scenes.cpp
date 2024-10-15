@@ -168,11 +168,10 @@ void Scenes::gameLoop()
     sf::Event event;
 
     /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
-    EntityFactory entityFactory;
     sf::Clock clock;
+    EntityFactory entityFactory;
     Entity background = entityFactory.createBackground(entityManager, componentManager);
-    sf::Texture &texture =
-        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
     SpriteComponent spriteComponent(texture, 0, 0, scale);
     componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
@@ -181,12 +180,21 @@ void Scenes::gameLoop()
     auto updatePlayerPosition = [&](const vf2d &delta) {
         r_type::net::Message<TypeMessage> msg;
         msg.header.id = TypeMessage::MoveEntityMessage;
+        if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
+            auto &sprites = **spritesOpt;
+            auto spriteComponent = sprites[c.getPlayerId()].second;
+            auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
+            int playerPosX = playerSprite.sprite.getPosition().x;
+            int playerPosY = playerSprite.sprite.getPosition().y;
+            msg << vf2d{playerPosX + delta.x, playerPosY + delta.y};
+        }
+
     };
 
     auto fireMissile = [&]() {
         r_type::net::Message<TypeMessage> msg;
         msg.header.id = TypeMessage::CreateEntityMessage;
-        msg << CreatableClientObject::MISSILE;
+        msg << CreatableClientObject::MISSILE << c.getPlayerId();
         c.Send(msg);
     };
 
@@ -197,7 +205,7 @@ void Scenes::gameLoop()
             if (event.type == sf::Event::Closed) {
                 r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::DestroyEntityMessage;
-                // msg << c.getPlayerId();
+                msg << c.getPlayerId();
                 c.Send(msg);
                 _window->close();
             }
@@ -226,7 +234,6 @@ void Scenes::gameLoop()
                 } break;
                 case sf::Keyboard::Space: {
                     fireMissile();
-                    // Tell server to create missile from player position
                 } break;
                 default:
                     break;
@@ -241,8 +248,8 @@ void Scenes::gameLoop()
                     std::cout << "Server Accepted Connection" << std::endl;
                     EntityInformation entity;
                     msg >> entity;
-                    // c.setPlayerId(entity.id);
-                    // addEntity(entity, componentManager);
+                    c.setPlayerId(entity.uniqueID);
+                    c.addEntity(entity, componentManager, textureManager);
                 } break;
                 case TypeMessage::ServerPing: {
                     std::chrono::system_clock::time_point timeNow =
@@ -267,7 +274,7 @@ void Scenes::gameLoop()
                 case TypeMessage::CreateEntityMessage: {
                     EntityInformation entity;
                     msg >> entity;
-                    // addEntity(entity, componentManager);
+                    c.addEntity(entity, componentManager, textureManager);
                 } break;
                 case TypeMessage::CreateEntityResponse: {
                 } break;
@@ -275,7 +282,7 @@ void Scenes::gameLoop()
                     r_type::net::Message<TypeMessage> reponse;
                     uint32_t id;
                     msg >> id;
-                    // removeEntity(id, componentManager);
+                    c.removeEntity(id, componentManager);
                     reponse.header.id = TypeMessage::DestroyEntityResponse;
                     c.Send(reponse);
                 } break;
@@ -284,7 +291,7 @@ void Scenes::gameLoop()
                     reponse.header.id = TypeMessage::UpdateEntityResponse;
                     EntityInformation entity;
                     msg >> entity;
-                    // updateEntity(entity);
+                    c.updateEntity(entity, componentManager);
                 } break;
                 case TypeMessage::UpdateEntityResponse: {
                 } break;
