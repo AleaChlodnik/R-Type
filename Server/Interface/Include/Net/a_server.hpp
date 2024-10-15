@@ -246,11 +246,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         if (sprite) {
             if (nbrOfPlayers == 1)
-                sprite.value()->spritePath = "Client/Assets/Sprites/Ships/ship2.png";
+                sprite.value()->spritePath = SpritePath::Ship2;
             else if (nbrOfPlayers == 2)
-                sprite.value()->spritePath = "Client/Assets/Sprites/Ships/ship3.png";
+                sprite.value()->spritePath = SpritePath::Ship3;
             else if (nbrOfPlayers == 3)
-                sprite.value()->spritePath = "Client/Assets/Sprites/Ships/ship4.png";
+                sprite.value()->spritePath = SpritePath::Ship4;
             entityInfo.spriteData = *(sprite.value());
         }
         clientPlayerID.insert_or_assign(clientId, entityInfo.uniqueID);
