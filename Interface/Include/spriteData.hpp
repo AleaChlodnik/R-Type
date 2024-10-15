@@ -11,16 +11,16 @@
 #include <string>
 
 template<typename T>
-struct Vector_s {
+struct Vector {
     T x;
     T y;
 };
 
 typedef struct SpriteData_s {
     std::string spritePath;
-    Vector_s<uint32_t> offSet;
-    Vector_s<uint32_t> dimension;
-    Vector_s<float> scale;
+    Vector<uint32_t> offSet;
+    Vector<uint32_t> dimension;
+    Vector<float> scale;
 } SpriteData_t;
 
 enum class SpriteType : uint32_t

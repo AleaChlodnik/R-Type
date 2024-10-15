@@ -5,9 +5,9 @@
 ** entities_struct
 */
 
+#pragma once
+
 #include <cstdint>
-#ifndef ENTITIES_STRUCT_HPP_
-    #define ENTITIES_STRUCT_HPP_
 
 struct vf2d {
     float x = 0;
@@ -31,5 +31,3 @@ struct EntityInformation {
     hbf2d hitbox;
     vf2d vPos;
 };
-
-#endif /* !ENTITIES_STRUCT_HPP_ */
