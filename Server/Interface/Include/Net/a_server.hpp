@@ -266,15 +266,25 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @return true
      * @return false
      */
+
     bool CheckPlayerPosition(EntityInformation desc)
     {
+        float descLeft, descRight, descTop, descBottom, playerLeft, playerRight, playerTop,
+            playerBottom;
+        for (const auto &player : Entities) {
+            if (player.first != desc.uniqueID) {
+                descLeft = desc.vPos.x - (desc.hitbox.width / 2);
+                descRight = desc.vPos.x + (desc.hitbox.width / 2);
+                descTop = desc.vPos.y - (desc.hitbox.height / 2);
+                descBottom = desc.vPos.y + (desc.hitbox.height / 2);
 
-        for (const auto &other : Entities) {
-            if (desc.uniqueID != other.first) {
-                float dx = desc.vPos.x - other.second.vPos.x;
-                float dy = desc.vPos.y - other.second.vPos.y;
-                float distance = std::sqrt(dx * dx + dy * dy);
-                if (distance <= (desc.hitbox.width)) {
+                playerLeft = player.second.vPos.x - (player.second.hitbox.width / 2);
+                playerRight = player.second.vPos.x + (player.second.hitbox.width / 2);
+                playerTop = player.second.vPos.y - (player.second.hitbox.height / 2);
+                playerBottom = player.second.vPos.y + (player.second.hitbox.height / 2);
+
+                if (!(descRight < playerLeft || descLeft > playerRight || descBottom < playerTop ||
+                        descTop > playerBottom)) {
                     return false;
                 }
             }
