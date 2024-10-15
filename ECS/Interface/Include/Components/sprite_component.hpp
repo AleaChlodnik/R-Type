@@ -20,8 +20,7 @@ struct SpriteComponent {
     {
         sprite.setTexture(texture);
         sprite.setPosition(posX, posY);
-        sprite.setScale(scale);
-        sf::Vector2u textureSize = texture.getSize();
-        sprite.setOrigin(textureSize.x / 2.0f, textureSize.y / 2.0f);
+        sprite.setScale(1.0f, 1.0f);
+        //sprite.setScale(scale);
     }
 };

@@ -199,6 +199,7 @@ void Scenes::gameLoop()
             clock.restart().asSeconds(); /////////////////////////////////////// TEMPORARY
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
+                std::cout << "Closing window" << std::endl;
                 r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::DestroyEntityMessage;
                 msg << c.getPlayerId();
@@ -241,6 +242,8 @@ void Scenes::gameLoop()
             }
         }
         if (c.IsConnected()) {
+            // std::cout << "Connected to Server" << std::endl;
+            // /////////////////////////////////////
             if (!c.Incoming().empty()) {
                 auto msg = c.Incoming().pop_front().msg;
                 switch (msg.header.id) {
@@ -249,15 +252,7 @@ void Scenes::gameLoop()
                     EntityInformation entity;
                     msg >> entity;
                     c.setPlayerId(entity.uniqueID);
-                    // std::cout << "Player ID: " << c.getPlayerId() << std::endl;
-                    // ///////////////////////////////
                     c.addEntity(entity, componentManager, textureManager);
-                    // if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
-                    //     std::cout << "sprites um exists" << std::endl;
-                    //     /////////////////////////////// auto &sprites = **spritesOpt; auto
-                    //     spriteComponent = sprites[c.getPlayerId()]; auto playerSprite =
-                    //     std::any_cast<SpriteComponent>(&spriteComponent);
-                    // }
 
                 } break;
                 case TypeMessage::ServerPing: {

@@ -38,7 +38,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         entityFactory = EntityFactory();
         componentManager = ComponentManager();
         background = InitiateBackground();
-        EntityFactory entityFactory;
         entityFactory.createBasicMonster(entityManager, componentManager);
     }
 
@@ -251,14 +250,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         Entity player = entityFactory.createPlayer(entityManager, componentManager);
         entityInfo.uniqueID = player.getId();
         entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
-        while (CheckPlayerPosition(entityInfo) == false) {
-            entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
-        }
-        auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
-        if (playerPos) {
-            playerPos.value()->x = entityInfo.vPos.x;
-            playerPos.value()->y = entityInfo.vPos.y;
-        }
         auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         if (sprite) {
             if (nbrOfPlayers == 1)
@@ -268,6 +259,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             else if (nbrOfPlayers == 3)
                 sprite.value()->spritePath = SpritePath::Ship4;
             entityInfo.spriteData = *(sprite.value());
+        }
+        while (CheckPlayerPosition(entityInfo) == false) {
+            entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
+        }
+        auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+        if (playerPos) {
+            playerPos.value()->x = entityInfo.vPos.x;
+            playerPos.value()->y = entityInfo.vPos.y;
         }
         clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
         return entityInfo;
@@ -343,7 +342,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             if (entity.getId() != desc.uniqueID && entity.getId() != background.uniqueID) {
                 auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
                 auto playerHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
-                if (playerPos) {
+                if (playerPos && playerHitbox) {
+
                     descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
                     descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
                     descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);

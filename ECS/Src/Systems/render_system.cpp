@@ -26,26 +26,26 @@ void RenderSystem::render(ComponentManager &componentManager)
 
     const auto spritesOpt = componentManager.getComponentMap<SpriteComponent>();
     if (spritesOpt) {
-
+        std::cout << "render can access unordered map of sprites" << std::endl; //////////////////////////////////
         auto &sprites = **spritesOpt;
-
         // Always display background first - game
-        // if (sprites.find(serverBackgroundId) != sprites.end()) {
-        //     const auto &anySprite = sprites[serverBackgroundId];
-        //     auto spriteComponent = std::any_cast<SpriteComponent>(&anySprite);
-        //     if (spriteComponent) {
-        //         _window.draw(spriteComponent->sprite);
-        //     }
-        // }
+            const auto &spriteComponent = sprites[2];
+            auto bgSprite = std::any_cast<SpriteComponent>(&spriteComponent);
+            if (bgSprite) {
+                std::cout << "Got bg sprite" << std::endl; /////////////////////////////////////////////////
+                _window.draw(bgSprite->sprite);
+            }
 
         for (const auto &pair : sprites) { // Derefrences the optional and then the pointer
-            const auto &entityId = pair.first;
-            if (entityId == backgroundId) { // || entityId == (serverBackgroundId)
+            int entityId = pair.first;
+            std::cout << "Entity ID: " << entityId << std::endl; /////////////////////////////////////////////////
+            if (entityId == backgroundId) { // || entityId == 2
                 continue;
             }
             const auto &spriteComponent = pair.second;
             auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
             if (sprite) {
+                std::cout << "Got bg sprite" << std::endl; /////////////////////////////////////////////////
                 _window.draw(sprite->sprite);
             }
         }
