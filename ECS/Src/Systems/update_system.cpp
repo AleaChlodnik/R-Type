@@ -38,9 +38,9 @@ void UpdateSystem::updateSpritePosition(
 void UpdateSystem::updateBackground(ComponentManager &componentManager, float deltaTime)
 {
     // Menu background scroll - just Client
-    int backgroundId = 0;
     auto backgroundOpt = componentManager.getComponentMap<BackgroundComponent>();
     if (backgroundOpt) {
+        int backgroundId = 0;
         auto &backgroundMap = **backgroundOpt;
         if (!backgroundMap.empty()) {
             auto entityId = backgroundMap.begin()->first;
