@@ -10,6 +10,42 @@
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 
+bool CheckPositionEntity(
+    EntityManager &entityManager, ComponentManager &componentManager, u_int32_t entityID)
+{
+    float descLeft, descRight, descTop, descBottom, playerLeft, playerRight, playerTop,
+        playerBottom;
+    const std::vector<Entity> entities = entityManager.getAllEntities();
+    auto desc = componentManager.getComponent<PositionComponent>(entityID);
+    auto descSprite = componentManager.getComponent<SpriteDataComponent>(entityID);
+    if (desc && descSprite) {
+        for (const auto &entity : entities) {
+            if (entity.getId() != entityID && entity.getId() != 1) {
+                auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
+                auto playerHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
+                if (playerPos && playerHitbox) {
+
+                    descLeft = desc.value()->x - (descSprite.value()->dimension.x / 2);
+                    descRight = desc.value()->x + (descSprite.value()->dimension.x / 2);
+                    descTop = desc.value()->y - (descSprite.value()->dimension.y / 2);
+                    descBottom = desc.value()->y + (descSprite.value()->dimension.y / 2);
+
+                    playerLeft = playerPos.value()->x - (playerHitbox.value()->w / 2);
+                    playerRight = playerPos.value()->x + (playerHitbox.value()->w / 2);
+                    playerTop = playerPos.value()->y - (playerHitbox.value()->h / 2);
+                    playerBottom = playerPos.value()->y + (playerHitbox.value()->h / 2);
+
+                    if (!(descRight < playerLeft || descLeft > playerRight ||
+                            descBottom < playerTop || descTop > playerBottom)) {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    return true;
+}
+
 Entity EntityFactory::createBackground(
     EntityManager &entityManager, ComponentManager &componentManager)
 {
@@ -38,7 +74,7 @@ Entity EntityFactory::createPlayer(
     PlayerComponent playerComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.5f, 1.5f}};
+    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.0f, 1.0f}};
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
     HealthComponent health{100, 100};
     InputComponent input{InputType::NONE};
@@ -102,8 +138,8 @@ Entity EntityFactory::createBasicMonster(
 
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {272, 224}, {0.8f, 0.8f}};
-    PositionComponent startPosition(1000, 500);
+    SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {136, 112}, {0.5f, 0.5f}};
+    PositionComponent startPosition(1200, 500);
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
     HealthComponent health{100, 100};
 
@@ -114,10 +150,23 @@ Entity EntityFactory::createBasicMonster(
     componentManager.addComponent<HealthComponent>(monster.getId(), health);
     componentManager.addComponent<SpriteDataComponent>(monster.getId(), spriteData);
 
+    while (CheckPositionEntity(entityManager, componentManager, monster.getId()) == false) {
+        auto monsterPos = componentManager.getComponent<PositionComponent>(monster.getId());
+        if (monsterPos) {
+            monsterPos.value()->x = static_cast<float>(rand() % 1800);
+            ;
+            if (monsterPos.value()->x < 1200) {
+                monsterPos.value()->x = 1200;
+            }
+            monsterPos.value()->y = static_cast<float>(rand() % 1000);
+        }
+    }
+
     return monster;
 }
 
-Entity EntityFactory::createPlayerMissile(EntityManager &entityManager, ComponentManager &componentManager)
+Entity EntityFactory::createPlayerMissile(
+    EntityManager &entityManager, ComponentManager &componentManager)
 {
     Entity playerMissile = entityManager.createEntity();
 

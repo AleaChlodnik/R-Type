@@ -21,7 +21,7 @@ namespace net {
 /**
  * @brief AServer class
  *
- * @tparam T
+ * @param T
  */
 template <typename T> class AServer : virtual public r_type::net::IServer<T> {
   public:
@@ -38,6 +38,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         entityFactory = EntityFactory();
         componentManager = ComponentManager();
         background = InitiateBackground();
+        entityFactory.createBasicMonster(entityManager, componentManager);
+        entityFactory.createBasicMonster(entityManager, componentManager);
         entityFactory.createBasicMonster(entityManager, componentManager);
     }
 
@@ -177,7 +179,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             } else {
                 OnClientDisconnect(client);
                 client.reset();
-
                 bInvalidClientExists = true;
             }
         }
@@ -199,10 +200,19 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         if (bWait)
             m_qMessagesIn.wait();
         std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
-        std::cout
-            << "Time: "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
-            << std::endl;
+        // std::cout
+        //     << "Time: "
+        //     << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
+        //     << std::endl;
+        while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
+            100) {
+
+            const std::vector<Entity> entities = entityManager.getAllEntities();
+            for (const auto &entity : entities) {
+                getCompo if (entity.getId() != entityID && entity.getId() != 1) {}
+            }
+        }
+        newClock -= std::chrono::milliseconds(100);
         _clock = newClock;
 
         size_t nMessageCount = 0;
@@ -278,7 +288,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             playerPos.value()->x = entityInfo.vPos.x;
             playerPos.value()->y = entityInfo.vPos.y;
         }
-        clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
+        clientPlayerID.insert_or_assign(
+            nIDCounter, entityInfo.uniqueID); // Assuming clientPlayerID is a
+                                              // std::unordered_map<uint32_t, uint32_t> or similar.
         return entityInfo;
     }
 
@@ -338,10 +350,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @brief check player position to avoid collision
      *
      * @param desc
-     * @return -1 if player touche nothing
-     * @return entityId of the entity touched
+     * @return true
+     * @return false
      */
-
     int CheckPlayerPosition(EntityInformation desc)
     {
         float descLeft, descRight, descTop, descBottom, playerLeft, playerRight, playerTop,
@@ -426,7 +437,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * right: player ID
      *
      * This unordered map is used to associate client IDs with their corresponding player IDs.
-     * The keys are of type uint32_t representing the client IDs, and the values are also of type
+     * The keys are o}f type uint32_t representing the client IDs, and the values are also of type
      * uint32_t representing the player IDs.
      */
     std::unordered_map<uint32_t, uint32_t> clientPlayerID;
