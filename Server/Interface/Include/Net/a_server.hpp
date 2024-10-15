@@ -12,7 +12,6 @@
 #include <entity_struct.hpp>
 #include <unordered_map>
 
-
 namespace r_type {
 namespace net {
 /**
