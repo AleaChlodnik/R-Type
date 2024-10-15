@@ -210,233 +210,233 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             const std::vector<Entity> entities = entityManager.getAllEntities();
             for (const auto &entity : entities) {
                 if (entity.getId() != entityID && entity.getId() != 1) {
-                    }
                 }
             }
-            newClock -= std::chrono::milliseconds(100);
         }
-        _clock = newClock;
-
-        size_t nMessageCount = 0;
-        while (nMessageCount < nMaxMessages && !m_qMessagesIn.empty()) {
-            auto msg = m_qMessagesIn.pop_front();
-
-            OnMessage(msg.remote, msg.msg);
-
-            nMessageCount++;
-        }
+        newClock -= std::chrono::milliseconds(100);
     }
+    _clock = newClock;
+
+    size_t nMessageCount = 0;
+    while (nMessageCount < nMaxMessages && !m_qMessagesIn.empty()) {
+        auto msg = m_qMessagesIn.pop_front();
+
+        OnMessage(msg.remote, msg.msg);
+
+        nMessageCount++;
+    }
+}
 
     void UpdateEntityPosition(r_type::net::Message<T> &msg, uint32_t clientId)
-    {
-        uint32_t entityId = GetClientEntityId(clientId);
-        EntityInformation entity;
-        vf2d entityPosition;
-        auto entitySprite = componentManager.getComponent<SpriteDataComponent>(entityId);
-        msg >> entityPosition;
-        entity.uniqueID = entityId;
-        entity.vPos = entityPosition;
-        entity.spriteData = *entitySprite.value();
+{
+    uint32_t entityId = GetClientEntityId(clientId);
+    EntityInformation entity;
+    vf2d entityPosition;
+    auto entitySprite = componentManager.getComponent<SpriteDataComponent>(entityId);
+    msg >> entityPosition;
+    entity.uniqueID = entityId;
+    entity.vPos = entityPosition;
+    entity.spriteData = *entitySprite.value();
 
-        if (CheckPlayerPosition(entity)) {
-            auto position = componentManager.getComponent<PositionComponent>(entityId);
-            if (position) {
-                position.value()->x = entityPosition.x;
-                position.value()->y = entityPosition.y;
-                r_type::net::Message<TypeMessage> msg;
-                msg.header.id = TypeMessage::UpdateEntity;
-                msg << entity;
-                MessageAllClients(msg);
-            }
+    if (CheckPlayerPosition(entity)) {
+        auto position = componentManager.getComponent<PositionComponent>(entityId);
+        if (position) {
+            position.value()->x = entityPosition.x;
+            position.value()->y = entityPosition.y;
+            r_type::net::Message<TypeMessage> msg;
+            msg.header.id = TypeMessage::UpdateEntity;
+            msg << entity;
+            MessageAllClients(msg);
         }
     }
+}
 
-    uint32_t GetClientEntityId(uint32_t id) { return clientPlayerID[id]; }
+uint32_t GetClientEntityId(uint32_t id) { return clientPlayerID[id]; }
 
-    void RemovePlayer(uint32_t id) { clientPlayerID.erase(id); }
-    void RemoveEntities(uint32_t id) { entityManager.removeEntity(id); }
+void RemovePlayer(uint32_t id) { clientPlayerID.erase(id); }
+void RemoveEntities(uint32_t id) { entityManager.removeEntity(id); }
 
-    EntityInformation InitiatePlayers(int clientId)
-    {
-        EntityInformation entityInfo;
-        Entity player = entityFactory.createPlayer(entityManager, componentManager);
-        entityInfo.uniqueID = player.getId();
+EntityInformation InitiatePlayers(int clientId)
+{
+    EntityInformation entityInfo;
+    Entity player = entityFactory.createPlayer(entityManager, componentManager);
+    entityInfo.uniqueID = player.getId();
+    entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
+    auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+    if (sprite) {
+        if (nbrOfPlayers == 1)
+            sprite.value()->spritePath = SpritePath::Ship2;
+        else if (nbrOfPlayers == 2)
+            sprite.value()->spritePath = SpritePath::Ship3;
+        else if (nbrOfPlayers == 3)
+            sprite.value()->spritePath = SpritePath::Ship4;
+        entityInfo.spriteData = *(sprite.value());
+    }
+    while (CheckPlayerPosition(entityInfo) == false) {
         entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
-        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
-        if (sprite) {
-            if (nbrOfPlayers == 1)
-                sprite.value()->spritePath = SpritePath::Ship2;
-            else if (nbrOfPlayers == 2)
-                sprite.value()->spritePath = SpritePath::Ship3;
-            else if (nbrOfPlayers == 3)
-                sprite.value()->spritePath = SpritePath::Ship4;
-            entityInfo.spriteData = *(sprite.value());
-        }
-        while (CheckPlayerPosition(entityInfo) == false) {
-            entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
-        }
-        auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
-        if (playerPos) {
-            playerPos.value()->x = entityInfo.vPos.x;
-            playerPos.value()->y = entityInfo.vPos.y;
-        }
-        clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
-        return entityInfo;
     }
-
-    EntityInformation InitiateMissile(int clientId)
-    {
-        EntityInformation entityInfo;
-        Entity missile = entityFactory.createPlayerMissile(entityManager, componentManager);
-        entityInfo.uniqueID = missile.getId();
-        auto playerPos =
-            componentManager.getComponent<PositionComponent>(GetClientEntityId(clientId)).value();
-        entityInfo.vPos.x = playerPos->x + 150;
-        entityInfo.vPos.y = playerPos->y + 70;
-        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
-        if (sprite) {
-            entityInfo.spriteData = *(sprite.value());
-        }
-        return entityInfo;
+    auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+    if (playerPos) {
+        playerPos.value()->x = entityInfo.vPos.x;
+        playerPos.value()->y = entityInfo.vPos.y;
     }
+    clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
+    return entityInfo;
+}
 
-    EntityInformation InitiateBackground()
-    {
-        EntityInformation entityInfo;
-        Entity background = entityFactory.createBackground(entityManager, componentManager);
-        entityInfo.uniqueID = background.getId();
-        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
-        if (sprite) {
-            entityInfo.spriteData = *(sprite.value());
-        }
-        return entityInfo;
+EntityInformation InitiateMissile(int clientId)
+{
+    EntityInformation entityInfo;
+    Entity missile = entityFactory.createPlayerMissile(entityManager, componentManager);
+    entityInfo.uniqueID = missile.getId();
+    auto playerPos =
+        componentManager.getComponent<PositionComponent>(GetClientEntityId(clientId)).value();
+    entityInfo.vPos.x = playerPos->x + 150;
+    entityInfo.vPos.y = playerPos->y + 70;
+    auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+    if (sprite) {
+        entityInfo.spriteData = *(sprite.value());
     }
+    return entityInfo;
+}
 
-    void InitListEntities(std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID)
-    {
-        EntityInformation entityInfo;
-        r_type::net::Message<T> msgAddPlayer;
-        msgAddPlayer.header.id = T::CreateEntityMessage;
-        const std::vector<Entity> entities = entityManager.getAllEntities();
-        for (const auto &entity : entities) {
-            if (entity.getId() != entityID && entity.getId() != 1) {
-                auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
-                auto sprite = componentManager.getComponent<SpriteDataComponent>(entity.getId());
-                if (playerPos && sprite) {
-                    entityInfo.uniqueID = entity.getId();
-                    entityInfo.vPos.x = playerPos.value()->x;
-                    entityInfo.vPos.y = playerPos.value()->y;
-                    entityInfo.spriteData = *(sprite.value());
-                    msgAddPlayer << entityInfo;
-                    MessageClient(client, msgAddPlayer);
+EntityInformation InitiateBackground()
+{
+    EntityInformation entityInfo;
+    Entity background = entityFactory.createBackground(entityManager, componentManager);
+    entityInfo.uniqueID = background.getId();
+    auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+    if (sprite) {
+        entityInfo.spriteData = *(sprite.value());
+    }
+    return entityInfo;
+}
+
+void InitListEntities(std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID)
+{
+    EntityInformation entityInfo;
+    r_type::net::Message<T> msgAddPlayer;
+    msgAddPlayer.header.id = T::CreateEntityMessage;
+    const std::vector<Entity> entities = entityManager.getAllEntities();
+    for (const auto &entity : entities) {
+        if (entity.getId() != entityID && entity.getId() != 1) {
+            auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
+            auto sprite = componentManager.getComponent<SpriteDataComponent>(entity.getId());
+            if (playerPos && sprite) {
+                entityInfo.uniqueID = entity.getId();
+                entityInfo.vPos.x = playerPos.value()->x;
+                entityInfo.vPos.y = playerPos.value()->y;
+                entityInfo.spriteData = *(sprite.value());
+                msgAddPlayer << entityInfo;
+                MessageClient(client, msgAddPlayer);
+            }
+        }
+    }
+    msgAddPlayer.header.id = T::FinishInitialization;
+    MessageClient(client, msgAddPlayer);
+}
+
+/**
+ * @brief check player position to avoid collision
+ *
+ * @param desc
+ * @return true
+ * @return false
+ */
+bool CheckPlayerPosition(EntityInformation desc)
+{
+    float descLeft, descRight, descTop, descBottom, playerLeft, playerRight, playerTop,
+        playerBottom;
+    const std::vector<Entity> entities = entityManager.getAllEntities();
+
+    for (const auto &entity : entities) {
+        if (entity.getId() != desc.uniqueID && entity.getId() != background.uniqueID) {
+            auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
+            auto playerHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
+            if (playerPos && playerHitbox) {
+
+                descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
+                descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
+                descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);
+                descBottom = desc.vPos.y + (desc.spriteData.dimension.y / 2);
+
+                playerLeft = playerPos.value()->x - (playerHitbox.value()->w / 2);
+                playerRight = playerPos.value()->x + (playerHitbox.value()->w / 2);
+                playerTop = playerPos.value()->y - (playerHitbox.value()->h / 2);
+                playerBottom = playerPos.value()->y + (playerHitbox.value()->h / 2);
+
+                if (!(descRight < playerLeft || descLeft > playerRight || descBottom < playerTop ||
+                        descTop > playerBottom)) {
+                    return false;
                 }
             }
         }
-        msgAddPlayer.header.id = T::FinishInitialization;
-        MessageClient(client, msgAddPlayer);
     }
+    return true;
+}
 
-    /**
-     * @brief check player position to avoid collision
-     *
-     * @param desc
-     * @return true
-     * @return false
-     */
-    bool CheckPlayerPosition(EntityInformation desc)
-    {
-        float descLeft, descRight, descTop, descBottom, playerLeft, playerRight, playerTop,
-            playerBottom;
-        const std::vector<Entity> entities = entityManager.getAllEntities();
+virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) {}
 
-        for (const auto &entity : entities) {
-            if (entity.getId() != desc.uniqueID && entity.getId() != background.uniqueID) {
-                auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
-                auto playerHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
-                if (playerPos && playerHitbox) {
+protected:
+/**
+ * @brief on client connect event
+ *
+ * @param client
+ * @return true
+ * @return false
+ */
+virtual bool OnClientConnect(std::shared_ptr<Connection<T>> client) { return false; }
 
-                    descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
-                    descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
-                    descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);
-                    descBottom = desc.vPos.y + (desc.spriteData.dimension.y / 2);
+/**
+ * @brief on client disconnect event
+ *
+ * @param client
+ */
+virtual void OnClientDisconnect(std::shared_ptr<Connection<T>> client) {}
 
-                    playerLeft = playerPos.value()->x - (playerHitbox.value()->w / 2);
-                    playerRight = playerPos.value()->x + (playerHitbox.value()->w / 2);
-                    playerTop = playerPos.value()->y - (playerHitbox.value()->h / 2);
-                    playerBottom = playerPos.value()->y + (playerHitbox.value()->h / 2);
+/**
+ * @brief on message event
+ *
+ * @param client
+ * @param msg
+ */
+virtual void OnMessage(std::shared_ptr<Connection<T>> client, Message<T> &msg) {}
 
-                    if (!(descRight < playerLeft || descLeft > playerRight ||
-                            descBottom < playerTop || descTop > playerBottom)) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
+public:
+ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
 
-    virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) {}
+std::deque<std::shared_ptr<Connection<T>>> m_deqConnections;
 
-  protected:
-    /**
-     * @brief on client connect event
-     *
-     * @param client
-     * @return true
-     * @return false
-     */
-    virtual bool OnClientConnect(std::shared_ptr<Connection<T>> client) { return false; }
+asio::io_context m_asioContext;
+std::thread m_threadContext;
 
-    /**
-     * @brief on client disconnect event
-     *
-     * @param client
-     */
-    virtual void OnClientDisconnect(std::shared_ptr<Connection<T>> client) {}
+asio::ip::udp::socket m_asioSocket;
+asio::ip::udp::endpoint m_clientEndpoint;
 
-    /**
-     * @brief on message event
-     *
-     * @param client
-     * @param msg
-     */
-    virtual void OnMessage(std::shared_ptr<Connection<T>> client, Message<T> &msg) {}
+std::array<uint8_t, 1024> m_tempBuffer;
 
-  public:
-    ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
+uint32_t nIDCounter = 10000;
 
-    std::deque<std::shared_ptr<Connection<T>>> m_deqConnections;
+ComponentManager componentManager;
+EntityManager entityManager;
+EntityFactory entityFactory;
+/**
+ * @brief A container that maps client IDs to player IDs.
+ *
+ * left: client ID
+ * right: player ID
+ *
+ * This unordered map is used to associate client IDs with their corresponding player IDs.
+ * The keys are of type uint32_t representing the client IDs, and the values are also of type
+ * uint32_t representing the player IDs.
+ */
+std::unordered_map<uint32_t, uint32_t> clientPlayerID;
 
-    asio::io_context m_asioContext;
-    std::thread m_threadContext;
+int nbrOfPlayers = 0;
 
-    asio::ip::udp::socket m_asioSocket;
-    asio::ip::udp::endpoint m_clientEndpoint;
+std::chrono::system_clock::time_point _clock = std::chrono::system_clock::now();
 
-    std::array<uint8_t, 1024> m_tempBuffer;
-
-    uint32_t nIDCounter = 10000;
-
-    ComponentManager componentManager;
-    EntityManager entityManager;
-    EntityFactory entityFactory;
-    /**
-     * @brief A container that maps client IDs to player IDs.
-     *
-     * left: client ID
-     * right: player ID
-     *
-     * This unordered map is used to associate client IDs with their corresponding player IDs.
-     * The keys are of type uint32_t representing the client IDs, and the values are also of type
-     * uint32_t representing the player IDs.
-     */
-    std::unordered_map<uint32_t, uint32_t> clientPlayerID;
-
-    int nbrOfPlayers = 0;
-
-    std::chrono::system_clock::time_point _clock = std::chrono::system_clock::now();
-
-    EntityInformation background;
+EntityInformation background;
 };
 } // namespace net
 } // namespace r_type
