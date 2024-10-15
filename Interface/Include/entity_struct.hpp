@@ -1,7 +1,14 @@
+/*
+** EPITECH PROJECT, 2024
+** R-Type
+** File description:
+** entities_struct
+*/
+
+#pragma once
+
 #include <cstdint>
 #include <spriteData.hpp>
-#ifndef ENTITIES_STRUCT_HPP_
-    #define ENTITIES_STRUCT_HPP_
 
 struct vf2d {
     float x = 0;
@@ -13,5 +20,3 @@ struct EntityInformation {
     SpriteData_t spriteData;
     vf2d vPos;
 };
-
-#endif /* !ENTITIES_STRUCT_HPP_ */

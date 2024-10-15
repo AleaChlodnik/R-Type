@@ -13,23 +13,19 @@
 
 class EntityFactory : public IEntityFactory {
   public:
-    Entity createBackground(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &textureManager) override;
-    Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &textureManager) override;
-    Entity createAlly(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &textureManager) override;
-    Entity createBasicEnemy(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &textureManager) override;
-    Entity createBasicMonster(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &textureManager) override;
-    Entity createPlayerMissile(int playerId, EntityManager &entityManager,
-        ComponentManager &componentManager, TextureManager &textureManager) override;
+    Entity createBackground(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createAlly(EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createBasicEnemy(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createBasicMonster(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createPlayerMissile(
+        int playerId, EntityManager &entityManager, ComponentManager &componentManager) override;
     Entity createButton(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &textureManager, std::string text,
         std::function<Scenes *(Scenes *)> *onClick);
-    Entity createAllyMissile(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &textureManager) override;
-    Entity createEnemyMissile(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &textureManager) override;
+    Entity createAllyMissile(EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createEnemyMissile(EntityManager &entityManager, ComponentManager &componentManager) override;
 };

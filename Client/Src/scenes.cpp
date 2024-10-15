@@ -6,6 +6,7 @@
 */
 
 #include <Components/component_manager.hpp>
+#include <Components/components.hpp>
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
 #include <Net/client.hpp>
@@ -19,7 +20,8 @@
 Scenes::Scenes(sf::RenderWindow *window)
 {
     this->_window = window;
-    this->currentScene = Scenes::Scene::MAIN_MENU;
+    this->currentScene =
+        Scenes::Scene::MAIN_MENU; /////////////////// change back to MAIN_MENU after testing
 }
 
 void Scenes::setScene(Scenes::Scene scene) { this->currentScene = scene; }
@@ -31,26 +33,24 @@ void Scenes::mainMenu()
     TextureManager textureManager;
     EntityFactory entityFactory;
     RenderSystem renderSystem(*_window);
-    // Create all the necessary entities
-    Entity background =
-        entityFactory.createBackground(entityManager, componentManager, textureManager);
-
-    // Create the buttons
+    // Create background
+    Entity background = entityFactory.createBackground(entityManager, componentManager);
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Vector2f scale(0.4, 0.4);
+    SpriteComponent spriteComponent(texture, 0, 0, scale);
+    // Create buttons
     std::function<Scenes *(Scenes *)> onPlayButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
         return currentScene;
     };
     Entity playButton = entityFactory.createButton(
         entityManager, componentManager, textureManager, "Play", &onPlayButtonClicked);
-    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
-    sf::Vector2u scale(1.0f, 1.0f);
     auto pos = componentManager.getComponent<PositionComponent>(playButton.getId());
     if (pos) {
         pos.value()->x = 760;
         pos.value()->y = 100;
     }
-    SpriteComponent sprite(texture, pos.value()->x, pos.value()->y, scale);
-    componentManager.addComponent<SpriteComponent>(playButton.getId(), sprite);
 
     std::function<Scenes *(Scenes *)> onSettingsButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::SETTINGS_MENU);
@@ -58,15 +58,11 @@ void Scenes::mainMenu()
     };
     Entity settingsButton = entityFactory.createButton(
         entityManager, componentManager, textureManager, "Settings", &onSettingsButtonClicked);
-    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
-    sf::Vector2u scale(1.0f, 1.0f);
     pos = componentManager.getComponent<PositionComponent>(settingsButton.getId());
     if (pos) {
         pos.value()->x = 760;
         pos.value()->y = 250;
     }
-    SpriteComponent sprite(texture, pos.value()->x, pos.value()->y, scale);
-    componentManager.addComponent<SpriteComponent>(settingsButton.getId(), sprite);
 
     std::function<Scenes *(Scenes *)> onQuitButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::EXIT);
@@ -74,15 +70,11 @@ void Scenes::mainMenu()
     };
     Entity quitButton = entityFactory.createButton(
         entityManager, componentManager, textureManager, "Quit", &onQuitButtonClicked);
-    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
-    sf::Vector2u scale(1.0f, 1.0f);
     pos = componentManager.getComponent<PositionComponent>(quitButton.getId());
     if (pos) {
         pos.value()->x = 760;
         pos.value()->y = 500;
     }
-    SpriteComponent sprite(texture, pos.value()->x, pos.value()->y, scale);
-    componentManager.addComponent<SpriteComponent>(quitButton.getId(), sprite);
 
     std::vector<Entity *> buttons = {&playButton, &settingsButton, &quitButton};
     sf::Event event;
@@ -113,13 +105,13 @@ void Scenes::mainMenu()
             }
         }
 
-        renderSystem.render(entityManager, componentManager);
+        renderSystem.render(componentManager);
     }
 }
 
 void Scenes::gameLoop()
 {
-    CustomClient c;
+    r_type::net::Client c;
     c.Connect("127.0.0.1", 60000);
 
     ComponentManager componentManager;
@@ -153,26 +145,26 @@ void Scenes::gameLoop()
                 case sf::Keyboard::Space: {
                     std::cout << "space" << std::endl;
                     c.PingServer();
+                    ////////////////////////////////////////// change space to shoot & ping server
+                    /// to something else
                 } break;
                 case sf::Keyboard::Q: {
-                    std::cout << "Q" << std::endl;
                     _window->close();
                 } break;
                 case sf::Keyboard::V: {
-                    std::cout << "V" << std::endl;
                     c.MessageAll();
                 } break;
                 case sf::Keyboard::Up: {
-                    updatePlayerPosition(vf2d(0, -5));
+                    updatePlayerPosition(vf2d{0, -5});
                 } break;
                 case sf::Keyboard::Down: {
-                    updatePlayerPosition(vf2d(0, 5));
+                    updatePlayerPosition(vf2d{0, 5});
                 } break;
                 case sf::Keyboard::Left: {
-                    updatePlayerPosition(vf2d(-5, 0));
+                    updatePlayerPosition(vf2d{-5, 0});
                 } break;
                 case sf::Keyboard::Right: {
-                    updatePlayerPosition(vf2d(5, 0));
+                    updatePlayerPosition(vf2d{5, 0});
                 } break;
                 default:
                     break;

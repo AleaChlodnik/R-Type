@@ -8,5 +8,5 @@
 #pragma once
 
 #include "render_system.hpp"
-#include "shoot_system.hpp"
+// #include "shoot_system.hpp"
 #include "update_system.hpp"

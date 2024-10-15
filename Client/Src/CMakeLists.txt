@@ -2,20 +2,16 @@
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
-add_subdirectory(Components)
-add_subdirectory(Entities)
-add_subdirectory(Systems)
-
-add_executable(r-type_client main.cpp r-type_client.cpp client.cpp simpleClient.cpp button.cpp scenes.cpp)
+add_executable(r-type_client main.cpp r-type_client.cpp scenes.cpp)
 
 target_compile_features(r-type_client PRIVATE cxx_std_17)
 
 if (MSVC)
   target_compile_options(r-type_client PRIVATE /W4)
-  target_link_libraries(r-type_client PRIVATE Components Entities Systems r-type_interfaces r-type_client_interfaces)
+  target_link_libraries(r-type_client PRIVATE r-type_interfaces r-type_client_interfaces r-type_ecs_src r-type_ecs_interfaces)
 else()
   target_compile_options(r-type_client PRIVATE -Wall -Wextra)
-  target_link_libraries(r-type_client PRIVATE Components Entities Systems r-type_interfaces r-type_client_interfaces sfml-graphics sfml-window sfml-system)
+  target_link_libraries(r-type_client PRIVATE r-type_interfaces r-type_client_interfaces r-type_ecs_src r-type_ecs_interfaces sfml-graphics sfml-window sfml-system)
 endif()
 
 # Windows-specific custom command to copy OpenAL DLL for SFML

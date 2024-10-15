@@ -6,7 +6,6 @@
 */
 
 #include <r_type_client.hpp>
-void simpleClient();
 
 int main()
 {
