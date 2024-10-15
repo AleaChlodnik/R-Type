@@ -168,7 +168,7 @@ void Scenes::gameLoop()
     sf::Event event;
 
     /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
-    sf::Clock clock;    
+    sf::Clock clock;
     /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
 
     auto updatePlayerPosition = [&](const vf2d &delta) {
@@ -242,13 +242,14 @@ void Scenes::gameLoop()
                     EntityInformation entity;
                     msg >> entity;
                     c.setPlayerId(entity.uniqueID);
-                    //std::cout << "Player ID: " << c.getPlayerId() << std::endl; ///////////////////////////////
+                    // std::cout << "Player ID: " << c.getPlayerId() << std::endl;
+                    // ///////////////////////////////
                     c.addEntity(entity, componentManager, textureManager);
                     // if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
-                    //     std::cout << "sprites um exists" << std::endl; ///////////////////////////////
-                    //     auto &sprites = **spritesOpt;
-                    //     auto spriteComponent = sprites[c.getPlayerId()];
-                    //     auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
+                    //     std::cout << "sprites um exists" << std::endl;
+                    //     /////////////////////////////// auto &sprites = **spritesOpt; auto
+                    //     spriteComponent = sprites[c.getPlayerId()]; auto playerSprite =
+                    //     std::any_cast<SpriteComponent>(&spriteComponent);
                     // }
 
                 } break;
