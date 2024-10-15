@@ -137,6 +137,13 @@ void Scenes::gameLoop()
         c.Send(msg);
     };
 
+    auto fireMissile = [&]() { r_type::net::Message<TypeMessage> msg;
+        std::string object = "missile";
+        msg.header.id = TypeMessage::CreateEntityMessage;
+        msg << object;
+        c.Send(msg);
+     };
+
     while (_window->isOpen()) {
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -170,6 +177,7 @@ void Scenes::gameLoop()
                     updatePlayerPosition(vf2d{5, 0});
                 } break;
                 case sf::Keyboard::Space: {
+                    fireMissile();
                     // Tell server to create missile from player position
                 } break;
                 default:
