@@ -41,10 +41,12 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         Send(msg);
     }
 
-    void addEntity(EntityInformation entity, ComponentManager &componentManager, TextureManager &textureManager)
+    void addEntity(EntityInformation entity, ComponentManager &componentManager,
+        TextureManager &textureManager)
     {
         sf::Texture &texture = componentManager.getTexture(entity.spriteData.spritePath);
-        SpriteComponent sprite(texture, entity.vPos.x, entity.vPos.y, entity.spriteData.scale, entity.spriteData.offSet);
+        SpriteComponent sprite(texture, entity.vPos.x, entity.vPos.y, entity.spriteData.scale,
+            entity.spriteData.offSet);
         componentManager.addComponent<SpriteComponent>(entity.uniqueID, sprite);
     }
 

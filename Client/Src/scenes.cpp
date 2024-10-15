@@ -171,7 +171,8 @@ void Scenes::gameLoop()
     sf::Clock clock;
     EntityFactory entityFactory;
     Entity background = entityFactory.createBackground(entityManager, componentManager);
-    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
     SpriteComponent spriteComponent(texture, 0, 0, scale);
     componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
@@ -188,7 +189,6 @@ void Scenes::gameLoop()
             int playerPosY = playerSprite.sprite.getPosition().y;
             msg << vf2d{playerPosX + delta.x, playerPosY + delta.y};
         }
-
     };
 
     auto fireMissile = [&]() {
