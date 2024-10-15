@@ -17,8 +17,8 @@ Entity EntityFactory::createBackground(EntityManager &entityManager,
 
     BackgroundComponent backgroundComponent;
     PositionComponent start_position(0, 0);
-    VelocityComponent velocity(200.0f);
-    OffsetComponent offset(0);
+    VelocityComponent velocity{200.0f};
+    OffsetComponent offset{0};
 
     componentManager.addComponent<BackgroundComponent>(background.getId(), backgroundComponent);
     componentManager.addComponent<PositionComponent>(background.getId(), start_position);
@@ -35,10 +35,10 @@ Entity EntityFactory::createPlayer(EntityManager &entityManager,
 
     PlayerComponent playerComponent;
     PositionComponent startPosition(0, 0);
-    VelocityComponent velocity(100.0f);
+    VelocityComponent velocity{100.0f};
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
-    HealthComponent health(100, 100);
-    InputComponent input(InputType::NONE);
+    HealthComponent health{100, 100};
+    InputComponent input{InputType::NONE};
 
     componentManager.addComponent<PlayerComponent>(player.getId(), playerComponent);
     componentManager.addComponent<PositionComponent>(player.getId(), startPosition);
@@ -56,9 +56,9 @@ Entity EntityFactory::createAlly(EntityManager &entityManager, ComponentManager 
 
     AllyComponent allyComponent;
     PositionComponent startPosition(0, 0);
-    VelocityComponent velocity(100.0f);
+    VelocityComponent velocity{100.0f};
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
-    HealthComponent health(100, 100);
+    HealthComponent health{100, 100};
 
     componentManager.addComponent<AllyComponent>(ally.getId(), allyComponent);
     componentManager.addComponent<PositionComponent>(ally.getId(), startPosition);
@@ -75,9 +75,9 @@ Entity EntityFactory::createBasicEnemy(EntityManager &entityManager,
 
     EnemyComponent enemyComponent;
     PositionComponent startPosition(0, 0);
-    VelocityComponent velocity(100.0f);
+    VelocityComponent velocity{100.0f};
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
-    HealthComponent health(100, 100);
+    HealthComponent health{100, 100};
 
     componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
     componentManager.addComponent<PositionComponent>(enemy.getId(), startPosition);
@@ -118,7 +118,7 @@ Entity EntityFactory::createPlayerMissile(int playerId, EntityManager &entityMan
     PlayerMissileComponent playerMissileComponent;
     PositionComponent startPosition(
         playerPosition.value()->x + 105, playerPosition.value()->y + 49);
-    VelocityComponent velocity(200.0f);
+    VelocityComponent velocity{200.0f};
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
 
     componentManager.addComponent<PlayerMissileComponent>(
@@ -136,7 +136,7 @@ Entity EntityFactory::createAllyMissile(EntityManager &entityManager,
 
     AllyMissileComponent allyMissileComponent;
     PositionComponent startPosition(0, 0);
-    VelocityComponent velocity(200.0f);
+    VelocityComponent velocity{200.0f};
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
 
     componentManager.addComponent<AllyMissileComponent>(allyMissile.getId(), allyMissileComponent);
@@ -153,7 +153,7 @@ Entity EntityFactory::createEnemyMissile(EntityManager &entityManager,
 
     EnemyMissileComponent enemyMissileComponent;
     PositionComponent startPosition(0, 0);
-    VelocityComponent velocity(200.0f);
+    VelocityComponent velocity{200.0f};
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
 
     componentManager.addComponent<EnemyMissileComponent>(

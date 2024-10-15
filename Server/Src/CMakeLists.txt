@@ -1,10 +1,10 @@
 # Server-side project
-add_executable(r-type_server main.cpp)
+add_executable(r-type_server main.cpp server.cpp)
 # target_link_libraries(r-type_server PRIVATE sfml-graphics sfml-window
 # sfml-system)
 target_compile_features(r-type_server PRIVATE cxx_std_17)
 
-target_link_libraries(r-type_server r-type_interfaces r-type_server_interfaces)
+target_link_libraries(r-type_server r-type_interfaces r-type_server_interfaces r-type_ecs_src)
 
 if(WIN32)
   target_compile_definitions(r-type_server PRIVATE _WIN32)
