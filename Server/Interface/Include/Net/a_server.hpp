@@ -37,6 +37,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         entityManager = EntityManager();
         entityFactory = EntityFactory();
         componentManager = ComponentManager();
+        background = InitiateBackground();
+        entityFactory.createBasicMonster(entityManager, componentManager);
     }
 
     /**
@@ -196,6 +198,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         if (bWait)
             m_qMessagesIn.wait();
+        std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
+        std::cout
+            << "Time: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
+            << std::endl;
+        _clock = newClock;
 
         size_t nMessageCount = 0;
         while (nMessageCount < nMaxMessages && !m_qMessagesIn.empty()) {
@@ -213,12 +221,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         EntityInformation entity;
         vf2d entityPosition;
         auto entitySprite = componentManager.getComponent<SpriteDataComponent>(entityId);
-        std::cout << "UpdateEntityPosition" << std::endl;
         msg >> entityPosition;
         entity.uniqueID = entityId;
         entity.vPos = entityPosition;
         entity.spriteData = *entitySprite.value();
-        std::cout << "position: " << entityPosition.x << " " << entityPosition.y << std::endl;
 
         if (CheckPlayerPosition(entity)) {
             auto position = componentManager.getComponent<PositionComponent>(entityId);
@@ -233,7 +239,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
     }
 
-    uint32_t GetClientEntityId(uint32_t id) { return clientPlayerID.at(id); }
+    uint32_t GetClientEntityId(uint32_t id) { return clientPlayerID[id]; }
 
     void RemovePlayer(uint32_t id) { clientPlayerID.erase(id); }
     void RemoveEntities(uint32_t id) { entityManager.removeEntity(id); }
@@ -244,14 +250,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         Entity player = entityFactory.createPlayer(entityManager, componentManager);
         entityInfo.uniqueID = player.getId();
         entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
-        while (CheckPlayerPosition(entityInfo) == false) {
-            entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
-        }
-        auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
-        if (playerPos) {
-            playerPos.value()->x = entityInfo.vPos.x;
-            playerPos.value()->y = entityInfo.vPos.y;
-        }
         auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         if (sprite) {
             if (nbrOfPlayers == 1)
@@ -262,20 +260,27 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 sprite.value()->spritePath = SpritePath::Ship4;
             entityInfo.spriteData = *(sprite.value());
         }
-        clientPlayerID.insert_or_assign(clientId, entityInfo.uniqueID);
+        while (CheckPlayerPosition(entityInfo) == false) {
+            entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
+        }
+        auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+        if (playerPos) {
+            playerPos.value()->x = entityInfo.vPos.x;
+            playerPos.value()->y = entityInfo.vPos.y;
+        }
+        clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
         return entityInfo;
     }
 
     EntityInformation InitiateMissile(int clientId)
     {
         EntityInformation entityInfo;
-        Entity missile = entityFactory.createPlayerMissile(
-            GetClientEntityId(clientId), entityManager, componentManager);
+        Entity missile = entityFactory.createPlayerMissile(entityManager, componentManager);
         entityInfo.uniqueID = missile.getId();
         auto playerPos =
             componentManager.getComponent<PositionComponent>(GetClientEntityId(clientId)).value();
-        entityInfo.vPos.x = playerPos->x;
-        entityInfo.vPos.y = playerPos->y;
+        entityInfo.vPos.x = playerPos->x + 150;
+        entityInfo.vPos.y = playerPos->y + 70;
         auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         if (sprite) {
             entityInfo.spriteData = *(sprite.value());
@@ -295,15 +300,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         return entityInfo;
     }
 
-    void InitListEntities(
-        std::shared_ptr<r_type::net::Connection<T>> client, EntityInformation desc)
+    void InitListEntities(std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID)
     {
-        r_type::net::Message<T> msgAddPlayer;
-        const std::vector<Entity> entities = entityManager.getAllEntities();
         EntityInformation entityInfo;
+        r_type::net::Message<T> msgAddPlayer;
         msgAddPlayer.header.id = T::CreateEntityMessage;
+        const std::vector<Entity> entities = entityManager.getAllEntities();
         for (const auto &entity : entities) {
-            if (entity.getId() != desc.uniqueID) {
+            if (entity.getId() != entityID && entity.getId() != 1) {
                 auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
                 auto sprite = componentManager.getComponent<SpriteDataComponent>(entity.getId());
                 if (playerPos && sprite) {
@@ -316,6 +320,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 }
             }
         }
+        msgAddPlayer.header.id = T::FinishInitialization;
+        MessageClient(client, msgAddPlayer);
     }
 
     /**
@@ -333,10 +339,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         const std::vector<Entity> entities = entityManager.getAllEntities();
 
         for (const auto &entity : entities) {
-            if (entity.getId() != desc.uniqueID) {
+            if (entity.getId() != desc.uniqueID && entity.getId() != background.uniqueID) {
                 auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
                 auto playerHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
-                if (playerPos) {
+                if (playerPos && playerHitbox) {
+
                     descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
                     descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
                     descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);
@@ -413,7 +420,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * uint32_t representing the player IDs.
      */
     std::unordered_map<uint32_t, uint32_t> clientPlayerID;
+
     int nbrOfPlayers = 0;
+
+    std::chrono::system_clock::time_point _clock = std::chrono::system_clock::now();
+
+    EntityInformation background;
 };
 } // namespace net
 } // namespace r_type

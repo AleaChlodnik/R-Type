@@ -26,21 +26,20 @@ void RenderSystem::render(ComponentManager &componentManager)
 
     const auto spritesOpt = componentManager.getComponentMap<SpriteComponent>();
     if (spritesOpt) {
-
         auto &sprites = **spritesOpt;
-
         // Always display background first - game
-        // if (sprites.find(serverBackgroundId) != sprites.end()) {
-        //     const auto &anySprite = sprites[serverBackgroundId];
-        //     auto spriteComponent = std::any_cast<SpriteComponent>(&anySprite);
-        //     if (spriteComponent) {
-        //         _window.draw(spriteComponent->sprite);
-        //     }
-        // }
+        auto bgSpriteIt = sprites.find(1);
+        if (bgSpriteIt != sprites.end()) {
+            const auto &spriteComponent = bgSpriteIt->second;
+            auto bgSprite = std::any_cast<SpriteComponent>(&spriteComponent);
+            if (bgSprite) {
+                _window.draw(bgSprite->sprite);
+            }
+        }
 
         for (const auto &pair : sprites) { // Derefrences the optional and then the pointer
-            const auto &entityId = pair.first;
-            if (entityId == backgroundId) { // || entityId == (serverBackgroundId)
+            int entityId = pair.first;
+            if (entityId == backgroundId || entityId == 1) {
                 continue;
             }
             const auto &spriteComponent = pair.second;

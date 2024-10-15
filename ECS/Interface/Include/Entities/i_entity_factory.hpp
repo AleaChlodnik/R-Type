@@ -106,7 +106,7 @@ class IEntityFactory {
      * @return The created player missile entity.
      */
     virtual Entity createPlayerMissile(
-        int playerId, EntityManager &entityManager, ComponentManager &componentManager) = 0;
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
     /**
      * @brief Creates an ally missile entity.

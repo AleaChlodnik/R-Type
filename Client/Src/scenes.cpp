@@ -197,27 +197,28 @@ void Scenes::gameLoop()
 
     sf::Event event;
 
-    /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
-    sf::Clock clock;
-    /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
+    sf::Clock clock; ///////////////////////////////////////////////////// TEMPORARY
 
     auto updatePlayerPosition = [&](const vf2d &delta) {
         r_type::net::Message<TypeMessage> msg;
+        std::cout << "Updating Player Position" << std::endl;
+        vf2d playerPos;
         msg.header.id = TypeMessage::MoveEntityMessage;
         if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
             auto &sprites = **spritesOpt;
             auto spriteComponent = sprites[c.getPlayerId()];
             auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            int playerPosX = playerSprite->sprite.getPosition().x;
-            int playerPosY = playerSprite->sprite.getPosition().y;
-            msg << vf2d{playerPosX + delta.x, playerPosY + delta.y};
+            playerPos.x = playerSprite->sprite.getPosition().x + delta.x;
+            playerPos.y = playerSprite->sprite.getPosition().y + delta.y;
+            msg << playerPos;
+            c.Send(msg);
         }
     };
 
     auto fireMissile = [&]() {
         r_type::net::Message<TypeMessage> msg;
         msg.header.id = TypeMessage::CreateEntityMessage;
-        msg << CreatableClientObject::MISSILE << c.getPlayerId();
+        msg << CreatableClientObject::MISSILE;
         c.Send(msg);
     };
 
@@ -226,8 +227,10 @@ void Scenes::gameLoop()
             clock.restart().asSeconds(); /////////////////////////////////////// TEMPORARY
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
+                std::cout << "Closing window" << std::endl;
                 r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::DestroyEntityMessage;
+                msg << c.getPlayerId();
                 msg << c.getPlayerId();
                 c.Send(msg);
                 _window->close();
@@ -263,6 +266,8 @@ void Scenes::gameLoop()
             }
         }
         if (c.IsConnected()) {
+            // std::cout << "Connected to Server" << std::endl;
+            // /////////////////////////////////////
             if (!c.Incoming().empty()) {
                 auto msg = c.Incoming().pop_front().msg;
                 switch (msg.header.id) {
@@ -271,15 +276,7 @@ void Scenes::gameLoop()
                     EntityInformation entity;
                     msg >> entity;
                     c.setPlayerId(entity.uniqueID);
-                    // std::cout << "Player ID: " << c.getPlayerId() << std::endl;
-                    // ///////////////////////////////
                     c.addEntity(entity, componentManager, textureManager);
-                    // if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
-                    //     std::cout << "sprites um exists" << std::endl;
-                    //     /////////////////////////////// auto &sprites = **spritesOpt; auto
-                    //     spriteComponent = sprites[c.getPlayerId()]; auto playerSprite =
-                    //     std::any_cast<SpriteComponent>(&spriteComponent);
-                    // }
 
                 } break;
                 case TypeMessage::ServerPing: {
@@ -306,6 +303,7 @@ void Scenes::gameLoop()
                     EntityInformation entity;
                     msg >> entity;
                     c.addEntity(entity, componentManager, textureManager);
+                    c.addEntity(entity, componentManager, textureManager);
                 } break;
                 case TypeMessage::CreateEntityResponse: {
                 } break;
@@ -313,6 +311,7 @@ void Scenes::gameLoop()
                     r_type::net::Message<TypeMessage> reponse;
                     uint32_t id;
                     msg >> id;
+                    c.removeEntity(id, componentManager);
                     c.removeEntity(id, componentManager);
                     reponse.header.id = TypeMessage::DestroyEntityResponse;
                     c.Send(reponse);
@@ -331,6 +330,8 @@ void Scenes::gameLoop()
                 case TypeMessage::MoveEntityResponse: {
                 } break;
                 case TypeMessage::DestroyEntityResponse: {
+                } break;
+                case TypeMessage::FinishInitialization: {
                 } break;
                 }
             }
