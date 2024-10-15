@@ -9,5 +9,5 @@ project(R-TypeClientInterfaces
 add_library(r-type_client_interfaces INTERFACE)
 
 target_include_directories(r-type_client_interfaces
-        INTERFACE Include
+        INTERFACE Include r-type_ecs_interfaces
 )
