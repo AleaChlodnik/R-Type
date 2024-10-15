@@ -137,12 +137,13 @@ void Scenes::gameLoop()
         c.Send(msg);
     };
 
-    auto fireMissile = [&]() { r_type::net::Message<TypeMessage> msg;
+    auto fireMissile = [&]() {
+        r_type::net::Message<TypeMessage> msg;
         std::string object = "missile";
         msg.header.id = TypeMessage::CreateEntityMessage;
         msg << object;
         c.Send(msg);
-     };
+    };
 
     while (_window->isOpen()) {
         while (_window->pollEvent(event)) {
