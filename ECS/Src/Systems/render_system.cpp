@@ -15,9 +15,11 @@ void RenderSystem::render(ComponentManager &componentManager)
         for (const auto &pair : **sprites) { // Derefrences the optional and then the pointer
             const auto &spriteComponent = pair.second;
             auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            if (sprite)
+            if (sprite) {
                 _window.draw(sprite->sprite);
+            }
         }
     }
+    const auto text = componentManager.getComponentMap<TextComponent>();
     _window.display();
 }

@@ -39,12 +39,12 @@ enum class SpriteType : uint32_t
     Monster3,
     Monster4,
     Monster5,
-    Bullet,
+    Missle,
     Background,
     Explosion,
     PowerUp,
     Boss,
-    BossBullet,
+    BossMissle,
 };
 
 SpriteData_t SpriteFactory(SpriteType sprite)
@@ -99,6 +99,13 @@ SpriteData_t SpriteFactory(SpriteType sprite)
     } break;
     case SpriteType::Monster5: {
         return SpriteData_t{"Client/Assets/Sprites/Ships/ship5.png", {0, 0}, {0, 0}, {0, 0}};
+    } break;
+    case SpriteType::Missle: {
+        return SpriteData_t{"Client/Assets/Sprites/Missiles/missle.png", {0, 0}, {16, 16}, {0, 0}};
+    } break;
+    case SpriteType::Background: {
+        return SpriteData_t{
+            "Client/Assets/Sprites/Background/background.jpg", {0, 0}, {0, 0}, {0, 0}};
     } break;
     default: {
         return SpriteData_t{"", {0, 0}, {0, 0}, {0, 0}};
