@@ -38,10 +38,8 @@ void RenderSystem::render(ComponentManager &componentManager)
 
         for (const auto &pair : sprites) { // Derefrences the optional and then the pointer
             int entityId = pair.first;
-
             std::cout << "Entity ID: " << entityId << std::endl; /////////////////////////////////////////////////
-
-            if (entityId == backgroundId || entityId == 2) {
+            if (entityId == backgroundId) { // || entityId == 2
                 continue;
             }
             const auto &spriteComponent = pair.second;
