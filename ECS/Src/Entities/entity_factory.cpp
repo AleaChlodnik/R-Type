@@ -39,7 +39,7 @@ Entity EntityFactory::createPlayer(
     VelocityComponent velocity{100.0f};
     SpriteDataComponent spriteData{
         "Client/Assets/Sprites/Ships/ship1.png", {16, 40}, {96, 48}, {0, 0}};
-    HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
+    HitboxComponent hitbox{(float)spriteData.dimension.x, (float)spriteData.dimension.y};
     HealthComponent health{100, 100};
     InputComponent input{InputType::NONE};
 
