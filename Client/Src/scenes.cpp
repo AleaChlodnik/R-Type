@@ -192,18 +192,21 @@ void Scenes::gameLoop()
         c.Send(msg);
     };
 
+    auto death = [&]() {
+        std::cout << "Closing window" << std::endl;
+        r_type::net::Message<TypeMessage> msg;
+        msg.header.id = TypeMessage::DestroyEntityMessage;
+        msg << c.getPlayerId();
+        c.Send(msg);
+        _window->close();
+    };
+
     while (_window->isOpen()) {
         float deltaTime =
             clock.restart().asSeconds(); /////////////////////////////////////// TEMPORARY
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
-                std::cout << "Closing window" << std::endl;
-                r_type::net::Message<TypeMessage> msg;
-                msg.header.id = TypeMessage::DestroyEntityMessage;
-                msg << c.getPlayerId();
-                msg << c.getPlayerId();
-                c.Send(msg);
-                _window->close();
+                death();
             }
             if (event.type == sf::Event::KeyPressed) {
                 switch (event.key.code) {
@@ -286,6 +289,9 @@ void Scenes::gameLoop()
                     r_type::net::Message<TypeMessage> reponse;
                     uint32_t id;
                     msg >> id;
+                    if (id == c.getPlayerId()) {
+                        death();
+                    }
                     c.removeEntity(id, componentManager);
                     c.removeEntity(id, componentManager);
                     reponse.header.id = TypeMessage::DestroyEntityResponse;

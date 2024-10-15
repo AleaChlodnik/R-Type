@@ -237,8 +237,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         entity.uniqueID = entityId;
         entity.vPos = entityPosition;
         entity.spriteData = *entitySprite.value();
+        uint32_t entityTouched = CheckPlayerPosition(entity);
 
-        if (CheckPlayerPosition(entity)) {
+        if (entityTouched == -1) {
             auto position = componentManager.getComponent<PositionComponent>(entityId);
             if (position) {
                 position.value()->x = entityPosition.x;
@@ -248,6 +249,15 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 msg << entity;
                 MessageAllClients(msg);
             }
+        } else {
+            r_type::net::Message<TypeMessage> msg;
+            componentManager.getComponent<PlayerComponent>(entityTouched);
+            if (componentManager.getComponent<PlayerComponent>(entityTouched)) {
+                return;
+            }
+            msg.header.id = TypeMessage::DestroyEntityMessage;
+            msg << entity.uniqueID;
+            MessageAllClients(msg);
         }
     }
 
@@ -272,7 +282,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 sprite.value()->spritePath = SpritePath::Ship4;
             entityInfo.spriteData = *(sprite.value());
         }
-        while (CheckPlayerPosition(entityInfo) == false) {
+        while (CheckPlayerPosition(entityInfo) != -1) {
             entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
         }
         auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
@@ -340,10 +350,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @brief check player position to avoid collision
      *
      * @param desc
-     * @return true
-     * @return false
+     * @return -1 if player touche nothing
+     * @return entityId of the entity touched
      */
-    bool CheckPlayerPosition(EntityInformation desc)
+
+    int CheckPlayerPosition(EntityInformation desc)
     {
         float descLeft, descRight, descTop, descBottom, playerLeft, playerRight, playerTop,
             playerBottom;
@@ -367,12 +378,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
                     if (!(descRight < playerLeft || descLeft > playerRight ||
                             descBottom < playerTop || descTop > playerBottom)) {
-                        return false;
+                        return entity.getId();
                     }
                 }
             }
         }
-        return true;
+        return -1;
     }
 
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) {}

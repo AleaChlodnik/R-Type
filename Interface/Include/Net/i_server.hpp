@@ -107,7 +107,7 @@ template <typename T> class IServer {
      * @return false
      */
 
-    virtual bool CheckPlayerPosition(EntityInformation desc) = 0;
+    virtual int CheckPlayerPosition(EntityInformation desc) = 0;
 
     /**
      * @brief Initiate players
