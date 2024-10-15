@@ -7,6 +7,10 @@
 
 #pragma once
 
+#include <Components/component_manager.hpp>
+#include <Components/components.hpp>
+#include <Entities/entity_factory.hpp>
+#include <Entities/entity_manager.hpp>
 #include <Net/i_server.hpp>
 #include <cmath>
 #include <entity_struct.hpp>
@@ -30,6 +34,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         : r_type::net::IServer<T>(),
           m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
     {
+        entityManager = EntityManager();
+        entityFactory = EntityFactory();
+        componentManager = ComponentManager();
     }
 
     /**
@@ -202,25 +209,19 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
     void UpdateEntity(EntityInformation desc)
     {
-        if (Entities.find(desc.uniqueID) == Entities.end())
-            PushEntity(desc);
-        Entities[desc.uniqueID] = desc;
+        // if (Entities.find(desc.uniqueID) == Entities.end())
+        //     PushEntity(desc);
+        // Entities[desc.uniqueID] = desc;
     }
-
-    /**
-     * @brief push entity on a undordered map
-     *
-     * @param desc
-     */
-
-    void PushEntity(EntityInformation desc) { Entities.insert_or_assign(desc.uniqueID, desc); }
 
     /**
      * @brief remove entity from a undordered map
      *
      * @param id
      */
-    void RemoveEntity(uint32_t id) { Entities.erase(id); }
+    void RemoveEntity(uint32_t id)
+    { /*Entities.erase(id);*/
+    }
 
     /**
      * @brief init player
@@ -228,17 +229,23 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param msg
      */
 
-    void InitiatePlayers(r_type::net::Message<T> &msg)
+    void InitiatePlayers(r_type::net::Message<T> &msg, int id)
     {
+        Entity player = entityFactory.createPlayer(entityManager, componentManager);
         EntityInformation desc;
-        desc.uniqueID = getNbrPlayer();
-        desc.hitbox = {10, 10};
+        desc.uniqueID = player.getId();
         desc.vPos = {100, static_cast<float>(rand() % 600)};
-        while (CheckPlayerPosition(desc) == false) {
+        while (CheckPlayerPosition(desc) == false)
             desc.vPos = {100, static_cast<float>(rand() % 600)};
+        PositionComponent playerPos = componentManager.getComponent<PositionComponent>(player._id);
+        if (playerPos) {
+            playerPos.value()->x = desc.vPos.x;
+            playerPos.value()->y = desc.vPos.y;
         }
+        SpriteData_t sprite = componentManager.getComponent<SpriteData_t>(player._id);
+        if (sprite)
+            desc.spriteData = sprite;
         msg << desc;
-        PushEntity(desc);
     }
 
     /**
@@ -249,14 +256,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     void InitListEntities(
         std::shared_ptr<r_type::net::Connection<T>> client, EntityInformation desc)
     {
-        r_type::net::Message<T> msgAddPlayer;
-        msgAddPlayer.header.id = T::CreateEntityMessage;
-        for (const auto &player : Entities) {
-            if (player.first != desc.uniqueID) {
-                msgAddPlayer << player.second;
-                MessageClient(client, msgAddPlayer);
-            }
-        }
+        // r_type::net::Message<T> msgAddPlayer;
+        // msgAddPlayer.header.id = T::CreateEntityMessage;
+        // for (const auto &player : Entities) {
+        //     if (player.first != desc.uniqueID) {
+        //         msgAddPlayer << player.second;
+        //         MessageClient(client, msgAddPlayer);
+        //     }
+        // }
     }
 
     /**
@@ -266,23 +273,39 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @return true
      * @return false
      */
+
     bool CheckPlayerPosition(EntityInformation desc)
     {
+        float descLeft, descRight, descTop, descBottom, playerLeft, playerRight, playerTop,
+            playerBottom;
+        const std::vector<Entity> entities = entityManager.getAllEntities();
 
-        for (const auto &other : Entities) {
-            if (desc.uniqueID != other.first) {
-                float dx = desc.vPos.x - other.second.vPos.x;
-                float dy = desc.vPos.y - other.second.vPos.y;
-                float distance = std::sqrt(dx * dx + dy * dy);
-                if (distance <= (desc.hitbox.width)) {
-                    return false;
+        for (const auto &player : entities) {
+            if (player.getId() != desc.uniqueID) {
+                PositionComponent playerPos =
+                    componentManager.getComponent<PositionComponent>(player.getID());
+                HitboxComponent playerHitbox =
+                    componentManager.getComponent<HitboxComponent>(player.getID());
+                if (playerPos) {
+                    descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
+                    descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
+                    descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);
+                    descBottom = desc.vPos.y + (desc.spriteData.dimension.y / 2);
+
+                    playerLeft = playerPos.value().x - (playerHitbox.w / 2);
+                    playerRight = playerPos.value().x + (playerHitbox.w / 2);
+                    playerTop = playerPos.value().y - (playerHitbox.h / 2);
+                    playerBottom = playerPos.value().y + (playerHitbox.h / 2);
+
+                    if (!(descRight < playerLeft || descLeft > playerRight ||
+                            descBottom < playerTop || descTop > playerBottom)) {
+                        return false;
+                    }
                 }
             }
         }
         return true;
     }
-
-    int getNbrPlayer() { return nbr_of_player; }
 
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) {}
 
@@ -325,8 +348,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     std::array<uint8_t, 1024> m_tempBuffer;
 
     uint32_t nIDCounter = 10000;
-    std::unordered_map<uint32_t, EntityInformation> Entities;
-    int nbr_of_player = 0;
+
+    ComponentManager componentManager;
+    EntityManager entityManager;
+    EntityFactory entityFactory;
 };
 } // namespace net
 } // namespace r_type

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** R-Type
 ** File description:
-** sprite
+** spriteData
 */
 
 #pragma once
@@ -44,7 +44,8 @@ enum class SpriteType : uint32_t
     Explosion,
     PowerUp,
     Boss,
-    BossMissle,
+    BossBullet,
+    NONE,
 };
 
 SpriteData_t SpriteFactory(SpriteType sprite)

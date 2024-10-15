@@ -151,15 +151,6 @@ void Scenes::gameLoop()
                 case sf::Keyboard::P: {
                     c.PingServer();
                 } break;
-                case sf::Keyboard::Space: {
-                    EntityInformation desc = c.GetAPlayer(c.GetEntityID());
-                    r_type::net::Message<TypeMessage> msg;
-                    desc.vPos.x += 50;
-                    desc.vPos.y += 50;
-                    msg.header.id = TypeMessage::CreateEntityMessage;
-                    msg << desc;
-                    c.Send(msg);
-                } break;
                 case sf::Keyboard::Q: {
                     _window->close();
                 } break;
@@ -177,6 +168,9 @@ void Scenes::gameLoop()
                 } break;
                 case sf::Keyboard::Right: {
                     updatePlayerPosition(vf2d{5, 0});
+                } break;
+                case sf::Keyboard::Space: {
+                    // Tell server to create missile from player position
                 } break;
                 default:
                     break;
