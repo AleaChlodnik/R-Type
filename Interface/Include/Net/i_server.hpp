@@ -116,7 +116,7 @@ template <typename T> class IServer {
      * @param clientId
      */
 
-    virtual void InitiatePlayers(r_type::net::Message<T> &msg, uint32_t clientId) = 0;
+    virtual EntityInformation InitiatePlayers(int clientId) = 0;
 
     /**
      * @brief Remove player
