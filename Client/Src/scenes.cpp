@@ -20,7 +20,7 @@
 Scenes::Scenes(sf::RenderWindow *window)
 {
     this->_window = window;
-    this->currentScene = Scenes::Scene::MAIN_MENU;
+    this->currentScene = Scenes::Scene::MAIN_MENU; /////////////////// change back to MAIN_MENU after testing
 }
 
 void Scenes::setScene(Scenes::Scene scene) { this->currentScene = scene; }
@@ -32,9 +32,12 @@ void Scenes::mainMenu()
     TextureManager textureManager;
     EntityFactory entityFactory;
     RenderSystem renderSystem(*_window);
-    // Create all the necessary entities
+    // Create background
     Entity background = entityFactory.createBackground(entityManager, componentManager);
-    // Create the buttons
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Vector2f scale(0.4, 0.4);
+    SpriteComponent spriteComponent(texture, 0, 0, scale);
+    // Create buttons
     std::function<Scenes *(Scenes *)> onPlayButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
         return currentScene;
