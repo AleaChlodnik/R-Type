@@ -708,15 +708,18 @@ void Scenes::settingsMenu()
     buttons.push_back(&keyBindsButton);
     buttons.push_back(&backButton);
 
-    if (displayDaltonismChoice)
-        createDaltonismChoiceButtons(
-            &buttons, componentManager, entityManager, textureManager, entityFactory);
-    if (displayGameModeChoice)
-        createGameModeChoiceButtons(
-            &buttons, componentManager, entityManager, textureManager, entityFactory);
-    if (displayKeyBinds)
-        createKeyBindingButtons(
-            &buttons, componentManager, entityManager, textureManager, entityFactory);
+    if (displayDaltonismChoice) {
+        // createDaltonismChoiceButtons(
+        //     &buttons, componentManager, entityManager, textureManager, entityFactory);
+    }
+    if (displayGameModeChoice) {
+        // createGameModeChoiceButtons(
+        //     &buttons, componentManager, entityManager, textureManager, entityFactory);
+    }
+    if (displayKeyBinds) {
+        // createKeyBindingButtons(
+        //     &buttons, componentManager, entityManager, textureManager, entityFactory);
+    }
 
     sf::Clock clock;
     sf::Event event;
