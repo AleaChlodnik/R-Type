@@ -142,7 +142,7 @@ void Scenes::gameLoop()
         msg.header.id = TypeMessage::CreateEntityMessage;
         msg << CreatableClientObject::BULLET;
         c.Send(msg);
-     };
+    };
 
     while (_window->isOpen()) {
         while (_window->pollEvent(event)) {
