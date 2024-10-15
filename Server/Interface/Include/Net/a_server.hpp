@@ -37,6 +37,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         entityManager = EntityManager();
         entityFactory = EntityFactory();
         componentManager = ComponentManager();
+        background = InitiateBackground();
     }
 
     /**
@@ -267,6 +268,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.spriteData = *(sprite.value());
         }
         clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
+        std::cout << "clientPlayerID: " << nIDCounter << " " << entityInfo.uniqueID << std::endl;
         return entityInfo;
     }
 
@@ -287,17 +289,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         return entityInfo;
     }
 
-    // EntityInformation InitiateBackground()
-    // {
-    //     EntityInformation entityInfo;
-    //     Entity background = entityFactory.createBackground(entityManager, componentManager);
-    //     entityInfo.uniqueID = background.getId();
-    //     auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
-    //     if (sprite) {
-    //         entityInfo.spriteData = *(sprite.value());
-    //     }
-    //     return entityInfo;
-    // }
+    EntityInformation InitiateBackground()
+    {
+        EntityInformation entityInfo;
+        Entity background = entityFactory.createBackground(entityManager, componentManager);
+        entityInfo.uniqueID = background.getId();
+        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        if (sprite) {
+            entityInfo.spriteData = *(sprite.value());
+        }
+        std::cout << "background: " << entityInfo.uniqueID << std::endl;
+        return entityInfo;
+    }
 
     void InitListEntities(
         std::shared_ptr<r_type::net::Connection<T>> client, EntityInformation desc)
@@ -421,6 +424,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     int nbrOfPlayers = 0;
 
     std::chrono::system_clock::time_point _clock = std::chrono::system_clock::now();
+
+    EntityInformation background;
 };
 } // namespace net
 } // namespace r_type
