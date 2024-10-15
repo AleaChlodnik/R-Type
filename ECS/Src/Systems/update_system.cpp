@@ -61,33 +61,57 @@ void UpdateSystem::updateBackground(ComponentManager &componentManager, float de
         }
     }
 
-    // Game background scroll - from Server
-
-    // client
-        // will save bg offset sent by server in accessible variable
-        // auto spritesOpt =
-        // auto &sprites = **spritesOpt
-        // auto bgSprite = sprites[backgroundId].second;
-        // float textureWidth = bgsprite.value()->sprite.getTexture()->getSize().x;
-        // if (offset sent by server is > (textureWidth * 0.35)) {
-        //     send message to server that offset is now 0,
-        //         and it continues and sends me the next started over after 0 offset afterwards set
-        //             offset value to 0;
-        // }
-        // sf::IntRect textureRect = bgsprite.value()->sprite.getTextureRect();
-        // textureRect.left = static_cast<int>(offset.value()->offset);
-        // bgsprite.value()->sprite.setTextureRect(textureRect);
-
-    // server
-        // will also keep background id in an accessible variable
-        // auto offset = bgId
-        // auto velocity = bgId
-        // deltaTime
-        // offsetOpt.value()->offset += velOpt.value()->speed * deltaTime;
-        // send float offset = offsetOpt.value()->offset; to client & await offset client sends back
-        // offsetOpt.value()->offset = offset that client sent;
-
+    /////////////////////////////////////////////////////////////////////////////// TEMPORARY
+    const auto spritesOpt = componentManager.getComponentMap<SpriteComponent>();
+    if (spritesOpt) {
+        auto &sprites = **spritesOpt;
+        auto bgSpriteIt = sprites.find(1);
+        if (bgSpriteIt != sprites.end()) {
+            auto &spriteComponent = bgSpriteIt->second;
+            auto bgSprite = std::any_cast<SpriteComponent>(&spriteComponent);
+            if (bgSprite) {
+                int offset = getGameBgOffset();
+                offset += static_cast<int>(300 * deltaTime);
+                float textureWidth = static_cast<float>(bgSprite->sprite.getTexture()->getSize().x);
+                if (offset > (textureWidth * 0.60)) {
+                    offset = 0;
+                }
+                sf::IntRect textureRect = bgSprite->sprite.getTextureRect();
+                textureRect.left = offset;
+                bgSprite->sprite.setTextureRect(textureRect);
+                setGameBgOffset(offset);
+            }
+        }
+    }
 }
+//////////////////////////////////////////////////////////////////////////////
+
+// Game background scroll - from Server
+
+// client
+// will save bg offset sent by server in accessible variable
+// auto spritesOpt =
+// auto &sprites = **spritesOpt
+// auto bgSprite = sprites[backgroundId].second;
+// float textureWidth = bgsprite.value()->sprite.getTexture()->getSize().x;
+// if (offset sent by server is > (textureWidth * 0.35)) {
+//     send message to server that offset is now 0,
+//         and it continues and sends me the next started over after 0 offset afterwards set
+//             offset value to 0;
+// }
+// sf::IntRect textureRect = bgsprite.value()->sprite.getTextureRect();
+// textureRect.left = static_cast<int>(offset.value()->offset);
+// bgsprite.value()->sprite.setTextureRect(textureRect);
+
+// server
+// will also keep background id in an accessible variable
+// auto offset = bgId
+// auto velocity = bgId
+// deltaTime
+// offsetOpt.value()->offset += velOpt.value()->speed * deltaTime;
+// send float offset = offsetOpt.value()->offset; to client & await offset client sends back
+// offsetOpt.value()->offset = offset that client sent;
+
 
 // bool UpdateSystem::updatePlayerMissile(int entityId, EntityManager &entityManager,
 //     ComponentManager &componentManager, float deltaTime)

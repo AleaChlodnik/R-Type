@@ -29,6 +29,10 @@ class UpdateSystem : public ISystem {
     // bool updatePlayerMissile(int entityId, EntityManager &entityManager,
     //     ComponentManager &componentManager, float deltaTime);
 
+    void setGameBgOffset(int offset) { gameBgOffset = offset; }
+    int getGameBgOffset() { return gameBgOffset; }
+
   private:
     sf::RenderWindow &_window;
+    int gameBgOffset = 0;
 };
