@@ -20,7 +20,8 @@
 Scenes::Scenes(sf::RenderWindow *window)
 {
     this->_window = window;
-    this->currentScene = Scenes::Scene::MAIN_MENU; /////////////////// change back to MAIN_MENU after testing
+    this->currentScene = Scenes::Scene::MAIN_MENU;
+    //this->currentScene = Scenes::Scene::GAME_LOOP; ////// TEMPORARY
 }
 
 void Scenes::setScene(Scenes::Scene scene) { this->currentScene = scene; }
@@ -35,8 +36,9 @@ void Scenes::mainMenu()
     // Create background
     Entity background = entityFactory.createBackground(entityManager, componentManager);
     sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
-    sf::Vector2f scale(0.4, 0.4);
+    sf::Vector2f scale(1.0, 1.0);
     SpriteComponent spriteComponent(texture, 0, 0, scale);
+    componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
     // Create buttons
     std::function<Scenes *(Scenes *)> onPlayButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
@@ -140,11 +142,17 @@ void Scenes::gameLoop()
             }
             if (event.type == sf::Event::KeyPressed) {
                 switch (event.key.code) {
-                case sf::Keyboard::Space: {
-                    std::cout << "space" << std::endl;
+                case sf::Keyboard::P: {
                     c.PingServer();
-                    ////////////////////////////////////////// change space to shoot & ping server
-                    /// to something else
+                } break;
+                case sf::Keyboard::Space: {
+                    EntityInformation desc = c.GetAPlayer(c.GetEntityID());
+                    r_type::net::Message<TypeMessage> msg;
+                    desc.vPos.x += 50;
+                    desc.vPos.y += 50;
+                    msg.header.id = TypeMessage::CreateEntityMessage;
+                    msg << desc;
+                    c.Send(msg);
                 } break;
                 case sf::Keyboard::Q: {
                     _window->close();
