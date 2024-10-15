@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <Components/ComponentManager.hpp>
+#include <Components/component_manager.hpp>
 #include <Components/components.hpp>
 #include <Net/i_client.hpp>
 #include <entity_struct.hpp>

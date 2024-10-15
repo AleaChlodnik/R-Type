@@ -174,7 +174,7 @@ void Scenes::gameLoop()
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, {0, 0});
     componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
     /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
 
@@ -183,10 +183,10 @@ void Scenes::gameLoop()
         msg.header.id = TypeMessage::MoveEntityMessage;
         if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
             auto &sprites = **spritesOpt;
-            auto spriteComponent = sprites[c.getPlayerId()].second;
+            auto spriteComponent = sprites[c.getPlayerId()];
             auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            int playerPosX = playerSprite.sprite.getPosition().x;
-            int playerPosY = playerSprite.sprite.getPosition().y;
+            int playerPosX = playerSprite->sprite.getPosition().x;
+            int playerPosY = playerSprite->sprite.getPosition().y;
             msg << vf2d{playerPosX + delta.x, playerPosY + delta.y};
         }
     };
@@ -199,8 +199,7 @@ void Scenes::gameLoop()
     };
 
     while (_window->isOpen()) {
-        float deltaTime =
-            clock.restart().asSeconds(); /////////////////////////////////////// TEMPORARY
+        float deltaTime = clock.restart().asSeconds(); /////////////////////////////////////// TEMPORARY
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 r_type::net::Message<TypeMessage> msg;
@@ -308,7 +307,7 @@ void Scenes::gameLoop()
             _window->close();
             break;
         }
-        updateSystem.update(entityManager, componentManager, 0.0f);
+        updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(componentManager);
     }
 }
