@@ -176,27 +176,27 @@ jobs:
         with:
           repository: ""
 
-      - name: Cache apt install
+      - name: Cache apt pdf doc install
         id: cache-apt
         uses: actions/cache@v4
         env:
-          cache-name: cache-apt-install
+          cache-name: cache-apt-pdf-doc-install
         with:
           path: /var/cache/apt
-          key: ${{ runner.os }}-install-${{ env.cache-name }}-${{ hashFiles('**/compile.sh') }}
+          key: ${{ runner.os }}-apt-pdf-doc-install-${{ env.cache-name }}-${{ hashFiles('**/compile.sh') }}
           restore-keys: |
-            ${{ runner.os }}-install-${{ env.cache-name }}-
+            ${{ runner.os }}-apt-pdf-doc-install-${{ env.cache-name }}-
 
-      - name: Cache cmake build
+      - name: Cache cmake build doc pdf
         id: cache-cmake
         uses: actions/cache@v4
         env:
-          cache-name: cache-cmake-build
+          cache-name: cache-cmake-build-doc-pdf
         with:
           path: ./build
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
+          key: ${{ runner.os }}-build-doc-pdf-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-doc-pdf-${{ env.cache-name }}-
 
       - name: Install Doxygen
         run: sudo apt-get install -y doxygen
