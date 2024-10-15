@@ -96,7 +96,7 @@ class EntityFactory : public IEntityFactory {
      * @return The created player missile entity.
      */
     Entity createPlayerMissile(
-        int playerId, EntityManager &entityManager, ComponentManager &componentManager) override;
+        EntityManager &entityManager, ComponentManager &componentManager) override;
 
     /**
      * @brief Creates a button entity.

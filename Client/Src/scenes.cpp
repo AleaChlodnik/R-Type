@@ -188,8 +188,7 @@ void Scenes::gameLoop()
     auto fireMissile = [&]() {
         r_type::net::Message<TypeMessage> msg;
         msg.header.id = TypeMessage::CreateEntityMessage;
-        msg << CreatableClientObject::MISSILE << c.getPlayerId();
-        msg << CreatableClientObject::MISSILE << c.getPlayerId();
+        msg << CreatableClientObject::MISSILE;
         c.Send(msg);
     };
 
