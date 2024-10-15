@@ -239,6 +239,14 @@ void Scenes::gameLoop()
                     msg >> entity;
                     c.UpdateEntity(entity);
                 } break;
+                case TypeMessage::UpdateEntityResponse: {
+                } break;
+                case TypeMessage::MoveEntityMessage: {
+                } break;
+                case TypeMessage::MoveEntityResponse: {
+                } break;
+                case TypeMessage::DestroyEntityResponse: {
+                } break;
                 }
             }
         } else {
