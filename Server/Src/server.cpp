@@ -6,6 +6,7 @@
 */
 
 #include <Net/server.hpp>
+#include <creatable_client_object.hpp>
 
 bool r_type::net::Server::OnClientConnect(
     std::shared_ptr<r_type::net::Connection<TypeMessage>> client)
@@ -13,7 +14,7 @@ bool r_type::net::Server::OnClientConnect(
     r_type::net::Message<TypeMessage> msg;
     EntityInformation entity;
     msg.header.id = TypeMessage::ServerAccept;
-    InitiatePlayers(msg, client->GetID());
+    msg << InitiatePlayers(client->GetID());
     nbrOfPlayers++;
     MessageClient(client, msg);
     msg.header.id = TypeMessage::CreateEntityMessage;
@@ -77,6 +78,23 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
     } break;
     case TypeMessage::DestroyEntityMessage: {
         OnClientDisconnect(client, msg);
+    } break;
+    case TypeMessage::CreateEntityMessage: {
+        CreatableClientObject tkt;
+        msg >> tkt;
+        switch (tkt) {
+        case CreatableClientObject::MISSILE: {
+            r_type::net::Message<TypeMessage> ResponseMsg;
+            ResponseMsg.header.id = TypeMessage::CreateEntityResponse;
+            client->Send(ResponseMsg);
+            r_type::net::Message<TypeMessage> MissileMsg;
+            MissileMsg.header.id = TypeMessage::CreateEntityMessage;
+            MissileMsg << InitiateMissile(client->GetID());
+            MessageAllClients(MissileMsg);
+        } break;
+        default: {
+        } break;
+        }
     } break;
     }
 }

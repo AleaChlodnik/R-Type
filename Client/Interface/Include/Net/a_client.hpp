@@ -7,8 +7,11 @@
 
 #pragma once
 
-#include "i_client.hpp"
+#include <Components/component_manager.hpp>
+#include <Components/components.hpp>
+#include <Net/i_client.hpp>
 #include <entity_struct.hpp>
+#include <texture_manager.hpp>
 #include <unordered_map>
 
 namespace r_type {
@@ -105,6 +108,14 @@ template <typename T> class AClient : virtual public IClient<T> {
 
     const std::unique_ptr<Connection<T>> &getConnection() { return m_connection; }
 
+    void setPlayerId(int id) { playerId = id; }
+    int getPlayerId() { return playerId; }
+
+    void addEntity(EntityInformation entity, ComponentManager &componentManager,
+        TextureManager &textureManager);
+    void removeEntity(int entityId, ComponentManager &componentManager);
+    void updateEntity(EntityInformation entity, ComponentManager &componentManager);
+
   protected:
     asio::io_context m_context;
     std::thread thrContext;
@@ -112,8 +123,7 @@ template <typename T> class AClient : virtual public IClient<T> {
 
   private:
     ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
-    // std::unordered_map<uint32_t, EntityInformation> Entities;
-    // int EntityID = 0;
+    int playerId = 0;
 };
 } // namespace net
 } // namespace r_type

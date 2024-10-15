@@ -12,6 +12,11 @@
 #include "Entities/entity_manager.hpp"
 #include "Systems/i_system.hpp"
 
+/**
+ * @class UpdateSystem
+ *
+ * @brief A system responsible for updating entities in the game.
+ */
 class UpdateSystem : public ISystem {
   public:
     UpdateSystem(sf::RenderWindow &window) : _window(window) {}

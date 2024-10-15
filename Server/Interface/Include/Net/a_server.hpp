@@ -236,10 +236,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     void RemovePlayer(uint32_t id) { clientPlayerID.erase(id); }
     void RemoveEntities(uint32_t id) { entityManager.removeEntity(id); }
 
-    void InitiatePlayers(r_type::net::Message<T> &msg, uint32_t clientId)
+    EntityInformation InitiatePlayers(int clientId)
     {
-        Entity player = entityFactory.createPlayer(entityManager, componentManager);
         EntityInformation entityInfo;
+        Entity player = entityFactory.createPlayer(entityManager, componentManager);
         entityInfo.uniqueID = player.getId();
         entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
         while (CheckPlayerPosition(entityInfo) == false) {
@@ -261,7 +261,26 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.spriteData = *(sprite.value());
         }
         clientPlayerID.insert_or_assign(clientId, entityInfo.uniqueID);
-        msg << entityInfo;
+        return entityInfo;
+    }
+
+    uint32_t GetClientEntityId(uint32_t id) { return clientPlayerID.at(id); }
+
+    EntityInformation InitiateMissile(int clientId)
+    {
+        EntityInformation entityInfo;
+        Entity missile = entityFactory.createPlayerMissile(
+            GetClientEntityId(clientId), entityManager, componentManager);
+        entityInfo.uniqueID = missile.getId();
+        auto playerPos =
+            componentManager.getComponent<PositionComponent>(GetClientEntityId(clientId)).value();
+        entityInfo.vPos.x = playerPos->x;
+        entityInfo.vPos.y = playerPos->y;
+        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        if (sprite) {
+            entityInfo.spriteData = *(sprite.value());
+        }
+        return entityInfo;
     }
 
     void InitListEntities(
@@ -371,6 +390,16 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     ComponentManager componentManager;
     EntityManager entityManager;
     EntityFactory entityFactory;
+    /**
+     * @brief A container that maps client IDs to player IDs.
+     *
+     * left: client ID
+     * right: player ID
+     *
+     * This unordered map is used to associate client IDs with their corresponding player IDs.
+     * The keys are of type uint32_t representing the client IDs, and the values are also of type
+     * uint32_t representing the player IDs.
+     */
     std::unordered_map<uint32_t, uint32_t> clientPlayerID;
     int nbrOfPlayers = 0;
 };
