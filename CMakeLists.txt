@@ -63,8 +63,8 @@ if(DOXYGEN_FOUND)
     COMMENT "Generating API documentation with Doxygen"
     VERBATIM)
 
-  # # Conditionally compile LaTeX to PDF and copy it
-  # # Ensure Doxygen and LaTeX are available
+  # Conditionally compile LaTeX to PDF and copy it
+  # Ensure Doxygen and LaTeX are available
   # find_package(LATEX) # This check is optional and serves to ensure Latex is
   #                     # installed
   # if(LATEX_FOUND)
@@ -76,9 +76,9 @@ if(DOXYGEN_FOUND)
   #     COMMAND ${CMAKE_COMMAND} -E chdir
   #             ${CMAKE_CURRENT_SOURCE_DIR}/doc_doxygen/latex make
   #     COMMAND
-  #       ${CMAKE_COMMAND} -E copy
+  #       ${CMAKE_COMMAND} -E copyh
   #       ${CMAKE_CURRENT_SOURCE_DIR}/doc_doxygen/latex/refman.pdf
-  #       ${CMAKE_CURRENT_SOURCE_DIR}/Docs
+  #       ${CMAKE_CURRENT_SOURCE_DIR}/doc
   #     COMMENT
   #       "Building PDF documentation with LaTeX and copying to doc directory")
   # else()
