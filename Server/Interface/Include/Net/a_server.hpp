@@ -219,7 +219,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      *
      * @param id
      */
-    void RemoveEntity(uint32_t id) { /*Entities.erase(id);*/ }
+    void RemoveEntity(uint32_t id)
+    { /*Entities.erase(id);*/
+    }
 
     /**
      * @brief init player

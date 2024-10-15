@@ -7,8 +7,8 @@
 
 #include <Net/client.hpp>
 #include <SFML/Graphics.hpp>
-#include <iostream>
 #include <entity_struct.hpp>
+#include <iostream>
 
 void simpleClient()
 {
@@ -131,7 +131,8 @@ void simpleClient()
 
         window.clear();
         for (const auto &player : c.GetPlayers()) {
-            sf::RectangleShape carre({player.second.spriteData.dimension.x, player.second.spriteData.dimension.y});
+            sf::RectangleShape carre(
+                {player.second.spriteData.dimension.x, player.second.spriteData.dimension.y});
             carre.setPosition(player.second.vPos.x, player.second.vPos.y);
             carre.setFillColor(sf::Color::White);
             window.draw(carre);
