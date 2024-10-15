@@ -10,6 +10,7 @@
 #include <cstdint>
 
 /**
+ * @class CreatableClientObject
  * @brief Enum class for the creatable client object
  *
  */

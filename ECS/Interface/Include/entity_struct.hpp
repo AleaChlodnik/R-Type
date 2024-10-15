@@ -11,8 +11,10 @@
 #include <cstdint>
 
 /**
- * @brief 2D vector struct
- *
+ * @struct vf2d
+ * @brief Represents a 2D vector with x and y coordinates.
+ * @var vf2d::x The x coordinate of the vector.
+ * @var vf2d::y The y coordinate of the vector.
  */
 struct vf2d {
     float x = 0;
@@ -20,8 +22,11 @@ struct vf2d {
 };
 
 /**
- * @brief Entity information struct
- *
+ * @struct EntityInformation
+ * @brief Represents information about an entity.
+ * @var EntityInformation::uniqueID The unique ID of the entity.
+ * @var EntityInformation::spriteData The sprite data component of the entity.
+ * @var EntityInformation::vPos The 2D vector representing the position of the entity.
  */
 struct EntityInformation {
     uint32_t uniqueID = 0;
