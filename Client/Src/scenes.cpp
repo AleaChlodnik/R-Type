@@ -20,8 +20,8 @@
 Scenes::Scenes(sf::RenderWindow *window)
 {
     this->_window = window;
-    this->currentScene =
-        Scenes::Scene::MAIN_MENU; /////////////////// change back to MAIN_MENU after testing
+    this->currentScene = Scenes::Scene::MAIN_MENU;
+    // this->currentScene = Scenes::Scene::GAME_LOOP; ////// TEMPORARY
 }
 
 void Scenes::setScene(Scenes::Scene scene) { this->currentScene = scene; }
@@ -32,13 +32,15 @@ void Scenes::mainMenu()
     EntityManager entityManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
+    UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
     // Create background
     Entity background = entityFactory.createBackground(entityManager, componentManager);
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
-    sf::Vector2f scale(0.4, 0.4);
+    sf::Vector2f scale(1.0, 1.0);
     SpriteComponent spriteComponent(texture, 0, 0, scale);
+    componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
     // Create buttons
     std::function<Scenes *(Scenes *)> onPlayButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
@@ -77,10 +79,12 @@ void Scenes::mainMenu()
     }
 
     std::vector<Entity *> buttons = {&playButton, &settingsButton, &quitButton};
+
+    sf::Clock clock;
     sf::Event event;
 
     while (_window->isOpen() && this->currentScene == Scenes::Scene::MAIN_MENU) {
-
+        float deltaTime = clock.restart().asSeconds();
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 _window->close();
@@ -104,7 +108,7 @@ void Scenes::mainMenu()
                 }
             }
         }
-
+        updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(componentManager);
     }
 }
@@ -116,7 +120,9 @@ void Scenes::gameLoop()
 
     ComponentManager componentManager;
     TextureManager textureManager;
+    EntityManager entityManager;
 
+    UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
 
     sf::Event event;
@@ -131,6 +137,14 @@ void Scenes::gameLoop()
         c.Send(msg);
     };
 
+    auto fireMissile = [&]() {
+        r_type::net::Message<TypeMessage> msg;
+        std::string object = "missile";
+        msg.header.id = TypeMessage::CreateEntityMessage;
+        msg << object;
+        c.Send(msg);
+    };
+
     while (_window->isOpen()) {
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -142,11 +156,8 @@ void Scenes::gameLoop()
             }
             if (event.type == sf::Event::KeyPressed) {
                 switch (event.key.code) {
-                case sf::Keyboard::Space: {
-                    std::cout << "space" << std::endl;
+                case sf::Keyboard::P: {
                     c.PingServer();
-                    ////////////////////////////////////////// change space to shoot & ping server
-                    /// to something else
                 } break;
                 case sf::Keyboard::Q: {
                     _window->close();
@@ -165,6 +176,10 @@ void Scenes::gameLoop()
                 } break;
                 case sf::Keyboard::Right: {
                     updatePlayerPosition(vf2d{5, 0});
+                } break;
+                case sf::Keyboard::Space: {
+                    fireMissile();
+                    // Tell server to create missile from player position
                 } break;
                 default:
                     break;
@@ -231,7 +246,7 @@ void Scenes::gameLoop()
             _window->close();
             break;
         }
-
+        updateSystem.update(entityManager, componentManager, 0.0f);
         renderSystem.render(componentManager);
     }
 }

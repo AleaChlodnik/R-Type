@@ -10,13 +10,44 @@
 void RenderSystem::render(ComponentManager &componentManager)
 {
     _window.clear();
-    const auto sprites = componentManager.getComponentMap<SpriteComponent>();
-    if (sprites) {
-        for (const auto &pair : **sprites) { // Derefrences the optional and then the pointer
+
+    // Always display background first - menus
+    int backgroundId = 0;
+    auto backgroundOpt = componentManager.getComponentMap<BackgroundComponent>();
+    if (backgroundOpt) {
+        auto &backgroundMap = **backgroundOpt;
+        if (!backgroundMap.empty()) {
+            auto entityId = backgroundMap.begin()->first;
+            backgroundId = entityId;
+        }
+        auto bgSprite = componentManager.getComponent<SpriteComponent>(backgroundId);
+        _window.draw(bgSprite.value()->sprite);
+    }
+
+    const auto spritesOpt = componentManager.getComponentMap<SpriteComponent>();
+    if (spritesOpt) {
+
+        auto &sprites = **spritesOpt;
+
+        // Always display background first - game
+        // if (sprites.find(serverBackgroundId) != sprites.end()) {
+        //     const auto &anySprite = sprites[serverBackgroundId];
+        //     auto spriteComponent = std::any_cast<SpriteComponent>(&anySprite);
+        //     if (spriteComponent) {
+        //         _window.draw(spriteComponent->sprite);
+        //     }
+        // }
+
+        for (const auto &pair : sprites) { // Derefrences the optional and then the pointer
+            const auto &entityId = pair.first;
+            if (entityId == backgroundId) { // || entityId == (serverBackgroundId)
+                continue;
+            }
             const auto &spriteComponent = pair.second;
             auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            if (sprite)
+            if (sprite) {
                 _window.draw(sprite->sprite);
+            }
         }
     }
     _window.display();

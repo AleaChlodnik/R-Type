@@ -8,7 +8,7 @@
 #pragma once
 
 #include <cstdint>
-#include <spriteData.hpp>
+#include "Components/sprite_data_component.hpp"
 
 struct vf2d {
     float x = 0;
@@ -17,6 +17,6 @@ struct vf2d {
 
 struct EntityInformation {
     uint32_t uniqueID = 0;
-    SpriteData_t spriteData;
+    SpriteDataComponent spriteData;
     vf2d vPos;
 };

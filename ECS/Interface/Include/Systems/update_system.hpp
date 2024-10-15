@@ -18,9 +18,11 @@ class UpdateSystem : public ISystem {
 
     void update(EntityManager &entityManager, ComponentManager &componentManager, float deltaTime);
 
-    void updateBackground(int entityId, ComponentManager &componentManager, float deltaTime);
-    bool updatePlayerMissile(int entityId, EntityManager &entityManager,
-        ComponentManager &componentManager, float deltaTime);
+    void updateSpritePosition(EntityManager &entityManager, ComponentManager &componentManager);
+    void updateBackground(ComponentManager &componentManager, float deltaTime);
+
+    // bool updatePlayerMissile(int entityId, EntityManager &entityManager,
+    //     ComponentManager &componentManager, float deltaTime);
 
   private:
     sf::RenderWindow &_window;
