@@ -19,8 +19,7 @@
  */
 Rtype::Rtype()
 {
-    _window.create(
-        sf::VideoMode::getDesktopMode(), "R-Type", sf::Style::Close | sf::Style::Resize);
+    _window.create(sf::VideoMode::getDesktopMode(), "R-Type", sf::Style::Close);
     _window.setFramerateLimit(60);
     _scenes = new Scenes(&_window);
 };
