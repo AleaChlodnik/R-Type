@@ -14,6 +14,7 @@
 
 struct SpriteComponent {
     sf::Sprite sprite;
+    SpriteType spriteType;
 
     SpriteComponent(
         sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale)

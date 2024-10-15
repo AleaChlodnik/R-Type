@@ -45,6 +45,7 @@ enum class SpriteType : uint32_t
     PowerUp,
     Boss,
     BossBullet,
+    NONE,
 };
 
 SpriteData_t SpriteFactory(SpriteType sprite)

@@ -219,9 +219,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      *
      * @param id
      */
-    void RemoveEntity(uint32_t id)
-    { /*Entities.erase(id);*/
-    }
+    void RemoveEntity(uint32_t id) { /*Entities.erase(id);*/ }
 
     /**
      * @brief init player
@@ -233,21 +231,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         Entity player = entityFactory.createPlayer(entityManager, componentManager);
         EntityInformation desc;
-        desc.uniqueID = id;
+        desc.uniqueID = player.getId();
         desc.vPos = {100, static_cast<float>(rand() % 600)};
-        while (CheckPlayerPosition(desc) == false) {
+        while (CheckPlayerPosition(desc) == false)
             desc.vPos = {100, static_cast<float>(rand() % 600)};
-        }
-        player._id = desc.uniqueID;
-        auto playerPos = componentManager.getComponent<PositionComponent>(player._id);
+        PositionComponent playerPos = componentManager.getComponent<PositionComponent>(player._id);
         if (playerPos) {
             playerPos.value()->x = desc.vPos.x;
             playerPos.value()->y = desc.vPos.y;
         }
-        auto playerSprite = componentManager.getComponent<SpriteComponent>(player._id);
-        if (playerSprite) {
-            playerSprite.value()->sprite = desc.spriteData.spritePath;
-        }
+        SpriteData_t sprite = componentManager.getComponent<SpriteData_t>(player._id);
+        if (sprite)
+            desc.spriteData = sprite;
         msg << desc;
     }
 
@@ -281,21 +276,29 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         float descLeft, descRight, descTop, descBottom, playerLeft, playerRight, playerTop,
             playerBottom;
-        for (const auto &player : Entities) {
-            if (player.first != desc.uniqueID) {
-                descLeft = desc.vPos.x - (desc.hitbox.width / 2);
-                descRight = desc.vPos.x + (desc.hitbox.width / 2);
-                descTop = desc.vPos.y - (desc.hitbox.height / 2);
-                descBottom = desc.vPos.y + (desc.hitbox.height / 2);
+        const std::vector<Entity> entities = entityManager.getAllEntities();
 
-                playerLeft = player.second.vPos.x - (player.second.hitbox.width / 2);
-                playerRight = player.second.vPos.x + (player.second.hitbox.width / 2);
-                playerTop = player.second.vPos.y - (player.second.hitbox.height / 2);
-                playerBottom = player.second.vPos.y + (player.second.hitbox.height / 2);
+        for (const auto &player : entities) {
+            if (player.getId() != desc.uniqueID) {
+                PositionComponent playerPos =
+                    componentManager.getComponent<PositionComponent>(player.getID());
+                HitboxComponent playerHitbox =
+                    componentManager.getComponent<HitboxComponent>(player.getID());
+                if (playerPos) {
+                    descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
+                    descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
+                    descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);
+                    descBottom = desc.vPos.y + (desc.spriteData.dimension.y / 2);
 
-                if (!(descRight < playerLeft || descLeft > playerRight || descBottom < playerTop ||
-                        descTop > playerBottom)) {
-                    return false;
+                    playerLeft = playerPos.value().x - (playerHitbox.w / 2);
+                    playerRight = playerPos.value().x + (playerHitbox.w / 2);
+                    playerTop = playerPos.value().y - (playerHitbox.h / 2);
+                    playerBottom = playerPos.value().y + (playerHitbox.h / 2);
+
+                    if (!(descRight < playerLeft || descLeft > playerRight ||
+                            descBottom < playerTop || descTop > playerBottom)) {
+                        return false;
+                    }
                 }
             }
         }

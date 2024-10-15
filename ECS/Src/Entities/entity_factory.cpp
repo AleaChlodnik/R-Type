@@ -39,7 +39,7 @@ Entity EntityFactory::createPlayer(EntityManager &entityManager,
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
     SpriteData_t sprite = SpriteFactory(SpriteType::Ship1);
-    HitboxComponent hitbox{startPosition.x, startPosition.y, sprite.scale.x, sprite.scale.y};
+    HitboxComponent hitbox{sprite.dimension.x, sprite.dimension.y};
     HealthComponent health{100, 100};
     InputComponent input{InputType::NONE};
 
@@ -48,6 +48,7 @@ Entity EntityFactory::createPlayer(EntityManager &entityManager,
     componentManager.addComponent<HitboxComponent>(player.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(player.getId(), health);
     componentManager.addComponent<InputComponent>(player.getId(), input);
+    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
 
     return player;
 }
@@ -60,13 +61,15 @@ Entity EntityFactory::createAlly(EntityManager &entityManager, ComponentManager 
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
     SpriteData_t sprite = SpriteFactory(SpriteType::Ship1);
-    HitboxComponent hitbox{startPosition.x, startPosition.y, sprite.scale.x, sprite.scale.y};
+    HitboxComponent hitbox{sprite.dimension.x, sprite.dimension.y};
     HealthComponent health{100, 100};
 
     componentManager.addComponent<AllyComponent>(ally.getId(), allyComponent);
     componentManager.addComponent<PositionComponent>(ally.getId(), startPosition);
     componentManager.addComponent<HitboxComponent>(ally.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(ally.getId(), health);
+    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
+
 
     return ally;
 }
@@ -80,7 +83,7 @@ Entity EntityFactory::createBasicEnemy(EntityManager &entityManager,
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
     SpriteData_t sprite = SpriteFactory(SpriteType::Enemy1);
-    HitboxComponent hitbox{startPosition.x, startPosition.y, sprite.scale.x, sprite.scale.y};
+    HitboxComponent hitbox{sprite.dimension.x, sprite.dimension.y};
     HealthComponent health{100, 100};
 
     componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
@@ -88,6 +91,8 @@ Entity EntityFactory::createBasicEnemy(EntityManager &entityManager,
     componentManager.addComponent<VelocityComponent>(enemy.getId(), velocity);
     componentManager.addComponent<HitboxComponent>(enemy.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(enemy.getId(), health);
+    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
+
 
     return enemy;
 }
@@ -101,7 +106,7 @@ Entity EntityFactory::createBasicMonster(EntityManager &entityManager,
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
     SpriteData_t sprite = SpriteFactory(SpriteType::Enemy1);
-    HitboxComponent hitbox{startPosition.x, startPosition.y, sprite.scale.x, sprite.scale.y};
+    HitboxComponent hitbox{sprite.dimension.x, sprite.dimension.y};
     HealthComponent health{100, 100};
 
     componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
@@ -109,6 +114,7 @@ Entity EntityFactory::createBasicMonster(EntityManager &entityManager,
     componentManager.addComponent<VelocityComponent>(monster.getId(), velocity);
     componentManager.addComponent<HitboxComponent>(monster.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(monster.getId(), health);
+    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
 
     return monster;
 }
@@ -125,12 +131,13 @@ Entity EntityFactory::createPlayerMissile(int playerId, EntityManager &entityMan
         playerPosition.value()->x + 105, playerPosition.value()->y + 49);
     VelocityComponent velocity{200.0f};
     SpriteData_t sprite = SpriteFactory(SpriteType::Enemy1);
-    HitboxComponent hitbox{startPosition.x, startPosition.y, sprite.scale.x, sprite.scale.y};
+    HitboxComponent hitbox{sprite.dimension.x, sprite.dimension.y};
 
     componentManager.addComponent<PlayerMissileComponent>(
         playerMissle.getId(), playerMissileComponent);
     componentManager.addComponent<PositionComponent>(playerMissle.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(playerMissle.getId(), velocity);
+    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
 
     return playerMissle;
 }
@@ -144,11 +151,12 @@ Entity EntityFactory::createAllyMissile(EntityManager &entityManager,
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
     SpriteData_t sprite = SpriteFactory(SpriteType::Enemy1);
-    HitboxComponent hitbox{startPosition.x, startPosition.y, sprite.scale.x, sprite.scale.y};
+    HitboxComponent hitbox{sprite.dimension.x, sprite.dimension.y};
 
     componentManager.addComponent<AllyMissileComponent>(allyMissile.getId(), allyMissileComponent);
     componentManager.addComponent<PositionComponent>(allyMissile.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(allyMissile.getId(), velocity);
+    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
 
     return allyMissile;
 }
@@ -162,12 +170,14 @@ Entity EntityFactory::createEnemyMissile(EntityManager &entityManager,
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
     SpriteData_t sprite = SpriteFactory(SpriteType::Enemy1);
-    HitboxComponent hitbox{startPosition.x, startPosition.y, sprite.scale.x, sprite.scale.y};
+    HitboxComponent hitbox{sprite.dimension.x, sprite.dimension.y};
 
     componentManager.addComponent<EnemyMissileComponent>(
         enemyMissile.getId(), enemyMissileComponent);
     componentManager.addComponent<PositionComponent>(enemyMissile.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(enemyMissile.getId(), velocity);
+    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
+
 
     return enemyMissile;
 }
@@ -179,17 +189,19 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
     Entity button = entityManager.createEntity();
 
     sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
-    sf::Vector2f scale(1.0f, 1.0f);
+    sf::Vector2f dimension(1.0f, 1.0f);
 
     PositionComponent pos(0, 0);
     TextComponent textComponent(text);
     OnClickComponent onClickfunction(*onClick);
-    SpriteComponent sprite(texture, pos.x, pos.y, scale);
+    SpriteComponent sprite(texture, pos.x, pos.y, dimension);
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
     componentManager.addComponent<OnClickComponent>(button.getId(), onClickfunction);
     componentManager.addComponent<TextComponent>(button.getId(), textComponent);
     componentManager.addComponent<SpriteComponent>(button.getId(), sprite);
+    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
+
 
     return button;
 }
