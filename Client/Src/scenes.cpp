@@ -197,7 +197,7 @@ void Scenes::gameLoop()
             if (event.type == sf::Event::Closed) {
                 r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::DestroyEntityMessage;
-                //msg << c.getPlayerId();
+                // msg << c.getPlayerId();
                 c.Send(msg);
                 _window->close();
             }
@@ -267,7 +267,7 @@ void Scenes::gameLoop()
                 case TypeMessage::CreateEntityMessage: {
                     EntityInformation entity;
                     msg >> entity;
-                    //addEntity(entity, componentManager);
+                    // addEntity(entity, componentManager);
                 } break;
                 case TypeMessage::CreateEntityResponse: {
                 } break;
@@ -275,7 +275,7 @@ void Scenes::gameLoop()
                     r_type::net::Message<TypeMessage> reponse;
                     uint32_t id;
                     msg >> id;
-                    //removeEntity(id, componentManager);
+                    // removeEntity(id, componentManager);
                     reponse.header.id = TypeMessage::DestroyEntityResponse;
                     c.Send(reponse);
                 } break;
@@ -284,7 +284,7 @@ void Scenes::gameLoop()
                     reponse.header.id = TypeMessage::UpdateEntityResponse;
                     EntityInformation entity;
                     msg >> entity;
-                    //updateEntity(entity);
+                    // updateEntity(entity);
                 } break;
                 case TypeMessage::UpdateEntityResponse: {
                 } break;

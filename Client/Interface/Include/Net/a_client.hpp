@@ -84,8 +84,6 @@ template <typename T> class AClient : virtual public IClient<T> {
             return false;
     }
 
-
-
   public:
     /**
      * @brief Send message to server
