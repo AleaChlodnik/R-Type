@@ -724,7 +724,8 @@ void Scenes::settingsMenu()
         //     &buttons, componentManager, entityManager, textureManager, entityFactory);
     }
     if (displayKeyBinds) {
-        //createKeyBindingButtons(&buttons, componentManager, entityManager, textureManager, entityFactory);
+        // createKeyBindingButtons(&buttons, componentManager, entityManager, textureManager,
+        // entityFactory);
     }
 
     sf::Clock clock;
