@@ -2,14 +2,19 @@
 ** EPITECH PROJECT, 2024
 ** R-Type
 ** File description:
-** creableObject
+** creatable_client_object
 */
 
 #pragma once
 
 #include <cstdint>
 
-enum class CreatableClientObject : uint32_t {
+/**
+ * @brief Enum class for the creatable client object
+ *
+ */
+enum class CreatableClientObject : uint32_t
+{
     MISSILE,
     NONE
 };

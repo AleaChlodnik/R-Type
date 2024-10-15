@@ -7,14 +7,22 @@
 
 #pragma once
 
-#include <cstdint>
 #include "Components/sprite_data_component.hpp"
+#include <cstdint>
 
+/**
+ * @brief 2D vector struct
+ *
+ */
 struct vf2d {
     float x = 0;
     float y = 0;
 };
 
+/**
+ * @brief Entity information struct
+ *
+ */
 struct EntityInformation {
     uint32_t uniqueID = 0;
     SpriteDataComponent spriteData;
