@@ -139,13 +139,8 @@ void Scenes::gameLoop()
     /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
 
     auto updatePlayerPosition = [&](const vf2d &delta) {
-        EntityInformation desc = c.GetAPlayer(c.GetEntityID());
         r_type::net::Message<TypeMessage> msg;
-        desc.vPos.x += delta.x;
-        desc.vPos.y += delta.y;
         msg.header.id = TypeMessage::MoveEntityMessage;
-        msg << desc;
-        c.Send(msg);
     };
 
     auto fireMissile = [&]() {
@@ -161,7 +156,7 @@ void Scenes::gameLoop()
             if (event.type == sf::Event::Closed) {
                 r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::DestroyEntityMessage;
-                msg << c.GetEntityID();
+                //msg << c.getPlayerId();
                 c.Send(msg);
                 _window->close();
             }
@@ -205,8 +200,8 @@ void Scenes::gameLoop()
                     std::cout << "Server Accepted Connection" << std::endl;
                     EntityInformation entity;
                     msg >> entity;
-                    c.AddEntity(entity);
-                    c.SetEntityID(entity.uniqueID);
+                    // c.setPlayerId(entity.id);
+                    // addEntity(entity, componentManager);
                 } break;
                 case TypeMessage::ServerPing: {
                     std::chrono::system_clock::time_point timeNow =
@@ -231,7 +226,7 @@ void Scenes::gameLoop()
                 case TypeMessage::CreateEntityMessage: {
                     EntityInformation entity;
                     msg >> entity;
-                    c.AddEntity(entity);
+                    //addEntity(entity, componentManager);
                 } break;
                 case TypeMessage::CreateEntityResponse: {
                 } break;
@@ -239,7 +234,7 @@ void Scenes::gameLoop()
                     r_type::net::Message<TypeMessage> reponse;
                     uint32_t id;
                     msg >> id;
-                    c.RemoveEntity(id);
+                    //removeEntity(id, componentManager);
                     reponse.header.id = TypeMessage::DestroyEntityResponse;
                     c.Send(reponse);
                 } break;
@@ -248,7 +243,7 @@ void Scenes::gameLoop()
                     reponse.header.id = TypeMessage::UpdateEntityResponse;
                     EntityInformation entity;
                     msg >> entity;
-                    c.UpdateEntity(entity);
+                    //updateEntity(entity);
                 } break;
                 }
             }
