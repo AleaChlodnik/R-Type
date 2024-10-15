@@ -155,6 +155,12 @@ jobs:
         with:
           commit_message: Automated Change
 
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ""
+          ref: "gh-pages"
+
       - name: Deploy to GitHub Pages
         if: success()
         run: |
@@ -162,19 +168,19 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
 
-          # Clone the gh-pages branch
-          git clone --depth 1 --branch gh-pages https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} gh-pages || git checkout --orphan gh-pages
-
           # Copy generated docs to the gh-pages directory
           rm -rf gh-pages/
           mkdir -p gh-pages/
           cp -r build/doc_doxygen/html/* gh-pages/
 
-          # Commit and push the updated documentation to GitHub Pages
-          cd gh-pages
-          git add .
-          git commit -m "Deploy updated documentation"
-          git push origin gh-pages
+      - name: Deploy to GitHub Pages
+        id: git-check-2
+        run: echo "modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
+      - name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        if: steps.git-check-2.outputs.modified == 'true'
+        with:
+          commit_message: Automated Change
 
   push_to_mirror:
     needs: [linux_install, windows_install]
