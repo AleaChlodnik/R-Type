@@ -219,9 +219,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      *
      * @param id
      */
-    void RemoveEntity(uint32_t id)
-    { /*Entities.erase(id);*/
-    }
+    void RemoveEntity(uint32_t id) { /*Entities.erase(id);*/ }
 
     /**
      * @brief init player
@@ -232,20 +230,21 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     void InitiatePlayers(r_type::net::Message<T> &msg, int id)
     {
         Entity player = entityFactory.createPlayer(entityManager, componentManager);
-        EntityInformation desc;
-        desc.uniqueID = player.getId();
-        desc.vPos = {100, static_cast<float>(rand() % 600)};
-        while (CheckPlayerPosition(desc) == false)
-            desc.vPos = {100, static_cast<float>(rand() % 600)};
-        PositionComponent playerPos = componentManager.getComponent<PositionComponent>(player._id);
-        if (playerPos) {
-            playerPos.value()->x = desc.vPos.x;
-            playerPos.value()->y = desc.vPos.y;
+        EntityInformation entityInfo;
+        entityInfo.uniqueID = player.getId();
+        entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
+        while (CheckPlayerPosition(entityInfo) == false) {
+            entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
         }
-        SpriteData_t sprite = componentManager.getComponent<SpriteData_t>(player._id);
+        auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+        if (playerPos) {
+            playerPos.value()->x = entityInfo.vPos.x;
+            playerPos.value()->y = entityInfo.vPos.y;
+        }
+        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         if (sprite)
-            desc.spriteData = sprite;
-        msg << desc;
+            entityInfo.spriteData = *(sprite.value());
+        msg << entityInfo;
     }
 
     /**
@@ -280,22 +279,20 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             playerBottom;
         const std::vector<Entity> entities = entityManager.getAllEntities();
 
-        for (const auto &player : entities) {
-            if (player.getId() != desc.uniqueID) {
-                PositionComponent playerPos =
-                    componentManager.getComponent<PositionComponent>(player.getID());
-                HitboxComponent playerHitbox =
-                    componentManager.getComponent<HitboxComponent>(player.getID());
+        for (const auto &entity : entities) {
+            if (entity.getId() != desc.uniqueID) {
+                auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
+                auto playerHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
                 if (playerPos) {
-                    descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
-                    descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
-                    descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);
-                    descBottom = desc.vPos.y + (desc.spriteData.dimension.y / 2);
+                    // descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
+                    // descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
+                    // descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);
+                    // descBottom = desc.vPos.y + (desc.spriteData.dimension.y / 2);
 
-                    playerLeft = playerPos.value().x - (playerHitbox.w / 2);
-                    playerRight = playerPos.value().x + (playerHitbox.w / 2);
-                    playerTop = playerPos.value().y - (playerHitbox.h / 2);
-                    playerBottom = playerPos.value().y + (playerHitbox.h / 2);
+                    // playerLeft = playerPos.value().x - (playerHitbox.w / 2);
+                    // playerRight = playerPos.value().x + (playerHitbox.w / 2);
+                    // playerTop = playerPos.value().y - (playerHitbox.h / 2);
+                    // playerBottom = playerPos.value().y + (playerHitbox.h / 2);
 
                     if (!(descRight < playerLeft || descLeft > playerRight ||
                             descBottom < playerTop || descTop > playerBottom)) {
