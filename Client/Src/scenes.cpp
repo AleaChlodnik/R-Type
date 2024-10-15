@@ -248,6 +248,12 @@ void Scenes::gameLoop()
                     std::cout << "Server Accepted Connection" << std::endl;
                     EntityInformation entity;
                     msg >> entity;
+                    std::cout << "Player ID: " << entity.uniqueID << " " << entity.vPos.x << " "
+                              << entity.vPos.y /*<< " " << entity.spriteData.spritePath << " "
+                              << entity.spriteData.offSet.x << " " << entity.spriteData.offSet.y
+                              << " " << entity.spriteData.dimension.x << " "
+                              << entity.spriteData.dimension.y << " " << entity.spriteData.scale.x
+                              << " " << entity.spriteData.scale.y */<< std::endl;
                     c.setPlayerId(entity.uniqueID);
                     c.addEntity(entity, componentManager, textureManager);
                 } break;
