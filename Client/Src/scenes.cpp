@@ -66,6 +66,7 @@ void Scenes::mainMenu()
     EntityManager entityManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
+    UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
     buttons = {};
 
@@ -88,7 +89,6 @@ void Scenes::mainMenu()
         pos.value()->x = 760;
         pos.value()->y = 100;
     }
-    EntityFactory.createLabel(entityManager, componentManager, {800, 140}, "Play");
 
     std::function<Scenes *(Scenes *)> onSettingsButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::SETTINGS_MENU);
@@ -125,6 +125,9 @@ void Scenes::mainMenu()
 
         handleEvents(event, componentManager, _window, buttons, this);
 
+        float deltaTime = clock.restart().asSeconds();
+
+        updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(componentManager);
     }
 }
@@ -268,6 +271,7 @@ void Scenes::inGameMenu()
     EntityManager entityManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
+    UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
     buttons = {};
 
@@ -275,8 +279,9 @@ void Scenes::inGameMenu()
     Entity background = entityFactory.createBackground(entityManager, componentManager);
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
-    sf::Vector2f scale(0.4, 0.4);
+    sf::Vector2f scale(1.0, 1.0);
     SpriteComponent spriteComponent(texture, 0, 0, scale);
+    componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
     // Create the buttons
     std::function<Scenes *(Scenes *)> onResumeButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
@@ -325,6 +330,9 @@ void Scenes::inGameMenu()
 
         handleEvents(event, componentManager, _window, buttons, this);
 
+        float deltaTime = clock.restart().asSeconds();
+
+        updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(componentManager);
     }
 }
@@ -431,12 +439,20 @@ void createGameModeChoiceButtons(std::vector<Entity *> buttons, ComponentManager
     buttons.push_back(&hardButton);
 }
 
+// void createKeyBindingButtons()
+// {
+//     std::function<Scenes *(Scenes *)> bind = [] (Scenes *currentScene) {
+
+//     }
+// }
+
 void Scenes::settingsMenu()
 {
     ComponentManager componentManager;
     EntityManager entityManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
+    UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
     buttons = {};
 
@@ -476,8 +492,21 @@ void Scenes::settingsMenu()
         pos.value()->y = 250;
     }
 
+    // std::function<Scenes *(Scenes *)> onKeybindButtonClicked = [](Scenes *currentScene) {
+    //     createKeyBindingButtons();
+    //     currentScene->settingsMenu();
+    //     return currentScene;
+    // };
+    // Entity backButton = entityFactory.createButton(
+    //     entityManager, componentManager, textureManager, "Back", &onKeybindButtonClicked);
+    // pos = componentManager.getComponent<PositionComponent>(backButton.getId());
+    // if (pos) {
+    //     pos.value()->x = 760;
+    //     pos.value()->y = 400;
+    // }
+
     std::function<Scenes *(Scenes *)> onBackButtonClicked = [](Scenes *currentScene) {
-        currentScene->setScene(Scenes::Scene::MAIN_MENU);
+        currentScene->setScene(currentScene->getPreviousScene());
         return currentScene;
     };
     Entity backButton = entityFactory.createButton(
@@ -485,7 +514,7 @@ void Scenes::settingsMenu()
     pos = componentManager.getComponent<PositionComponent>(backButton.getId());
     if (pos) {
         pos.value()->x = 760;
-        pos.value()->y = 500;
+        pos.value()->y = 650;
     }
 
     buttons.push_back(&daltonismModeButton);
@@ -506,6 +535,9 @@ void Scenes::settingsMenu()
 
         handleEvents(event, componentManager, _window, buttons, this);
 
+        float deltaTime = clock.restart().asSeconds();
+
+        updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(componentManager);
     }
 }

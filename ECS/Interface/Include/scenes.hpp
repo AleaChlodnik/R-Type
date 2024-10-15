@@ -37,6 +37,27 @@ class Scenes {
         PROTANOPIA
     };
 
+    enum class Actions
+    {
+      UP,
+      DOWN,
+      LEFT,
+      RIGHT,
+      FIRE,
+      PAUSE,
+      QUIT
+    };
+
+    std::map<Actions, sf::Keyboard::Key> keyBinds = {
+      {Actions::UP, sf::Keyboard::Key::W},
+      {Actions::DOWN, sf::Keyboard::Key::S},
+      {Actions::LEFT, sf::Keyboard::Key::A},
+      {Actions::RIGHT, sf::Keyboard::Key::D},
+      {Actions::FIRE, sf::Keyboard::Key::Space},
+      {Actions::PAUSE, sf::Keyboard::Key::Escape},
+      {Actions::QUIT, sf::Keyboard::Key::Q}
+    };
+
     Scenes(sf::RenderWindow *window);
     ~Scenes() = default;
 
