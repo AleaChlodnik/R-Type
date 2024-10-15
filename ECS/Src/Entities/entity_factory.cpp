@@ -10,7 +10,8 @@
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 
-bool CheckPositionEntity(EntityManager &entityManager, ComponentManager &componentManager, u_int32_t entityID)
+bool CheckPositionEntity(
+    EntityManager &entityManager, ComponentManager &componentManager, u_int32_t entityID)
 {
     float descLeft, descRight, descTop, descBottom, playerLeft, playerRight, playerTop,
         playerBottom;
@@ -138,7 +139,7 @@ Entity EntityFactory::createBasicMonster(
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{100.0f};
     SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {136, 112}, {0.5f, 0.5f}};
-    PositionComponent startPosition(1000, 500);
+    PositionComponent startPosition(1200, 500);
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
     HealthComponent health{100, 100};
 
@@ -152,7 +153,11 @@ Entity EntityFactory::createBasicMonster(
     while (CheckPositionEntity(entityManager, componentManager, monster.getId()) == false) {
         auto monsterPos = componentManager.getComponent<PositionComponent>(monster.getId());
         if (monsterPos) {
-            monsterPos.value()->x = 1000;
+            monsterPos.value()->x = static_cast<float>(rand() % 1800);
+            ;
+            if (monsterPos.value()->x < 1200) {
+                monsterPos.value()->x = 1200;
+            }
             monsterPos.value()->y = static_cast<float>(rand() % 1000);
         }
     }
@@ -160,7 +165,8 @@ Entity EntityFactory::createBasicMonster(
     return monster;
 }
 
-Entity EntityFactory::createPlayerMissile(EntityManager &entityManager, ComponentManager &componentManager)
+Entity EntityFactory::createPlayerMissile(
+    EntityManager &entityManager, ComponentManager &componentManager)
 {
     Entity playerMissile = entityManager.createEntity();
 
