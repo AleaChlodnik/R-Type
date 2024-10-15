@@ -213,10 +213,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         EntityInformation entity;
         vf2d entityPosition;
         auto entitySprite = componentManager.getComponent<SpriteDataComponent>(entityId);
+        std::cout << "UpdateEntityPosition" << std::endl;
         msg >> entityPosition;
         entity.uniqueID = entityId;
         entity.vPos = entityPosition;
         entity.spriteData = *entitySprite.value();
+        std::cout << "position: " << entityPosition.x << " " << entityPosition.y << std::endl;
 
         if (CheckPlayerPosition(entity)) {
             auto position = componentManager.getComponent<PositionComponent>(entityId);
@@ -274,6 +276,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             componentManager.getComponent<PositionComponent>(GetClientEntityId(clientId)).value();
         entityInfo.vPos.x = playerPos->x;
         entityInfo.vPos.y = playerPos->y;
+        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        if (sprite) {
+            entityInfo.spriteData = *(sprite.value());
+        }
+        return entityInfo;
+    }
+
+    EntityInformation InitiateBackground()
+    {
+        EntityInformation entityInfo;
+        Entity background = entityFactory.createBackground(entityManager, componentManager);
+        entityInfo.uniqueID = background.getId();
         auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         if (sprite) {
             entityInfo.spriteData = *(sprite.value());

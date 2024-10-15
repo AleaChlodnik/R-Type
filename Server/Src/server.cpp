@@ -19,6 +19,8 @@ bool r_type::net::Server::OnClientConnect(
     MessageClient(client, msg);
     msg.header.id = TypeMessage::CreateEntityMessage;
     MessageAllClients(msg, client);
+    msg << InitiateBackground();
+    MessageClient(client, msg);
     // msg >> entity;
     // InitListEntities(client, entity);
     return true;
