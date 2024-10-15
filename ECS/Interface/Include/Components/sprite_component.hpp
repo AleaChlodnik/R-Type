@@ -21,6 +21,6 @@ struct SpriteComponent {
         sprite.setTexture(texture);
         sprite.setPosition(posX, posY);
         sprite.setScale(1.0f, 1.0f);
-        //sprite.setScale(scale);
+        sprite.setOrigin(sprite.getGlobalBounds().width / 2, sprite.getGlobalBounds().height / 2);
     }
 };
