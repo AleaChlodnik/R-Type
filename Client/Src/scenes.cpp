@@ -21,8 +21,8 @@
 Scenes::Scenes(sf::RenderWindow *window)
 {
     this->_window = window;
-    this->currentScene = Scenes::Scene::MAIN_MENU;
-    // this->currentScene = Scenes::Scene::GAME_LOOP; ////// TEMPORARY
+    // this->currentScene = Scenes::Scene::MAIN_MENU;
+    this->currentScene = Scenes::Scene::GAME_LOOP; ////// TEMPORARY
 }
 
 /**
@@ -169,13 +169,6 @@ void Scenes::gameLoop()
 
     /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
     sf::Clock clock;
-    EntityFactory entityFactory;
-    Entity background = entityFactory.createBackground(entityManager, componentManager);
-    sf::Texture &texture =
-        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
-    sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale);
-    componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
     /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
 
     auto updatePlayerPosition = [&](const vf2d &delta) {
@@ -257,6 +250,7 @@ void Scenes::gameLoop()
                     msg >> entity;
                     c.setPlayerId(entity.uniqueID);
                     c.addEntity(entity, componentManager, textureManager);
+
                 } break;
                 case TypeMessage::ServerPing: {
                     std::chrono::system_clock::time_point timeNow =

@@ -17,6 +17,7 @@ Entity EntityFactory::createBackground(
 
     BackgroundComponent backgroundComponent;
     PositionComponent start_position(0, 0);
+    SpriteDataComponent spriteData{SpritePath::Background, {0, 0}, {6913, 3901}, {0, 0}};
     VelocityComponent velocity{200.0f};
     OffsetComponent offset{0};
 
@@ -24,6 +25,7 @@ Entity EntityFactory::createBackground(
     componentManager.addComponent<PositionComponent>(background.getId(), start_position);
     componentManager.addComponent<VelocityComponent>(background.getId(), velocity);
     componentManager.addComponent<OffsetComponent>(background.getId(), offset);
+    componentManager.addComponent<SpriteDataComponent>(background.getId(), spriteData);
 
     return background;
 }
