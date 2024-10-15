@@ -196,6 +196,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         if (bWait)
             m_qMessagesIn.wait();
+        std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
+        std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() << std::endl;
+        _clock = newClock;
 
         size_t nMessageCount = 0;
         while (nMessageCount < nMaxMessages && !m_qMessagesIn.empty()) {
@@ -414,7 +417,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * uint32_t representing the player IDs.
      */
     std::unordered_map<uint32_t, uint32_t> clientPlayerID;
+
     int nbrOfPlayers = 0;
+
+    std::chrono::system_clock::time_point _clock = std::chrono::system_clock::now();
 };
 } // namespace net
 } // namespace r_type
