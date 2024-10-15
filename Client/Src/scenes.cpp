@@ -167,9 +167,7 @@ void Scenes::gameLoop()
 
     sf::Event event;
 
-    /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
-    sf::Clock clock;
-    /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
+    sf::Clock clock; ///////////////////////////////////////////////////// TEMPORARY
 
     auto updatePlayerPosition = [&](const vf2d &delta) {
         r_type::net::Message<TypeMessage> msg;
@@ -191,6 +189,7 @@ void Scenes::gameLoop()
         r_type::net::Message<TypeMessage> msg;
         msg.header.id = TypeMessage::CreateEntityMessage;
         msg << CreatableClientObject::MISSILE << c.getPlayerId();
+        msg << CreatableClientObject::MISSILE << c.getPlayerId();
         c.Send(msg);
     };
 
@@ -202,6 +201,7 @@ void Scenes::gameLoop()
                 std::cout << "Closing window" << std::endl;
                 r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::DestroyEntityMessage;
+                msg << c.getPlayerId();
                 msg << c.getPlayerId();
                 c.Send(msg);
                 _window->close();
@@ -279,6 +279,7 @@ void Scenes::gameLoop()
                     EntityInformation entity;
                     msg >> entity;
                     c.addEntity(entity, componentManager, textureManager);
+                    c.addEntity(entity, componentManager, textureManager);
                 } break;
                 case TypeMessage::CreateEntityResponse: {
                 } break;
@@ -286,6 +287,7 @@ void Scenes::gameLoop()
                     r_type::net::Message<TypeMessage> reponse;
                     uint32_t id;
                     msg >> id;
+                    c.removeEntity(id, componentManager);
                     c.removeEntity(id, componentManager);
                     reponse.header.id = TypeMessage::DestroyEntityResponse;
                     c.Send(reponse);

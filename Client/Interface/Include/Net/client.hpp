@@ -8,6 +8,7 @@
 #pragma once
 
 #include <Net/a_client.hpp>
+#include <Net/a_client.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -46,8 +47,8 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
     {
         sf::Texture &texture =
             textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
-        // sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
-        SpriteComponent sprite(texture, entity.vPos.x, entity.vPos.y, {1.0f, 1.0f});
+        sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
+        SpriteComponent sprite(texture, entity.vPos.x, entity.vPos.y, scale);
         componentManager.addComponent<SpriteComponent>(entity.uniqueID, sprite);
     }
 
