@@ -214,7 +214,7 @@ jobs:
         run: echo "modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
-        if: steps.git-check.outputs.modified == 'true'
+        # if: steps.git-check.outputs.modified == 'true'
         with:
           commit_message: Automated Change
 
