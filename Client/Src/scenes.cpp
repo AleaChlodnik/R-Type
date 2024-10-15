@@ -32,6 +32,7 @@ void Scenes::mainMenu()
     EntityManager entityManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
+    UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
     // Create background
     Entity background = entityFactory.createBackground(entityManager, componentManager);
@@ -77,10 +78,12 @@ void Scenes::mainMenu()
     }
 
     std::vector<Entity *> buttons = {&playButton, &settingsButton, &quitButton};
+
+    sf::Clock clock;
     sf::Event event;
 
     while (_window->isOpen() && this->currentScene == Scenes::Scene::MAIN_MENU) {
-
+        float deltaTime = clock.restart().asSeconds();
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 _window->close();
@@ -104,7 +107,7 @@ void Scenes::mainMenu()
                 }
             }
         }
-
+        updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(componentManager);
     }
 }
