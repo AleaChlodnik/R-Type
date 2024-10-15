@@ -596,13 +596,13 @@ void createKeyBindingButtons(std::vector<Entity *> *buttons, ComponentManager &c
         pos.value()->y = 550;
     }
 
-    Entity bindPauseButton = entityFactory.createSmallButton(
-        entityManager, componentManager, textureManager, "Pause : ", &bindkey);
-    pos = componentManager.getComponent<PositionComponent>(bindPauseButton.getId());
-    if (pos) {
-        pos.value()->x = 1560;
-        pos.value()->y = 750;
-    }
+    // Entity bindPauseButton = entityFactory.createSmallButton(
+    //     entityManager, componentManager, textureManager, "Pause : ", &bindkey);
+    // pos = componentManager.getComponent<PositionComponent>(bindPauseButton.getId());
+    // if (pos) {
+    //     pos.value()->x = 1560;
+    //     pos.value()->y = 750;
+    // }
 
     Entity bindQuitButton = entityFactory.createSmallButton(
         entityManager, componentManager, textureManager, "Quit : ", &bindkey);
@@ -641,7 +641,7 @@ void Scenes::settingsMenu()
     Entity background = entityFactory.createBackground(entityManager, componentManager);
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
-    sf::Vector2f scale(0.4, 0.4);
+    sf::Vector2f scale(1.0, 1.0);
     SpriteComponent spriteComponent(texture, 0, 0, scale);
     componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
 
@@ -705,8 +705,8 @@ void Scenes::settingsMenu()
 
     buttons.push_back(&daltonismModeButton);
     buttons.push_back(&gameModeButton);
-    buttons.push_back(&backButton);
     buttons.push_back(&keyBindsButton);
+    buttons.push_back(&backButton);
 
     if (displayDaltonismChoice)
         createDaltonismChoiceButtons(
