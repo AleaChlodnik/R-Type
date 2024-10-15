@@ -13,8 +13,8 @@ void simpleClient()
 {
     r_type::net::Client c;
     c.Connect("127.0.0.1", 60000);
-    std::cout << "Socket: " << c.getConnection()->getSocket() << std::endl;
-    std::cout << "Endpoint: " << c.getConnection()->getEndpoint() << std::endl;
+    // std::cout << "Socket: " << c.getConnection()->getSocket() << std::endl;
+    // std::cout << "Endpoint: " << c.getConnection()->getEndpoint() << std::endl;
     sf::RenderWindow window(sf::VideoMode(800, 600), "Preferences");
     sf::Event event;
     auto updatePlayerPosition = [&](const vf2d &delta) {
