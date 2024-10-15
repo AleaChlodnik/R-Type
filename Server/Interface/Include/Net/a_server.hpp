@@ -210,14 +210,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
     void UpdateEntityPosition(r_type::net::Message<T> &msg, uint32_t clientId)
     {
-        std::cout << "UpdateEntityPosition" << std::endl;
-        std::cout << "clientId: " << clientId << std::endl;
         uint32_t entityId = GetClientEntityId(clientId);
         EntityInformation entity;
         vf2d entityPosition;
         auto entitySprite = componentManager.getComponent<SpriteDataComponent>(entityId);
         msg >> entityPosition;
-        std::cout << "position: " << entityPosition.x << " " << entityPosition.y << std::endl;
         entity.uniqueID = entityId;
         entity.vPos = entityPosition;
         entity.spriteData = *entitySprite.value();
@@ -265,7 +262,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.spriteData = *(sprite.value());
         }
         clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
-        std::cout << "clientPlayerID: " << nIDCounter << " " << entityInfo.uniqueID << std::endl;
         return entityInfo;
     }
 
@@ -295,7 +291,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         if (sprite) {
             entityInfo.spriteData = *(sprite.value());
         }
-        std::cout << "background: " << entityInfo.uniqueID << std::endl;
         return entityInfo;
     }
 
@@ -337,7 +332,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         const std::vector<Entity> entities = entityManager.getAllEntities();
 
         for (const auto &entity : entities) {
-            if (entity.getId() != desc.uniqueID) {
+            if (entity.getId() != desc.uniqueID && entity.getId() != background.uniqueID) {
                 auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
                 auto playerHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
                 if (playerPos) {
