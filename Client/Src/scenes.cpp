@@ -253,7 +253,8 @@ void Scenes::gameLoop()
                               << entity.spriteData.offSet.x << " " << entity.spriteData.offSet.y
                               << " " << entity.spriteData.dimension.x << " "
                               << entity.spriteData.dimension.y << " " << entity.spriteData.scale.x
-                              << " " << entity.spriteData.scale.y */<< std::endl;
+                              << " " << entity.spriteData.scale.y */
+                              << std::endl;
                     c.setPlayerId(entity.uniqueID);
                     c.addEntity(entity, componentManager, textureManager);
                 } break;
