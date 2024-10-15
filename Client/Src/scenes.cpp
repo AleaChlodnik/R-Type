@@ -465,62 +465,63 @@ sf::Keyboard::Key waitForKey(sf::RenderWindow *_window)
 void createKeyBindingButtons(std::vector<Entity *> bindButtons, ComponentManager &componentManager,
     EntityManager &entityManager, TextureManager &textureManager, EntityFactory &entityFactory)
 {
-    std::function<Scenes *(Scenes *, Scenes::Actions)> bindkey = [](Scenes *currentScene, Scenes::Actions action) {
+    std::function<Scenes *(Scenes *, Scenes::Actions)> bindkey = [](Scenes *currentScene,
+                                                                     Scenes::Actions action) {
         sf::Keyboard::Key key = waitForKey(currentScene->getRenderWindow());
         currentScene->keyBinds[action] = key;
         return currentScene;
     };
 
-    Entity bindUpButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Up : ", &bindkey);
+    Entity bindUpButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Up : ", &bindkey);
     auto pos = componentManager.getComponent<PositionComponent>(bindUpButton.getId());
     if (pos) {
         pos.value()->x = 1560;
         pos.value()->y = 100;
     }
 
-    Entity bindDownButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Down : ", &bindkey);
+    Entity bindDownButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Down : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindDownButton.getId());
     if (pos) {
         pos.value()->x = 1260;
         pos.value()->y = 250;
     }
 
-    Entity bindLeftButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Left : ", &bindkey);
+    Entity bindLeftButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Left : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindLeftButton.getId());
     if (pos) {
         pos.value()->x = 1560;
         pos.value()->y = 550;
     }
 
-    Entity bindRightButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Right : ", &bindkey);
+    Entity bindRightButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Right : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindRightButton.getId());
     if (pos) {
         pos.value()->x = 1260;
         pos.value()->y = 550;
     }
 
-    Entity bindFireButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Fire : ", &bindkey);
+    Entity bindFireButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Fire : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindFireButton.getId());
     if (pos) {
         pos.value()->x = 1760;
         pos.value()->y = 550;
     }
 
-    Entity bindPauseButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Pause : ", &bindkey);
+    Entity bindPauseButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Pause : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindPauseButton.getId());
     if (pos) {
         pos.value()->x = 1560;
         pos.value()->y = 750;
     }
 
-    Entity bindQuitButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Quit : ", &bindkey);
+    Entity bindQuitButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Quit : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindQuitButton.getId());
     if (pos) {
         pos.value()->x = 1560;
