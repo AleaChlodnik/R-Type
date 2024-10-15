@@ -264,8 +264,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         return entityInfo;
     }
 
-    uint32_t GetClientEntityId(uint32_t id) { return clientPlayerID.at(id); }
-
     EntityInformation InitiateMissile(int clientId)
     {
         EntityInformation entityInfo;
