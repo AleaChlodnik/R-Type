@@ -22,7 +22,7 @@ bool r_type::net::Server::OnClientConnect(
     MessageClient(client, msg);
     EntityInformation entity;
     InitListEntities(client, GetClientEntityId(client.get()->GetID()));
-        const std::vector<Entity> entities = entityManager.getAllEntities();
+    const std::vector<Entity> entities = entityManager.getAllEntities();
 
     // msg >> entity;
     // InitListEntities(client, entity);
