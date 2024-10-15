@@ -17,7 +17,7 @@ Entity EntityFactory::createBackground(
 
     BackgroundComponent backgroundComponent;
     PositionComponent start_position(0, 0);
-    SpriteDataComponent spriteData{SpritePath::Background, {0, 0}, {6913, 3901}, {0, 0}};
+    SpriteDataComponent spriteData{SpritePath::Background, {0, 0}, {6913, 3901}, {0.6f, 0.6f}};
     VelocityComponent velocity{200.0f};
     OffsetComponent offset{0};
 
@@ -38,7 +38,7 @@ Entity EntityFactory::createPlayer(
     PlayerComponent playerComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {0, 0}};
+    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.3f, 1.3f}};
     HitboxComponent hitbox{(float)spriteData.dimension.x, (float)spriteData.dimension.y};
     HealthComponent health{100, 100};
     InputComponent input{InputType::NONE};
@@ -60,7 +60,7 @@ Entity EntityFactory::createAlly(EntityManager &entityManager, ComponentManager 
     AllyComponent allyComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {0, 0}};
+    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.3f, 1.3f}};
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
     HealthComponent health{100, 100};
 
@@ -81,7 +81,7 @@ Entity EntityFactory::createBasicEnemy(
     EnemyComponent enemyComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Enemy1, {0, 0}, {80, 160}, {0, 0}};
+    SpriteDataComponent spriteData{SpritePath::Enemy1, {0, 0}, {80, 160}, {0.5f, 0.5f}};
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
     HealthComponent health{100, 100};
 
@@ -103,7 +103,7 @@ Entity EntityFactory::createBasicMonster(
     BasicMonsterComponent monsterComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {272, 224}, {0, 0}};
+    SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {272, 224}, {0.25f, 0.25f}};
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
     HealthComponent health{100, 100};
 
@@ -128,7 +128,7 @@ Entity EntityFactory::createPlayerMissile(
     PositionComponent startPosition(
         playerPosition.value()->x + 105, playerPosition.value()->y + 49);
     VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {0, 0}};
+    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {0.1f, 0.1f}};
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
 
     componentManager.addComponent<PlayerMissileComponent>(
@@ -148,7 +148,7 @@ Entity EntityFactory::createAllyMissile(
     AllyMissileComponent allyMissileComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {0, 0}};
+    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {0.1f, 0.1f}};
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
 
     componentManager.addComponent<AllyMissileComponent>(allyMissile.getId(), allyMissileComponent);
@@ -167,7 +167,7 @@ Entity EntityFactory::createEnemyMissile(
     EnemyMissileComponent enemyMissileComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {0, 0}};
+    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {0.1f, 0.1f}};
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
 
     componentManager.addComponent<EnemyMissileComponent>(
