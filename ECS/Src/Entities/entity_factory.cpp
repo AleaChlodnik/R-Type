@@ -95,9 +95,9 @@ Entity EntityFactory::createBasicMonster(EntityManager &entityManager,
 
     BasicMonsterComponent monsterComponent;
     PositionComponent startPosition(0, 0);
-    VelocityComponent velocity(100.0f);
+    VelocityComponent velocity{100.0f};
     HitboxComponent hitbox{startPosition.x, startPosition.y, scale.x, scale.y};
-    HealthComponent health(100, 100);
+    HealthComponent health{100, 100};
 
     componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
     componentManager.addComponent<PositionComponent>(monster.getId(), startPosition);
