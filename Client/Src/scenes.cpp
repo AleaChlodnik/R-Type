@@ -195,7 +195,8 @@ void Scenes::gameLoop()
     };
 
     while (_window->isOpen()) {
-        float deltaTime = clock.restart().asSeconds(); /////////////////////////////////////// TEMPORARY
+        float deltaTime =
+            clock.restart().asSeconds(); /////////////////////////////////////// TEMPORARY
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 std::cout << "Closing window" << std::endl;
@@ -241,7 +242,8 @@ void Scenes::gameLoop()
             }
         }
         if (c.IsConnected()) {
-            //std::cout << "Connected to Server" << std::endl; /////////////////////////////////////
+            // std::cout << "Connected to Server" << std::endl;
+            // /////////////////////////////////////
             if (!c.Incoming().empty()) {
                 auto msg = c.Incoming().pop_front().msg;
                 switch (msg.header.id) {

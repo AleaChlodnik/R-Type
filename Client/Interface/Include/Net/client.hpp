@@ -44,7 +44,8 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
     void addEntity(EntityInformation entity, ComponentManager &componentManager,
         TextureManager &textureManager)
     {
-        sf::Texture &texture = textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
+        sf::Texture &texture =
+            textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
         // sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
         SpriteComponent sprite(texture, entity.vPos.x, entity.vPos.y, {1.0f, 1.0f});
         componentManager.addComponent<SpriteComponent>(entity.uniqueID, sprite);
