@@ -79,6 +79,10 @@ if(DOXYGEN_FOUND)
         ${CMAKE_COMMAND} -E copy
         ${CMAKE_CURRENT_SOURCE_DIR}/doc_doxygen/latex/refman.pdf
         ${CMAKE_CURRENT_SOURCE_DIR}/Docs
+        COMMAND
+        ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/doc_doxygen/html
+        ${CMAKE_CURRENT_SOURCE_DIR}/Docs
       COMMENT
         "Building PDF documentation with LaTeX and copying to doc directory")
   else()
