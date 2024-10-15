@@ -179,7 +179,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             } else {
                 OnClientDisconnect(client);
                 client.reset();
-
                 bInvalidClientExists = true;
             }
         }
@@ -201,10 +200,21 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         if (bWait)
             m_qMessagesIn.wait();
         std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
-        std::cout
-            << "Time: "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
-            << std::endl;
+        // std::cout
+        //     << "Time: "
+        //     << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
+        //     << std::endl;
+        while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
+            100) {
+
+            const std::vector<Entity> entities = entityManager.getAllEntities();
+            for (const auto &entity : entities) {
+                if (entity.getId() != entityID && entity.getId() != 1) {
+                    }
+                }
+            }
+            newClock -= std::chrono::milliseconds(100);
+        }
         _clock = newClock;
 
         size_t nMessageCount = 0;
