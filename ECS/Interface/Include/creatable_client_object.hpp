@@ -10,6 +10,6 @@
 #include <cstdint>
 
 enum class CreatableClientObject : uint32_t {
-    BULLET,
+    MISSILE,
     NONE
 };

@@ -128,6 +128,17 @@ void Scenes::gameLoop()
 
     sf::Event event;
 
+    /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
+    EntityFactory entityFactory;
+    sf::Clock clock;
+    Entity background = entityFactory.createBackground(entityManager, componentManager);
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Vector2f scale(1.0, 1.0);
+    SpriteComponent spriteComponent(texture, 0, 0, scale);
+    componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
+    /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
+
     auto updatePlayerPosition = [&](const vf2d &delta) {
         EntityInformation desc = c.GetAPlayer(c.GetEntityID());
         r_type::net::Message<TypeMessage> msg;
@@ -141,11 +152,13 @@ void Scenes::gameLoop()
     auto fireMissile = [&]() {
         r_type::net::Message<TypeMessage> msg;
         msg.header.id = TypeMessage::CreateEntityMessage;
-        msg << CreatableClientObject::BULLET;
+        msg << CreatableClientObject::MISSILE;
         c.Send(msg);
     };
 
     while (_window->isOpen()) {
+        float deltaTime =
+            clock.restart().asSeconds(); /////////////////////////////////////// TEMPORARY
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 r_type::net::Message<TypeMessage> msg;
