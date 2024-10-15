@@ -33,8 +33,7 @@ void Scenes::mainMenu()
     EntityFactory entityFactory;
     RenderSystem renderSystem(*_window);
     // Create all the necessary entities
-    Entity background =
-        entityFactory.createBackground(entityManager, componentManager);
+    Entity background = entityFactory.createBackground(entityManager, componentManager);
     // Create the buttons
     std::function<Scenes *(Scenes *)> onPlayButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);

@@ -10,8 +10,7 @@
 #include <cstdint>
 #include <string>
 
-template<typename T>
-struct Vector {
+template <typename T> struct Vector {
     T x;
     T y;
 };
