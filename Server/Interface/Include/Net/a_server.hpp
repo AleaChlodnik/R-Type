@@ -280,9 +280,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
         for (const auto &player : entities) {
             if (player.getId() != desc.uniqueID) {
-                PositionComponent playerPos =
+                auto playerPos =
                     componentManager.getComponent<PositionComponent>(player.getID());
-                HitboxComponent playerHitbox =
+                auto playerHitbox =
                     componentManager.getComponent<HitboxComponent>(player.getID());
                 if (playerPos) {
                     descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
@@ -350,6 +350,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     ComponentManager componentManager;
     EntityManager entityManager;
     EntityFactory entityFactory;
+    undordered_map<uint32_t, uint32_t> entities_sh;
 };
 } // namespace net
 } // namespace r_type
