@@ -60,9 +60,12 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
     {
         if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
             auto &sprites = **spritesOpt;
-            auto entitySprite = sprites[entity.uniqueID];
-            auto spriteComponent = std::any_cast<SpriteComponent>(&entitySprite);
-            spriteComponent->sprite.setPosition(entity.vPos.x, entity.vPos.y);
+            auto entitySpriteIt = sprites.find(entity.uniqueID);
+            if (entitySpriteIt != sprites.end()) {
+                auto &spriteComponent = entitySpriteIt->second;
+                if (auto entitySprite = std::any_cast<SpriteComponent>(&spriteComponent))
+                    entitySprite->sprite.setPosition(entity.vPos.x, entity.vPos.y);
+            }
         }
     }
 };
