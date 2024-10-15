@@ -16,6 +16,7 @@
 #include <r_type_client.hpp>
 #include <scenes.hpp>
 #include <texture_manager.hpp>
+#include <creatable_client_object.hpp>
 
 Scenes::Scenes(sf::RenderWindow *window)
 {
@@ -138,9 +139,8 @@ void Scenes::gameLoop()
     };
 
     auto fireMissile = [&]() { r_type::net::Message<TypeMessage> msg;
-        std::string object = "missile";
         msg.header.id = TypeMessage::CreateEntityMessage;
-        msg << object;
+        msg << CreatableClientObject::BULLET;
         c.Send(msg);
      };
 

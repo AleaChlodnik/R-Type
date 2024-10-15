@@ -228,7 +228,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      *
      * @param msg
      */
-
     void InitiatePlayers(r_type::net::Message<T> &msg, int id)
     {
         Entity player = entityFactory.createPlayer(entityManager, componentManager);
