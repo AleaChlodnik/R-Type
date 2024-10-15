@@ -13,13 +13,12 @@ bool r_type::net::Server::OnClientConnect(
     r_type::net::Message<TypeMessage> msg;
     EntityInformation entity;
     msg.header.id = TypeMessage::ServerAccept;
-    InitiatePlayers(msg);
-    nbr_of_player++;
+    InitiatePlayers(msg, (client->GetID() - 1000));
     MessageClient(client, msg);
     msg.header.id = TypeMessage::CreateEntityMessage;
     MessageAllClients(msg, client);
-    msg >> entity;
-    InitListEntities(client, entity);
+    // msg >> entity;
+    // InitListEntities(client, entity);
     return true;
 }
 

@@ -8,6 +8,7 @@
 #include <Net/client.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <entity_struct.hpp>
 
 void simpleClient()
 {
@@ -51,16 +52,16 @@ void simpleClient()
                     c.MessageAll();
                 } break;
                 case sf::Keyboard::Up: {
-                    updatePlayerPosition(vf2d(0, -5));
+                    updatePlayerPosition({0, -5});
                 } break;
                 case sf::Keyboard::Down: {
-                    updatePlayerPosition(vf2d(0, 5));
+                    updatePlayerPosition({0, 5});
                 } break;
                 case sf::Keyboard::Left: {
-                    updatePlayerPosition(vf2d(-5, 0));
+                    updatePlayerPosition({-5, 0});
                 } break;
                 case sf::Keyboard::Right: {
-                    updatePlayerPosition(vf2d(5, 0));
+                    updatePlayerPosition({5, 0});
                 } break;
                 default:
                     break;
@@ -130,7 +131,7 @@ void simpleClient()
 
         window.clear();
         for (const auto &player : c.GetPlayers()) {
-            sf::RectangleShape carre({player.second.hitbox.width, player.second.hitbox.height});
+            sf::RectangleShape carre({player.second.spriteData.dimension.x, player.second.spriteData.dimension.y});
             carre.setPosition(player.second.vPos.x, player.second.vPos.y);
             carre.setFillColor(sf::Color::White);
             window.draw(carre);

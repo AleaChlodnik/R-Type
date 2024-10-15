@@ -7,6 +7,10 @@
 
 #pragma once
 
+#include <Components/component_manager.hpp>
+#include <Components/components.hpp>
+#include <Entities/entity_factory.hpp>
+#include <Entities/entity_manager.hpp>
 #include <Net/i_server.hpp>
 #include <cmath>
 #include <entity_struct.hpp>
@@ -30,6 +34,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         : r_type::net::IServer<T>(),
           m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
     {
+        entityManager = EntityManager();
+        entityFactory = EntityFactory();
+        componentManager = ComponentManager();
     }
 
     /**
@@ -202,25 +209,17 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
     void UpdateEntity(EntityInformation desc)
     {
-        if (Entities.find(desc.uniqueID) == Entities.end())
-            PushEntity(desc);
-        Entities[desc.uniqueID] = desc;
+        // if (Entities.find(desc.uniqueID) == Entities.end())
+        //     PushEntity(desc);
+        // Entities[desc.uniqueID] = desc;
     }
-
-    /**
-     * @brief push entity on a undordered map
-     *
-     * @param desc
-     */
-
-    void PushEntity(EntityInformation desc) { Entities.insert_or_assign(desc.uniqueID, desc); }
 
     /**
      * @brief remove entity from a undordered map
      *
      * @param id
      */
-    void RemoveEntity(uint32_t id) { Entities.erase(id); }
+    void RemoveEntity(uint32_t id) { /*Entities.erase(id);*/ }
 
     /**
      * @brief init player
@@ -228,17 +227,26 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param msg
      */
 
-    void InitiatePlayers(r_type::net::Message<T> &msg)
+    void InitiatePlayers(r_type::net::Message<T> &msg, int id)
     {
+        Entity player = entityFactory.createPlayer(entityManager, componentManager);
         EntityInformation desc;
-        desc.uniqueID = getNbrPlayer();
-        desc.hitbox = {10, 10};
+        desc.uniqueID = id;
         desc.vPos = {100, static_cast<float>(rand() % 600)};
         while (CheckPlayerPosition(desc) == false) {
             desc.vPos = {100, static_cast<float>(rand() % 600)};
         }
+        player._id = desc.uniqueID;
+        auto playerPos = componentManager.getComponent<PositionComponent>(player._id);
+        if (playerPos) {
+            playerPos.value()->x = desc.vPos.x;
+            playerPos.value()->y = desc.vPos.y;
+        }
+        auto playerSprite = componentManager.getComponent<SpriteComponent>(player._id);
+        if (playerSprite) {
+            playerSprite.value()->sprite = desc.spriteData.spritePath;
+        }
         msg << desc;
-        PushEntity(desc);
     }
 
     /**
@@ -249,14 +257,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     void InitListEntities(
         std::shared_ptr<r_type::net::Connection<T>> client, EntityInformation desc)
     {
-        r_type::net::Message<T> msgAddPlayer;
-        msgAddPlayer.header.id = T::CreateEntityMessage;
-        for (const auto &player : Entities) {
-            if (player.first != desc.uniqueID) {
-                msgAddPlayer << player.second;
-                MessageClient(client, msgAddPlayer);
-            }
-        }
+        // r_type::net::Message<T> msgAddPlayer;
+        // msgAddPlayer.header.id = T::CreateEntityMessage;
+        // for (const auto &player : Entities) {
+        //     if (player.first != desc.uniqueID) {
+        //         msgAddPlayer << player.second;
+        //         MessageClient(client, msgAddPlayer);
+        //     }
+        // }
     }
 
     /**
@@ -281,8 +289,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
         return true;
     }
-
-    int getNbrPlayer() { return nbr_of_player; }
 
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) {}
 
@@ -325,7 +331,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     std::array<uint8_t, 1024> m_tempBuffer;
 
     uint32_t nIDCounter = 10000;
-    int nbr_of_player = 0;
+
     ComponentManager componentManager;
     EntityManager entityManager;
     EntityFactory entityFactory;
