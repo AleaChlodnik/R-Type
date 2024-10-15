@@ -295,8 +295,6 @@ void Scenes::gameLoop()
                     reponse.header.id = TypeMessage::UpdateEntityResponse;
                     EntityInformation entity;
                     msg >> entity;
-                    std::cout << "Updating Entity: " << entity.uniqueID << "position ["
-                              << entity.vPos.x << ", " << entity.vPos.y << "]" << std::endl;
                     c.updateEntity(entity, componentManager);
                 } break;
                 case TypeMessage::UpdateEntityResponse: {
