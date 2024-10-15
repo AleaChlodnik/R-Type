@@ -102,7 +102,7 @@ jobs:
   #       run: cmake --build build -- /maxcpucount:4
 
   push_to_mirror:
-    needs: [linux_install, windows_install]
+    needs: [linux_install]
     runs-on: ubuntu-latest
     if: github.repository == 'Tom-Mendy/R-Type'
     steps:
