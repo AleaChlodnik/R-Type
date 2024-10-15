@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** R-Type
 ** File description:
-** sprite
+** spriteData
 */
 
 #pragma once
@@ -10,12 +10,17 @@
 #include <cstdint>
 #include <string>
 
+template<typename T>
+struct Vector {
+    T x;
+    T y;
+};
+
 typedef struct SpriteData_s {
     std::string spritePath;
-    std::uint32_t offSetX;
-    std::uint32_t offSetY;
-    std::uint32_t height;
-    std::uint32_t width;
+    Vector<uint32_t> offSet;
+    Vector<uint32_t> dimension;
+    Vector<float> scale;
 } SpriteData_t;
 
 enum class SpriteType : uint32_t

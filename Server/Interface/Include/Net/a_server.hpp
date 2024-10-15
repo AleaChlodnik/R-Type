@@ -12,6 +12,7 @@
 #include <entity_struct.hpp>
 #include <unordered_map>
 
+
 namespace r_type {
 namespace net {
 /**
@@ -325,8 +326,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     std::array<uint8_t, 1024> m_tempBuffer;
 
     uint32_t nIDCounter = 10000;
-    std::unordered_map<uint32_t, EntityInformation> Entities;
     int nbr_of_player = 0;
+    ComponentManager componentManager;
+    EntityManager entityManager;
+    EntityFactory entityFactory;
 };
 } // namespace net
 } // namespace r_type
