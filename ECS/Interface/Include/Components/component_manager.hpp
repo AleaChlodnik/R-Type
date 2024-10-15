@@ -79,7 +79,7 @@ class ComponentManager {
     }
 
     template <typename ComponentType>
-    void removeComponent(int entityId)
+    void removeEntityFromComponent(int entityId)
     {
         auto it = components.find(typeid(ComponentType));
         if (it != components.end()) {

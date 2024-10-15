@@ -195,7 +195,7 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
     PositionComponent pos(0, 0);
     TextComponent textComponent(text);
     OnClickComponent onClickfunction(*onClick);
-    SpriteComponent sprite(texture, pos.x, pos.y, dimension, {0, 0});
+    SpriteComponent sprite(texture, pos.x, pos.y, dimension);
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
     componentManager.addComponent<OnClickComponent>(button.getId(), onClickfunction);

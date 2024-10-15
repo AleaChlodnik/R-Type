@@ -174,7 +174,7 @@ void Scenes::gameLoop()
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale, {0, 0});
+    SpriteComponent spriteComponent(texture, 0, 0, scale);
     componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
     /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
 
