@@ -209,16 +209,17 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
     void UpdateEntityPosition(r_type::net::Message<T> &msg, uint32_t clientId)
     {
+        std::cout << "UpdateEntityPosition" << std::endl;
+        std::cout << "clientId: " << clientId << std::endl;
         uint32_t entityId = GetClientEntityId(clientId);
         EntityInformation entity;
         vf2d entityPosition;
         auto entitySprite = componentManager.getComponent<SpriteDataComponent>(entityId);
-        std::cout << "UpdateEntityPosition" << std::endl;
         msg >> entityPosition;
+        std::cout << "position: " << entityPosition.x << " " << entityPosition.y << std::endl;
         entity.uniqueID = entityId;
         entity.vPos = entityPosition;
         entity.spriteData = *entitySprite.value();
-        std::cout << "position: " << entityPosition.x << " " << entityPosition.y << std::endl;
 
         if (CheckPlayerPosition(entity)) {
             auto position = componentManager.getComponent<PositionComponent>(entityId);
@@ -233,7 +234,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
     }
 
-    uint32_t GetClientEntityId(uint32_t id) { return clientPlayerID.at(id); }
+    uint32_t GetClientEntityId(uint32_t id) { return clientPlayerID[id]; }
 
     void RemovePlayer(uint32_t id) { clientPlayerID.erase(id); }
     void RemoveEntities(uint32_t id) { entityManager.removeEntity(id); }
@@ -262,7 +263,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 sprite.value()->spritePath = SpritePath::Ship4;
             entityInfo.spriteData = *(sprite.value());
         }
-        clientPlayerID.insert_or_assign(clientId, entityInfo.uniqueID);
+        clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
         return entityInfo;
     }
 
@@ -283,17 +284,17 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         return entityInfo;
     }
 
-    EntityInformation InitiateBackground()
-    {
-        EntityInformation entityInfo;
-        Entity background = entityFactory.createBackground(entityManager, componentManager);
-        entityInfo.uniqueID = background.getId();
-        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
-        if (sprite) {
-            entityInfo.spriteData = *(sprite.value());
-        }
-        return entityInfo;
-    }
+    // EntityInformation InitiateBackground()
+    // {
+    //     EntityInformation entityInfo;
+    //     Entity background = entityFactory.createBackground(entityManager, componentManager);
+    //     entityInfo.uniqueID = background.getId();
+    //     auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+    //     if (sprite) {
+    //         entityInfo.spriteData = *(sprite.value());
+    //     }
+    //     return entityInfo;
+    // }
 
     void InitListEntities(
         std::shared_ptr<r_type::net::Connection<T>> client, EntityInformation desc)
