@@ -99,12 +99,12 @@ template <typename T> class AClient : virtual public IClient<T> {
      *
      * @param id
      */
-    void RemoveEntity(uint32_t id) {
-        Entities.erase(id);
-    }
+    void RemoveEntity(uint32_t id) { Entities.erase(id); }
 
     /**
-     * @brief This function updates the information of an entity. If the entity does not exist in the collection of entities, it will be added. Otherwise, the existing entity will be updated with the new information.
+     * @brief This function updates the information of an entity. If the entity does not exist in
+     * the collection of entities, it will be added. Otherwise, the existing entity will be updated
+     * with the new information.
      *
      * @param entity The entity information to be updated.
      */

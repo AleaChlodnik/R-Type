@@ -20,7 +20,7 @@ template <typename T> class IClient {
     virtual ~IClient() {}
 
   public:
-        /**
+    /**
      * @brief Connects to a remote host using UDP protocol.
      *
      * @param host The IP address or hostname of the remote host.
