@@ -120,7 +120,9 @@ void Scenes::gameLoop()
 
     ComponentManager componentManager;
     TextureManager textureManager;
+    EntityManager entityManager;
 
+    UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
 
     sf::Event event;
@@ -241,7 +243,7 @@ void Scenes::gameLoop()
             _window->close();
             break;
         }
-
+        updateSystem.update(entityManager, componentManager, 0.0f);
         renderSystem.render(componentManager);
     }
 }
