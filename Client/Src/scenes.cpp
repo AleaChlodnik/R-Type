@@ -41,7 +41,7 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
             for (auto button : buttons) {
                 auto posComp = componentManager.getComponent<PositionComponent>(button->getId());
                 auto sprite = componentManager.getComponent<SpriteComponent>(button->getId());
-                if (sprite)
+                if (sprite) {
                     if (posComp && sprite) {
                         sf::Vector2u spriteSize = sprite.value()->sprite.getTexture()->getSize();
                         if (pos.x >= posComp.value()->x &&
@@ -65,6 +65,7 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
                             }
                         }
                     }
+                }
             }
         }
     }
@@ -174,11 +175,13 @@ void Scenes::gameLoop()
                 _window->close();
             }
             if (event.type == sf::Event::KeyPressed) {
-                switch (event.key.code) {
-                case sf::Keyboard::P: {
+                if (event.key.code == sf::Keyboard::P) {
                     c.PingServer();
-                } break;
-                case sf::Keyboard::Space: {
+                }
+                if (event.key.code == sf::Keyboard::V) {
+                    c.MessageAll();
+                }
+                if (event.key.code == keyBinds[Actions::FIRE]) {
                     EntityInformation desc = c.GetAPlayer(c.GetEntityID());
                     r_type::net::Message<TypeMessage> msg;
                     desc.vPos.x += 50;
@@ -186,27 +189,24 @@ void Scenes::gameLoop()
                     msg.header.id = TypeMessage::CreateEntityMessage;
                     msg << desc;
                     c.Send(msg);
-                } break;
-                case sf::Keyboard::Q: {
+                }
+                if (event.key.code == keyBinds[Actions::QUIT]) {
                     _window->close();
-                } break;
-                case sf::Keyboard::V: {
-                    c.MessageAll();
-                } break;
-                case sf::Keyboard::Up: {
+                }
+                if (event.key.code == keyBinds[Actions::UP]) {
                     updatePlayerPosition(vf2d{0, -5});
-                } break;
-                case sf::Keyboard::Down: {
+                }
+                if (event.key.code == keyBinds[Actions::DOWN]) {
                     updatePlayerPosition(vf2d{0, 5});
-                } break;
-                case sf::Keyboard::Left: {
+                }
+                if (event.key.code == keyBinds[Actions::LEFT]) {
                     updatePlayerPosition(vf2d{-5, 0});
-                } break;
-                case sf::Keyboard::Right: {
+                }
+                if (event.key.code == keyBinds[Actions::RIGHT]) {
                     updatePlayerPosition(vf2d{5, 0});
-                } break;
-                default:
-                    break;
+                }
+                if (event.key.code == keyBinds[Actions::PAUSE]) {
+                    this->setScene(Scenes::Scene::IN_GAME_MENU);
                 }
             }
         }
@@ -348,7 +348,7 @@ void Scenes::inGameMenu()
     }
 }
 
-void createDaltonismChoiceButtons(std::vector<Entity *> buttons,
+void createDaltonismChoiceButtons(std::vector<Entity *> *buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
     TextureManager &textureManager, EntityFactory &entityFactory)
 {
@@ -400,14 +400,15 @@ void createDaltonismChoiceButtons(std::vector<Entity *> buttons,
         pos.value()->y = 550;
     }
 
-    buttons.push_back(&normalButton);
-    buttons.push_back(&tritanopiaButton);
-    buttons.push_back(&deuteranopiaButton);
-    buttons.push_back(&protanopiaButton);
+    buttons->push_back(&normalButton);
+    buttons->push_back(&tritanopiaButton);
+    buttons->push_back(&deuteranopiaButton);
+    buttons->push_back(&protanopiaButton);
 }
 
-void createGameModeChoiceButtons(std::vector<Entity *> buttons, ComponentManager &componentManager,
-    EntityManager &entityManager, TextureManager &textureManager, EntityFactory &entityFactory)
+void createGameModeChoiceButtons(std::vector<Entity *> *buttons,
+    ComponentManager &componentManager, EntityManager &entityManager,
+    TextureManager &textureManager, EntityFactory &entityFactory)
 {
     std::function<Scenes *(Scenes *)> easyButtonClicked = [](Scenes *currentScene) {
         currentScene->setGameMode(Scenes::GameMode::EASY);
@@ -445,13 +446,14 @@ void createGameModeChoiceButtons(std::vector<Entity *> buttons, ComponentManager
         pos.value()->y = 550;
     }
 
-    buttons.push_back(&easyButton);
-    buttons.push_back(&mediumButton);
-    buttons.push_back(&hardButton);
+    buttons->push_back(&easyButton);
+    buttons->push_back(&mediumButton);
+    buttons->push_back(&hardButton);
 }
 
 sf::Keyboard::Key waitForKey(sf::RenderWindow *_window)
 {
+    std::cout << "Waiting for key" << std::endl;
     sf::Event event;
     while (true) {
         while (_window->pollEvent(event)) {
@@ -462,78 +464,80 @@ sf::Keyboard::Key waitForKey(sf::RenderWindow *_window)
     }
 }
 
-void createKeyBindingButtons(std::vector<Entity *> bindButtons, ComponentManager &componentManager,
+void createKeyBindingButtons(std::vector<Entity *> *buttons, ComponentManager &componentManager,
     EntityManager &entityManager, TextureManager &textureManager, EntityFactory &entityFactory)
 {
-    std::function<Scenes *(Scenes *, Scenes::Actions)> bindkey = [](Scenes *currentScene, Scenes::Actions action) {
+    std::function<Scenes *(Scenes *, Scenes::Actions)> bindkey = [](Scenes *currentScene,
+                                                                     Scenes::Actions action) {
         sf::Keyboard::Key key = waitForKey(currentScene->getRenderWindow());
         currentScene->keyBinds[action] = key;
+        std::cout << currentScene->keyBinds[action] << "ton pere" << std::endl;
         return currentScene;
     };
 
-    Entity bindUpButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Up : ", &bindkey);
+    Entity bindUpButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Up : ", &bindkey);
     auto pos = componentManager.getComponent<PositionComponent>(bindUpButton.getId());
     if (pos) {
-        pos.value()->x = 1560;
+        pos.value()->x = 1450;
         pos.value()->y = 100;
     }
 
-    Entity bindDownButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Down : ", &bindkey);
+    Entity bindDownButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Down : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindDownButton.getId());
     if (pos) {
-        pos.value()->x = 1260;
+        pos.value()->x = 1450;
         pos.value()->y = 250;
     }
 
-    Entity bindLeftButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Left : ", &bindkey);
+    Entity bindLeftButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Left : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindLeftButton.getId());
     if (pos) {
-        pos.value()->x = 1560;
-        pos.value()->y = 550;
+        pos.value()->x = 1200;
+        pos.value()->y = 250;
     }
 
-    Entity bindRightButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Right : ", &bindkey);
+    Entity bindRightButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Right : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindRightButton.getId());
     if (pos) {
-        pos.value()->x = 1260;
-        pos.value()->y = 550;
+        pos.value()->x = 1700;
+        pos.value()->y = 250;
     }
 
-    Entity bindFireButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Fire : ", &bindkey);
+    Entity bindFireButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Fire : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindFireButton.getId());
     if (pos) {
-        pos.value()->x = 1760;
+        pos.value()->x = 1450;
+        pos.value()->y = 400;
+    }
+
+    Entity bindPauseButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Pause : ", &bindkey);
+    pos = componentManager.getComponent<PositionComponent>(bindPauseButton.getId());
+    if (pos) {
+        pos.value()->x = 1450;
         pos.value()->y = 550;
     }
 
-    Entity bindPauseButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Pause : ", &bindkey);
-    pos = componentManager.getComponent<PositionComponent>(bindPauseButton.getId());
-    if (pos) {
-        pos.value()->x = 1560;
-        pos.value()->y = 750;
-    }
-
-    Entity bindQuitButton = entityFactory.createSmallButton(entityManager, componentManager,
-        textureManager, "Quit : ", &bindkey);
+    Entity bindQuitButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Quit : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindQuitButton.getId());
     if (pos) {
-        pos.value()->x = 1560;
-        pos.value()->y = 900;
+        pos.value()->x = 1450;
+        pos.value()->y = 700;
     }
 
-    bindButtons.push_back(&bindUpButton);
-    bindButtons.push_back(&bindDownButton);
-    bindButtons.push_back(&bindLeftButton);
-    bindButtons.push_back(&bindRightButton);
-    bindButtons.push_back(&bindFireButton);
-    bindButtons.push_back(&bindPauseButton);
-    bindButtons.push_back(&bindQuitButton);
+    buttons->push_back(&bindUpButton);
+    buttons->push_back(&bindDownButton);
+    buttons->push_back(&bindLeftButton);
+    buttons->push_back(&bindRightButton);
+    buttons->push_back(&bindFireButton);
+    buttons->push_back(&bindPauseButton);
+    buttons->push_back(&bindQuitButton);
 }
 
 void Scenes::settingsMenu()
@@ -558,6 +562,7 @@ void Scenes::settingsMenu()
     std::function<Scenes *(Scenes *)> onDaltonismModeButtonClicked = [](Scenes *currentScene) {
         currentScene->displayDaltonismChoice = !currentScene->displayDaltonismChoice;
         currentScene->displayGameModeChoice = false;
+        currentScene->displayKeyBinds = false;
         currentScene->settingsMenu();
         return currentScene;
     };
@@ -572,6 +577,7 @@ void Scenes::settingsMenu()
     std::function<Scenes *(Scenes *)> onGameModeButtonClicked = [](Scenes *currentScene) {
         currentScene->displayGameModeChoice = !currentScene->displayGameModeChoice;
         currentScene->displayDaltonismChoice = false;
+        currentScene->displayKeyBinds = false;
         currentScene->settingsMenu();
         return currentScene;
     };
@@ -585,6 +591,8 @@ void Scenes::settingsMenu()
 
     std::function<Scenes *(Scenes *)> onKeybindButtonClicked = [](Scenes *currentScene) {
         currentScene->displayKeyBinds = !currentScene->displayKeyBinds;
+        currentScene->displayDaltonismChoice = false;
+        currentScene->displayGameModeChoice = false;
         currentScene->settingsMenu();
         return currentScene;
     };
@@ -615,13 +623,13 @@ void Scenes::settingsMenu()
 
     if (displayDaltonismChoice)
         createDaltonismChoiceButtons(
-            buttons, componentManager, entityManager, textureManager, entityFactory);
+            &buttons, componentManager, entityManager, textureManager, entityFactory);
     if (displayGameModeChoice)
         createGameModeChoiceButtons(
-            buttons, componentManager, entityManager, textureManager, entityFactory);
+            &buttons, componentManager, entityManager, textureManager, entityFactory);
     if (displayKeyBinds)
         createKeyBindingButtons(
-            buttons, componentManager, entityManager, textureManager, entityFactory);
+            &buttons, componentManager, entityManager, textureManager, entityFactory);
 
     sf::Clock clock;
     sf::Event event;

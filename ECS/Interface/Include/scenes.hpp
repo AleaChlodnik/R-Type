@@ -135,6 +135,5 @@ class Scenes {
     bool displayKeyBinds = false;
     sf::RenderWindow *_window;
     std::vector<Entity *> buttons;
-    std::vector<Entity *> bindButtons;
     sf::Keyboard::Key binding;
 };
