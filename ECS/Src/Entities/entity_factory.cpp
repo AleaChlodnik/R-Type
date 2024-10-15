@@ -193,3 +193,25 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
 
     return button;
 }
+
+Entity EntityFactory::createSmallButton(EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager, std::string text,
+    std::function<Scenes *(Scenes *, Scenes::Actions)> *onClick)
+{
+    Entity button = entityManager.createEntity();
+
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/small_button.png");
+    sf::Vector2f scale(1.0f, 1.0f);
+
+    PositionComponent pos(0, 0);
+    TextComponent textComponent(text);
+    BindComponent bindComponent(*onClick);
+    SpriteComponent sprite(texture, pos.x, pos.y, scale);
+
+    componentManager.addComponent<PositionComponent>(button.getId(), pos);
+    componentManager.addComponent<BindComponent>(button.getId(), bindComponent);
+    componentManager.addComponent<TextComponent>(button.getId(), textComponent);
+    componentManager.addComponent<SpriteComponent>(button.getId(), sprite);
+
+    return button;
+}

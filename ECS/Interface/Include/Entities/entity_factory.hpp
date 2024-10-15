@@ -26,6 +26,9 @@ class EntityFactory : public IEntityFactory {
     Entity createButton(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &textureManager, std::string text,
         std::function<Scenes *(Scenes *)> *onClick);
+    Entity createSmallButton(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &textureManager, std::string text,
+        std::function<Scenes *(Scenes *, Scenes::Actions)> *onClick);
     Entity createAllyMissile(EntityManager &entityManager, ComponentManager &componentManager) override;
     Entity createEnemyMissile(EntityManager &entityManager, ComponentManager &componentManager) override;
 };

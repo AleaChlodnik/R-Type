@@ -118,6 +118,12 @@ class Scenes {
      * @return false
      */
     bool shouldQuit() { return currentScene == Scene::EXIT; }
+    /**
+     * @brief Get the RenderWindow object
+     *
+     * @return sf::RenderWindow*
+     */
+    sf::RenderWindow *getRenderWindow() { return _window;}
 
   private:
     GameMode currentGameMode = GameMode::MEDIUM;
@@ -126,6 +132,9 @@ class Scenes {
     Scene previousScene = Scene::MAIN_MENU;
     bool displayDaltonismChoice = false;
     bool displayGameModeChoice = false;
+    bool displayKeyBinds = false;
     sf::RenderWindow *_window;
     std::vector<Entity *> buttons;
+    std::vector<Entity *> bindButtons;
+    sf::Keyboard::Key binding;
 };
