@@ -164,7 +164,7 @@ jobs:
   #       with:
   #         commit_message: Automated Change
 
-  build-doc:
+  deploy-pdf-doc:
     needs: [linux_install]
     runs-on: ubuntu-latest
     permissions:
