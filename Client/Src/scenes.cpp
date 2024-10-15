@@ -21,7 +21,7 @@ Scenes::Scenes(sf::RenderWindow *window)
 {
     this->_window = window;
     this->currentScene = Scenes::Scene::MAIN_MENU;
-    //this->currentScene = Scenes::Scene::GAME_LOOP; ////// TEMPORARY
+    // this->currentScene = Scenes::Scene::GAME_LOOP; ////// TEMPORARY
 }
 
 void Scenes::setScene(Scenes::Scene scene) { this->currentScene = scene; }
@@ -35,7 +35,8 @@ void Scenes::mainMenu()
     RenderSystem renderSystem(*_window);
     // Create background
     Entity background = entityFactory.createBackground(entityManager, componentManager);
-    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
     SpriteComponent spriteComponent(texture, 0, 0, scale);
     componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
