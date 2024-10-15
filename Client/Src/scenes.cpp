@@ -199,7 +199,8 @@ void Scenes::gameLoop()
     };
 
     while (_window->isOpen()) {
-        float deltaTime = clock.restart().asSeconds(); /////////////////////////////////////// TEMPORARY
+        float deltaTime =
+            clock.restart().asSeconds(); /////////////////////////////////////// TEMPORARY
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 r_type::net::Message<TypeMessage> msg;
