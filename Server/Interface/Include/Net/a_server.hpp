@@ -250,14 +250,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         Entity player = entityFactory.createPlayer(entityManager, componentManager);
         entityInfo.uniqueID = player.getId();
         entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
-        while (CheckPlayerPosition(entityInfo) == false) {
-            entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
-        }
-        auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
-        if (playerPos) {
-            playerPos.value()->x = entityInfo.vPos.x;
-            playerPos.value()->y = entityInfo.vPos.y;
-        }
         auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         if (sprite) {
             if (nbrOfPlayers == 1)
@@ -267,6 +259,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             else if (nbrOfPlayers == 3)
                 sprite.value()->spritePath = SpritePath::Ship4;
             entityInfo.spriteData = *(sprite.value());
+        }
+        while (CheckPlayerPosition(entityInfo) == false) {
+            entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
+        }
+        auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+        if (playerPos) {
+            playerPos.value()->x = entityInfo.vPos.x;
+            playerPos.value()->y = entityInfo.vPos.y;
         }
         clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
         return entityInfo;
@@ -301,15 +301,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         return entityInfo;
     }
 
-    void InitListEntities(
-        std::shared_ptr<r_type::net::Connection<T>> client, EntityInformation desc)
+    void InitListEntities(std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID)
     {
-        r_type::net::Message<T> msgAddPlayer;
-        const std::vector<Entity> entities = entityManager.getAllEntities();
         EntityInformation entityInfo;
+        r_type::net::Message<T> msgAddPlayer;
         msgAddPlayer.header.id = T::CreateEntityMessage;
+        const std::vector<Entity> entities = entityManager.getAllEntities();
         for (const auto &entity : entities) {
-            if (entity.getId() != desc.uniqueID) {
+            if (entity.getId() != entityID && entity.getId() != 1) {
                 auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
                 auto sprite = componentManager.getComponent<SpriteDataComponent>(entity.getId());
                 if (playerPos && sprite) {
@@ -322,6 +321,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 }
             }
         }
+        msgAddPlayer.header.id = T::FinishInitialization;
+        MessageClient(client, msgAddPlayer);
     }
 
     /**
@@ -342,22 +343,23 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             if (entity.getId() != desc.uniqueID && entity.getId() != background.uniqueID) {
                 auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
                 auto playerHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
-                // if (playerPos) {
-                //     descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
-                //     descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
-                //     descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);
-                //     descBottom = desc.vPos.y + (desc.spriteData.dimension.y / 2);
+                if (playerPos && playerHitbox) {
 
-                //     playerLeft = playerPos.value()->x - (playerHitbox.value()->w / 2);
-                //     playerRight = playerPos.value()->x + (playerHitbox.value()->w / 2);
-                //     playerTop = playerPos.value()->y - (playerHitbox.value()->h / 2);
-                //     playerBottom = playerPos.value()->y + (playerHitbox.value()->h / 2);
+                    descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
+                    descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
+                    descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);
+                    descBottom = desc.vPos.y + (desc.spriteData.dimension.y / 2);
 
-                //     if (!(descRight < playerLeft || descLeft > playerRight ||
-                //             descBottom < playerTop || descTop > playerBottom)) {
-                //         return false;
-                //     }
-                // }
+                    playerLeft = playerPos.value()->x - (playerHitbox.value()->w / 2);
+                    playerRight = playerPos.value()->x + (playerHitbox.value()->w / 2);
+                    playerTop = playerPos.value()->y - (playerHitbox.value()->h / 2);
+                    playerBottom = playerPos.value()->y + (playerHitbox.value()->h / 2);
+
+                    if (!(descRight < playerLeft || descLeft > playerRight ||
+                            descBottom < playerTop || descTop > playerBottom)) {
+                        return false;
+                    }
+                }
             }
         }
         return true;

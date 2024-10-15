@@ -41,19 +41,16 @@ std::string SpriteFactory(SpritePath sprite)
         return "Client/Assets/Sprites/Enemies/enemy5.png";
     } break;
     case SpritePath::Monster1: {
-        return "Client/Assets/Sprites/Ships/ship5.png";
+        return "Client/Assets/Sprites/Monsters/monster1.png";
     } break;
     case SpritePath::Monster2: {
-        return "Client/Assets/Sprites/Ships/ship5.png";
+        return "Client/Assets/Sprites/Monsters/monster2.png";
     } break;
     case SpritePath::Monster3: {
-        return "Client/Assets/Sprites/Ships/ship5.png";
+        return "Client/Assets/Sprites/Monsters/monster3.png";
     } break;
     case SpritePath::Monster4: {
-        return "Client/Assets/Sprites/Ships/ship5.png";
-    } break;
-    case SpritePath::Monster5: {
-        return "Client/Assets/Sprites/Ships/ship5.png";
+        return "Client/Assets/Sprites/Monsters/monster4.png";
     } break;
     case SpritePath::Missile: {
         return "Client/Assets/Sprites/Missiles/missile.png";

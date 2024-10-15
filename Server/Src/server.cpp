@@ -12,15 +12,19 @@ bool r_type::net::Server::OnClientConnect(
     std::shared_ptr<r_type::net::Connection<TypeMessage>> client)
 {
     r_type::net::Message<TypeMessage> msg;
-    EntityInformation entity;
     msg.header.id = TypeMessage::ServerAccept;
     msg << InitiatePlayers(client->GetID());
     nbrOfPlayers++;
     MessageClient(client, msg);
+
     msg.header.id = TypeMessage::CreateEntityMessage;
     MessageAllClients(msg, client);
     msg << background;
     MessageClient(client, msg);
+    EntityInformation entity;
+    InitListEntities(client, GetClientEntityId(client.get()->GetID()));
+    const std::vector<Entity> entities = entityManager.getAllEntities();
+
     // msg >> entity;
     // InitListEntities(client, entity);
     return true;
@@ -42,6 +46,7 @@ void r_type::net::Server::OnClientDisconnect(
     RemoveEntities(entityId);
     msg << entityId;
     MessageAllClients(msg, client);
+    nbrOfPlayers--;
     client->Disconnect();
 }
 
