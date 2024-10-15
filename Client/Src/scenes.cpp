@@ -25,8 +25,23 @@ Scenes::Scenes(sf::RenderWindow *window)
     // this->currentScene = Scenes::Scene::GAME_LOOP; ////// TEMPORARY
 }
 
+/**
+ * @brief Set the Scene object
+ *
+ * @param scene
+ */
 void Scenes::setScene(Scenes::Scene scene) { this->currentScene = scene; }
 
+/**
+ * @brief Displays the main menu scene.
+ *
+ * This function creates the main menu scene, including the background, buttons, and event
+ * handling. The main menu scene allows the user to navigate to different scenes by clicking on the
+ * buttons. The buttons include "Play", "Settings", and "Quit". The function continuously updates
+ * and renders the scene until the user closes the window or navigates to a different scene.
+ *
+ * @return void
+ */
 void Scenes::mainMenu()
 {
     ComponentManager componentManager;
@@ -114,6 +129,30 @@ void Scenes::mainMenu()
     }
 }
 
+/**
+ * @brief This function handles the main game loop for the Scenes class. It contains the logic for
+ * connecting to a server, updating entities, handling user input, and rendering the game.
+ *
+ * @details The game loop performs the following steps:
+ * 1. Connects to a server using the r_type::net::Client class.
+ * 2. Initializes the ComponentManager, TextureManager, and EntityManager.
+ * 3. Creates a background entity and sets its sprite component.
+ * 4. Defines lambda functions for updating player position and firing missiles.
+ * 5. Enters the main loop, which continues until the window is closed.
+ * 6. Within the loop, it checks for user input events and handles them accordingly.
+ * 7. If the server is connected, it processes incoming messages and updates entities accordingly.
+ * 8. It then updates the entities using the UpdateSystem and renders them using the RenderSystem.
+ *
+ * @note This code assumes the presence of the r_type::net::Client, ComponentManager,
+ * TextureManager, EntityManager, UpdateSystem, and RenderSystem classes.
+ *
+ * @see r_type::net::Client
+ * @see ComponentManager
+ * @see TextureManager
+ * @see EntityManager
+ * @see UpdateSystem
+ * @see RenderSystem
+ */
 void Scenes::gameLoop()
 {
     r_type::net::Client c;
@@ -272,10 +311,28 @@ void Scenes::gameLoop()
     }
 }
 
+/**
+ * @brief Displays the in-game menu.
+ *
+ */
 void Scenes::inGameMenu() { return; }
 
+/**
+ * @brief Displays the settings menu.
+ *
+ * This function is responsible for displaying the settings menu in the game.
+ * It does not return any value.
+ */
 void Scenes::settingsMenu() { return; }
 
+/**
+ * @brief Renders the current scene based on the value of currentScene.
+ *
+ * The render function uses a switch statement to determine which scene to render.
+ * It calls the corresponding member function based on the value of currentScene.
+ *
+ * @note The currentScene variable must be set before calling this function.
+ */
 void Scenes::render()
 {
     switch (this->currentScene) {

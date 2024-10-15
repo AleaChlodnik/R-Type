@@ -15,6 +15,10 @@ namespace r_type {
 namespace net {
 class Client : virtual public r_type::net::AClient<TypeMessage> {
   public:
+    /**
+     * @brief Send a message to the server to get the ping
+     *
+     */
     void PingServer()
     {
         r_type::net::Message<TypeMessage> msg;
@@ -26,6 +30,10 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         Send(msg);
     }
 
+    /**
+     * @brief Send a message to the server to all other clients
+     *
+     */
     void MessageAll()
     {
         r_type::net::Message<TypeMessage> msg;

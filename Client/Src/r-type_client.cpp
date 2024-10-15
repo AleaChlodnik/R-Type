@@ -13,6 +13,10 @@
 #include <r_type_client.hpp>
 #include <texture_manager.hpp>
 
+/**
+ * @brief Construct a new Rtype:: Rtype object
+ *
+ */
 Rtype::Rtype()
 {
     _window.create(
