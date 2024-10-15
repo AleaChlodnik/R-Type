@@ -29,16 +29,14 @@ Entity EntityFactory::createBackground(
     return background;
 }
 
-Entity EntityFactory::createPlayer(
-    EntityManager &entityManager, ComponentManager &componentManager)
+Entity EntityFactory::createPlayer(EntityManager &entityManager, ComponentManager &componentManager)
 {
     Entity player = entityManager.createEntity();
 
     PlayerComponent playerComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{
-        "Client/Assets/Sprites/Ships/ship1.png", {16, 40}, {96, 48}, {0, 0}};
+    SpriteDataComponent spriteData{"Client/Assets/Sprites/Ships/ship1.png", {16, 40}, {96, 48}, {0, 0}};
     HitboxComponent hitbox{(float)spriteData.dimension.x, (float)spriteData.dimension.y};
     HealthComponent health{100, 100};
     InputComponent input{InputType::NONE};
@@ -197,7 +195,7 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
     PositionComponent pos(0, 0);
     TextComponent textComponent(text);
     OnClickComponent onClickfunction(*onClick);
-    SpriteComponent sprite(texture, pos.x, pos.y, dimension);
+    SpriteComponent sprite(texture, pos.x, pos.y, dimension, {0, 0});
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
     componentManager.addComponent<OnClickComponent>(button.getId(), onClickfunction);
