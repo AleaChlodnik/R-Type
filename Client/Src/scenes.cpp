@@ -173,14 +173,17 @@ void Scenes::gameLoop()
 
     auto updatePlayerPosition = [&](const vf2d &delta) {
         r_type::net::Message<TypeMessage> msg;
+        std::cout << "Updating Player Position" << std::endl;
+        vf2d playerPos;
         msg.header.id = TypeMessage::MoveEntityMessage;
         if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
             auto &sprites = **spritesOpt;
             auto spriteComponent = sprites[c.getPlayerId()];
             auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            int playerPosX = playerSprite->sprite.getPosition().x;
-            int playerPosY = playerSprite->sprite.getPosition().y;
-            msg << vf2d{playerPosX + delta.x, playerPosY + delta.y};
+            playerPos.x = playerSprite->sprite.getPosition().x + delta.x;
+            playerPos.y = playerSprite->sprite.getPosition().y + delta.y;
+            msg << playerPos;
+            c.Send(msg);
         }
     };
 
@@ -214,15 +217,19 @@ void Scenes::gameLoop()
                     c.MessageAll();
                 } break;
                 case sf::Keyboard::Up: {
+                    std::cout << "Up" << std::endl;
                     updatePlayerPosition(vf2d{0, -5});
                 } break;
                 case sf::Keyboard::Down: {
+                    std::cout << "Down" << std::endl;
                     updatePlayerPosition(vf2d{0, 5});
                 } break;
                 case sf::Keyboard::Left: {
+                    std::cout << "Left" << std::endl;
                     updatePlayerPosition(vf2d{-5, 0});
                 } break;
                 case sf::Keyboard::Right: {
+                    std::cout << "Right" << std::endl;
                     updatePlayerPosition(vf2d{5, 0});
                 } break;
                 case sf::Keyboard::Space: {
@@ -293,6 +300,8 @@ void Scenes::gameLoop()
                     reponse.header.id = TypeMessage::UpdateEntityResponse;
                     EntityInformation entity;
                     msg >> entity;
+                    std::cout << "Updating Entity: " << entity.uniqueID << "position ["
+                              << entity.vPos.x << ", " << entity.vPos.y << "]" << std::endl;
                     c.updateEntity(entity, componentManager);
                 } break;
                 case TypeMessage::UpdateEntityResponse: {
