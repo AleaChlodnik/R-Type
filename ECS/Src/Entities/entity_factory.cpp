@@ -73,7 +73,7 @@ Entity EntityFactory::createPlayer(
     PlayerComponent playerComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.5f, 1.5f}};
+    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.0f, 1.0f}};
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
     HealthComponent health{100, 100};
     InputComponent input{InputType::NONE};
