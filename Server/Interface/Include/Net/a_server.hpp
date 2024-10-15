@@ -39,6 +39,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         componentManager = ComponentManager();
         background = InitiateBackground();
         entityFactory.createBasicMonster(entityManager, componentManager);
+        entityFactory.createBasicMonster(entityManager, componentManager);
+        entityFactory.createBasicMonster(entityManager, componentManager);
     }
 
     /**
@@ -332,7 +334,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @return true
      * @return false
      */
-
     bool CheckPlayerPosition(EntityInformation desc)
     {
         float descLeft, descRight, descTop, descBottom, playerLeft, playerRight, playerTop,
