@@ -73,7 +73,7 @@ Entity EntityFactory::createPlayer(
     PlayerComponent playerComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.0f, 1.0f}};
+    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.5f, 1.5f}};
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
     HealthComponent health{100, 100};
     InputComponent input{InputType::NONE};
@@ -137,7 +137,7 @@ Entity EntityFactory::createBasicMonster(
 
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {272, 224}, {1.0f, 1.0f}};
+    SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {272, 224}, {0.8f, 0.8f}};
     PositionComponent startPosition(1000, 500);
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
     HealthComponent health{100, 100};
@@ -160,18 +160,14 @@ Entity EntityFactory::createBasicMonster(
     return monster;
 }
 
-Entity EntityFactory::createPlayerMissile(
-    int playerId, EntityManager &entityManager, ComponentManager &componentManager)
+Entity EntityFactory::createPlayerMissile(EntityManager &entityManager, ComponentManager &componentManager)
 {
     Entity playerMissile = entityManager.createEntity();
 
-    auto playerPosition = componentManager.getComponent<PositionComponent>(playerId);
-
     PlayerMissileComponent playerMissileComponent;
-    PositionComponent startPosition(
-        playerPosition.value()->x + 105, playerPosition.value()->y + 49);
+    PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {1.0f, 1.0f}};
+    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {0.1f, 0.1f}};
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
 
     componentManager.addComponent<PlayerMissileComponent>(

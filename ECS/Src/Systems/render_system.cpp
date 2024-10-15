@@ -33,24 +33,18 @@ void RenderSystem::render(ComponentManager &componentManager)
             const auto &spriteComponent = bgSpriteIt->second;
             auto bgSprite = std::any_cast<SpriteComponent>(&spriteComponent);
             if (bgSprite) {
-                std::cout << "Got bg sprite"
-                          << std::endl; /////////////////////////////////////////////////
                 _window.draw(bgSprite->sprite);
             }
         }
 
         for (const auto &pair : sprites) { // Derefrences the optional and then the pointer
             int entityId = pair.first;
-            std::cout << "Entity ID: " << entityId
-                      << std::endl; /////////////////////////////////////////////////
             if (entityId == backgroundId || entityId == 1) {
                 continue;
             }
             const auto &spriteComponent = pair.second;
             auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
             if (sprite) {
-                std::cout << "Got sprite: " << entityId
-                          << std::endl; /////////////////////////////////////////////////
                 _window.draw(sprite->sprite);
             }
         }

@@ -20,7 +20,6 @@ struct SpriteComponent {
     {
         sprite.setTexture(texture);
         sprite.setPosition(posX, posY);
-        sprite.setScale(1.0f, 1.0f);
-        //sprite.setScale(scale);
+        sprite.setScale(scale);
     }
 };
