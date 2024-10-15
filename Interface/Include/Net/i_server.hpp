@@ -33,13 +33,13 @@ template <typename T> class IServer {
      *
      * @param port
      */
-    IServer(){};
+    IServer() {};
 
     /**
      * @brief Destroy the Server Interface object
      *
      */
-    virtual ~IServer(){};
+    virtual ~IServer() {};
     /**
      * @brief Start the server
      *
@@ -88,9 +88,49 @@ template <typename T> class IServer {
      */
     virtual void Update(size_t nMaxMessages = -1, bool bWait = false) = 0;
 
+    /**
+     * @brief Send all the existing entities to the client
+     *
+     * @param client
+     * @param entity
+     */
+    virtual void InitListEntities(
+        std::shared_ptr<r_type::net::Connection<T>> client, EntityInformation entity) = 0;
+
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) = 0;
 
+    /**
+     * @brief Check if player position is valid
+     *
+     * @param desc
+     * @return true
+     * @return false
+     */
+
     virtual bool CheckPlayerPosition(EntityInformation desc) = 0;
+
+    /**
+     * @brief Initiate players
+     *
+     * @param msg
+     * @param clientId
+     */
+
+    virtual void InitiatePlayers(r_type::net::Message<T> &msg, uint32_t clientId) = 0;
+
+    /**
+     * @brief Remove player
+     *
+     * @param clientId
+     */
+    virtual void RemovePlayer(uint32_t id) = 0;
+
+    /**
+     * @brief Remove entities
+     *
+     * @param entityId
+     */
+    virtual void RemoveEntities(uint32_t id) = 0;
 
   protected:
     /**
