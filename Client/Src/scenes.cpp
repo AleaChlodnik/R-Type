@@ -264,7 +264,7 @@ void Scenes::inGameMenu()
     RenderSystem renderSystem(*_window);
     buttons = {};
 
-     // Create background
+    // Create background
     Entity background = entityFactory.createBackground(entityManager, componentManager);
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
@@ -433,7 +433,7 @@ void Scenes::settingsMenu()
     RenderSystem renderSystem(*_window);
     buttons = {};
 
-     // Create background
+    // Create background
     Entity background = entityFactory.createBackground(entityManager, componentManager);
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
