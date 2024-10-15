@@ -41,7 +41,7 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
     while (_window->pollEvent(event)) {
         if (event.type == sf::Event::Closed)
             _window->close();
-        if (event.type == sf::Event::MouseButtonPressed and
+        if (event.type == sf::Event::MouseButtonPressed &&
             event.mouseButton.button == sf::Mouse::Left) {
             auto pos = sf::Mouse::getPosition(*_window);
             for (auto button : buttons) {
@@ -551,7 +551,7 @@ void createKeyBindingButtons(std::vector<Entity *> *buttons, ComponentManager &c
                                                                      Scenes::Actions action) {
         sf::Keyboard::Key key = waitForKey(currentScene->getRenderWindow());
         currentScene->keyBinds[action] = key;
-        std::cout << currentScene->keyBinds[action] << "ton pere" << std::endl;
+        std::cout << currentScene->keyBinds[action] << "ok" << std::endl;
         return currentScene;
     };
 
@@ -724,8 +724,7 @@ void Scenes::settingsMenu()
         //     &buttons, componentManager, entityManager, textureManager, entityFactory);
     }
     if (displayKeyBinds) {
-        // createKeyBindingButtons(
-        //     &buttons, componentManager, entityManager, textureManager, entityFactory);
+        //createKeyBindingButtons(&buttons, componentManager, entityManager, textureManager, entityFactory);
     }
 
     sf::Clock clock;
