@@ -101,9 +101,9 @@ Entity EntityFactory::createBasicMonster(
     Entity monster = entityManager.createEntity();
 
     BasicMonsterComponent monsterComponent;
-    PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
     SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {272, 224}, {1.0f, 1.0f}};
+    PositionComponent startPosition(1000, 500);
     HitboxComponent hitbox{spriteData.dimension.x, spriteData.dimension.y};
     HealthComponent health{100, 100};
 
