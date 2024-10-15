@@ -301,15 +301,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         return entityInfo;
     }
 
-    void InitListEntities(
-        std::shared_ptr<r_type::net::Connection<T>> client, EntityInformation desc)
+    void InitListEntities(std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID)
     {
-        r_type::net::Message<T> msgAddPlayer;
-        const std::vector<Entity> entities = entityManager.getAllEntities();
         EntityInformation entityInfo;
+        r_type::net::Message<T> msgAddPlayer;
         msgAddPlayer.header.id = T::CreateEntityMessage;
+        const std::vector<Entity> entities = entityManager.getAllEntities();
         for (const auto &entity : entities) {
-            if (entity.getId() != desc.uniqueID) {
+            if (entity.getId() != entityID && entity.getId() != 1) {
                 auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
                 auto sprite = componentManager.getComponent<SpriteDataComponent>(entity.getId());
                 if (playerPos && sprite) {
@@ -322,6 +321,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 }
             }
         }
+        msgAddPlayer.header.id = T::FinishInitialization;
+        MessageClient(client, msgAddPlayer);
     }
 
     /**

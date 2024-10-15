@@ -86,5 +86,6 @@ enum class TypeMessage : uint32_t
      *
      */
     DestroyEntityResponse,
+    FinishInitialization,
 
 };

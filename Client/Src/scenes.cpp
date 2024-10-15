@@ -309,6 +309,8 @@ void Scenes::gameLoop()
                 } break;
                 case TypeMessage::DestroyEntityResponse: {
                 } break;
+                case TypeMessage::FinishInitialization: {
+                } break;
                 }
             }
         } else {
