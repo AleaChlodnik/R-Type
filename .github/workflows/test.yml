@@ -101,6 +101,80 @@ jobs:
       - name: build project
         run: cmake --build build -- /maxcpucount:4
 
+  build-doc:
+    needs: [linux_install]
+    runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ""
+
+      - name: Cache apt install
+        id: cache-apt
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-apt-install
+        with:
+          path: /var/cache/apt
+          key: ${{ runner.os }}-install-${{ env.cache-name }}-${{ hashFiles('**/compile.sh') }}
+          restore-keys: |
+            ${{ runner.os }}-install-${{ env.cache-name }}-
+
+      - name: Cache cmake build
+        id: cache-cmake
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-cmake-build
+        with:
+          path: ./build
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Install Doxygen
+        run: sudo apt-get install -y doxygen
+
+      - name: Install LaTeX (Optional for PDF)
+        run: sudo apt-get install -y texlive-full
+
+      - name: Configure CMake and Build Documentation
+        run: |
+          cmake -S . -B build -DBUILD_DOC=ON
+          cmake --build build --target doc_doxygen
+
+      - name: Push refman.pdf
+        id: git-check
+        run: echo "modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
+      - name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        if: steps.git-check.outputs.modified == 'true'
+        with:
+          commit_message: Automated Change
+
+      - name: Deploy to GitHub Pages
+        if: success()
+        run: |
+          # Set up Git configuration for deploying to gh-pages
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+          # Clone the gh-pages branch
+          git clone --depth 1 --branch gh-pages https://github.com/${{ github.repository }} gh-pages
+
+          # Copy generated docs to the gh-pages directory
+          rm -rf gh-pages/*
+          cp -r build/doc_doxygen/html/* gh-pages/
+
+          # Commit and push the updated documentation to GitHub Pages
+          cd gh-pages
+          git add .
+          git commit -m "Deploy updated documentation"
+          git push origin gh-pages
+
   push_to_mirror:
     needs: [linux_install, windows_install]
     runs-on: ubuntu-latest
