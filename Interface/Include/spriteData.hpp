@@ -52,22 +52,28 @@
 // {
 //     switch (sprite) {
 //     case SpriteType::Ship1: {
-//         return SpriteData_t{"Client/Assets/Sprites/Ships/ship1.png", {16, 40}, {96, 48}, {0, 0}};
+//         return SpriteData_t{"Client/Assets/Sprites/Ships/ship1.png", {16, 40}, {96, 48}, {0,
+//         0}};
 //     } break;
 //     case SpriteType::Ship2: {
-//         return SpriteData_t{"Client/Assets/Sprites/Ships/ship2.png", {16, 40}, {96, 48}, {0, 0}};
+//         return SpriteData_t{"Client/Assets/Sprites/Ships/ship2.png", {16, 40}, {96, 48}, {0,
+//         0}};
 //     } break;
 //     case SpriteType::Ship3: {
-//         return SpriteData_t{"Client/Assets/Sprites/Ships/ship4.png", {16, 40}, {96, 48}, {0, 0}};
+//         return SpriteData_t{"Client/Assets/Sprites/Ships/ship4.png", {16, 40}, {96, 48}, {0,
+//         0}};
 //     } break;
 //     case SpriteType::Ship4: {
-//         return SpriteData_t{"Client/Assets/Sprites/Ships/ship5.png", {16, 40}, {96, 48}, {0, 0}};
+//         return SpriteData_t{"Client/Assets/Sprites/Ships/ship5.png", {16, 40}, {96, 48}, {0,
+//         0}};
 //     } break;
 //     case SpriteType::Enemy1: {
-//         return SpriteData_t{"Client/Assets/Sprites/Enemies/enemy1.png", {0, 0}, {80, 160}, {0, 0}};
+//         return SpriteData_t{"Client/Assets/Sprites/Enemies/enemy1.png", {0, 0}, {80, 160}, {0,
+//         0}};
 //     } break;
 //     case SpriteType::Enemy2: {
-//         return SpriteData_t{"Client/Assets/Sprites/Enemies/enemy2.png", {0, 0}, {128, 88}, {0, 0}};
+//         return SpriteData_t{"Client/Assets/Sprites/Enemies/enemy2.png", {0, 0}, {128, 88}, {0,
+//         0}};
 //     } break;
 //     case SpriteType::Enemy3: {
 //         return SpriteData_t{
@@ -78,7 +84,8 @@
 //             "Client/Assets/Sprites/Enemies/enemy4.png", {0, 0}, {128, 144}, {0, 0}};
 //     } break;
 //     case SpriteType::Enemy5: {
-//         return SpriteData_t{"Client/Assets/Sprites/Enemies/enemy5.png", {0, 0}, {96, 136}, {0, 0}};
+//         return SpriteData_t{"Client/Assets/Sprites/Enemies/enemy5.png", {0, 0}, {96, 136}, {0,
+//         0}};
 //     } break;
 //     case SpriteType::Enemy6: {
 //         return SpriteData_t{
@@ -102,7 +109,8 @@
 //         return SpriteData_t{"Client/Assets/Sprites/Ships/ship5.png", {0, 0}, {0, 0}, {0, 0}};
 //     } break;
 //     case SpriteType::Missle: {
-//         return SpriteData_t{"Client/Assets/Sprites/Missiles/missile.png", {0, 0}, {16, 16}, {0, 0}};
+//         return SpriteData_t{"Client/Assets/Sprites/Missiles/missile.png", {0, 0}, {16, 16}, {0,
+//         0}};
 //     } break;
 //     case SpriteType::Background: {
 //         return SpriteData_t{
