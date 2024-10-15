@@ -100,7 +100,7 @@ void Scenes::mainMenu()
             }
         }
 
-        renderSystem.render(entityManager, componentManager);
+        renderSystem.render(componentManager);
     }
 }
 
