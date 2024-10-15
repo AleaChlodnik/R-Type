@@ -282,10 +282,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
         for (const auto &player : entities) {
             if (player.getId() != desc.uniqueID) {
-                auto playerPos =
-                    componentManager.getComponent<PositionComponent>(player.getID());
-                auto playerHitbox =
-                    componentManager.getComponent<HitboxComponent>(player.getID());
+                auto playerPos = componentManager.getComponent<PositionComponent>(player.getID());
+                auto playerHitbox = componentManager.getComponent<HitboxComponent>(player.getID());
                 if (playerPos) {
                     descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
                     descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
