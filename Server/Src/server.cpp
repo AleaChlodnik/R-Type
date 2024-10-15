@@ -19,6 +19,8 @@ bool r_type::net::Server::OnClientConnect(
     MessageClient(client, msg);
     msg.header.id = TypeMessage::CreateEntityMessage;
     MessageAllClients(msg, client);
+    msg << InitiateBackground();
+    MessageClient(client, msg);
     // msg >> entity;
     // InitListEntities(client, entity);
     return true;
@@ -33,10 +35,11 @@ void r_type::net::Server::OnClientDisconnect(
     std::shared_ptr<r_type::net::Connection<TypeMessage>> client,
     r_type::net::Message<TypeMessage> &msg)
 {
-    int entityId;
+    uint32_t entityId;
     std::cout << "[" << client->GetID() << "]: Removing client" << std::endl;
     msg >> entityId;
-    RemoveEntity(entityId);
+    RemovePlayer(client->GetID());
+    RemoveEntities(entityId);
     msg << entityId;
     MessageAllClients(msg, client);
     client->Disconnect();
@@ -73,15 +76,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         std::cout << "[" << client->GetID() << "]: Client Connect" << std::endl;
     } break;
     case TypeMessage::MoveEntityMessage: {
-        EntityInformation entity;
-        msg >> entity;
-        if (CheckPlayerPosition(entity)) {
-            UpdateEntity(entity);
-            r_type::net::Message<TypeMessage> msg;
-            msg.header.id = TypeMessage::UpdateEntity;
-            msg << entity;
-            MessageAllClients(msg);
-        }
+        UpdateEntityPosition(msg, client->GetID());
     } break;
     case TypeMessage::DestroyEntityMessage: {
         OnClientDisconnect(client, msg);

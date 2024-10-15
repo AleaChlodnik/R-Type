@@ -207,27 +207,36 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
     }
 
-    void UpdateEntity(EntityInformation desc)
+    void UpdateEntityPosition(r_type::net::Message<T> &msg, uint32_t clientId)
     {
-        // if (Entities.find(desc.uniqueID) == Entities.end())
-        //     PushEntity(desc);
-        // Entities[desc.uniqueID] = desc;
+        uint32_t entityId = GetClientEntityId(clientId);
+        EntityInformation entity;
+        vf2d entityPosition;
+        auto entitySprite = componentManager.getComponent<SpriteDataComponent>(entityId);
+        std::cout << "UpdateEntityPosition" << std::endl;
+        msg >> entityPosition;
+        entity.uniqueID = entityId;
+        entity.vPos = entityPosition;
+        entity.spriteData = *entitySprite.value();
+        std::cout << "position: " << entityPosition.x << " " << entityPosition.y << std::endl;
+
+        if (CheckPlayerPosition(entity)) {
+            auto position = componentManager.getComponent<PositionComponent>(entityId);
+            if (position) {
+                position.value()->x = entityPosition.x;
+                position.value()->y = entityPosition.y;
+                r_type::net::Message<TypeMessage> msg;
+                msg.header.id = TypeMessage::UpdateEntity;
+                msg << entity;
+                MessageAllClients(msg);
+            }
+        }
     }
 
-    /**
-     * @brief remove entity from a undordered map
-     *
-     * @param id
-     */
-    void RemoveEntity(uint32_t id)
-    { /*Entities.erase(id);*/
-    }
+    uint32_t GetClientEntityId(uint32_t id) { return clientPlayerID.at(id); }
 
-    /**
-     * @brief init player
-     *
-     * @param msg
-     */
+    void RemovePlayer(uint32_t id) { clientPlayerID.erase(id); }
+    void RemoveEntities(uint32_t id) { entityManager.removeEntity(id); }
 
     EntityInformation InitiatePlayers(int clientId)
     {
@@ -257,8 +266,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         return entityInfo;
     }
 
-    uint32_t GetClientEntityId(uint32_t id) { return clientPlayerID.at(id); }
-
     EntityInformation InitiateMissile(int clientId)
     {
         EntityInformation entityInfo;
@@ -276,11 +283,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         return entityInfo;
     }
 
-    /**
-     * @brief push player
-     *
-     * @param desc
-     */
+    EntityInformation InitiateBackground()
+    {
+        EntityInformation entityInfo;
+        Entity background = entityFactory.createBackground(entityManager, componentManager);
+        entityInfo.uniqueID = background.getId();
+        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        if (sprite) {
+            entityInfo.spriteData = *(sprite.value());
+        }
+        return entityInfo;
+    }
+
     void InitListEntities(
         std::shared_ptr<r_type::net::Connection<T>> client, EntityInformation desc)
     {
