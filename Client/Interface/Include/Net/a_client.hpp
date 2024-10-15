@@ -84,55 +84,6 @@ template <typename T> class AClient : virtual public IClient<T> {
             return false;
     }
 
-    /**
-     * @brief Add a new entity to the list of entities
-     *
-     * @param entity
-     */
-    void AddEntity(EntityInformation entity)
-    {
-        Entities.insert_or_assign(entity.uniqueID, entity);
-    }
-
-    /**
-     * @brief Remove an entity from the list of entities
-     *
-     * @param id
-     */
-    void RemoveEntity(uint32_t id) {
-        Entities.erase(id);
-    }
-
-    /**
-     * @brief This function updates the information of an entity. If the entity does not exist in the collection of entities, it will be added. Otherwise, the existing entity will be updated with the new information.
-     *
-     * @param entity The entity information to be updated.
-     */
-    void UpdateEntity(EntityInformation entity)
-    {
-        if (Entities.find(entity.uniqueID) == Entities.end())
-            AddEntity(entity);
-        Entities[entity.uniqueID] = entity;
-    }
-
-    /**
-     * @brief Get the Players object
-     *
-     * @return std::unordered_map<uint32_t, EntityInformation>
-     */
-    std::unordered_map<uint32_t, EntityInformation> GetPlayers() { return Entities; }
-
-    /**
-     * @brief Get a player by its id
-     *
-     * @param id
-     * @return EntityInformation
-     */
-    EntityInformation GetAPlayer(uint32_t id) { return Entities[id]; }
-
-    void SetEntityID(int id) { EntityID = id; }
-    int GetEntityID() { return EntityID; }
-
   public:
     /**
      * @brief Send message to server
@@ -161,8 +112,8 @@ template <typename T> class AClient : virtual public IClient<T> {
 
   private:
     ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
-    std::unordered_map<uint32_t, EntityInformation> Entities;
-    int EntityID = 0;
+    // std::unordered_map<uint32_t, EntityInformation> Entities;
+    // int EntityID = 0;
 };
 } // namespace net
 } // namespace r_type
