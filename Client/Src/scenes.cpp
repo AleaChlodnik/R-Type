@@ -20,7 +20,8 @@
 Scenes::Scenes(sf::RenderWindow *window)
 {
     this->_window = window;
-    this->currentScene = Scenes::Scene::MAIN_MENU; /////////////////// change back to MAIN_MENU after testing
+    this->currentScene =
+        Scenes::Scene::MAIN_MENU; /////////////////// change back to MAIN_MENU after testing
 }
 
 void Scenes::setScene(Scenes::Scene scene) { this->currentScene = scene; }
@@ -34,7 +35,8 @@ void Scenes::mainMenu()
     RenderSystem renderSystem(*_window);
     // Create background
     Entity background = entityFactory.createBackground(entityManager, componentManager);
-    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(0.4, 0.4);
     SpriteComponent spriteComponent(texture, 0, 0, scale);
     // Create buttons
