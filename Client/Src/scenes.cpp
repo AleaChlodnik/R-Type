@@ -596,6 +596,14 @@ void createKeyBindingButtons(std::vector<Entity *> *buttons, ComponentManager &c
         pos.value()->y = 550;
     }
 
+    Entity bindPauseButton = entityFactory.createSmallButton(
+        entityManager, componentManager, textureManager, "Pause : ", &bindkey);
+    pos = componentManager.getComponent<PositionComponent>(bindPauseButton.getId());
+    if (pos) {
+        pos.value()->x = 1560;
+        pos.value()->y = 750;
+    }
+
     Entity bindQuitButton = entityFactory.createSmallButton(
         entityManager, componentManager, textureManager, "Quit : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindQuitButton.getId());
