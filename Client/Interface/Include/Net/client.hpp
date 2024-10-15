@@ -62,7 +62,11 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
             auto &sprites = **spritesOpt;
             auto entitySprite = sprites[entity.uniqueID];
             auto spriteComponent = std::any_cast<SpriteComponent>(&entitySprite);
-            spriteComponent->sprite.setPosition(entity.vPos.x, entity.vPos.y);
+            if (spriteComponent) {
+                std::cout << "Updating entity " << entity.uniqueID << " doesn't work need patch !"
+                          << std::endl;
+                spriteComponent->sprite.setPosition(entity.vPos.x, entity.vPos.y);
+            }
         }
     }
 };
