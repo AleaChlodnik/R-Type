@@ -11,12 +11,12 @@
 #include <Entities/entity_manager.hpp>
 #include <Net/client.hpp>
 #include <Systems/systems.hpp>
+#include <creatable_client_object.hpp>
 #include <functional>
 #include <iostream>
 #include <r_type_client.hpp>
 #include <scenes.hpp>
 #include <texture_manager.hpp>
-#include <creatable_client_object.hpp>
 
 Scenes::Scenes(sf::RenderWindow *window)
 {
@@ -138,7 +138,8 @@ void Scenes::gameLoop()
         c.Send(msg);
     };
 
-    auto fireMissile = [&]() { r_type::net::Message<TypeMessage> msg;
+    auto fireMissile = [&]() {
+        r_type::net::Message<TypeMessage> msg;
         msg.header.id = TypeMessage::CreateEntityMessage;
         msg << CreatableClientObject::BULLET;
         c.Send(msg);
