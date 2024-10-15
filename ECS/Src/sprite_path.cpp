@@ -17,10 +17,10 @@ std::string SpriteFactory(SpritePath sprite)
         return "Client/Assets/Sprites/Ships/ship2.png";
     } break;
     case SpritePath::Ship3: {
-        return "Client/Assets/Sprites/Ships/ship4.png";
+        return "Client/Assets/Sprites/Ships/ship3.png";
     } break;
     case SpritePath::Ship4: {
-        return "Client/Assets/Sprites/Ships/ship5.png";
+        return "Client/Assets/Sprites/Ships/ship4.png";
     } break;
     case SpritePath::Enemy1: {
         return "Client/Assets/Sprites/Enemies/enemy1.png";
