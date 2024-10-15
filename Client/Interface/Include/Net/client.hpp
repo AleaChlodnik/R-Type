@@ -8,7 +8,6 @@
 #pragma once
 
 #include <Net/a_client.hpp>
-#include <Net/a_client.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
