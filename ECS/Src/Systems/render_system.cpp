@@ -61,15 +61,8 @@ void RenderSystem::render(ComponentManager &componentManager)
             if (text) {
                 sf::Text textToDraw(text->_text, font);
                 auto position = componentManager.getComponent<PositionComponent>(id);
-                auto sprite = componentManager.getComponent<SpriteComponent>(id);
-                if (sprite) {
-                    sf::FloatRect spriteBounds = sprite.value()->sprite.getGlobalBounds();
-                    sf::FloatRect textBounds = textToDraw.getGlobalBounds();
-                    float x = position.value()->x + (spriteBounds.width / 2.0f) - (textBounds.width / 2.0f);
-                    float y = position.value()->y + (spriteBounds.height / 2.0f) - textBounds.height;
-                    textToDraw.setPosition(x, y);
-                } else
-                    textToDraw.setPosition(position.value()->x, position.value()->y);
+                textToDraw.setOrigin(textToDraw.getLocalBounds().width / 2.0f, textToDraw.getLocalBounds().height / 2.0f);
+                textToDraw.setPosition(position.value()->x, position.value()->y);
                 _window.draw(textToDraw);
             }
         }

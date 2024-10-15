@@ -41,8 +41,9 @@ add_subdirectory(Server)
 
 # first we can indicate the documentation build as an option and set it to ON by
 # default
-option(BUILD_DOC "Build documentation" ON)
+# option(BUILD_DOC "Build documentation" ON)
 
+if (BUILD_DOC)
 # check if Doxygen is installed
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
@@ -65,26 +66,31 @@ if(DOXYGEN_FOUND)
 
   # Conditionally compile LaTeX to PDF and copy it
   # Ensure Doxygen and LaTeX are available
-  # find_package(LATEX) # This check is optional and serves to ensure Latex is
-  #                     # installed
-  # if(LATEX_FOUND)
-  #   add_custom_command(
-  #     TARGET doc_doxygen
-  #     POST_BUILD
-  #     COMMAND ${CMAKE_COMMAND} -E make_directory
-  #             ${CMAKE_CURRENT_SOURCE_DIR}/doc_doxygen/latex
-  #     COMMAND ${CMAKE_COMMAND} -E chdir
-  #             ${CMAKE_CURRENT_SOURCE_DIR}/doc_doxygen/latex make
-  #     COMMAND
-  #       ${CMAKE_COMMAND} -E copyh
-  #       ${CMAKE_CURRENT_SOURCE_DIR}/doc_doxygen/latex/refman.pdf
-  #       ${CMAKE_CURRENT_SOURCE_DIR}/doc
-  #     COMMENT
-  #       "Building PDF documentation with LaTeX and copying to doc directory")
-  # else()
-  #   message("LaTeX not found, PDF documentation will not be generated.")
-  # endif()
+  find_package(LATEX) # This check is optional and serves to ensure Latex is
+                      # installed
+  if(LATEX_FOUND)
+    add_custom_command(
+      TARGET doc_doxygen
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory
+              ${CMAKE_CURRENT_SOURCE_DIR}/doc_doxygen/latex
+      COMMAND ${CMAKE_COMMAND} -E chdir
+              ${CMAKE_CURRENT_SOURCE_DIR}/doc_doxygen/latex make
+      COMMAND
+        ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/doc_doxygen/latex/refman.pdf
+        ${CMAKE_CURRENT_SOURCE_DIR}/Docs
+        COMMAND
+        ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/doc_doxygen/html
+        ${CMAKE_CURRENT_SOURCE_DIR}/Docs
+      COMMENT
+        "Building PDF documentation with LaTeX and copying to doc directory")
+  else()
+    message("LaTeX not found, PDF documentation will not be generated.")
+  endif()
 
 else(DOXYGEN_FOUND)
   message("Doxygen need to be installed to generate the doxygen documentation")
 endif(DOXYGEN_FOUND)
+endif(BUILD_DOC)

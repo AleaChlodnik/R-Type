@@ -11,6 +11,7 @@
 #include <Entities/entity_manager.hpp>
 #include <Net/client.hpp>
 #include <Systems/systems.hpp>
+#include <creatable_client_object.hpp>
 #include <functional>
 #include <iostream>
 #include <r_type_client.hpp>
@@ -23,6 +24,11 @@ Scenes::Scenes(sf::RenderWindow *window)
     this->currentScene = Scenes::Scene::MAIN_MENU;
 }
 
+/**
+ * @brief Set the Scene object
+ *
+ * @param scene
+ */
 void Scenes::setScene(Scenes::Scene scene)
 {
     this->previousScene = this->currentScene;
@@ -44,10 +50,10 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
                 if (sprite) {
                     if (posComp && sprite) {
                         sf::Vector2u spriteSize = sprite.value()->sprite.getTexture()->getSize();
-                        if (pos.x >= posComp.value()->x &&
-                            pos.x <= posComp.value()->x + spriteSize.x &&
-                            pos.y >= posComp.value()->y &&
-                            pos.y <= posComp.value()->y + spriteSize.y) {
+                        if (pos.x >= posComp.value()->x - spriteSize.x / 2 &&
+                            pos.x <= posComp.value()->x + spriteSize.x / 2 &&
+                            pos.y >= posComp.value()->y - spriteSize.y / 2 &&
+                            pos.y <= posComp.value()->y + spriteSize.y / 2) {
                             auto onClick =
                                 componentManager.getComponent<OnClickComponent>(button->getId());
                             if (onClick)
@@ -71,6 +77,16 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
     }
 }
 
+/**
+ * @brief Displays the main menu scene.
+ *
+ * This function creates the main menu scene, including the background, buttons, and event
+ * handling. The main menu scene allows the user to navigate to different scenes by clicking on the
+ * buttons. The buttons include "Play", "Settings", and "Quit". The function continuously updates
+ * and renders the scene until the user closes the window or navigates to a different scene.
+ *
+ * @return void
+ */
 void Scenes::mainMenu()
 {
     ComponentManager componentManager;
@@ -97,7 +113,7 @@ void Scenes::mainMenu()
         entityManager, componentManager, textureManager, "Play", &onPlayButtonClicked);
     auto pos = componentManager.getComponent<PositionComponent>(playButton.getId());
     if (pos) {
-        pos.value()->x = 760;
+        pos.value()->x = 960;
         pos.value()->y = 100;
     }
 
@@ -109,7 +125,7 @@ void Scenes::mainMenu()
         entityManager, componentManager, textureManager, "Settings", &onSettingsButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(settingsButton.getId());
     if (pos) {
-        pos.value()->x = 760;
+        pos.value()->x = 960;
         pos.value()->y = 250;
     }
 
@@ -121,7 +137,7 @@ void Scenes::mainMenu()
         entityManager, componentManager, textureManager, "Quit", &onQuitButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(quitButton.getId());
     if (pos) {
-        pos.value()->x = 760;
+        pos.value()->x = 960;
         pos.value()->y = 500;
     }
 
@@ -143,6 +159,30 @@ void Scenes::mainMenu()
     }
 }
 
+/**
+ * @brief This function handles the main game loop for the Scenes class. It contains the logic for
+ * connecting to a server, updating entities, handling user input, and rendering the game.
+ *
+ * @details The game loop performs the following steps:
+ * 1. Connects to a server using the r_type::net::Client class.
+ * 2. Initializes the ComponentManager, TextureManager, and EntityManager.
+ * 3. Creates a background entity and sets its sprite component.
+ * 4. Defines lambda functions for updating player position and firing missiles.
+ * 5. Enters the main loop, which continues until the window is closed.
+ * 6. Within the loop, it checks for user input events and handles them accordingly.
+ * 7. If the server is connected, it processes incoming messages and updates entities accordingly.
+ * 8. It then updates the entities using the UpdateSystem and renders them using the RenderSystem.
+ *
+ * @note This code assumes the presence of the r_type::net::Client, ComponentManager,
+ * TextureManager, EntityManager, UpdateSystem, and RenderSystem classes.
+ *
+ * @see r_type::net::Client
+ * @see ComponentManager
+ * @see TextureManager
+ * @see EntityManager
+ * @see UpdateSystem
+ * @see RenderSystem
+ */
 void Scenes::gameLoop()
 {
     r_type::net::Client c;
@@ -150,27 +190,45 @@ void Scenes::gameLoop()
 
     ComponentManager componentManager;
     TextureManager textureManager;
+    EntityManager entityManager;
 
+    UpdateSystem updateSystem(*_window);
     RenderSystem renderSystem(*_window);
 
     sf::Event event;
 
+    /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
+    sf::Clock clock;
+    /////////////////////////////////////////////////////////////////////////////////// TEMPORARY
+
     auto updatePlayerPosition = [&](const vf2d &delta) {
-        EntityInformation desc = c.GetAPlayer(c.GetEntityID());
         r_type::net::Message<TypeMessage> msg;
-        desc.vPos.x += delta.x;
-        desc.vPos.y += delta.y;
         msg.header.id = TypeMessage::MoveEntityMessage;
-        msg << desc;
+        if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
+            auto &sprites = **spritesOpt;
+            auto spriteComponent = sprites[c.getPlayerId()];
+            auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
+            int playerPosX = playerSprite->sprite.getPosition().x;
+            int playerPosY = playerSprite->sprite.getPosition().y;
+            msg << vf2d{playerPosX + delta.x, playerPosY + delta.y};
+        }
+    };
+
+    auto fireMissile = [&]() {
+        r_type::net::Message<TypeMessage> msg;
+        msg.header.id = TypeMessage::CreateEntityMessage;
+        msg << CreatableClientObject::MISSILE << c.getPlayerId();
         c.Send(msg);
     };
 
     while (_window->isOpen()) {
+        float deltaTime =
+            clock.restart().asSeconds(); /////////////////////////////////////// TEMPORARY
         while (_window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::DestroyEntityMessage;
-                msg << c.GetEntityID();
+                msg << c.getPlayerId();
                 c.Send(msg);
                 _window->close();
             }
@@ -182,13 +240,7 @@ void Scenes::gameLoop()
                     c.MessageAll();
                 }
                 if (event.key.code == keyBinds[Actions::FIRE]) {
-                    EntityInformation desc = c.GetAPlayer(c.GetEntityID());
-                    r_type::net::Message<TypeMessage> msg;
-                    desc.vPos.x += 50;
-                    desc.vPos.y += 50;
-                    msg.header.id = TypeMessage::CreateEntityMessage;
-                    msg << desc;
-                    c.Send(msg);
+                    fireMissile();
                 }
                 if (event.key.code == keyBinds[Actions::QUIT]) {
                     _window->close();
@@ -218,8 +270,17 @@ void Scenes::gameLoop()
                     std::cout << "Server Accepted Connection" << std::endl;
                     EntityInformation entity;
                     msg >> entity;
-                    c.AddEntity(entity);
-                    c.SetEntityID(entity.uniqueID);
+                    c.setPlayerId(entity.uniqueID);
+                    // std::cout << "Player ID: " << c.getPlayerId() << std::endl;
+                    // ///////////////////////////////
+                    c.addEntity(entity, componentManager, textureManager);
+                    // if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
+                    //     std::cout << "sprites um exists" << std::endl;
+                    //     /////////////////////////////// auto &sprites = **spritesOpt; auto
+                    //     spriteComponent = sprites[c.getPlayerId()]; auto playerSprite =
+                    //     std::any_cast<SpriteComponent>(&spriteComponent);
+                    // }
+
                 } break;
                 case TypeMessage::ServerPing: {
                     std::chrono::system_clock::time_point timeNow =
@@ -244,7 +305,7 @@ void Scenes::gameLoop()
                 case TypeMessage::CreateEntityMessage: {
                     EntityInformation entity;
                     msg >> entity;
-                    c.AddEntity(entity);
+                    c.addEntity(entity, componentManager, textureManager);
                 } break;
                 case TypeMessage::CreateEntityResponse: {
                 } break;
@@ -252,7 +313,7 @@ void Scenes::gameLoop()
                     r_type::net::Message<TypeMessage> reponse;
                     uint32_t id;
                     msg >> id;
-                    c.RemoveEntity(id);
+                    c.removeEntity(id, componentManager);
                     reponse.header.id = TypeMessage::DestroyEntityResponse;
                     c.Send(reponse);
                 } break;
@@ -261,7 +322,15 @@ void Scenes::gameLoop()
                     reponse.header.id = TypeMessage::UpdateEntityResponse;
                     EntityInformation entity;
                     msg >> entity;
-                    c.UpdateEntity(entity);
+                    c.updateEntity(entity, componentManager);
+                } break;
+                case TypeMessage::UpdateEntityResponse: {
+                } break;
+                case TypeMessage::MoveEntityMessage: {
+                } break;
+                case TypeMessage::MoveEntityResponse: {
+                } break;
+                case TypeMessage::DestroyEntityResponse: {
                 } break;
                 }
             }
@@ -270,11 +339,15 @@ void Scenes::gameLoop()
             _window->close();
             break;
         }
-
+        updateSystem.update(entityManager, componentManager, deltaTime);
         renderSystem.render(componentManager);
     }
 }
 
+/**
+ * @brief Displays the in-game menu.
+ *
+ */
 void Scenes::inGameMenu()
 {
     ComponentManager componentManager;
@@ -302,7 +375,7 @@ void Scenes::inGameMenu()
         entityManager, componentManager, textureManager, "Resume", &onResumeButtonClicked);
     auto pos = componentManager.getComponent<PositionComponent>(resumeButton.getId());
     if (pos) {
-        pos.value()->x = 760;
+        pos.value()->x = 960;
         pos.value()->y = 100;
     }
 
@@ -314,7 +387,7 @@ void Scenes::inGameMenu()
         entityManager, componentManager, textureManager, "Settings", &onSettingsButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(settingsButton.getId());
     if (pos) {
-        pos.value()->x = 760;
+        pos.value()->x = 960;
         pos.value()->y = 250;
     }
 
@@ -326,7 +399,7 @@ void Scenes::inGameMenu()
         textureManager, "Return To Main Menu", &onReturnToMainMenuButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(returnToMainMenu.getId());
     if (pos) {
-        pos.value()->x = 760;
+        pos.value()->x = 960;
         pos.value()->y = 500;
     }
 
@@ -360,7 +433,7 @@ void createDaltonismChoiceButtons(std::vector<Entity *> *buttons,
         entityManager, componentManager, textureManager, "Normal", &onNormalButtonClicked);
     auto pos = componentManager.getComponent<PositionComponent>(normalButton.getId());
     if (pos) {
-        pos.value()->x = 1260;
+        pos.value()->x = 1460;
         pos.value()->y = 100;
     }
 
@@ -372,7 +445,7 @@ void createDaltonismChoiceButtons(std::vector<Entity *> *buttons,
         entityManager, componentManager, textureManager, "Tritanopia", &onTritanopiaButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(tritanopiaButton.getId());
     if (pos) {
-        pos.value()->x = 1260;
+        pos.value()->x = 1460;
         pos.value()->y = 250;
     }
 
@@ -384,7 +457,7 @@ void createDaltonismChoiceButtons(std::vector<Entity *> *buttons,
         textureManager, "Deuteranopia", &onDeuteranopiaButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(deuteranopiaButton.getId());
     if (pos) {
-        pos.value()->x = 1260;
+        pos.value()->x = 1460;
         pos.value()->y = 400;
     }
 
@@ -396,7 +469,7 @@ void createDaltonismChoiceButtons(std::vector<Entity *> *buttons,
         entityManager, componentManager, textureManager, "Protanopia", &onProtanopiaButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(protanopiaButton.getId());
     if (pos) {
-        pos.value()->x = 1260;
+        pos.value()->x = 1460;
         pos.value()->y = 550;
     }
 
@@ -418,7 +491,7 @@ void createGameModeChoiceButtons(std::vector<Entity *> *buttons,
         entityManager, componentManager, textureManager, "Easy", &easyButtonClicked);
     auto pos = componentManager.getComponent<PositionComponent>(easyButton.getId());
     if (pos) {
-        pos.value()->x = 1260;
+        pos.value()->x = 1460;
         pos.value()->y = 250;
     }
 
@@ -430,7 +503,7 @@ void createGameModeChoiceButtons(std::vector<Entity *> *buttons,
         entityManager, componentManager, textureManager, "Medium", &mediumButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(mediumButton.getId());
     if (pos) {
-        pos.value()->x = 1260;
+        pos.value()->x = 1460;
         pos.value()->y = 400;
     }
 
@@ -442,7 +515,7 @@ void createGameModeChoiceButtons(std::vector<Entity *> *buttons,
         entityManager, componentManager, textureManager, "Hard", &hardButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(hardButton.getId());
     if (pos) {
-        pos.value()->x = 1260;
+        pos.value()->x = 1460;
         pos.value()->y = 550;
     }
 
@@ -479,7 +552,7 @@ void createKeyBindingButtons(std::vector<Entity *> *buttons, ComponentManager &c
         entityManager, componentManager, textureManager, "Up : ", &bindkey);
     auto pos = componentManager.getComponent<PositionComponent>(bindUpButton.getId());
     if (pos) {
-        pos.value()->x = 1450;
+        pos.value()->x = 1650;
         pos.value()->y = 100;
     }
 
@@ -487,7 +560,7 @@ void createKeyBindingButtons(std::vector<Entity *> *buttons, ComponentManager &c
         entityManager, componentManager, textureManager, "Down : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindDownButton.getId());
     if (pos) {
-        pos.value()->x = 1450;
+        pos.value()->x = 1650;
         pos.value()->y = 250;
     }
 
@@ -495,7 +568,7 @@ void createKeyBindingButtons(std::vector<Entity *> *buttons, ComponentManager &c
         entityManager, componentManager, textureManager, "Left : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindLeftButton.getId());
     if (pos) {
-        pos.value()->x = 1200;
+        pos.value()->x = 1400;
         pos.value()->y = 250;
     }
 
@@ -503,7 +576,7 @@ void createKeyBindingButtons(std::vector<Entity *> *buttons, ComponentManager &c
         entityManager, componentManager, textureManager, "Right : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindRightButton.getId());
     if (pos) {
-        pos.value()->x = 1700;
+        pos.value()->x = 1900;
         pos.value()->y = 250;
     }
 
@@ -511,7 +584,7 @@ void createKeyBindingButtons(std::vector<Entity *> *buttons, ComponentManager &c
         entityManager, componentManager, textureManager, "Fire : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindFireButton.getId());
     if (pos) {
-        pos.value()->x = 1450;
+        pos.value()->x = 1650;
         pos.value()->y = 400;
     }
 
@@ -519,7 +592,7 @@ void createKeyBindingButtons(std::vector<Entity *> *buttons, ComponentManager &c
         entityManager, componentManager, textureManager, "Pause : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindPauseButton.getId());
     if (pos) {
-        pos.value()->x = 1450;
+        pos.value()->x = 1650;
         pos.value()->y = 550;
     }
 
@@ -527,7 +600,7 @@ void createKeyBindingButtons(std::vector<Entity *> *buttons, ComponentManager &c
         entityManager, componentManager, textureManager, "Quit : ", &bindkey);
     pos = componentManager.getComponent<PositionComponent>(bindQuitButton.getId());
     if (pos) {
-        pos.value()->x = 1450;
+        pos.value()->x = 1650;
         pos.value()->y = 700;
     }
 
@@ -540,6 +613,12 @@ void createKeyBindingButtons(std::vector<Entity *> *buttons, ComponentManager &c
     buttons->push_back(&bindQuitButton);
 }
 
+/**
+ * @brief Displays the settings menu.
+ *
+ * This function is responsible for displaying the settings menu in the game.
+ * It does not return any value.
+ */
 void Scenes::settingsMenu()
 {
     ComponentManager componentManager;
@@ -570,7 +649,7 @@ void Scenes::settingsMenu()
         textureManager, "Daltonism Mode", &onDaltonismModeButtonClicked);
     auto pos = componentManager.getComponent<PositionComponent>(daltonismModeButton.getId());
     if (pos) {
-        pos.value()->x = 760;
+        pos.value()->x = 960;
         pos.value()->y = 100;
     }
 
@@ -585,7 +664,7 @@ void Scenes::settingsMenu()
         entityManager, componentManager, textureManager, "Game Mode", &onGameModeButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(gameModeButton.getId());
     if (pos) {
-        pos.value()->x = 760;
+        pos.value()->x = 960;
         pos.value()->y = 250;
     }
 
@@ -600,7 +679,7 @@ void Scenes::settingsMenu()
         entityManager, componentManager, textureManager, "Key Binds", &onKeybindButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(keyBindsButton.getId());
     if (pos) {
-        pos.value()->x = 760;
+        pos.value()->x = 960;
         pos.value()->y = 400;
     }
 
@@ -612,7 +691,7 @@ void Scenes::settingsMenu()
         entityManager, componentManager, textureManager, "Back", &onBackButtonClicked);
     pos = componentManager.getComponent<PositionComponent>(backButton.getId());
     if (pos) {
-        pos.value()->x = 760;
+        pos.value()->x = 960;
         pos.value()->y = 650;
     }
 
@@ -645,6 +724,14 @@ void Scenes::settingsMenu()
     }
 }
 
+/**
+ * @brief Renders the current scene based on the value of currentScene.
+ *
+ * The render function uses a switch statement to determine which scene to render.
+ * It calls the corresponding member function based on the value of currentScene.
+ *
+ * @note The currentScene variable must be set before calling this function.
+ */
 void Scenes::render()
 {
     switch (this->currentScene) {

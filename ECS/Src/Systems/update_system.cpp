@@ -10,8 +10,8 @@
 void UpdateSystem::update(
     EntityManager &entityManager, ComponentManager &componentManager, float deltaTime)
 {
-    updateSpritePosition(entityManager, componentManager);
     updateBackground(componentManager, deltaTime);
+    updateSpritePosition(entityManager, componentManager);
 }
 
 void UpdateSystem::updateSpritePosition(
