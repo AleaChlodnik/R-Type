@@ -39,6 +39,7 @@ class TextureManager {
         }
 
         textures[filePath] = std::move(texture);
+
         return textures[filePath];
     }
 
