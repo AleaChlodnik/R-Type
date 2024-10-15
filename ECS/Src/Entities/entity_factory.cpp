@@ -178,6 +178,10 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
 {
     Entity button = entityManager.createEntity();
 
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
+    sf::Vector2f scale(1.0f, 1.0f);
+
+    SpriteComponent sprite(texture, pos.value()->x, pos.value()->y, scale);
     PositionComponent start_position(0, 0);
     TextComponent textComponent(text);
     OnClickComponent onClickfunction(*onClick);
@@ -185,6 +189,7 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
     componentManager.addComponent<PositionComponent>(button.getId(), start_position);
     componentManager.addComponent<OnClickComponent>(button.getId(), onClickfunction);
     componentManager.addComponent<TextComponent>(button.getId(), textComponent);
+    componentManager.addComponent<SpriteComponent>(playButton.getId(), sprite);
 
     return button;
 }

@@ -14,7 +14,7 @@ class RenderSystem : public ISystem {
   public:
     RenderSystem(sf::RenderWindow &window) : _window(window) {}
 
-    void render(EntityManager &entityManager, ComponentManager &componentManager);
+    void render(ComponentManager &componentManager);
 
   private:
     sf::RenderWindow &_window;
