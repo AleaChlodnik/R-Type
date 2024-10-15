@@ -33,6 +33,18 @@ class EntityFactory : public IEntityFactory {
 
     /**
      * @brief Creates a player entity.
+     * 
+     * This function creates a player entity using the provided entity manager and component manager.
+     * 
+     * @param entityManager The entity manager to use for creating the entity.
+     * @param componentManager The component manager to use for adding components to the entity.
+     * @return The created player entity.
+     */
+    Entity createPlayer(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
+
+    /**
+     * @brief Creates a player entity.
      *
      * This function creates a player entity using the provided entity manager and component
      * manager.
