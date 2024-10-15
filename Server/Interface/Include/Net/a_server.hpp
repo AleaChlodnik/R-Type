@@ -209,9 +209,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
             const std::vector<Entity> entities = entityManager.getAllEntities();
             for (const auto &entity : entities) {
-                getCompo
-                if (entity.getId() != entityID && entity.getId() != 1) {
-                }
+                getCompo if (entity.getId() != entityID && entity.getId() != 1) {}
             }
         }
         newClock -= std::chrono::milliseconds(100);
