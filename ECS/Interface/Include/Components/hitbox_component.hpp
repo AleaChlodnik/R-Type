@@ -8,6 +8,6 @@
 #pragma once
 
 struct HitboxComponent {
-    float w;
-    float h;
+    int w;
+    int h;
 };
