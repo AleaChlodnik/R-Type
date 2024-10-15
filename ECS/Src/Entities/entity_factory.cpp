@@ -68,7 +68,7 @@ Entity EntityFactory::createAlly(EntityManager &entityManager, ComponentManager 
     componentManager.addComponent<PositionComponent>(ally.getId(), startPosition);
     componentManager.addComponent<HitboxComponent>(ally.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(ally.getId(), health);
-    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
+    componentManager.addComponent<SpriteData_t>(ally.getId(), sprite);
 
 
     return ally;
@@ -91,7 +91,7 @@ Entity EntityFactory::createBasicEnemy(EntityManager &entityManager,
     componentManager.addComponent<VelocityComponent>(enemy.getId(), velocity);
     componentManager.addComponent<HitboxComponent>(enemy.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(enemy.getId(), health);
-    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
+    componentManager.addComponent<SpriteData_t>(enemy.getId(), sprite);
 
 
     return enemy;
@@ -114,7 +114,7 @@ Entity EntityFactory::createBasicMonster(EntityManager &entityManager,
     componentManager.addComponent<VelocityComponent>(monster.getId(), velocity);
     componentManager.addComponent<HitboxComponent>(monster.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(monster.getId(), health);
-    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
+    componentManager.addComponent<SpriteData_t>(monster.getId(), sprite);
 
     return monster;
 }
@@ -122,7 +122,7 @@ Entity EntityFactory::createBasicMonster(EntityManager &entityManager,
 Entity EntityFactory::createPlayerMissile(int playerId, EntityManager &entityManager,
     ComponentManager &componentManager)
 {
-    Entity playerMissle = entityManager.createEntity();
+    Entity playerMissile = entityManager.createEntity();
 
     auto playerPosition = componentManager.getComponent<PositionComponent>(playerId);
 
@@ -134,12 +134,12 @@ Entity EntityFactory::createPlayerMissile(int playerId, EntityManager &entityMan
     HitboxComponent hitbox{sprite.dimension.x, sprite.dimension.y};
 
     componentManager.addComponent<PlayerMissileComponent>(
-        playerMissle.getId(), playerMissileComponent);
-    componentManager.addComponent<PositionComponent>(playerMissle.getId(), startPosition);
-    componentManager.addComponent<VelocityComponent>(playerMissle.getId(), velocity);
-    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
+        playerMissile.getId(), playerMissileComponent);
+    componentManager.addComponent<PositionComponent>(playerMissile.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(playerMissile.getId(), velocity);
+    componentManager.addComponent<SpriteData_t>(playerMissile.getId(), sprite);
 
-    return playerMissle;
+    return playerMissile;
 }
 
 Entity EntityFactory::createAllyMissile(EntityManager &entityManager,
@@ -156,7 +156,7 @@ Entity EntityFactory::createAllyMissile(EntityManager &entityManager,
     componentManager.addComponent<AllyMissileComponent>(allyMissile.getId(), allyMissileComponent);
     componentManager.addComponent<PositionComponent>(allyMissile.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(allyMissile.getId(), velocity);
-    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
+    componentManager.addComponent<SpriteData_t>(allyMissile.getId(), sprite);
 
     return allyMissile;
 }
@@ -176,7 +176,7 @@ Entity EntityFactory::createEnemyMissile(EntityManager &entityManager,
         enemyMissile.getId(), enemyMissileComponent);
     componentManager.addComponent<PositionComponent>(enemyMissile.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(enemyMissile.getId(), velocity);
-    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
+    componentManager.addComponent<SpriteData_t>(enemyMissile.getId(), sprite);
 
 
     return enemyMissile;
@@ -200,8 +200,6 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
     componentManager.addComponent<OnClickComponent>(button.getId(), onClickfunction);
     componentManager.addComponent<TextComponent>(button.getId(), textComponent);
     componentManager.addComponent<SpriteComponent>(button.getId(), sprite);
-    componentManager.addComponent<SpriteData_t>(player.getId(), sprite);
-
 
     return button;
 }
