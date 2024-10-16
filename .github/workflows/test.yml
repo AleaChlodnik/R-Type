@@ -135,11 +135,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-doc-pdf-${{ env.cache-name }}-
 
-      - name: Install Doxygen
-        run: sudo apt-get install -y doxygen
-
-      - name: Install LaTeX (Optional for PDF)
-        run: sudo apt-get install -y texlive-full
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: doxygen texlive-full
+          version: 1.0
 
       - name: Configure CMake and Build Documentation
         run: |
