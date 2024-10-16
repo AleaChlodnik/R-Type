@@ -201,7 +201,6 @@ void Scenes::gameLoop()
 
     auto updatePlayerPosition = [&](const vf2d &delta) {
         r_type::net::Message<TypeMessage> msg;
-        std::cout << "Updating Player Position" << std::endl;
         vf2d playerPos;
         msg.header.id = TypeMessage::MoveEntityMessage;
         if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {

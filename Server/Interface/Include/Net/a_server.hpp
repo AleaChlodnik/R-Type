@@ -210,7 +210,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
         bool bUpdateEntities = false;
         while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
-            1000) {
+            500) {
             bUpdateEntities = true;
 
             const std::vector<Entity> entities = entityManager.getAllEntities();
@@ -227,18 +227,34 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     if (monster && position && spriteData) {
                         position.value()->x -= 5;
                         MessageAllClients(
-                            msg << EntityInformation{static_cast<u_int32_t>(entity.getId()), *(spriteData.value()),
+                            msg << EntityInformation{static_cast<u_int32_t>(entity.getId()),
+                                *(spriteData.value()),
                                 {(position.value()->x), (position.value()->y)}});
                     }
                     if (missile && position && spriteData) {
-                        position.value()->x += 10;
-                        MessageAllClients(
-                            msg << EntityInformation{static_cast<u_int32_t>(entity.getId()), *(spriteData.value()),
-                                {(position.value()->x), (position.value()->y)}});
+                        position.value()->x += 20;
+                        EntityInformation newMissile = EntityInformation{
+                            static_cast<u_int32_t>(entity.getId()), *(spriteData.value()),
+                            {(position.value()->x), (position.value()->y)}};
+                        int newID = CheckPlayerPosition(newMissile);
+                        auto monster = componentManager.getComponent<BasicMonsterComponent>(newID);
+                        if (monster) {
+                            r_type::net::Message<TypeMessage> msgDestroy;
+                            msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
+                            msgDestroy << entity.getId();
+                            MessageAllClients(msgDestroy);
+                            RemoveEntities(entity.getId());
+
+                            msgDestroy << newID;
+                            MessageAllClients(msgDestroy);
+                            RemoveEntities(newID);
+                        } else {
+                            MessageAllClients(msg << newMissile);
+                        }
                     }
                 }
             }
-            _clock += std::chrono::milliseconds(1000);
+            _clock += std::chrono::milliseconds(500);
         }
         if (bUpdateEntities)
             _clock = newClock;
@@ -329,8 +345,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         entityInfo.uniqueID = missile.getId();
         auto playerPos =
             componentManager.getComponent<PositionComponent>(GetClientEntityId(clientId)).value();
-        entityInfo.vPos.x = playerPos->x + 150;
-        entityInfo.vPos.y = playerPos->y + 70;
+        entityInfo.vPos.x = playerPos->x;
+        entityInfo.vPos.y = playerPos->y;
         auto MissilePos =
             componentManager.getComponent<PositionComponent>(entityInfo.uniqueID).value();
         if (MissilePos) {

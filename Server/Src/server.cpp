@@ -84,9 +84,9 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         OnClientDisconnect(client, msg);
     } break;
     case TypeMessage::CreateEntityMessage: {
-        CreatableClientObject tkt;
-        msg >> tkt;
-        switch (tkt) {
+        CreatableClientObject incomingObject;
+        msg >> incomingObject;
+        switch (incomingObject) {
         case CreatableClientObject::MISSILE: {
             r_type::net::Message<TypeMessage> ResponseMsg;
             ResponseMsg.header.id = TypeMessage::CreateEntityResponse;
