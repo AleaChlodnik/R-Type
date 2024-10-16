@@ -215,6 +215,17 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
     }
 
+    /**
+     * @brief Updates the position of an entity based on the message received and the client ID.
+     *
+     * This function updates the position of an entity. If the entity is not touching any other
+     * player, it updates its position and sends a message to all clients about the new position.
+     * If it touches another player, a destroy message is sent to all clients.
+     *
+     * @param msg The message containing the new position of the entity.
+     * @param clientId The ID of the client sending the update.
+     */
+
     void UpdateEntityPosition(r_type::net::Message<T> &msg, uint32_t clientId)
     {
         uint32_t entityId = GetClientEntityId(clientId);
@@ -248,12 +259,39 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             MessageAllClients(msg);
         }
     }
+    /**
+     * @brief Retrieves the entity ID associated with a client ID.
+     *
+     * @param id The client ID.
+     * @return uint32_t The entity ID associated with the client.
+     */
 
     uint32_t GetClientEntityId(uint32_t id) { return clientPlayerID[id]; }
 
+    /**
+     * @brief Removes a player from the game based on the client ID.
+     *
+     * @param id The client ID of the player to be removed.
+     */
+
     void RemovePlayer(uint32_t id) { clientPlayerID.erase(id); }
+
+    /**
+     * @brief Removes entities associated with a player.
+     *
+     * @param id The ID of the player whose entities are to be removed.
+     */
     void RemoveEntities(uint32_t id) { entityManager.removeEntity(id); }
 
+    /**
+     * @brief Initializes a new player entity and assigns a random position.
+     *
+     * The function creates a new player entity, assigns it a random position, and ensures that
+     * it does not overlap with any other players.
+     *
+     * @param clientId The client ID of the player being initialized.
+     * @return EntityInformation The information of the newly created player entity.
+     */
     EntityInformation InitiatePlayers(int clientId)
     {
         EntityInformation entityInfo;
@@ -282,6 +320,15 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         return entityInfo;
     }
 
+    /**
+     * @brief Initializes a missile entity associated with a player.
+     *
+     * The function creates a missile entity associated with a player and assigns its position
+     * based on the player's current position.
+     *
+     * @param clientId The client ID of the player firing the missile.
+     * @return EntityInformation The information of the newly created missile entity.
+     */
     EntityInformation InitiateMissile(int clientId)
     {
         EntityInformation entityInfo;
@@ -299,6 +346,13 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         return entityInfo;
     }
 
+    /**
+     * @brief Initializes a background entity.
+     *
+     * The function creates and returns information about the background entity.
+     *
+     * @return EntityInformation The information of the background entity.
+     */
     EntityInformation InitiateBackground()
     {
         EntityInformation entityInfo;
@@ -310,6 +364,16 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
         return entityInfo;
     }
+
+    /**
+     * @brief Sends a list of existing entities to a newly connected client for initialization.
+     *
+     * The function iterates through all existing entities and sends their information to the
+     * newly connected client, excluding specific entities such as the client itself.
+     *
+     * @param client The connection to the client.
+     * @param entityID The ID of the entity to exclude (usually the client's own entity).
+     */
 
     void InitListEntities(std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID)
     {
