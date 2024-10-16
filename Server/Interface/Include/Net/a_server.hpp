@@ -204,16 +204,44 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         //     << "Time: "
         //     << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
         //     << std::endl;
-        while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
-            100) {
 
-            // const std::vector<Entity> entities = entityManager.getAllEntities();
-            // for (const auto &entity : entities) {
-            //     getCompo if (entity.getId() != entityID && entity.getId() != 1) {}
-            // }
+        r_type::net::Message<TypeMessage> msg;
+        msg.header.id = TypeMessage::UpdateEntity;
+
+        bool bUpdateEntities = false;
+        while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
+            1000) {
+            bUpdateEntities = true;
+
+            const std::vector<Entity> entities = entityManager.getAllEntities();
+            for (const auto &entity : entities) {
+                if (entity.getId() != 1) {
+                    auto monster =
+                        componentManager.getComponent<BasicMonsterComponent>(entity.getId());
+                    auto missile =
+                        componentManager.getComponent<PlayerMissileComponent>(entity.getId());
+                    auto position =
+                        componentManager.getComponent<PositionComponent>(entity.getId());
+                    auto spriteData =
+                        componentManager.getComponent<SpriteDataComponent>(entity.getId());
+                    if (monster && position && spriteData) {
+                        position.value()->x -= 3;
+                        MessageAllClients(
+                            msg << EntityInformation{entity.getId(), *(spriteData.value()),
+                                {(position.value()->x), (position.value()->y)}});
+                    }
+                    if (missile && position && spriteData) {
+                        position.value()->x += 6;
+                        MessageAllClients(
+                            msg << EntityInformation{entity.getId(), *(spriteData.value()),
+                                {(position.value()->x), (position.value()->y)}});
+                    }
+                }
+            }
+            _clock += std::chrono::milliseconds(1000);
         }
-        newClock -= std::chrono::milliseconds(100);
-        _clock = newClock;
+        if (bUpdateEntities)
+            _clock = newClock;
 
         size_t nMessageCount = 0;
         while (nMessageCount < nMaxMessages && !m_qMessagesIn.empty()) {
