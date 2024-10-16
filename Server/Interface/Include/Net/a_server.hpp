@@ -225,13 +225,13 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     auto spriteData =
                         componentManager.getComponent<SpriteDataComponent>(entity.getId());
                     if (monster && position && spriteData) {
-                        position.value()->x -= 3;
+                        position.value()->x -= 5;
                         MessageAllClients(
                             msg << EntityInformation{entity.getId(), *(spriteData.value()),
                                 {(position.value()->x), (position.value()->y)}});
                     }
                     if (missile && position && spriteData) {
-                        position.value()->x += 6;
+                        position.value()->x += 10;
                         MessageAllClients(
                             msg << EntityInformation{entity.getId(), *(spriteData.value()),
                                 {(position.value()->x), (position.value()->y)}});
