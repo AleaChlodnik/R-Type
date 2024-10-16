@@ -98,8 +98,8 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
       - name: compile project
         run: cmake -S . -B build
-      - name: build project
-        run: cmake --build build -- /maxcpucount:4
+      # - name: build project
+      #   run: cmake --build build -- /maxcpucount:4
 
   deploy-pdf-doc:
     needs: [linux_install]
