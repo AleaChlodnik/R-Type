@@ -5,10 +5,11 @@
 ** entity_factory
 */
 
-#include "Components/components.hpp"
+#include <Components/components.hpp>
 #include <Entities/entity_factory.hpp>
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
+#include <cstdint>
 
 bool CheckPositionEntity(
     EntityManager &entityManager, ComponentManager &componentManager, u_int32_t entityID)

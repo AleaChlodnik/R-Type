@@ -125,16 +125,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-apt-pdf-doc-install-${{ env.cache-name }}-
 
-      - name: Cache cmake build doc pdf
-        id: cache-cmake
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-cmake-build-doc-pdf
-        with:
-          path: ./build
-          key: ${{ runner.os }}-build-doc-pdf-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-build-doc-pdf-${{ env.cache-name }}-
+      # - name: Cache cmake build doc pdf
+      #   id: cache-cmake
+      #   uses: actions/cache@v4
+      #   env:
+      #     cache-name: cache-cmake-build-doc-pdf
+      #   with:
+      #     path: ./build
+      #     key: ${{ runner.os }}-build-doc-pdf-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-build-doc-pdf-${{ env.cache-name }}-
 
       - uses: awalsh128/cache-apt-pkgs-action@latest
         with:
