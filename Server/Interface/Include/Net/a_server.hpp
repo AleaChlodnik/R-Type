@@ -207,10 +207,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
             100) {
 
-            const std::vector<Entity> entities = entityManager.getAllEntities();
-            for (const auto &entity : entities) {
-                getCompo if (entity.getId() != entityID && entity.getId() != 1) {}
-            }
+            // const std::vector<Entity> entities = entityManager.getAllEntities();
+            // for (const auto &entity : entities) {
+            //     getCompo if (entity.getId() != entityID && entity.getId() != 1) {}
+            // }
         }
         newClock -= std::chrono::milliseconds(100);
         _clock = newClock;

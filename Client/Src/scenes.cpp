@@ -716,9 +716,27 @@ void Scenes::settingsMenu()
     buttons.push_back(&backButton);
 
     if (displayDaltonismChoice) {
-        // createDaltonismChoiceButtons(
-        //     &buttons, componentManager, entityManager, textureManager, entityFactory);
+        //createDaltonismChoiceButtons(
+        //    &buttons, componentManager, entityManager, textureManager, entityFactory);
+        sf::RectangleShape filter(sf::Vector2f(
+            (*_window).getSize().x, (*_window).getSize().y));
+            currentDaltonismMode = DaltonismMode::TRITANOPIA;
+        switch (currentDaltonismMode) {
+        case DaltonismMode::NORMAL:
+            filter.setFillColor(sf::Color(0, 0, 0, 0));
+            break;
+        case DaltonismMode::TRITANOPIA:
+            filter.setFillColor(sf::Color(255, 255, 100, 100));
+            break;
+        case DaltonismMode::DEUTERANOPIA:
+            filter.setFillColor(sf::Color(255, 100, 255, 100));
+            break;
+        case DaltonismMode::PROTANOPIA:
+            filter.setFillColor(sf::Color(255, 255, 100, 100));
+            break;
+        }
     }
+
     if (displayGameModeChoice) {
         // createGameModeChoiceButtons(
         //     &buttons, componentManager, entityManager, textureManager, entityFactory);
