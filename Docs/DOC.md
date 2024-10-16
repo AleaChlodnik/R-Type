@@ -68,10 +68,10 @@ This table represents a communication where the client sends and receives a mess
 |---------------------------|------------------|---------------------------|
 |                           |       Send       |                           |
 |  process message          | <--------------- | header: `DeadEntityMessage` |
-|                           |                  | body: `entityInfo_t`        |
+|                           |                  | body: `entityId`        |
 |                           |     Response     |                           |
 | header: `DeadEntityResponse` | ---------------> |                           |
-| body: `entityInfo_t`        |                  |                           |
+| body: ``                 |                  |                           |
 
 **Transmission**: The server sends a `DeadEntityMessage` to the client, containing information about an entity (in `entityInfo_t` format) that is dead.
 **Response**: The client processes the message and responds back to the server with the `DeadEntityResponse` type of message to confirm reception.
@@ -86,13 +86,13 @@ This table depicts a communication where the server requests the creation of an 
 |---------------------------|------------------|---------------------------|
 |                           |       Send       |                           |
 |  process message          | <--------------- | header: `CreateEntityMessage`|
-|                           |                  | body: `entityInfo_t`        |
+|                           |                  | body: `EntityInformation`        |
 |                           |     Response     |                           |
 | header: `CreateEntityResponse`| --------------->|                           |
-| body: `entityInfo_t`        |                  |                           |
+| body: ``        |                  |                           |
 
-**Transmission**: The server sends a `CreateEntityMessage` to the client, which includes entity creation data in `entityInfo_t`.
-**Response**: The client processes the message and sends a confirmation response back with the `CreateEntityResponse` message type and the same entity data.
+**Transmission**: The server sends a `CreateEntityMessage` to the client, which includes entity creation data in `EntityInformation`.
+**Response**: The client processes the message and sends a confirmation response back with the `CreateEntityResponse` message type.
 
 ---
 
@@ -104,9 +104,9 @@ This table outlines the communication flow for moving an entity:
 |---------------------------|------------------|---------------------------|
 |                           |       Send       |                           |
 |  process message          | <--------------- | header: `MoveEntityMessage` |
-|                           |                  | body: `entityInfo_t`        |
+|                           |                  | body: `EntityInformation`        |
 
-**Transmission**: The server sends a `MoveEntityMessage` to the client, containing data (in `entityInfo_t` format) about an entity that needs to be moved.
+**Transmission**: The server sends a `MoveEntityMessage` to the client, containing data (in `EntityInformation` format) about an entity that needs to be moved.
 **Response**: The client processes the message but does not send a response back in this table.
 
 ---
@@ -131,14 +131,13 @@ This table outlines the communication flow for moving an entity:
 
 ### Move Player Message Exchange
 
-This table shows the process for updating the player's position:
-
 |         Client            | Transmission     |          Server           |
 |---------------------------|------------------|---------------------------|
+| header: `MoveEntityMessage` |     Send       |                           |
+| bode: `Vector_position_t`    | --------------->|       process             |
 |                           |       Send       |                           |
-| header: `MovePlayerMessage` | ---------------> |  process message          |
-| body: `entityInfo_t`        |                  |                           |
+|  process message          | <--------------- | header: `UpdateEntity` |
+|                           |                  | body: `EntityInformation`        |
 
-**Transmission**: The client sends a `MovePlayerMessage` to the server to update the server with the new player position.
-
-**Response**: The server processes the message, but there is no response from the server shown in this table.
+**Transmission**: The Client sends a `MoveEntityMessage` to the Server, containing data (in `Vector_position_t` format) about an entity that needs to be moved.
+**Response**: The server processes the message and send a response message with the `EntityInformation`.
