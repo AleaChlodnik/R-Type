@@ -68,9 +68,9 @@ class Scenes {
         QUIT
     };
 
-    std::map<Actions, sf::Keyboard::Key> keyBinds = {{Actions::UP, sf::Keyboard::Key::W},
-        {Actions::DOWN, sf::Keyboard::Key::S}, {Actions::LEFT, sf::Keyboard::Key::A},
-        {Actions::RIGHT, sf::Keyboard::Key::D}, {Actions::FIRE, sf::Keyboard::Key::Space},
+    std::map<Actions, sf::Keyboard::Key> keyBinds = {{Actions::UP, sf::Keyboard::Key::Up},
+        {Actions::DOWN, sf::Keyboard::Key::Down}, {Actions::LEFT, sf::Keyboard::Key::Left},
+        {Actions::RIGHT, sf::Keyboard::Key::Right}, {Actions::FIRE, sf::Keyboard::Key::Space},
         {Actions::PAUSE, sf::Keyboard::Key::Escape}, {Actions::QUIT, sf::Keyboard::Key::Q}};
 
   public:
