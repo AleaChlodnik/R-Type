@@ -197,8 +197,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     void Update(size_t nMaxMessages = -1, bool bWait = false)
     {
-        if (bWait)
-            m_qMessagesIn.wait();
+        // if (bWait)
+        //     m_qMessagesIn.wait();
         std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
         // std::cout
         //     << "Time: "
