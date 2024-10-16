@@ -227,13 +227,15 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     if (monster && position && spriteData) {
                         position.value()->x -= 5;
                         MessageAllClients(
-                            msg << EntityInformation{static_cast<u_int32_t>(entity.getId()), *(spriteData.value()),
+                            msg << EntityInformation{static_cast<u_int32_t>(entity.getId()),
+                                *(spriteData.value()),
                                 {(position.value()->x), (position.value()->y)}});
                     }
                     if (missile && position && spriteData) {
                         position.value()->x += 10;
                         MessageAllClients(
-                            msg << EntityInformation{static_cast<u_int32_t>(entity.getId()), *(spriteData.value()),
+                            msg << EntityInformation{static_cast<u_int32_t>(entity.getId()),
+                                *(spriteData.value()),
                                 {(position.value()->x), (position.value()->y)}});
                     }
                 }
