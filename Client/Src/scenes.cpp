@@ -716,11 +716,10 @@ void Scenes::settingsMenu()
     buttons.push_back(&backButton);
 
     if (displayDaltonismChoice) {
-        //createDaltonismChoiceButtons(
-        //    &buttons, componentManager, entityManager, textureManager, entityFactory);
-        sf::RectangleShape filter(sf::Vector2f(
-            (*_window).getSize().x, (*_window).getSize().y));
-            currentDaltonismMode = DaltonismMode::TRITANOPIA;
+        // createDaltonismChoiceButtons(
+        //     &buttons, componentManager, entityManager, textureManager, entityFactory);
+        sf::RectangleShape filter(sf::Vector2f((*_window).getSize().x, (*_window).getSize().y));
+        currentDaltonismMode = DaltonismMode::TRITANOPIA;
         switch (currentDaltonismMode) {
         case DaltonismMode::NORMAL:
             filter.setFillColor(sf::Color(0, 0, 0, 0));
