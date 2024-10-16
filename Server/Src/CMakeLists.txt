@@ -4,7 +4,7 @@ add_executable(r-type_server main.cpp server.cpp)
 # sfml-system)
 target_compile_features(r-type_server PRIVATE cxx_std_17)
 
-target_link_libraries(r-type_server r-type_interfaces r-type_server_interfaces)
+target_link_libraries(r-type_server r-type_interfaces r-type_server_interfaces r-type_ecs_src r-type_ecs_interfaces)
 
 if(WIN32)
   target_compile_definitions(r-type_server PRIVATE _WIN32)

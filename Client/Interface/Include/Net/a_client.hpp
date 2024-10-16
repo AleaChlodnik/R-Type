@@ -7,8 +7,11 @@
 
 #pragma once
 
-#include "i_client.hpp"
+#include <Components/component_manager.hpp>
+#include <Components/components.hpp>
+#include <Net/i_client.hpp>
 #include <entity_struct.hpp>
+#include <texture_manager.hpp>
 #include <unordered_map>
 
 namespace r_type {
@@ -21,12 +24,11 @@ template <typename T> class AClient : virtual public IClient<T> {
 
   public:
     /**
-     * @brief Connect to server
+     * @brief Connects to a remote host using UDP protocol.
      *
-     * @param host
-     * @param port
-     * @return true
-     * @return false
+     * @param host The IP address or hostname of the remote host.
+     * @param port The port number of the remote host.
+     * @return true if the connection is successful, false otherwise.
      */
     bool Connect(const std::string &host, const uint16_t port)
     {
@@ -52,8 +54,11 @@ template <typename T> class AClient : virtual public IClient<T> {
     }
 
     /**
-     * @brief Disconnect from server
+     * @brief Disconnects the client from the server.
      *
+     * This function disconnects the client from the server if it is currently connected.
+     * It stops the context and joins the context thread.
+     * It also releases the connection resource.
      */
     void Disconnect()
     {
@@ -69,7 +74,7 @@ template <typename T> class AClient : virtual public IClient<T> {
     }
 
     /**
-     * @brief return status of connection
+     * @brief Checks if the client is connected to the server.
      *
      * @return true
      * @return false
@@ -81,27 +86,6 @@ template <typename T> class AClient : virtual public IClient<T> {
         else
             return false;
     }
-
-    void AddEntity(EntityInformation entity)
-    {
-        Entities.insert_or_assign(entity.uniqueID, entity);
-    }
-
-    void RemoveEntity(uint32_t id) { Entities.erase(id); }
-
-    void UpdateEntity(EntityInformation entity)
-    {
-        if (Entities.find(entity.uniqueID) == Entities.end())
-            AddEntity(entity);
-        Entities[entity.uniqueID] = entity;
-    }
-
-    std::unordered_map<uint32_t, EntityInformation> GetPlayers() { return Entities; }
-
-    EntityInformation GetAPlayer(uint32_t id) { return Entities[id]; }
-
-    void SetEntityID(int id) { EntityID = id; }
-    int GetEntityID() { return EntityID; }
 
   public:
     /**
@@ -124,6 +108,14 @@ template <typename T> class AClient : virtual public IClient<T> {
 
     const std::unique_ptr<Connection<T>> &getConnection() { return m_connection; }
 
+    void setPlayerId(int id) { playerId = id; }
+    uint32_t getPlayerId() { return playerId; }
+
+    void addEntity(EntityInformation entity, ComponentManager &componentManager,
+        TextureManager &textureManager);
+    void removeEntity(int entityId, ComponentManager &componentManager);
+    void updateEntity(EntityInformation entity, ComponentManager &componentManager);
+
   protected:
     asio::io_context m_context;
     std::thread thrContext;
@@ -131,8 +123,7 @@ template <typename T> class AClient : virtual public IClient<T> {
 
   private:
     ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
-    std::unordered_map<uint32_t, EntityInformation> Entities;
-    int EntityID = 0;
+    uint32_t playerId = 0;
 };
 } // namespace net
 } // namespace r_type
