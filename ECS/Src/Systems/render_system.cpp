@@ -49,5 +49,22 @@ void RenderSystem::render(ComponentManager &componentManager)
             }
         }
     }
+    const auto text = componentManager.getComponentMap<TextComponent>();
+    if (text) {
+        sf::Font font;
+        font.loadFromFile("Client/Assets/Fonts/GODOFWAR.TTF");
+        for (const auto &pair : **text) {
+            const auto &textComponent = pair.second;
+            const int id = pair.first;
+            auto text = std::any_cast<TextComponent>(&textComponent);
+            if (text) {
+                sf::Text textToDraw(text->_text, font);
+                auto position = componentManager.getComponent<PositionComponent>(id);
+                textToDraw.setOrigin(textToDraw.getLocalBounds().width / 2.0f, textToDraw.getLocalBounds().height / 2.0f);
+                textToDraw.setPosition(position.value()->x, position.value()->y);
+                _window.draw(textToDraw);
+            }
+        }
+    }
     _window.display();
 }

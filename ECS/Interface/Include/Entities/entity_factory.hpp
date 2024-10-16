@@ -33,15 +33,15 @@ class EntityFactory : public IEntityFactory {
 
     /**
      * @brief Creates a player entity.
-     * 
-     * This function creates a player entity using the provided entity manager and component manager.
-     * 
+     *
+     * This function creates a player entity using the provided entity manager and component
+     * manager.
+     *
      * @param entityManager The entity manager to use for creating the entity.
      * @param componentManager The component manager to use for adding components to the entity.
      * @return The created player entity.
      */
-    Entity createPlayer(
-        EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager) override;
 
     /**
      * @brief Creates a player entity.
@@ -115,15 +115,32 @@ class EntityFactory : public IEntityFactory {
     Entity createButton(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &textureManager, std::string text,
         std::function<Scenes *(Scenes *)> *onClick);
-
+    /**
+     * @brief Creates a small button entity.
+     *
+     * This function creates a small button entity with the specified parameters.
+     *
+     * @param entityManager The entity manager to create the entity.
+     * @param componentManager The component manager to add components to the entity.
+     * @param textureManager The texture manager to load the button texture.
+     * @param text The text to display on the button.
+     * @param onClick The function to be called when the button is clicked.
+     *
+     * @return The created small button entity.
+     *
+     */
+    Entity createSmallButton(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &textureManager, std::string text,
+        std::function<Scenes *(Scenes *, Scenes::Actions)> *onClick);
     /**
      * @brief Creates an ally missile entity.
      *
-     * This function creates an ally missile entity using the provided entity manager and component
-     * manager.
+     * This function creates an ally missile entity using the provided entity manager and
+     * component manager.
      *
      * @param entityManager The entity manager used to create the entity.
-     * @param componentManager The component manager used to manage the components of the entity.
+     * @param componentManager The component manager used to manage the components of the
+     * entity.
      * @return The created ally missile entity.
      *
      */

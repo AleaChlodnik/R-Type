@@ -6,6 +6,8 @@
 */
 
 #pragma once
+
+#include "Entities/entity.hpp"
 #include <SFML/Graphics.hpp>
 
 /**
@@ -17,7 +19,21 @@
  * and daltonism mode.
  */
 class Scenes {
+
   public:
+    /*/**
+     * @brief
+     *
+     */
+    enum class Scene
+    {
+        MAIN_MENU,
+        GAME_LOOP,
+        SETTINGS_MENU,
+        IN_GAME_MENU,
+        EXIT
+    };
+
     /**
      * @brief Enumeration representing different game modes.
      *
@@ -41,18 +57,21 @@ class Scenes {
         PROTANOPIA
     };
 
-    /**
-     * @brief Enumeration representing different scenes in the game.
-     *
-     */
-    enum class Scene
+    enum class Actions
     {
-        MAIN_MENU,
-        GAME_LOOP,
-        SETTINGS_MENU,
-        IN_GAME_MENU,
-        EXIT
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT,
+        FIRE,
+        PAUSE,
+        QUIT
     };
+
+    std::map<Actions, sf::Keyboard::Key> keyBinds = {{Actions::UP, sf::Keyboard::Key::W},
+        {Actions::DOWN, sf::Keyboard::Key::S}, {Actions::LEFT, sf::Keyboard::Key::A},
+        {Actions::RIGHT, sf::Keyboard::Key::D}, {Actions::FIRE, sf::Keyboard::Key::Space},
+        {Actions::PAUSE, sf::Keyboard::Key::Escape}, {Actions::QUIT, sf::Keyboard::Key::Q}};
 
   public:
     /**
@@ -104,29 +123,38 @@ class Scenes {
      *
      * @param mode The daltonism mode to set
      */
-    void setDaltonism(DaltonismMode mode);
-
+    void setDaltonism(DaltonismMode mode) { currentDaltonismMode = mode; }
     /**
      * @brief Set the Game Mode object
      *
      * @param mode
      */
-    void setGameMode(GameMode mode);
-
+    void setGameMode(GameMode mode) { currentGameMode = mode; }
     /**
      * @brief Set the Scene object
      *
      * @param scene
      */
     void setScene(Scene scene);
-
     /**
-     * @brief Checks if the current scene should quit.
+     * @brief Get the Previous Scene object
+     *
+     * @return Scene
+     */
+    Scene getPreviousScene() { return previousScene; }
+    /**
+     * @brief check if game should stop running
      *
      * @return true
      * @return false
      */
     bool shouldQuit() { return currentScene == Scene::EXIT; }
+    /**
+     * @brief Get the RenderWindow object
+     *
+     * @return sf::RenderWindow*
+     */
+    sf::RenderWindow *getRenderWindow() { return _window; }
 
   private:
     /**
@@ -144,9 +172,15 @@ class Scenes {
      *
      */
     Scene currentScene = Scene::MAIN_MENU;
+    Scene previousScene = Scene::MAIN_MENU;
+    bool displayDaltonismChoice = false;
+    bool displayGameModeChoice = false;
+    bool displayKeyBinds = false;
     /**
      * @brief the window
      *
      */
     sf::RenderWindow *_window;
+    std::vector<Entity *> buttons;
+    sf::Keyboard::Key binding;
 };

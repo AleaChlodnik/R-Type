@@ -52,12 +52,13 @@ void UpdateSystem::updateBackground(ComponentManager &componentManager, float de
         if (spriteOpt && offsetOpt && velOpt) {
             offsetOpt.value()->offset += velOpt.value()->speed * deltaTime;
             float textureWidth = spriteOpt.value()->sprite.getTexture()->getSize().x;
-            if (offsetOpt.value()->offset > (textureWidth * 0.35)) {
+            if (offsetOpt.value()->offset > (textureWidth * 0.15)) {
                 offsetOpt.value()->offset = 0;
             }
             sf::IntRect textureRect = spriteOpt.value()->sprite.getTextureRect();
             textureRect.left = static_cast<int>(offsetOpt.value()->offset);
             spriteOpt.value()->sprite.setTextureRect(textureRect);
+            return;
         }
     }
 
@@ -73,7 +74,7 @@ void UpdateSystem::updateBackground(ComponentManager &componentManager, float de
                 int offset = getGameBgOffset();
                 offset += static_cast<int>(300 * deltaTime);
                 float textureWidth = static_cast<float>(bgSprite->sprite.getTexture()->getSize().x);
-                if (offset > (textureWidth * 0.60)) {
+                if (offset > (textureWidth * 0.15)) {
                     offset = 0;
                 }
                 sf::IntRect textureRect = bgSprite->sprite.getTextureRect();
