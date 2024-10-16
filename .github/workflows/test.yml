@@ -68,101 +68,38 @@ jobs:
       - name: build project
         run: cmake --build build -j "$(nproc)"
 
-  # windows_install:
-  #   runs-on: windows-latest
-  #   timeout-minutes: 10
-  #   steps:
-  #     - name: Checkout GH repository
-  #       uses: actions/checkout@v4
-  #       with:
-  #         repository: ""
-  #     - name: Cache vcpkg Install
-  #       id: cache-vcpkg
-  #       uses: actions/cache@v4
-  #       env:
-  #         cache-name: cache-vcpkg-install
-  #       with:
-  #         path: C:/vcpkg
-  #         key: ${{ runner.os }}-vcpkg-install-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-vcpkg-install-${{ env.cache-name }}-
-  #     - name: Cache cmake build
-  #       id: cache-cmake
-  #       uses: actions/cache@v4
-  #       env:
-  #         cache-name: cache-cmake-build
-  #       with:
-  #         path: ./build
-  #         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-build-${{ env.cache-name }}-
-  #     - name: compile project
-  #       run: cmake -S . -B build
-  #     - name: build project
-  #       run: cmake --build build -- /maxcpucount:4
-
-  # build-html-doc:
-  #   needs: [linux_install]
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
-  #     contents: write
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v4
-  #       with:
-  #         repository: ""
-
-  #     - name: Cache apt install
-  #       id: cache-apt
-  #       uses: actions/cache@v4
-  #       env:
-  #         cache-name: cache-apt-install
-  #       with:
-  #         path: /var/cache/apt
-  #         key: ${{ runner.os }}-install-${{ env.cache-name }}-${{ hashFiles('**/compile.sh') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-install-${{ env.cache-name }}-
-
-  #     - name: Cache cmake build
-  #       id: cache-cmake
-  #       uses: actions/cache@v4
-  #       env:
-  #         cache-name: cache-cmake-build
-  #       with:
-  #         path: ./build
-  #         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-build-${{ env.cache-name }}-
-
-  #     - name: Install Doxygen
-  #       run: sudo apt-get install -y doxygen
-
-  #     - name: Configure CMake and Build Documentation
-  #       run: |
-  #         cmake -S . -B build -DBUILD_DOC=ON
-  #         cmake --build build --target doc_doxygen
-
-  #     - name: Deploy to GitHub Pages
-  #       if: success()
-  #       run: |
-  #         # Set up Git configuration for deploying to gh-pages
-  #         git config --global user.name "github-actions"
-  #         git config --global user.email "github-actions@github.com"
-
-  #         # Copy generated docs to the gh-pages directory
-  #         rm -rf gh-pages/
-  #         mkdir -p gh-pages/
-  #         cp -r build/doc_doxygen/html/* gh-pages/
-
-  #     - name: Deploy to GitHub Pages
-  #       id: git-check-2
-  #       run: echo "modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
-  #     - name: Push changes
-  #       uses: stefanzweifel/git-auto-commit-action@v5
-  #       if: steps.git-check-2.outputs.modified == 'true'
-  #       with:
-  #         commit_message: Automated Change
+  windows_install:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout GH repository
+        uses: actions/checkout@v4
+        with:
+          repository: ""
+      - name: Cache vcpkg Install
+        id: cache-vcpkg
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-vcpkg-install
+        with:
+          path: C:/vcpkg
+          key: ${{ runner.os }}-vcpkg-install-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-install-${{ env.cache-name }}-
+      - name: Cache cmake build
+        id: cache-cmake
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-cmake-build
+        with:
+          path: ./build
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+      - name: compile project
+        run: cmake -S . -B build
+      - name: build project
+        run: cmake --build build -- /maxcpucount:4
 
   deploy-pdf-doc:
     needs: [linux_install]
