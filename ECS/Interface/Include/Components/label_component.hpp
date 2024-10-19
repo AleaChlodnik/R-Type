@@ -9,8 +9,7 @@
 
 #include <iostream>
 
-struct labelComponent
-{
+struct labelComponent {
     std::string name;
     int x;
     int y;

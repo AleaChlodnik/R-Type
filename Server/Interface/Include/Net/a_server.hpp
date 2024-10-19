@@ -178,7 +178,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
     }
 
-
     /**
      * @brief Sends a message to all connected clients, optionally ignoring a specified client.
      *
@@ -189,7 +188,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      *
      * @tparam T The type of the message.
      * @param msg The message to be sent to all clients.
-     * @param pIgnoreClient A shared pointer to a client connection that should be ignored. Defaults to nullptr.
+     * @param pIgnoreClient A shared pointer to a client connection that should be ignored.
+     * Defaults to nullptr.
      */
     void MessageAllClients(
         const Message<T> &msg, std::shared_ptr<Connection<T>> pIgnoreClient = nullptr)
@@ -213,20 +213,21 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 m_deqConnections.end());
     }
 
-
     /**
      * @brief Updates the server state and processes incoming messages.
      *
      * This function updates the state of entities on the server and processes incoming messages.
      * It can optionally wait for messages and limit the number of messages processed in one call.
      *
-     * @param nMaxMessages The maximum number of messages to process in one call. Default is -1 (no limit).
+     * @param nMaxMessages The maximum number of messages to process in one call. Default is -1 (no
+     * limit).
      * @param bWait If true, the function will wait for messages to be available before processing.
      *
      * The function performs the following tasks:
      * - Updates the positions of entities based on their components.
      * - Sends updated entity information to all connected clients.
-     * - Checks for collisions between player missiles and monsters, and handles entity destruction.
+     * - Checks for collisions between player missiles and monsters, and handles entity
+     * destruction.
      * - Processes incoming messages from clients.
      */
     void Update(size_t nMaxMessages = -1, bool bWait = false)
@@ -468,7 +469,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param client The connection to the client.
      * @param entityID The ID of the entity to exclude (usually the client's own entity).
      */
-    virtual void InitListEntities(std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID) = 0;
+    virtual void InitListEntities(
+        std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID) = 0;
 
     /**
      * @brief check player position to avoid collision

@@ -73,7 +73,8 @@ void UpdateSystem::updateBackground(ComponentManager &componentManager, float de
             if (bgSprite) {
                 int offset = getGameBgOffset();
                 offset += static_cast<int>(300 * deltaTime);
-                float textureWidth = static_cast<float>(bgSprite->sprite.getTexture()->getSize().x);
+                float textureWidth =
+                    static_cast<float>(bgSprite->sprite.getTexture()->getSize().x);
                 if (offset > (textureWidth * 0.15)) {
                     offset = 0;
                 }
@@ -112,7 +113,6 @@ void UpdateSystem::updateBackground(ComponentManager &componentManager, float de
 // offsetOpt.value()->offset += velOpt.value()->speed * deltaTime;
 // send float offset = offsetOpt.value()->offset; to client & await offset client sends back
 // offsetOpt.value()->offset = offset that client sent;
-
 
 // bool UpdateSystem::updatePlayerMissile(int entityId, EntityManager &entityManager,
 //     ComponentManager &componentManager, float deltaTime)

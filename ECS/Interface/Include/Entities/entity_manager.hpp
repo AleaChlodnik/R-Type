@@ -37,8 +37,8 @@ class EntityManager {
      *
      * @param entityId The ID of the entity to remove.
      *
-     * This function removes the entity with the specified ID from the entity manager. If the entity
-     * is not found, an entityNotFound exception is thrown.
+     * This function removes the entity with the specified ID from the entity manager. If the
+     * entity is not found, an entityNotFound exception is thrown.
      */
     void removeEntity(int entityId)
     {
@@ -57,8 +57,8 @@ class EntityManager {
      * @param entityId The ID of the entity to retrieve.
      * @return Entity& A reference to the entity with the specified ID.
      *
-     * This function retrieves the entity with the specified ID from the entity manager. If the entity
-     * is not found, an entityNotFound exception is thrown.
+     * This function retrieves the entity with the specified ID from the entity manager. If the
+     * entity is not found, an entityNotFound exception is thrown.
      */
     Entity &getEntity(int entityId)
     {

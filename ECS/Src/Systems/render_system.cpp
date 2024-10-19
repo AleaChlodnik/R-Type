@@ -60,7 +60,8 @@ void RenderSystem::render(ComponentManager &componentManager)
             if (text) {
                 sf::Text textToDraw(text->_text, font);
                 auto position = componentManager.getComponent<PositionComponent>(id);
-                textToDraw.setOrigin(textToDraw.getLocalBounds().width / 2.0f, textToDraw.getLocalBounds().height / 2.0f);
+                textToDraw.setOrigin(textToDraw.getLocalBounds().width / 2.0f,
+                    textToDraw.getLocalBounds().height / 2.0f);
                 textToDraw.setPosition(position.value()->x, position.value()->y);
                 _window.draw(textToDraw);
             }

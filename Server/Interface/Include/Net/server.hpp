@@ -56,7 +56,8 @@ class Server : virtual public r_type::net::AServer<TypeMessage> {
      * @param client The connection to the client.
      * @param entityID The ID of the entity to exclude (usually the client's own entity).
      */
-    void InitListEntities(std::shared_ptr<r_type::net::Connection<TypeMessage>> client, u_int32_t entityID);
+    void InitListEntities(
+        std::shared_ptr<r_type::net::Connection<TypeMessage>> client, u_int32_t entityID);
 };
 } // namespace net
 } // namespace r_type
