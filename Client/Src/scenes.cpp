@@ -35,6 +35,20 @@ void Scenes::setScene(Scenes::Scene scene)
     this->currentScene = scene;
 }
 
+/**
+ * @brief Handles events for the scene, including window close and mouse button press events.
+ *
+ * This function processes events from the given RenderWindow and performs actions based on the
+ * type of event. It handles window close events and mouse button press events. For mouse button
+ * press events, it checks if the left mouse button was pressed and if the click occurred within
+ * the bounds of any button entities. If a button is clicked, it triggers the associated
+ * OnClickComponent or BindComponent actions.
+ *
+ * @param event The event to handle.
+ * @param componentManager Reference to the ComponentManager to access components of entities.
+ * @param _window Pointer to the RenderWindow where events are polled from.
+ * @param buttons Vector of shared pointers to Entity objects representing buttons.
+ */
 void handleEvents(sf::Event event, ComponentManager &componentManager, sf::RenderWindow *_window,
     std::vector<std::shared_ptr<Entity>> buttons, Scenes *scenes)
 {
@@ -302,7 +316,7 @@ void Scenes::gameLoop()
                 case TypeMessage::CreateEntityResponse: {
                 } break;
                 case TypeMessage::DestroyEntityMessage: {
-                    r_type::net::Message<TypeMessage> reponse;
+                    r_type::net::Message<TypeMessage> response;
                     uint32_t id;
                     msg >> id;
                     if (id == c.getPlayerId()) {
@@ -310,12 +324,12 @@ void Scenes::gameLoop()
                     }
                     c.removeEntity(id, componentManager);
                     c.removeEntity(id, componentManager);
-                    reponse.header.id = TypeMessage::DestroyEntityResponse;
-                    c.Send(reponse);
+                    response.header.id = TypeMessage::DestroyEntityResponse;
+                    c.Send(response);
                 } break;
                 case TypeMessage::UpdateEntity: {
-                    r_type::net::Message<TypeMessage> reponse;
-                    reponse.header.id = TypeMessage::UpdateEntityResponse;
+                    r_type::net::Message<TypeMessage> response;
+                    response.header.id = TypeMessage::UpdateEntityResponse;
                     EntityInformation entity;
                     msg >> entity;
                     c.updateEntity(entity, componentManager);
@@ -498,7 +512,7 @@ void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
     TextureManager &textureManager, EntityFactory &entityFactory)
 {
-    std::function<Scenes *(Scenes *, Scenes::Actions)> bindkey = [](Scenes *currentScene,
+    std::function<Scenes *(Scenes *, Scenes::Actions)> bindKey = [](Scenes *currentScene,
                                                                      Scenes::Actions action) {
         sf::Keyboard::Key key = waitForKey(currentScene->getRenderWindow());
         currentScene->keyBinds[action] = key;
@@ -508,30 +522,30 @@ void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
 
     std::shared_ptr<Entity> bindUpButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Up : ", &bindkey, 1650, 100));
+            entityManager, componentManager, textureManager, "Up : ", &bindKey, 1650, 100));
 
     std::shared_ptr<Entity> bindDownButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Down : ", &bindkey, 1650, 250));
+            entityManager, componentManager, textureManager, "Down : ", &bindKey, 1650, 250));
 
     std::shared_ptr<Entity> bindLeftButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Left : ", &bindkey, 1400, 250));
+            entityManager, componentManager, textureManager, "Left : ", &bindKey, 1400, 250));
 
     std::shared_ptr<Entity> bindRightButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Right : ", &bindkey, 1900, 250));
+            entityManager, componentManager, textureManager, "Right : ", &bindKey, 1900, 250));
 
     std::shared_ptr<Entity> bindFireButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Fire : ", &bindkey, 1650, 400));
+            entityManager, componentManager, textureManager, "Fire : ", &bindKey, 1650, 400));
 
     std::shared_ptr<Entity> bindPauseButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Pause : ", &bindkey, 1650, 550));
+            entityManager, componentManager, textureManager, "Pause : ", &bindKey, 1650, 550));
 
     // Entity bindPauseButton = entityFactory.createSmallButton(
-    //     entityManager, componentManager, textureManager, "Pause : ", &bindkey);
+    //     entityManager, componentManager, textureManager, "Pause : ", &bindKey);
     // pos = componentManager.getComponent<PositionComponent>(bindPauseButton.get()->getId());
     // if (pos) {
     //     pos.value()->x = 1560;
@@ -540,7 +554,7 @@ void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
 
     std::shared_ptr<Entity> bindQuitButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Quit : ", &bindkey, 1650, 700));
+            entityManager, componentManager, textureManager, "Quit : ", &bindKey, 1650, 700));
 
     buttons.push_back(bindUpButton);
     buttons.push_back(bindDownButton);
@@ -601,7 +615,7 @@ void Scenes::settingsMenu()
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Game Mode", &onGameModeButtonClicked, 960, 250));
 
-    std::function<Scenes *(Scenes *)> onKeybindButtonClicked = [](Scenes *currentScene) {
+    std::function<Scenes *(Scenes *)> onKeyBindButtonClicked = [](Scenes *currentScene) {
         currentScene->displayKeyBinds = !currentScene->displayKeyBinds;
         currentScene->displayDaltonismChoice = false;
         currentScene->displayGameModeChoice = false;
@@ -611,7 +625,7 @@ void Scenes::settingsMenu()
 
     std::shared_ptr<Entity> keyBindsButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Key Binds", &onKeybindButtonClicked, 960, 400));
+            textureManager, "Key Binds", &onKeyBindButtonClicked, 960, 400));
 
     std::function<Scenes *(Scenes *)> onBackButtonClicked = [](Scenes *currentScene) {
         currentScene->setScene(currentScene->getPreviousScene());
