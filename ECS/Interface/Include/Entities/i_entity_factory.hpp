@@ -147,5 +147,5 @@ class IEntityFactory {
      */
     virtual Entity createButton(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &textureManager, std::string text,
-        std::function<Scenes *(Scenes *)> *onClick) = 0;
+        std::function<Scenes *(Scenes *)> *onClick, float x, float y) = 0;
 };

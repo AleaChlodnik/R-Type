@@ -5,10 +5,11 @@
 ** entity_factory
 */
 
-#include "Components/components.hpp"
+#include <Components/components.hpp>
 #include <Entities/entity_factory.hpp>
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
+#include <cstdint>
 
 bool CheckPositionEntity(
     EntityManager &entityManager, ComponentManager &componentManager, u_int32_t entityID)
@@ -226,14 +227,14 @@ Entity EntityFactory::createEnemyMissile(
 
 Entity EntityFactory::createButton(EntityManager &entityManager,
     ComponentManager &componentManager, TextureManager &textureManager, std::string text,
-    std::function<Scenes *(Scenes *)> *onClick)
+    std::function<Scenes *(Scenes *)> *onClick, float x, float y)
 {
     Entity button = entityManager.createEntity();
 
     sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
     sf::Vector2f dimension(1.0f, 1.0f);
 
-    PositionComponent pos(0, 0);
+    PositionComponent pos(x, y);
     TextComponent textComponent(text);
     OnClickComponent onClickfunction(*onClick);
     SpriteComponent sprite(texture, pos.x, pos.y, dimension);
@@ -248,14 +249,14 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
 
 Entity EntityFactory::createSmallButton(EntityManager &entityManager,
     ComponentManager &componentManager, TextureManager &textureManager, std::string text,
-    std::function<Scenes *(Scenes *, Scenes::Actions)> *onClick)
+    std::function<Scenes *(Scenes *, Scenes::Actions)> *onClick, float x, float y)
 {
     Entity button = entityManager.createEntity();
 
     sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/small_button.png");
     sf::Vector2f scale(1.0f, 1.0f);
 
-    PositionComponent pos(0, 0);
+    PositionComponent pos(x, y);
     TextComponent textComponent(text);
     BindComponent bindComponent(*onClick);
     SpriteComponent sprite(texture, pos.x, pos.y, scale);
