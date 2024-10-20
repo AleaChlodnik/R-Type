@@ -9,6 +9,7 @@
 #include <Components/components.hpp>
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
+#include <Systems/system_manager.hpp>
 #include <Net/client.hpp>
 #include <Systems/systems.hpp>
 #include <creatable_client_object.hpp>
@@ -105,12 +106,19 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
  */
 void Scenes::mainMenu()
 {
-    ComponentManager componentManager;
     EntityManager entityManager;
+    ComponentManager componentManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    UpdateSystem updateSystem(*_window);
-    RenderSystem renderSystem(*_window);
+    
+    SystemManager systemManager;
+
+    UpdateSystem updateSystem(*_window, componentManager, entityManager);
+    RenderSystem renderSystem(*_window, componentManager);
+
+    systemManager.addSystem(&updateSystem);
+    systemManager.addSystem(&renderSystem);
+
     buttons = {};
 
     // Create background
@@ -160,8 +168,7 @@ void Scenes::mainMenu()
 
         float deltaTime = clock.restart().asSeconds();
 
-        updateSystem.update(entityManager, componentManager, deltaTime);
-        renderSystem.render(componentManager);
+        systemManager.updateSystems(deltaTime);
     }
 }
 
@@ -194,12 +201,21 @@ void Scenes::gameLoop()
     r_type::net::Client c;
     c.Connect("127.0.0.1", 60000);
 
+    EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
-    EntityManager entityManager;
 
-    UpdateSystem updateSystem(*_window);
-    RenderSystem renderSystem(*_window);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    SystemManager systemManager;
+
+    UpdateSystem updateSystem(*_window, componentManager, entityManager);
+    RenderSystem renderSystem(*_window, componentManager);
+
+    systemManager.addSystem(&updateSystem);
+    systemManager.addSystem(&renderSystem);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     sf::Event event;
 
@@ -351,8 +367,8 @@ void Scenes::gameLoop()
             _window->close();
             break;
         }
-        updateSystem.update(entityManager, componentManager, deltaTime);
-        renderSystem.render(componentManager);
+        
+        systemManager.updateSystems(deltaTime); ////////////////////////////////////////////////////////////////////////////////////
     }
 }
 
@@ -362,12 +378,19 @@ void Scenes::gameLoop()
  */
 void Scenes::inGameMenu()
 {
-    ComponentManager componentManager;
     EntityManager entityManager;
+    ComponentManager componentManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    UpdateSystem updateSystem(*_window);
-    RenderSystem renderSystem(*_window);
+    
+    SystemManager systemManager;
+
+    UpdateSystem updateSystem(*_window, componentManager, entityManager);
+    RenderSystem renderSystem(*_window, componentManager);
+
+    systemManager.addSystem(&updateSystem);
+    systemManager.addSystem(&renderSystem);
+
     buttons = {};
 
     // Create background
@@ -417,8 +440,7 @@ void Scenes::inGameMenu()
 
         float deltaTime = clock.restart().asSeconds();
 
-        updateSystem.update(entityManager, componentManager, deltaTime);
-        renderSystem.render(componentManager);
+        systemManager.updateSystems(deltaTime);
     }
 }
 
@@ -573,12 +595,19 @@ void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
  */
 void Scenes::settingsMenu()
 {
-    ComponentManager componentManager;
     EntityManager entityManager;
+    ComponentManager componentManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    UpdateSystem updateSystem(*_window);
-    RenderSystem renderSystem(*_window);
+    
+    SystemManager systemManager;
+
+    UpdateSystem updateSystem(*_window, componentManager, entityManager);
+    RenderSystem renderSystem(*_window, componentManager);
+
+    systemManager.addSystem(&updateSystem);
+    systemManager.addSystem(&renderSystem);
+
     buttons = {};
 
     // Create background
@@ -678,8 +707,7 @@ void Scenes::settingsMenu()
 
         float deltaTime = clock.restart().asSeconds();
 
-        updateSystem.update(entityManager, componentManager, deltaTime);
-        renderSystem.render(componentManager);
+        systemManager.updateSystems(deltaTime);
     }
 }
 
