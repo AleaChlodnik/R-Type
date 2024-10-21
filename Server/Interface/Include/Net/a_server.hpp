@@ -413,6 +413,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         uint32_t playerId = GetClientEntityId(clientId);
         Entity missile =
             entityFactory.createPlayerMissile(entityManager, componentManager, playerId);
+        entityInfo.uniqueID = missile.getId();
         auto missilePos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         if (missilePos && sprite) {
@@ -420,7 +421,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.vPos.y = missilePos.value()->y;
             entityInfo.spriteData = *(sprite.value());
         }
-        entityInfo.uniqueID = missile.getId();
         return entityInfo;
     }
 
