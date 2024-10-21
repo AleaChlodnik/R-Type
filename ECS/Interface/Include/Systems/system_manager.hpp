@@ -12,16 +12,15 @@
 
 class SystemManager {
   public:
-    void addSystem(ISystem* system) {
-        systems.push_back(system);
-    }
+    void addSystem(std::shared_ptr<ISystem> system) { systems.push_back(system); }
 
-    void updateSystems(float deltaTime) {
-        for (ISystem* system : systems) {
+    void updateSystems(float deltaTime)
+    {
+        for (const auto &system : systems) {
             system->update(deltaTime);
         }
     }
 
   private:
-    std::vector<ISystem*> systems;
+    std::vector<std::shared_ptr<ISystem>> systems;
 };

@@ -9,8 +9,8 @@
 #include <Components/components.hpp>
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
-#include <Systems/system_manager.hpp>
 #include <Net/client.hpp>
+#include <Systems/system_manager.hpp>
 #include <Systems/systems.hpp>
 #include <creatable_client_object.hpp>
 #include <functional>
@@ -110,14 +110,16 @@ void Scenes::mainMenu()
     ComponentManager componentManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    
+
     SystemManager systemManager;
 
-    UpdateSystem updateSystem(*_window, componentManager, entityManager);
-    RenderSystem renderSystem(*_window, componentManager);
+    std::shared_ptr<UpdateSystem> updateSystem =
+        std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
+    std::shared_ptr<RenderSystem> renderSystem =
+        std::make_shared<RenderSystem>(*_window, componentManager);
 
-    systemManager.addSystem(&updateSystem);
-    systemManager.addSystem(&renderSystem);
+    systemManager.addSystem(updateSystem);
+    systemManager.addSystem(renderSystem);
 
     buttons = {};
 
@@ -205,17 +207,19 @@ void Scenes::gameLoop()
     ComponentManager componentManager;
     TextureManager textureManager;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     SystemManager systemManager;
 
-    UpdateSystem updateSystem(*_window, componentManager, entityManager);
-    RenderSystem renderSystem(*_window, componentManager);
+    std::shared_ptr<UpdateSystem> updateSystem =
+        std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
+    std::shared_ptr<RenderSystem> renderSystem =
+        std::make_shared<RenderSystem>(*_window, componentManager);
 
-    systemManager.addSystem(&updateSystem);
-    systemManager.addSystem(&renderSystem);
+    systemManager.addSystem(updateSystem);
+    systemManager.addSystem(renderSystem);
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     sf::Event event;
 
@@ -367,8 +371,9 @@ void Scenes::gameLoop()
             _window->close();
             break;
         }
-        
-        systemManager.updateSystems(deltaTime); ////////////////////////////////////////////////////////////////////////////////////
+
+        systemManager.updateSystems(
+            deltaTime); ////////////////////////////////////////////////////////////////////////////////////
     }
 }
 
@@ -382,14 +387,16 @@ void Scenes::inGameMenu()
     ComponentManager componentManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    
+
     SystemManager systemManager;
 
-    UpdateSystem updateSystem(*_window, componentManager, entityManager);
-    RenderSystem renderSystem(*_window, componentManager);
+    std::shared_ptr<UpdateSystem> updateSystem =
+        std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
+    std::shared_ptr<RenderSystem> renderSystem =
+        std::make_shared<RenderSystem>(*_window, componentManager);
 
-    systemManager.addSystem(&updateSystem);
-    systemManager.addSystem(&renderSystem);
+    systemManager.addSystem(updateSystem);
+    systemManager.addSystem(renderSystem);
 
     buttons = {};
 
@@ -599,14 +606,16 @@ void Scenes::settingsMenu()
     ComponentManager componentManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    
+
     SystemManager systemManager;
 
-    UpdateSystem updateSystem(*_window, componentManager, entityManager);
-    RenderSystem renderSystem(*_window, componentManager);
+    std::shared_ptr<UpdateSystem> updateSystem =
+        std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
+    std::shared_ptr<RenderSystem> renderSystem =
+        std::make_shared<RenderSystem>(*_window, componentManager);
 
-    systemManager.addSystem(&updateSystem);
-    systemManager.addSystem(&renderSystem);
+    systemManager.addSystem(updateSystem);
+    systemManager.addSystem(renderSystem);
 
     buttons = {};
 
