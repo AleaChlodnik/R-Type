@@ -614,6 +614,7 @@ void Scenes::gameLoop()
         _window->close();
     };
 
+    sf::Vector2u windowSize = _window->getSize();
     while (_window->isOpen()) {
         float deltaTime = clock.restart().asSeconds();
         while (_window->pollEvent(event)) {
@@ -661,7 +662,7 @@ void Scenes::gameLoop()
                     EntityInformation entity;
                     msg >> entity;
                     c.setPlayerId(entity.uniqueID);
-                    c.addEntity(entity, componentManager, textureManager);
+                    c.addEntity(entity, componentManager, textureManager, windowSize);
 
                 } break;
                 case TypeMessage::ServerPing: {
@@ -687,8 +688,8 @@ void Scenes::gameLoop()
                 case TypeMessage::CreateEntityMessage: {
                     EntityInformation entity;
                     msg >> entity;
-                    c.addEntity(entity, componentManager, textureManager);
-                    c.addEntity(entity, componentManager, textureManager);
+                    c.addEntity(entity, componentManager, textureManager, windowSize);
+                    c.addEntity(entity, componentManager, textureManager, windowSize);
                 } break;
                 case TypeMessage::CreateEntityResponse: {
                 } break;
@@ -709,7 +710,7 @@ void Scenes::gameLoop()
                     response.header.id = TypeMessage::UpdateEntityResponse;
                     EntityInformation entity;
                     msg >> entity;
-                    c.updateEntity(entity, componentManager);
+                    c.updateEntity(entity, componentManager, windowSize);
                 } break;
                 case TypeMessage::UpdateEntityResponse: {
                 } break;

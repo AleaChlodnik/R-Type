@@ -112,9 +112,9 @@ template <typename T> class AClient : virtual public IClient<T> {
     uint32_t getPlayerId() { return playerId; }
 
     void addEntity(EntityInformation entity, ComponentManager &componentManager,
-        TextureManager &textureManager);
+        TextureManager &textureManager, sf::Vector2u windowSize);
+    void updateEntity(EntityInformation entity, ComponentManager &componentManager, sf::Vector2u windowSize);
     void removeEntity(int entityId, ComponentManager &componentManager);
-    void updateEntity(EntityInformation entity, ComponentManager &componentManager);
 
   protected:
     asio::io_context m_context;

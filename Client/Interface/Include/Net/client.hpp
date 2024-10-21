@@ -42,12 +42,14 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
     }
 
     void addEntity(EntityInformation entity, ComponentManager &componentManager,
-        TextureManager &textureManager)
+        TextureManager &textureManager, sf::Vector2u windowSize)
     {
-        std::cout << "entity.spriteData.type: " << entity.spriteData.type << std::endl; /////////////////////////////////
-        sf::Texture &texture = textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
+        float posX = windowSize.x * (entity.vPos.x / 100.0f);
+        float posY = windowSize.y * (entity.vPos.y / 100.0f);
+        sf::Texture &texture =
+            textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
         sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
-        SpriteComponent sprite(texture, entity.vPos.x, entity.vPos.y, scale, entity.spriteData.type);
+        SpriteComponent sprite(texture, posX, posY, scale, entity.spriteData.type);
         componentManager.addComponent<SpriteComponent>(entity.uniqueID, sprite);
     }
 
@@ -56,15 +58,19 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         componentManager.removeEntityFromComponent<SpriteComponent>(entityId);
     }
 
-    void updateEntity(EntityInformation entity, ComponentManager &componentManager)
+    void updateEntity(
+        EntityInformation entity, ComponentManager &componentManager, sf::Vector2u windowSize)
     {
         if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
             auto &sprites = **spritesOpt;
             auto entitySpriteIt = sprites.find(entity.uniqueID);
             if (entitySpriteIt != sprites.end()) {
                 auto &spriteComponent = entitySpriteIt->second;
-                if (auto entitySprite = std::any_cast<SpriteComponent>(&spriteComponent))
-                    entitySprite->sprite.setPosition(entity.vPos.x, entity.vPos.y);
+                if (auto entitySprite = std::any_cast<SpriteComponent>(&spriteComponent)) {
+                    float posX = windowSize.x * (entity.vPos.x / 100.0f);
+                    float posY = windowSize.y * (entity.vPos.y / 100.0f);
+                    entitySprite->sprite.setPosition(posX, posY);
+                }
             }
         }
     }
