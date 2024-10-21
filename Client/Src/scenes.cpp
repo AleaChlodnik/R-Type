@@ -114,7 +114,7 @@ void Scenes::mainMenu()
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, 0);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
     // Create buttons
@@ -183,184 +183,6 @@ void Scenes::mainMenu()
  * @see UpdateSystem
  * @see RenderSystem
  */
-void Scenes::gameLoop()
-{
-    r_type::net::Client c;
-    c.Connect("127.0.0.1", 60000);
-
-    EntityManager entityManager;
-    ComponentManager componentManager;
-    TextureManager textureManager;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    SystemManager systemManager;
-
-    std::shared_ptr<UpdateSystem> updateSystem =
-        std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
-    std::shared_ptr<RenderSystem> renderSystem =
-        std::make_shared<RenderSystem>(*_window, componentManager);
-
-    systemManager.addSystem(updateSystem);
-    systemManager.addSystem(renderSystem);
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    sf::Event event;
-
-    sf::Clock clock; ///////////////////////////////////////////////////// TEMPORARY
-
-    auto updatePlayerPosition = [&](const vf2d &delta) {
-        r_type::net::Message<TypeMessage> msg;
-        vf2d playerPos;
-        msg.header.id = TypeMessage::MoveEntityMessage;
-        if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
-            auto &sprites = **spritesOpt;
-            auto spriteComponent = sprites[c.getPlayerId()];
-            auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            playerPos.x = playerSprite->sprite.getPosition().x + delta.x;
-            playerPos.y = playerSprite->sprite.getPosition().y + delta.y;
-            msg << playerPos;
-            c.Send(msg);
-        }
-    };
-
-    auto fireMissile = [&]() {
-        r_type::net::Message<TypeMessage> msg;
-        msg.header.id = TypeMessage::CreateEntityMessage;
-        msg << CreatableClientObject::MISSILE;
-        c.Send(msg);
-    };
-
-    auto death = [&]() {
-        std::cout << "Closing window" << std::endl;
-        r_type::net::Message<TypeMessage> msg;
-        msg.header.id = TypeMessage::DestroyEntityMessage;
-        msg << c.getPlayerId();
-        c.Send(msg);
-        _window->close();
-    };
-
-    while (_window->isOpen()) {
-        float deltaTime =
-            clock.restart().asSeconds(); /////////////////////////////////////// TEMPORARY
-        while (_window->pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                death();
-            }
-            if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::P) {
-                    c.PingServer();
-                }
-                if (event.key.code == sf::Keyboard::V) {
-                    c.MessageAll();
-                }
-                if (event.key.code == keyBinds[Actions::FIRE]) {
-                    fireMissile();
-                }
-                if (event.key.code == keyBinds[Actions::QUIT]) {
-                    _window->close();
-                }
-                if (event.key.code == keyBinds[Actions::UP]) {
-                    updatePlayerPosition(vf2d{0, -5});
-                }
-                if (event.key.code == keyBinds[Actions::DOWN]) {
-                    updatePlayerPosition(vf2d{0, 5});
-                }
-                if (event.key.code == keyBinds[Actions::LEFT]) {
-                    updatePlayerPosition(vf2d{-5, 0});
-                }
-                if (event.key.code == keyBinds[Actions::RIGHT]) {
-                    updatePlayerPosition(vf2d{5, 0});
-                }
-                if (event.key.code == keyBinds[Actions::PAUSE]) {
-                    this->setScene(Scenes::Scene::IN_GAME_MENU);
-                }
-            }
-        }
-        if (c.IsConnected()) {
-            // std::cout << "Connected to Server" << std::endl;
-            // /////////////////////////////////////
-            if (!c.Incoming().empty()) {
-                auto msg = c.Incoming().pop_front().msg;
-                switch (msg.header.id) {
-                case TypeMessage::ServerAccept: {
-                    std::cout << "Server Accepted Connection" << std::endl;
-                    EntityInformation entity;
-                    msg >> entity;
-                    c.setPlayerId(entity.uniqueID);
-                    c.addEntity(entity, componentManager, textureManager);
-
-                } break;
-                case TypeMessage::ServerPing: {
-                    std::chrono::system_clock::time_point timeNow =
-                        std::chrono::system_clock::now();
-                    std::chrono::system_clock::time_point timeThen;
-                    msg >> timeThen;
-                    std::cout << "Ping: "
-                              << std::chrono::duration<double>(timeNow - timeThen).count()
-                              << std::endl;
-                } break;
-                case TypeMessage::ServerMessage: {
-                    uint32_t clientID;
-                    msg >> clientID;
-                    std::cout << "Hello from [" << clientID << "]" << std::endl;
-                } break;
-                case TypeMessage::ServerDeny: {
-                } break;
-                case TypeMessage::MessageAll: {
-                } break;
-                case TypeMessage::ClientConnect: {
-                } break;
-                case TypeMessage::CreateEntityMessage: {
-                    EntityInformation entity;
-                    msg >> entity;
-                    c.addEntity(entity, componentManager, textureManager);
-                    c.addEntity(entity, componentManager, textureManager);
-                } break;
-                case TypeMessage::CreateEntityResponse: {
-                } break;
-                case TypeMessage::DestroyEntityMessage: {
-                    r_type::net::Message<TypeMessage> response;
-                    uint32_t id;
-                    msg >> id;
-                    if (id == c.getPlayerId()) {
-                        death();
-                    }
-                    c.removeEntity(id, componentManager);
-                    c.removeEntity(id, componentManager);
-                    response.header.id = TypeMessage::DestroyEntityResponse;
-                    c.Send(response);
-                } break;
-                case TypeMessage::UpdateEntity: {
-                    r_type::net::Message<TypeMessage> response;
-                    response.header.id = TypeMessage::UpdateEntityResponse;
-                    EntityInformation entity;
-                    msg >> entity;
-                    c.updateEntity(entity, componentManager);
-                } break;
-                case TypeMessage::UpdateEntityResponse: {
-                } break;
-                case TypeMessage::MoveEntityMessage: {
-                } break;
-                case TypeMessage::MoveEntityResponse: {
-                } break;
-                case TypeMessage::DestroyEntityResponse: {
-                } break;
-                case TypeMessage::FinishInitialization: {
-                } break;
-                }
-            }
-        } else {
-            std::cout << "Server Down" << std::endl;
-            _window->close();
-            break;
-        }
-
-        systemManager.updateSystems(
-            deltaTime); ////////////////////////////////////////////////////////////////////////////////////
-    }
-}
 
 /**
  * @brief Displays the in-game menu.
@@ -391,7 +213,7 @@ void Scenes::inGameMenu()
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, 0);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
     // Create the buttons
@@ -611,7 +433,7 @@ void Scenes::settingsMenu()
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, 0);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
     // Create the buttons
@@ -731,5 +553,182 @@ void Scenes::render()
         break;
     default:
         break;
+    }
+}
+
+void Scenes::gameLoop()
+{
+    r_type::net::Client c;
+    c.Connect("127.0.0.1", 60000);
+
+    EntityManager entityManager;
+    ComponentManager componentManager;
+    TextureManager textureManager;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    SystemManager systemManager;
+
+    std::shared_ptr<UpdateSystem> updateSystem =
+        std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
+    std::shared_ptr<RenderSystem> renderSystem =
+        std::make_shared<RenderSystem>(*_window, componentManager);
+
+    systemManager.addSystem(updateSystem);
+    systemManager.addSystem(renderSystem);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    sf::Event event;
+
+    sf::Clock clock; ///////////////////////////////////////////////////// TEMPORARY
+
+    auto updatePlayerPosition = [&](const vf2d &delta) {
+        r_type::net::Message<TypeMessage> msg;
+        vf2d playerPos;
+        msg.header.id = TypeMessage::MoveEntityMessage;
+        if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
+            auto &sprites = **spritesOpt;
+            auto spriteComponent = sprites[c.getPlayerId()];
+            auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
+            playerPos.x = playerSprite->sprite.getPosition().x + delta.x;
+            playerPos.y = playerSprite->sprite.getPosition().y + delta.y;
+            msg << playerPos;
+            c.Send(msg);
+        }
+    };
+
+    auto fireMissile = [&]() {
+        r_type::net::Message<TypeMessage> msg;
+        msg.header.id = TypeMessage::CreateEntityMessage;
+        msg << CreatableClientObject::MISSILE;
+        c.Send(msg);
+    };
+
+    auto death = [&]() {
+        std::cout << "Closing window" << std::endl;
+        r_type::net::Message<TypeMessage> msg;
+        msg.header.id = TypeMessage::DestroyEntityMessage;
+        msg << c.getPlayerId();
+        c.Send(msg);
+        _window->close();
+    };
+
+    while (_window->isOpen()) {
+        float deltaTime = clock.restart().asSeconds();
+        while (_window->pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                death();
+            }
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::P) {
+                    c.PingServer();
+                }
+                if (event.key.code == sf::Keyboard::V) {
+                    c.MessageAll();
+                }
+                if (event.key.code == keyBinds[Actions::FIRE]) {
+                    fireMissile();
+                }
+                if (event.key.code == keyBinds[Actions::QUIT]) {
+                    _window->close();
+                }
+                if (event.key.code == keyBinds[Actions::UP]) {
+                    updatePlayerPosition(vf2d{0, -5});
+                }
+                if (event.key.code == keyBinds[Actions::DOWN]) {
+                    updatePlayerPosition(vf2d{0, 5});
+                }
+                if (event.key.code == keyBinds[Actions::LEFT]) {
+                    updatePlayerPosition(vf2d{-5, 0});
+                }
+                if (event.key.code == keyBinds[Actions::RIGHT]) {
+                    updatePlayerPosition(vf2d{5, 0});
+                }
+                if (event.key.code == keyBinds[Actions::PAUSE]) {
+                    this->setScene(Scenes::Scene::IN_GAME_MENU);
+                }
+            }
+        }
+        if (c.IsConnected()) {
+            // std::cout << "Connected to Server" << std::endl;
+            // /////////////////////////////////////
+            if (!c.Incoming().empty()) {
+                auto msg = c.Incoming().pop_front().msg;
+                switch (msg.header.id) {
+                case TypeMessage::ServerAccept: {
+                    std::cout << "Server Accepted Connection" << std::endl;
+                    EntityInformation entity;
+                    msg >> entity;
+                    c.setPlayerId(entity.uniqueID);
+                    c.addEntity(entity, componentManager, textureManager);
+
+                } break;
+                case TypeMessage::ServerPing: {
+                    std::chrono::system_clock::time_point timeNow =
+                        std::chrono::system_clock::now();
+                    std::chrono::system_clock::time_point timeThen;
+                    msg >> timeThen;
+                    std::cout << "Ping: "
+                              << std::chrono::duration<double>(timeNow - timeThen).count()
+                              << std::endl;
+                } break;
+                case TypeMessage::ServerMessage: {
+                    uint32_t clientID;
+                    msg >> clientID;
+                    std::cout << "Hello from [" << clientID << "]" << std::endl;
+                } break;
+                case TypeMessage::ServerDeny: {
+                } break;
+                case TypeMessage::MessageAll: {
+                } break;
+                case TypeMessage::ClientConnect: {
+                } break;
+                case TypeMessage::CreateEntityMessage: {
+                    EntityInformation entity;
+                    msg >> entity;
+                    c.addEntity(entity, componentManager, textureManager);
+                    c.addEntity(entity, componentManager, textureManager);
+                } break;
+                case TypeMessage::CreateEntityResponse: {
+                } break;
+                case TypeMessage::DestroyEntityMessage: {
+                    r_type::net::Message<TypeMessage> response;
+                    uint32_t id;
+                    msg >> id;
+                    if (id == c.getPlayerId()) {
+                        death();
+                    }
+                    c.removeEntity(id, componentManager);
+                    c.removeEntity(id, componentManager);
+                    response.header.id = TypeMessage::DestroyEntityResponse;
+                    c.Send(response);
+                } break;
+                case TypeMessage::UpdateEntity: {
+                    r_type::net::Message<TypeMessage> response;
+                    response.header.id = TypeMessage::UpdateEntityResponse;
+                    EntityInformation entity;
+                    msg >> entity;
+                    c.updateEntity(entity, componentManager);
+                } break;
+                case TypeMessage::UpdateEntityResponse: {
+                } break;
+                case TypeMessage::MoveEntityMessage: {
+                } break;
+                case TypeMessage::MoveEntityResponse: {
+                } break;
+                case TypeMessage::DestroyEntityResponse: {
+                } break;
+                case TypeMessage::FinishInitialization: {
+                } break;
+                }
+            }
+        } else {
+            std::cout << "Server Down" << std::endl;
+            _window->close();
+            break;
+        }
+
+        systemManager.updateSystems(deltaTime);
     }
 }

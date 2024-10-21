@@ -386,15 +386,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         EntityInformation entityInfo;
         Entity player = entityFactory.createPlayer(entityManager, componentManager, nbrOfPlayers);
-        auto playerSprite =
-            componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        entityInfo.uniqueID = player.getId();
+        auto playerSprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         if (playerSprite && playerPos) {
             entityInfo.spriteData = *(playerSprite.value());
             entityInfo.vPos.x = playerPos.value()->x;
             entityInfo.vPos.y = playerPos.value()->y;
         }
-        entityInfo.uniqueID = player.getId();
         clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
         return entityInfo;
     }

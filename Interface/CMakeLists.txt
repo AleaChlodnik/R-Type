@@ -10,5 +10,4 @@ add_library(r-type_interfaces INTERFACE)
 
 target_include_directories(r-type_interfaces
         INTERFACE Include
-        hitbox_tmp.hpp
 )
