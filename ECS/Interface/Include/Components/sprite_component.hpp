@@ -7,16 +7,17 @@
 
 #pragma once
 
-#include "../error_handling.hpp"
-#include "position_component.hpp"
+#include "scenes.hpp"
 #include <SFML/Graphics.hpp>
 #include <string>
 
 struct SpriteComponent {
     sf::Sprite sprite;
+    Scenes::SpriteType type;
 
-    SpriteComponent(sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale)
+    SpriteComponent(sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale, int typeNb)
     {
+        type = static_cast<Scenes::SpriteType>(typeNb);
         sprite.setTexture(texture);
         sprite.setPosition(posX, posY);
         sprite.setScale(scale);

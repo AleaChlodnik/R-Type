@@ -69,6 +69,15 @@ class Scenes {
         QUIT
     };
 
+    enum class SpriteType
+    {
+        BACKGROUND,
+        PLAYER,
+        ALLY,
+        ENEMY,
+        OTHER
+    };
+
     std::map<Actions, sf::Keyboard::Key> keyBinds = {{Actions::UP, sf::Keyboard::Key::Up},
         {Actions::DOWN, sf::Keyboard::Key::Down}, {Actions::LEFT, sf::Keyboard::Key::Left},
         {Actions::RIGHT, sf::Keyboard::Key::Right}, {Actions::FIRE, sf::Keyboard::Key::Space},
