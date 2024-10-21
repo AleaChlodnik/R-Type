@@ -13,18 +13,21 @@ vf2d:
     float x // 4 bits
     float y // 4 bits
 
-entityInfo_t:
-    uint32 nUniqueID // 4 bits
-    uint32 nAvatarID // 4 bits
-
+EntityInformation:
+    uint32_t nUniqueID // 4 bits
+    uint32_t nAvatarID // 4 bits
     vf2d vPosition
-    vf2d vVel
+
+entityId:
+    uint32_t id // 4 bit
 ```
 
 | Message Part | Description        |
 |--------------|--------------------|
 | **Headers**  | Required headers   |
 | **Body**     | Optional body text |
+
+---
 
 ### Dead Entity Message Exchange
 
@@ -39,8 +42,8 @@ This table represents a communication where the client sends and receives a mess
 | header: `DeadEntityResponse` | ---------------> |                           |
 | body: ``                 |                  |                           |
 
-**Transmission**: The server sends a `DeadEntityMessage` to the client, containing information about an entity (in `entityInfo_t` format) that is dead.
-**Response**: The client processes the message and responds back to the server with the `DeadEntityResponse` type of message to confirm reception.
+**Transmission**: The server sends a `DeadEntityMessage` to the client, containing information about an entity (in `entityId` format) that is dead.
+**Response**: The client processes the message and responds back to the server with the `DeadEntityResponse` type of message with an empty body to confirm reception.
 
 ---
 
@@ -69,11 +72,26 @@ This table outlines the communication flow for moving an entity:
 |         Client            | Transmission     |          Server           |
 |---------------------------|------------------|---------------------------|
 |                           |       Send       |                           |
-|  process message          | <--------------- | header: `MoveEntityMessage` |
+|  process message          | <--------------- | header: `UpdateEntity` |
 |                           |                  | body: `EntityInformation`        |
 
-**Transmission**: The server sends a `MoveEntityMessage` to the client, containing data (in `EntityInformation` format) about an entity that needs to be moved.
+**Transmission**: The server sends a `UpdateEntity` to the client, containing data (in `EntityInformation` format) about an entity that needs to be moved.
 **Response**: The client processes the message but does not send a response back in this table.
+
+---
+
+### Move Player Message Exchange
+
+|         Client            | Transmission     |          Server           |
+|---------------------------|------------------|---------------------------|
+| header: `MoveEntityMessage` |     Send       |                           |
+| bode: `vf2d`    | --------------->|       process             |
+|                           |       Send       |                           |
+|  process message          | <--------------- | header: `UpdateEntity` |
+|                           |                  | body: `EntityInformation`        |
+
+**Transmission**: The Client sends a `MoveEntityMessage` to the Server, containing data (in `vf2d` format) about an entity that needs to be moved.
+**Response**: The server processes the request and returns an `UpdateEntity` message containing the entity's information (in `EntityInformation` format), provided that no collision error is detected.
 
 ---
 
@@ -94,16 +112,3 @@ This table outlines the communication flow for moving an entity:
 <!-- **Response**: The server processes the message and responds with a confirmation `FireBulletResponse`, which the client then receives. -->
 
 ---
-
-### Move Player Message Exchange
-
-|         Client            | Transmission     |          Server           |
-|---------------------------|------------------|---------------------------|
-| header: `MoveEntityMessage` |     Send       |                           |
-| bode: `Vector_position_t`    | --------------->|       process             |
-|                           |       Send       |                           |
-|  process message          | <--------------- | header: `UpdateEntity` |
-|                           |                  | body: `EntityInformation`        |
-
-**Transmission**: The Client sends a `MoveEntityMessage` to the Server, containing data (in `Vector_position_t` format) about an entity that needs to be moved.
-**Response**: The server processes the message and send a response message with the `EntityInformation`.
