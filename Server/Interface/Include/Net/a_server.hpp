@@ -231,85 +231,85 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * destruction.
      * - Processes incoming messages from clients.
      */
-    void Update(size_t nMaxMessages = -1, bool bWait = false)
-    {
-        // if (bWait)
-        //     m_qMessagesIn.wait();
-        std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
-        // std::cout
-        //     << "Time: "
-        //     << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
-        //     << std::endl;
+    // void Update(size_t nMaxMessages = -1, bool bWait = false)
+    // {
+    //     // if (bWait)
+    //     //     m_qMessagesIn.wait();
+    //     std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
+    //     // std::cout
+    //     //     << "Time: "
+    //     //     << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
+    //     //     << std::endl;
 
-        r_type::net::Message<TypeMessage> msg;
-        msg.header.id = TypeMessage::UpdateEntity;
+    //     r_type::net::Message<TypeMessage> msg;
+    //     msg.header.id = TypeMessage::UpdateEntity;
 
-        bool bUpdateEntities = false;
-        while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
-            500) {
-            bUpdateEntities = true;
+    //     bool bUpdateEntities = false;
+    //     while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
+    //         500) {
+    //         bUpdateEntities = true;
 
-            const std::vector<Entity> entities = entityManager.getAllEntities();
-            for (const auto &entity : entities) {
-                int entityId = entity.getId();
-                auto player = componentManager.getComponent<PlayerComponent>(entityId);
-                auto background = componentManager.getComponent<BackgroundComponent>(entityId);
-                if (player || background) {
-                    continue;
-                }
+    //         const std::vector<Entity> entities = entityManager.getAllEntities();
+    //         for (const auto &entity : entities) {
+    //             int entityId = entity.getId();
+    //             auto player = componentManager.getComponent<PlayerComponent>(entityId);
+    //             auto background = componentManager.getComponent<BackgroundComponent>(entityId);
+    //             if (player || background) {
+    //                 continue;
+    //             }
 
-                auto position = componentManager.getComponent<PositionComponent>(entityId);
-                auto spriteData = componentManager.getComponent<SpriteDataComponent>(entityId);
+    //             auto position = componentManager.getComponent<PositionComponent>(entityId);
+    //             auto spriteData = componentManager.getComponent<SpriteDataComponent>(entityId);
 
-                if (position && spriteData) {
-                    auto monster = componentManager.getComponent<BasicMonsterComponent>(entityId);
-                    auto missile = componentManager.getComponent<PlayerMissileComponent>(entityId);
+    //             if (position && spriteData) {
+    //                 auto monster = componentManager.getComponent<BasicMonsterComponent>(entityId);
+    //                 auto missile = componentManager.getComponent<PlayerMissileComponent>(entityId);
 
-                    if (monster) {
-                        position.value()->x -= 5;
-                        MessageAllClients(
-                            msg << EntityInformation{static_cast<u_int32_t>(entityId),
-                                *(spriteData.value()),
-                                {(position.value()->x), (position.value()->y)}});
-                    }
-                    if (missile) {
-                        position.value()->x += 20;
-                        EntityInformation newMissile = EntityInformation{
-                            static_cast<u_int32_t>(entityId), *(spriteData.value()),
-                            {(position.value()->x), (position.value()->y)}};
-                        int newID =
-                            CheckEntityMovement(newMissile, componentManager, entityManager);
-                        auto monster = componentManager.getComponent<BasicMonsterComponent>(newID);
-                        if (monster) {
-                            r_type::net::Message<TypeMessage> msgDestroy;
-                            msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
-                            msgDestroy << entityId;
-                            MessageAllClients(msgDestroy);
-                            RemoveEntities(entityId);
+    //                 if (monster) {
+    //                     position.value()->x -= 5;
+    //                     MessageAllClients(
+    //                         msg << EntityInformation{static_cast<u_int32_t>(entityId),
+    //                             *(spriteData.value()),
+    //                             {(position.value()->x), (position.value()->y)}});
+    //                 }
+    //                 if (missile) {
+    //                     position.value()->x += 20;
+    //                     EntityInformation newMissile = EntityInformation{
+    //                         static_cast<u_int32_t>(entityId), *(spriteData.value()),
+    //                         {(position.value()->x), (position.value()->y)}};
+    //                     int newID =
+    //                         CheckEntityMovement(newMissile, componentManager, entityManager);
+    //                     auto monster = componentManager.getComponent<BasicMonsterComponent>(newID);
+    //                     if (monster) {
+    //                         r_type::net::Message<TypeMessage> msgDestroy;
+    //                         msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
+    //                         msgDestroy << entityId;
+    //                         MessageAllClients(msgDestroy);
+    //                         RemoveEntities(entityId);
 
-                            msgDestroy << newID;
-                            MessageAllClients(msgDestroy);
-                            RemoveEntities(newID);
-                        } else {
-                            MessageAllClients(msg << newMissile);
-                        }
-                    }
-                }
-            }
-            _clock += std::chrono::milliseconds(500);
-        }
-        if (bUpdateEntities)
-            _clock = newClock;
+    //                         msgDestroy << newID;
+    //                         MessageAllClients(msgDestroy);
+    //                         RemoveEntities(newID);
+    //                     } else {
+    //                         MessageAllClients(msg << newMissile);
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         _clock += std::chrono::milliseconds(500);
+    //     }
+    //     if (bUpdateEntities)
+    //         _clock = newClock;
 
-        size_t nMessageCount = 0;
-        while (nMessageCount < nMaxMessages && !m_qMessagesIn.empty()) {
-            auto msg = m_qMessagesIn.pop_front();
+    //     size_t nMessageCount = 0;
+    //     while (nMessageCount < nMaxMessages && !m_qMessagesIn.empty()) {
+    //         auto msg = m_qMessagesIn.pop_front();
 
-            OnMessage(msg.remote, msg.msg);
+    //         OnMessage(msg.remote, msg.msg);
 
-            nMessageCount++;
-        }
-    }
+    //         nMessageCount++;
+    //     }
+    // }
 
     /**
      * @brief Updates the position of an entity based on the message received and the client ID.
