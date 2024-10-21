@@ -5,7 +5,6 @@
 ** scenes
 */
 
-#include <Components/component_manager.hpp>
 #include <Components/components.hpp>
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
@@ -68,6 +67,9 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
                                     if (it != buttons.end()) {
                                         int index = std::distance(buttons.begin(), it);
                                         bind.value()->bind(scenes, Scenes::Actions(index - 4));
+                                        auto text = componentManager.getComponent<TextComponent>(button->getId());
+                                        if (text)
+                                            text.value()->_text = text.value()->_text.substr(0, text.value()->_text.find(":") + 1) + " " + keyToString(scenes->keyBinds[AScenes::Actions(index - 4)]);
                                     }
                                 }
                             }
@@ -334,7 +336,6 @@ void createGameModeChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
 
 sf::Keyboard::Key waitForKey(sf::RenderWindow *_window)
 {
-    std::cout << "Waiting for key" << std::endl;
     sf::Event event;
     while (true) {
         while (_window->pollEvent(event)) {
@@ -347,51 +348,42 @@ sf::Keyboard::Key waitForKey(sf::RenderWindow *_window)
 
 void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
-    TextureManager &textureManager, EntityFactory &entityFactory)
+    TextureManager &textureManager, EntityFactory &entityFactory, std::map<Scenes::Actions, sf::Keyboard::Key> &keyBinds)
 {
     std::function<IScenes *(AScenes *, AScenes::Actions)> bindKey = [](AScenes *currentScene,
                                                                         AScenes::Actions action) {
         sf::Keyboard::Key key = waitForKey(currentScene->getRenderWindow());
         currentScene->keyBinds[action] = key;
-        std::cout << currentScene->keyBinds[action] << "ok" << std::endl;
         return currentScene;
     };
 
     std::shared_ptr<Entity> bindUpButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Up : ", &bindKey, 1650, 100));
+            entityManager, componentManager, textureManager, "Up: " + keyToString(keyBinds[Scenes::Actions::UP]), &bindKey, 1550, 100));
 
     std::shared_ptr<Entity> bindDownButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Down : ", &bindKey, 1650, 250));
+            entityManager, componentManager, textureManager, "Down: " + keyToString(keyBinds[Scenes::Actions::DOWN]), &bindKey, 1550, 250));
 
     std::shared_ptr<Entity> bindLeftButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Left : ", &bindKey, 1400, 250));
+            entityManager, componentManager, textureManager, "Left: " + keyToString(keyBinds[Scenes::Actions::LEFT]), &bindKey, 1300, 250));
 
     std::shared_ptr<Entity> bindRightButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Right : ", &bindKey, 1900, 250));
+            entityManager, componentManager, textureManager, "Right: " + keyToString(keyBinds[Scenes::Actions::RIGHT]), &bindKey, 1800, 250));
 
     std::shared_ptr<Entity> bindFireButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Fire : ", &bindKey, 1650, 400));
+            entityManager, componentManager, textureManager, "Fire: " + keyToString(keyBinds[Scenes::Actions::FIRE]), &bindKey, 1550, 400));
 
     std::shared_ptr<Entity> bindPauseButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Pause : ", &bindKey, 1650, 550));
-
-    // Entity bindPauseButton = entityFactory.createSmallButton(
-    //     entityManager, componentManager, textureManager, "Pause : ", &bindKey);
-    // pos = componentManager.getComponent<PositionComponent>(bindPauseButton.get()->getId());
-    // if (pos) {
-    //     pos.value()->x = 1560;
-    //     pos.value()->y = 750;
-    // }
+            entityManager, componentManager, textureManager, "Pause: " + keyToString(keyBinds[Scenes::Actions::PAUSE]), &bindKey, 1550, 550));
 
     std::shared_ptr<Entity> bindQuitButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Quit : ", &bindKey, 1650, 700));
+            entityManager, componentManager, textureManager, "Quit: " + keyToString(keyBinds[Scenes::Actions::QUIT]), &bindKey, 1550, 700));
 
     buttons.push_back(bindUpButton);
     buttons.push_back(bindDownButton);
@@ -512,7 +504,7 @@ void Scenes::settingsMenu()
     }
     if (_displayKeyBindsChoice) {
         createKeyBindingButtons(
-            buttons, componentManager, entityManager, textureManager, entityFactory);
+            buttons, componentManager, entityManager, textureManager, entityFactory, keyBinds);
     }
 
     sf::Clock clock;

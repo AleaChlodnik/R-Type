@@ -202,13 +202,13 @@ class AScenes : virtual public IScenes {
 
     bool getDisplayKeyBindsChoice() const;
 
+    std::vector<std::shared_ptr<Entity>> buttons;
   protected:
     sf::RenderWindow *_window;
     GameMode _currentGameMode = GameMode::MEDIUM;
     DaltonismMode _currentDaltonismMode = DaltonismMode::NORMAL;
     Scene _currentScene = Scene::MAIN_MENU;
     Scene _previousScene = Scene::MAIN_MENU;
-    std::vector<std::shared_ptr<Entity>> buttons;
     bool _displayDaltonismChoice = false;
     bool _displayGameModeChoice = false;
     bool _displayKeyBindsChoice = false;
