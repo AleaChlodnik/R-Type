@@ -56,7 +56,7 @@ class IEntityFactory {
      * @return The created player entity.
      */
     virtual Entity createPlayer(
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+        EntityManager &entityManager, ComponentManager &componentManager, int nbrOfPlayers) = 0;
 
      /**
      * @brief Creates an ally entity.
@@ -100,13 +100,13 @@ class IEntityFactory {
      * This function creates a player missile entity with the specified player ID and adds it to the entity manager.
      * It also initializes the necessary components for the player missile entity using the component manager.
      *
-     * @param playerId The ID of the player.
+     * @param entityId The ID of the entity that shoot the missile.
      * @param entityManager The entity manager to add the player missile entity to.
      * @param componentManager The component manager to initialize the components for the player missile entity.
      * @return The created player missile entity.
      */
     virtual Entity createPlayerMissile(
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+        EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId) = 0;
 
     /**
      * @brief Creates an ally missile entity.
@@ -130,7 +130,7 @@ class IEntityFactory {
      * @return The created enemy missile entity.
      */
     virtual Entity createEnemyMissile(
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+        EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId) = 0;
 
     /**
      * @brief Creates a button entity.
