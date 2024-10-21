@@ -259,7 +259,7 @@ Entity EntityFactory::createEnemyMissile(
 
 Entity EntityFactory::createButton(EntityManager &entityManager,
     ComponentManager &componentManager, TextureManager &textureManager, std::string text,
-    std::function<Scenes *(Scenes *)> *onClick, float x, float y)
+    std::function<IScenes *(AScenes *)> *onClick, float x, float y)
 {
     Entity button = entityManager.createEntity();
 
@@ -281,7 +281,7 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
 
 Entity EntityFactory::createSmallButton(EntityManager &entityManager,
     ComponentManager &componentManager, TextureManager &textureManager, std::string text,
-    std::function<Scenes *(Scenes *, Scenes::Actions)> *onClick, float x, float y)
+    std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x, float y)
 {
     Entity button = entityManager.createEntity();
 
