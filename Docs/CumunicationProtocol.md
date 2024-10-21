@@ -16,7 +16,7 @@ struct entityInfo_s {
     uint32_t nUniqueID;
     uint32_t nAvatarID;
 
-    vf2d vPosition;
+    vf2d vPosition;v
     vf2d vVel;
 }entityInfo_t;
 ```

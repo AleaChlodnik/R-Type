@@ -64,7 +64,7 @@ nix develop --command bash -c 'cmake -S . -B build && cmake --build build -j "$(
 
 ### Windows
 
-Install [Visual Studio](https://visualstudio.microsoft.com/)
+Install [Visual Studio](https://visualstudio.microsoft.com/), [CMake](https://cmake.org/download/) and [g++](https://sourceforge.net/projects/mingw/)
 
 Build r-type_client & r-type_server with CMake
 
@@ -76,7 +76,9 @@ cmake --build build -- /maxcpucount:4
 ## Documentation
 
 [Developer Documentation](./Docs/DeveloperDocumentation.md)
+
 [Protocol Documentation](./Docs/CumunicationProtocol.md)
+
 [Architecture Documentation](./doc_doxygen/html/index.html)
 
 ## Tech Stack
