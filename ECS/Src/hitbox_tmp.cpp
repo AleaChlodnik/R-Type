@@ -20,10 +20,10 @@ static int CheckCollisionLogic(float descLeft, float descRight, float descTop, f
             auto playerHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
             if (playerPos && playerHitbox) {
 
-                playerLeft = playerPos.value()->x - (playerHitbox.value()->w / 2);
-                playerRight = playerPos.value()->x + (playerHitbox.value()->w / 2);
-                playerTop = playerPos.value()->y - (playerHitbox.value()->h / 2);
-                playerBottom = playerPos.value()->y + (playerHitbox.value()->h / 2);
+                playerLeft = (playerPos.value()->x / 100) - ((playerHitbox.value()->w / 100) / 2);
+                playerRight = (playerPos.value()->x / 100) + ((playerHitbox.value()->w / 100) / 2);
+                playerTop = (playerPos.value()->y / 100) - ((playerHitbox.value()->h / 100) / 2);
+                playerBottom = (playerPos.value()->y / 100) + ((playerHitbox.value()->h / 100) / 2);
 
                 if (!(descRight < playerLeft || descLeft > playerRight || descBottom < playerTop ||
                         descTop > playerBottom)) {
@@ -43,10 +43,10 @@ int CheckEntityPosition(
     if (!descPos || !descHitbox)
         return -1;
 
-    float descLeft = descPos.value()->x - (descHitbox.value()->w / 2);
-    float descRight = descPos.value()->x + (descHitbox.value()->w / 2);
-    float descTop = descPos.value()->y - (descHitbox.value()->h / 2);
-    float descBottom = descPos.value()->y + (descHitbox.value()->h / 2);
+    float descLeft = (descPos.value()->x / 100) - ((descHitbox.value()->w / 100) / 2);
+    float descRight = (descPos.value()->x / 100) + ((descHitbox.value()->w / 100) / 2);
+    float descTop = (descPos.value()->y / 100) - ((descHitbox.value()->h / 100) / 2);
+    float descBottom = (descPos.value()->y / 100) + ((descHitbox.value()->h / 100) / 2);
 
     return CheckCollisionLogic(
         descLeft, descRight, descTop, descBottom, componentManager, entityManager, entityId);
@@ -55,10 +55,10 @@ int CheckEntityPosition(
 int CheckEntityMovement(
     EntityInformation desc, ComponentManager componentManager, EntityManager entityManager)
 {
-    float descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
-    float descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
-    float descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);
-    float descBottom = desc.vPos.y + (desc.spriteData.dimension.y / 2);
+    float descLeft = (desc.vPos.x / 100) - ((desc.spriteData.dimension.x / 100) / 2);
+    float descRight = (desc.vPos.x / 100) + ((desc.spriteData.dimension.x / 100) / 2);
+    float descTop = (desc.vPos.y / 100) - ((desc.spriteData.dimension.y / 100) / 2);
+    float descBottom = (desc.vPos.y / 100) + ((desc.spriteData.dimension.y / 100) / 2);
 
     return CheckCollisionLogic(
         descLeft, descRight, descTop, descBottom, componentManager, entityManager, desc.uniqueID);
