@@ -7,32 +7,25 @@
 
 #pragma once
 
-#include "Components/component_manager.hpp"
-#include "Components/components.hpp"
-#include "Entities/entity_manager.hpp"
 #include "Systems/i_system.hpp"
 
-/**
- * @class UpdateSystem
- *
- * @brief A system responsible for updating entities in the game.
- */
 class UpdateSystem : public ISystem {
   public:
-    UpdateSystem(sf::RenderWindow &window) : _window(window) {}
+    UpdateSystem(
+        sf::RenderWindow &window, ComponentManager &componentManager, EntityManager &entityManager)
+        : _window(window), _componentManager(componentManager), _entityManager(entityManager)
+    {
+    }
 
-    void update(EntityManager &entityManager, ComponentManager &componentManager, float deltaTime);
+    void update(float deltaTime) override
+    {
+        updateSpritePositions(this->_componentManager, this->_entityManager);
+    }
 
-    void updateSpritePosition(EntityManager &entityManager, ComponentManager &componentManager);
-    void updateBackground(ComponentManager &componentManager, float deltaTime);
-
-    // bool updatePlayerMissile(int entityId, EntityManager &entityManager,
-    //     ComponentManager &componentManager, float deltaTime);
-
-    void setGameBgOffset(int offset) { gameBgOffset = offset; }
-    int getGameBgOffset() { return gameBgOffset; }
+    void updateSpritePositions(ComponentManager &componentManager, EntityManager &entityManager);
 
   private:
     sf::RenderWindow &_window;
-    int gameBgOffset = 0;
+    ComponentManager &_componentManager;
+    EntityManager &_entityManager;
 };

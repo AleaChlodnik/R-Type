@@ -7,27 +7,19 @@
 
 #include "Systems/update_system.hpp"
 
-void UpdateSystem::update(
-    EntityManager &entityManager, ComponentManager &componentManager, float deltaTime)
-{
-    updateBackground(componentManager, deltaTime);
-    updateSpritePosition(entityManager, componentManager);
-}
-
-void UpdateSystem::updateSpritePosition(
-    EntityManager &entityManager, ComponentManager &componentManager)
+void UpdateSystem::updateSpritePositions(ComponentManager &componentManager, EntityManager &entityManager)
 {
     const auto &entities = entityManager.getAllEntities();
     if (!entities.empty()) {
         for (const auto &entity : entities) {
-            auto spriteOpt = componentManager.getComponent<SpriteComponent>(entity.getId());
-            if (spriteOpt) {
-                auto posOpt = componentManager.getComponent<PositionComponent>(entity.getId());
-                if (posOpt) {
-                    if (spriteOpt.value()->sprite.getPosition().x != posOpt.value()->x ||
-                        spriteOpt.value()->sprite.getPosition().y != posOpt.value()->y) {
-                        spriteOpt.value()->sprite.setPosition(
-                            posOpt.value()->x, posOpt.value()->y);
+            auto sprite = componentManager.getComponent<SpriteComponent>(entity.getId());
+            if (sprite) {
+                auto pos = componentManager.getComponent<PositionComponent>(entity.getId());
+                if (pos) {
+                    if (sprite.value()->sprite.getPosition().x != pos.value()->x ||
+                        sprite.value()->sprite.getPosition().y != pos.value()->y) {
+                        sprite.value()->sprite.setPosition(
+                            pos.value()->x, pos.value()->y);
                     }
                 }
             }
@@ -35,57 +27,57 @@ void UpdateSystem::updateSpritePosition(
     }
 }
 
-void UpdateSystem::updateBackground(ComponentManager &componentManager, float deltaTime)
-{
-    // Menu background scroll - just Client
-    auto backgroundOpt = componentManager.getComponentMap<BackgroundComponent>();
-    if (backgroundOpt) {
-        int backgroundId = 0;
-        auto &backgroundMap = **backgroundOpt;
-        if (!backgroundMap.empty()) {
-            auto entityId = backgroundMap.begin()->first;
-            backgroundId = entityId;
-        }
-        auto spriteOpt = componentManager.getComponent<SpriteComponent>(backgroundId);
-        auto offsetOpt = componentManager.getComponent<OffsetComponent>(backgroundId);
-        auto velOpt = componentManager.getComponent<VelocityComponent>(backgroundId);
-        if (spriteOpt && offsetOpt && velOpt) {
-            offsetOpt.value()->offset += velOpt.value()->speed * deltaTime;
-            float textureWidth = spriteOpt.value()->sprite.getTexture()->getSize().x;
-            if (offsetOpt.value()->offset > (textureWidth * 0.15)) {
-                offsetOpt.value()->offset = 0;
-            }
-            sf::IntRect textureRect = spriteOpt.value()->sprite.getTextureRect();
-            textureRect.left = static_cast<int>(offsetOpt.value()->offset);
-            spriteOpt.value()->sprite.setTextureRect(textureRect);
-            return;
-        }
-    }
+// void UpdateSystem::updateBackground(ComponentManager &componentManager, float deltaTime)
+// {
+//     // Menu background scroll - just Client
+//     auto backgroundOpt = componentManager.getComponentMap<BackgroundComponent>();
+//     if (backgroundOpt) {
+//         int backgroundId = 0;
+//         auto &backgroundMap = **backgroundOpt;
+//         if (!backgroundMap.empty()) {
+//             auto entityId = backgroundMap.begin()->first;
+//             backgroundId = entityId;
+//         }
+//         auto spriteOpt = componentManager.getComponent<SpriteComponent>(backgroundId);
+//         auto offsetOpt = componentManager.getComponent<OffsetComponent>(backgroundId);
+//         auto velOpt = componentManager.getComponent<VelocityComponent>(backgroundId);
+//         if (spriteOpt && offsetOpt && velOpt) {
+//             offsetOpt.value()->offset += velOpt.value()->speed * deltaTime;
+//             float textureWidth = spriteOpt.value()->sprite.getTexture()->getSize().x;
+//             if (offsetOpt.value()->offset > (textureWidth * 0.15)) {
+//                 offsetOpt.value()->offset = 0;
+//             }
+//             sf::IntRect textureRect = spriteOpt.value()->sprite.getTextureRect();
+//             textureRect.left = static_cast<int>(offsetOpt.value()->offset);
+//             spriteOpt.value()->sprite.setTextureRect(textureRect);
+//             return;
+//         }
+//     }
 
     /////////////////////////////////////////////////////////////////////////////// TEMPORARY
-    const auto spritesOpt = componentManager.getComponentMap<SpriteComponent>();
-    if (spritesOpt) {
-        auto &sprites = **spritesOpt;
-        auto bgSpriteIt = sprites.find(1);
-        if (bgSpriteIt != sprites.end()) {
-            auto &spriteComponent = bgSpriteIt->second;
-            auto bgSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            if (bgSprite) {
-                int offset = getGameBgOffset();
-                offset += static_cast<int>(300 * deltaTime);
-                float textureWidth =
-                    static_cast<float>(bgSprite->sprite.getTexture()->getSize().x);
-                if (offset > (textureWidth * 0.15)) {
-                    offset = 0;
-                }
-                sf::IntRect textureRect = bgSprite->sprite.getTextureRect();
-                textureRect.left = offset;
-                bgSprite->sprite.setTextureRect(textureRect);
-                setGameBgOffset(offset);
-            }
-        }
-    }
-}
+//     const auto spritesOpt = componentManager.getComponentMap<SpriteComponent>();
+//     if (spritesOpt) {
+//         auto &sprites = **spritesOpt;
+//         auto bgSpriteIt = sprites.find(1);
+//         if (bgSpriteIt != sprites.end()) {
+//             auto &spriteComponent = bgSpriteIt->second;
+//             auto bgSprite = std::any_cast<SpriteComponent>(&spriteComponent);
+//             if (bgSprite) {
+//                 int offset = getGameBgOffset();
+//                 offset += static_cast<int>(300 * deltaTime);
+//                 float textureWidth =
+//                     static_cast<float>(bgSprite->sprite.getTexture()->getSize().x);
+//                 if (offset > (textureWidth * 0.15)) {
+//                     offset = 0;
+//                 }
+//                 sf::IntRect textureRect = bgSprite->sprite.getTextureRect();
+//                 textureRect.left = offset;
+//                 bgSprite->sprite.setTextureRect(textureRect);
+//                 setGameBgOffset(offset);
+//             }
+//         }
+//     }
+// }
 //////////////////////////////////////////////////////////////////////////////
 
 // Game background scroll - from Server
