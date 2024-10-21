@@ -49,7 +49,7 @@ void RenderSystem::render(ComponentManager &componentManager)
                 if (position) {
                     textToDraw.setOrigin(textToDraw.getLocalBounds().width / 2.0f,
                         textToDraw.getLocalBounds().height / 2.0f);
-                    textToDraw.setPosition(position.value()->x, position.value()->y);
+                    textToDraw.setPosition(position.value().x, position.value().y);
                     _window.draw(textToDraw);
                 }
             }

@@ -27,15 +27,15 @@ bool CheckPositionEntity(
                 auto playerHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
                 if (playerPos && playerHitbox) {
 
-                    descLeft = desc.value()->x - (descSprite.value()->dimension.x / 2);
-                    descRight = desc.value()->x + (descSprite.value()->dimension.x / 2);
-                    descTop = desc.value()->y - (descSprite.value()->dimension.y / 2);
-                    descBottom = desc.value()->y + (descSprite.value()->dimension.y / 2);
+                    descLeft = desc.value().x - (descSprite.value().dimension.x / 2);
+                    descRight = desc.value().x + (descSprite.value().dimension.x / 2);
+                    descTop = desc.value().y - (descSprite.value().dimension.y / 2);
+                    descBottom = desc.value().y + (descSprite.value().dimension.y / 2);
 
-                    playerLeft = playerPos.value()->x - (playerHitbox.value()->w / 2);
-                    playerRight = playerPos.value()->x + (playerHitbox.value()->w / 2);
-                    playerTop = playerPos.value()->y - (playerHitbox.value()->h / 2);
-                    playerBottom = playerPos.value()->y + (playerHitbox.value()->h / 2);
+                    playerLeft = playerPos.value().x - (playerHitbox.value().w / 2);
+                    playerRight = playerPos.value().x + (playerHitbox.value().w / 2);
+                    playerTop = playerPos.value().y - (playerHitbox.value().h / 2);
+                    playerBottom = playerPos.value().y + (playerHitbox.value().h / 2);
 
                     if (!(descRight < playerLeft || descLeft > playerRight ||
                             descBottom < playerTop || descTop > playerBottom)) {
@@ -98,7 +98,7 @@ Entity EntityFactory::createPlayer(
 
     while (CheckEntityPosition(player.getId(), componentManager, entityManager) != -1) {
         auto getPosition = componentManager.getComponent<PositionComponent>(player.getId());
-        getPosition.value()->y = static_cast<float>(rand() % 600);
+        getPosition.value().y = static_cast<float>(rand() % 600);
     }
 
     return player;
@@ -171,12 +171,12 @@ Entity EntityFactory::createBasicMonster(
     while (CheckPositionEntity(entityManager, componentManager, monster.getId()) == false) {
         auto monsterPos = componentManager.getComponent<PositionComponent>(monster.getId());
         if (monsterPos) {
-            monsterPos.value()->x = static_cast<float>(rand() % 1800);
+            monsterPos.value().x = static_cast<float>(rand() % 1800);
             ;
-            if (monsterPos.value()->x < 1200) {
-                monsterPos.value()->x = 1200;
+            if (monsterPos.value().x < 1200) {
+                monsterPos.value().x = 1200;
             }
-            monsterPos.value()->y = static_cast<float>(rand() % 1000);
+            monsterPos.value().y = static_cast<float>(rand() % 1000);
         }
     }
 
@@ -189,17 +189,15 @@ Entity EntityFactory::createPlayerMissile(
     Entity playerMissile = entityManager.createEntity();
 
     PlayerMissileComponent playerMissileComponent;
-    PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
     SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {0.1f, 0.1f}, 1};
     // HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x),
     // static_cast<int>(spriteData.dimension.y)};
 
     auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
-    if (entityPos) {
-        startPosition.x = entityPos.value()->x + 50;
-        startPosition.y = entityPos.value()->y;
-    }
+    if (!entityPos)
+        throw std::runtime_error("Entity does not have a position component");
+    PositionComponent startPosition(entityPos.value().x + 50, entityPos.value().y);
 
     componentManager.addComponent<PlayerMissileComponent>(
         playerMissile.getId(), playerMissileComponent);
@@ -236,17 +234,15 @@ Entity EntityFactory::createEnemyMissile(
     Entity enemyMissile = entityManager.createEntity();
 
     EnemyMissileComponent enemyMissileComponent;
-    PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
     SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {1.0f, 1.0f}, 3};
     // HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x),
     // static_cast<int>(spriteData.dimension.y)};
 
     auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
-    if (entityPos) {
-        startPosition.x = entityPos.value()->x + 50;
-        startPosition.y = entityPos.value()->y;
-    }
+    if (!entityPos)
+        throw std::runtime_error("Entity does not have a position component");
+    PositionComponent startPosition(entityPos.value().x + 50, entityPos.value().y);
 
     componentManager.addComponent<EnemyMissileComponent>(
         enemyMissile.getId(), enemyMissileComponent);

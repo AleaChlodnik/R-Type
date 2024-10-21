@@ -51,23 +51,23 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
                     componentManager.getComponent<SpriteComponent>(button.get()->getId());
                 if (sprite) {
                     if (posComp && sprite) {
-                        sf::Vector2u spriteSize = sprite.value()->sprite.getTexture()->getSize();
-                        if (pos.x >= posComp.value()->x - spriteSize.x / 2 &&
-                            pos.x <= posComp.value()->x + spriteSize.x / 2 &&
-                            pos.y >= posComp.value()->y - spriteSize.y / 2 &&
-                            pos.y <= posComp.value()->y + spriteSize.y / 2) {
+                        sf::Vector2u spriteSize = sprite.value().sprite.getTexture()->getSize();
+                        if (pos.x >= posComp.value().x - spriteSize.x / 2 &&
+                            pos.x <= posComp.value().x + spriteSize.x / 2 &&
+                            pos.y >= posComp.value().y - spriteSize.y / 2 &&
+                            pos.y <= posComp.value().y + spriteSize.y / 2) {
                             auto onClick =
                                 componentManager.getComponent<OnClickComponent>(button->getId());
                             if (onClick)
-                                onClick.value()->onClick(scenes);
+                                onClick.value().onClick(scenes);
                             else {
-                                auto bind =
+                                auto bindComponent =
                                     componentManager.getComponent<BindComponent>(button->getId());
-                                if (bind) {
+                                if (bindComponent) {
                                     auto it = std::find(buttons.begin(), buttons.end(), button);
                                     if (it != buttons.end()) {
                                         int index = std::distance(buttons.begin(), it);
-                                        bind.value()->bind(scenes, Scenes::Actions(index));
+                                        bindComponent.value().bind(scenes, Scenes::Actions(index));
                                     }
                                 }
                             }

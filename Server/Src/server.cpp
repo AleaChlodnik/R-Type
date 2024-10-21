@@ -125,9 +125,9 @@ void r_type::net::Server::InitListEntities(
             auto sprite = componentManager.getComponent<SpriteDataComponent>(entity.getId());
             if (playerPos && sprite) {
                 entityInfo.uniqueID = entity.getId();
-                entityInfo.vPos.x = playerPos.value()->x;
-                entityInfo.vPos.y = playerPos.value()->y;
-                entityInfo.spriteData = *(sprite.value());
+                entityInfo.vPos.x = playerPos.value().x;
+                entityInfo.vPos.y = playerPos.value().y;
+                entityInfo.spriteData = sprite.value();
                 msgAddPlayer << entityInfo;
                 MessageClient(client, msgAddPlayer);
             }

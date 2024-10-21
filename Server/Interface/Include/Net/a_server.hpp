@@ -261,17 +261,17 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     auto spriteData =
                         componentManager.getComponent<SpriteDataComponent>(entity.getId());
                     if (monster && position && spriteData) {
-                        position.value()->x -= 5;
+                        position.value().x -= 5;
                         MessageAllClients(
                             msg << EntityInformation{static_cast<u_int32_t>(entity.getId()),
-                                *(spriteData.value()),
-                                {(position.value()->x), (position.value()->y)}});
+                                spriteData.value(),
+                                {(position.value().x), (position.value().y)}});
                     }
                     if (missile && position && spriteData) {
-                        position.value()->x += 20;
+                        position.value().x += 20;
                         EntityInformation newMissile = EntityInformation{
-                            static_cast<u_int32_t>(entity.getId()), *(spriteData.value()),
-                            {(position.value()->x), (position.value()->y)}};
+                            static_cast<u_int32_t>(entity.getId()), spriteData.value(),
+                            {(position.value().x), (position.value().y)}};
                         int newID =
                             CheckEntityMovement(newMissile, componentManager, entityManager);
                         auto monster = componentManager.getComponent<BasicMonsterComponent>(newID);
@@ -326,14 +326,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         msg >> entityPosition;
         entity.uniqueID = entityId;
         entity.vPos = entityPosition;
-        entity.spriteData = *entitySprite.value();
+        entity.spriteData = entitySprite.value();
         uint32_t entityTouched = CheckEntityMovement(entity, componentManager, entityManager);
 
         if (entityTouched == -1) {
             auto position = componentManager.getComponent<PositionComponent>(entityId);
             if (position) {
-                position.value()->x = entityPosition.x;
-                position.value()->y = entityPosition.y;
+                position.value().x = entityPosition.x;
+                position.value().y = entityPosition.y;
                 r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::UpdateEntity;
                 msg << entity;
@@ -387,12 +387,13 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         EntityInformation entityInfo;
         Entity player = entityFactory.createPlayer(entityManager, componentManager, nbrOfPlayers);
         entityInfo.uniqueID = player.getId();
-        auto playerSprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        auto playerSprite =
+            componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         if (playerSprite && playerPos) {
-            entityInfo.spriteData = *(playerSprite.value());
-            entityInfo.vPos.x = playerPos.value()->x;
-            entityInfo.vPos.y = playerPos.value()->y;
+            entityInfo.spriteData = playerSprite.value();
+            entityInfo.vPos.x = playerPos.value().x;
+            entityInfo.vPos.y = playerPos.value().y;
         }
         clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
         return entityInfo;
@@ -417,9 +418,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         auto missilePos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         if (missilePos && sprite) {
-            entityInfo.vPos.x = missilePos.value()->x;
-            entityInfo.vPos.y = missilePos.value()->y;
-            entityInfo.spriteData = *(sprite.value());
+            entityInfo.vPos.x = missilePos.value().x;
+            entityInfo.vPos.y = missilePos.value().y;
+            entityInfo.spriteData = sprite.value();
         }
         return entityInfo;
     }
@@ -438,7 +439,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         entityInfo.uniqueID = background.getId();
         auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         if (sprite) {
-            entityInfo.spriteData = *(sprite.value());
+            entityInfo.spriteData = sprite.value();
         }
         return entityInfo;
     }

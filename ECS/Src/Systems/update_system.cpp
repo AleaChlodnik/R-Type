@@ -16,10 +16,10 @@ void UpdateSystem::updateSpritePositions(ComponentManager &componentManager, Ent
             if (sprite) {
                 auto pos = componentManager.getComponent<PositionComponent>(entity.getId());
                 if (pos) {
-                    if (sprite.value()->sprite.getPosition().x != pos.value()->x ||
-                        sprite.value()->sprite.getPosition().y != pos.value()->y) {
-                        sprite.value()->sprite.setPosition(
-                            pos.value()->x, pos.value()->y);
+                    if (sprite.value().sprite.getPosition().x != pos.value().x ||
+                        sprite.value().sprite.getPosition().y != pos.value().y) {
+                        sprite.value().sprite.setPosition(
+                            pos.value().x, pos.value().y);
                     }
                 }
             }

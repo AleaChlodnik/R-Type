@@ -40,7 +40,7 @@ class ComponentManager {
     void addComponent(int entityId, Args &&...args)
     {
         ComponentType component(std::forward<Args>(args)...);
-        components[typeid(ComponentType)][entityId] =
+        _components[typeid(ComponentType)][entityId] =
             std::make_any<ComponentType>(std::move(component));
     }
 
@@ -51,12 +51,12 @@ class ComponentManager {
      * @param entityId The ID of the entity.
      * @return An optional pointer to the component if found, otherwise std::nullopt.
      */
-    template <typename ComponentType> std::optional<ComponentType *> getComponent(int entityId)
+    template <typename ComponentType> std::optional<ComponentType> getComponent(int entityId)
     {
-        if (components.find(typeid(ComponentType)) != components.end()) {
-            auto &entityComponents = components[typeid(ComponentType)];
+        if (_components.find(typeid(ComponentType)) != _components.end()) {
+            auto &entityComponents = _components[typeid(ComponentType)];
             if (entityComponents.find(entityId) != entityComponents.end()) {
-                return std::any_cast<ComponentType>(&entityComponents[entityId]);
+                return std::any_cast<ComponentType>(entityComponents[entityId]);
             }
         }
         return std::nullopt; // Return nullopt if not found
@@ -72,8 +72,8 @@ class ComponentManager {
     template <typename ComponentType>
     std::optional<std::unordered_map<int, std::any> *> getComponentMap()
     {
-        auto it = components.find(typeid(ComponentType));
-        if (it != components.end()) {
+        auto it = _components.find(typeid(ComponentType));
+        if (it != _components.end()) {
             return &it->second;
         }
         return std::nullopt;
@@ -81,8 +81,8 @@ class ComponentManager {
 
     template <typename ComponentType> void removeEntityFromComponent(int entityId)
     {
-        auto it = components.find(typeid(ComponentType));
-        if (it != components.end()) {
+        auto it = _components.find(typeid(ComponentType));
+        if (it != _components.end()) {
             auto &entityComponents = it->second;
             entityComponents.erase(entityId);
         }
@@ -99,5 +99,5 @@ class ComponentManager {
      * outer map are inner unordered maps, where the keys are of type int and represent the entity
      * ID, and the values are of type std::any, which allows storing components of any type.
      */
-    std::unordered_map<std::type_index, std::unordered_map<int, std::any>> components;
+    std::unordered_map<std::type_index, std::unordered_map<int, std::any>> _components;
 };
