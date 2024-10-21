@@ -9,16 +9,16 @@ This document outlines the protocol used for communication between the Client an
 ## 2. Architecture Overview
 
 ```cpp
-struct vf2d {
-    float x, y;
-};
-struct entityInfo_s {
-    uint32_t nUniqueID;
-    uint32_t nAvatarID;
+vf2d:
+    float x // 4 bits
+    float y // 4 bits
 
-    vf2d vPosition;
-    vf2d vVel;
-}entityInfo_t;
+entityInfo_t:
+    uint32 nUniqueID // 4 bits
+    uint32 nAvatarID // 4 bits
+
+    vf2d vPosition
+    vf2d vVel
 ```
 
 | Message Part | Description        |
