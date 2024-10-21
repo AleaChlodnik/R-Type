@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include "i_entity.hpp"
-
 /**
  * @class Entity
  *
@@ -17,7 +15,7 @@
  * This class is a concrete implementation of the IEntity interface.
  * It provides functionality to retrieve the ID of the entity.
  */
-class Entity : public IEntity {
+class Entity {
   public:
     /**
      * @brief Constructs an Entity object with the given ID.
@@ -32,7 +30,7 @@ class Entity : public IEntity {
      *
      * @return The ID of the entity.
      */
-    int getId() const override { return _id; }
+    int getId() const { return _id; }
 
   private:
     int _id;
