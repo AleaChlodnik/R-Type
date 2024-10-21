@@ -18,7 +18,7 @@ void RenderSystem::render(ComponentManager &componentManager)
             const auto &spriteComponent = pair.second;
             auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
             if (sprite) {
-                if (sprite->type == Scenes::SpriteType::BACKGROUND) {
+                if (sprite->type == AScenes::SpriteType::BACKGROUND) {
                     _window.draw(sprite->sprite);
                     break;
                 }
@@ -28,7 +28,7 @@ void RenderSystem::render(ComponentManager &componentManager)
             const auto &spriteComponent = pair.second;
             auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
             if (sprite) {
-                if (sprite->type == Scenes::SpriteType::BACKGROUND) {
+                if (sprite->type == AScenes::SpriteType::BACKGROUND) {
                     continue;
                 }
                 _window.draw(sprite->sprite);
