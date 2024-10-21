@@ -264,6 +264,7 @@ void Scenes::gameLoop()
                 death();
             }
             if (event.type == sf::Event::KeyPressed) {
+                std::cout << keyBinds[Actions::QUIT] << std::endl;
                 if (event.key.code == sf::Keyboard::P) {
                     c.PingServer();
                 }
@@ -544,8 +545,8 @@ void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     std::function<Scenes *(Scenes *, Scenes::Actions)> bindKey = [](Scenes *currentScene,
                                                                      Scenes::Actions action) {
         sf::Keyboard::Key key = waitForKey(currentScene->getRenderWindow());
-        currentScene->keyBinds[action] = key;
-        std::cout << currentScene->keyBinds[action] << "ok" << std::endl;
+        currentScene->keyBinds[action] = sf::Keyboard::Key(key);
+        std::cout << currentScene->keyBinds[action] << std::endl;
         return currentScene;
     };
 
@@ -572,14 +573,6 @@ void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     std::shared_ptr<Entity> bindPauseButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
             entityManager, componentManager, textureManager, "Pause : ", &bindKey, 1650, 550));
-
-    // Entity bindPauseButton = entityFactory.createSmallButton(
-    //     entityManager, componentManager, textureManager, "Pause : ", &bindKey);
-    // pos = componentManager.getComponent<PositionComponent>(bindPauseButton.get()->getId());
-    // if (pos) {
-    //     pos.value()->x = 1560;
-    //     pos.value()->y = 750;
-    // }
 
     std::shared_ptr<Entity> bindQuitButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(
@@ -678,33 +671,33 @@ void Scenes::settingsMenu()
     buttons.push_back(backButton);
 
     if (displayDaltonismChoice) {
-        // createDaltonismChoiceButtons(
-        //     &buttons, componentManager, entityManager, textureManager, entityFactory);
-        sf::RectangleShape filter(sf::Vector2f((*_window).getSize().x, (*_window).getSize().y));
-        currentDaltonismMode = DaltonismMode::TRITANOPIA;
-        switch (currentDaltonismMode) {
-        case DaltonismMode::NORMAL:
-            filter.setFillColor(sf::Color(0, 0, 0, 0));
-            break;
-        case DaltonismMode::TRITANOPIA:
-            filter.setFillColor(sf::Color(255, 255, 100, 100));
-            break;
-        case DaltonismMode::DEUTERANOPIA:
-            filter.setFillColor(sf::Color(255, 100, 255, 100));
-            break;
-        case DaltonismMode::PROTANOPIA:
-            filter.setFillColor(sf::Color(255, 255, 100, 100));
-            break;
-        }
+        createDaltonismChoiceButtons(
+            buttons, componentManager, entityManager, textureManager, entityFactory);
+        // sf::RectangleShape filter(sf::Vector2f((*_window).getSize().x, (*_window).getSize().y));
+        // currentDaltonismMode = DaltonismMode::TRITANOPIA;
+        // switch (currentDaltonismMode) {
+        // case DaltonismMode::NORMAL:
+        //     filter.setFillColor(sf::Color(0, 0, 0, 0));
+        //     break;
+        // case DaltonismMode::TRITANOPIA:
+        //     filter.setFillColor(sf::Color(255, 255, 100, 100));
+        //     break;
+        // case DaltonismMode::DEUTERANOPIA:
+        //     filter.setFillColor(sf::Color(255, 100, 255, 100));
+        //     break;
+        // case DaltonismMode::PROTANOPIA:
+        //     filter.setFillColor(sf::Color(255, 255, 100, 100));
+        //     break;
+        // }
     }
 
     if (displayGameModeChoice) {
-        // createGameModeChoiceButtons(
-        //     &buttons, componentManager, entityManager, textureManager, entityFactory);
+        createGameModeChoiceButtons(
+            buttons, componentManager, entityManager, textureManager, entityFactory);
     }
     if (displayKeyBinds) {
-        // createKeyBindingButtons(buttons, componentManager, entityManager, textureManager,
-        // entityFactory);
+        createKeyBindingButtons(buttons, componentManager, entityManager, textureManager,
+        entityFactory);
     }
 
     sf::Clock clock;
