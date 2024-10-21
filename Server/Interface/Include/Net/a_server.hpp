@@ -253,8 +253,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             for (const auto &entity : entities) {
                 int entityId = entity.getId();
                 auto player = componentManager.getComponent<PlayerComponent>(entityId);
-                auto background =
-                    componentManager.getComponent<BackgroundComponent>(entityId);
+                auto background = componentManager.getComponent<BackgroundComponent>(entityId);
                 if (player || background) {
                     continue;
                 }
@@ -263,37 +262,37 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 auto spriteData = componentManager.getComponent<SpriteDataComponent>(entityId);
 
                 if (position && spriteData) {
-                    auto monster =
-                    componentManager.getComponent<BasicMonsterComponent>(entityId);
-                auto missile =
-                    componentManager.getComponent<PlayerMissileComponent>(entityId);
-                }
-                if (monster && position && spriteData) {
-                    position.value()->x -= 5;
-                    MessageAllClients(
-                        msg << EntityInformation{static_cast<u_int32_t>(entityId),
-                            *(spriteData.value()),
-                            {(position.value()->x), (position.value()->y)}});
-                }
-                if (missile && position && spriteData) {
-                    position.value()->x += 20;
-                    EntityInformation newMissile =
-                        EntityInformation{static_cast<u_int32_t>(entityId),
-                            *(spriteData.value()), {(position.value()->x), (position.value()->y)}};
-                    int newID = CheckEntityMovement(newMissile, componentManager, entityManager);
-                    auto monster = componentManager.getComponent<BasicMonsterComponent>(newID);
-                    if (monster) {
-                        r_type::net::Message<TypeMessage> msgDestroy;
-                        msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
-                        msgDestroy << entityId;
-                        MessageAllClients(msgDestroy);
-                        RemoveEntities(entityId);
+                    auto monster = componentManager.getComponent<BasicMonsterComponent>(entityId);
+                    auto missile = componentManager.getComponent<PlayerMissileComponent>(entityId);
 
-                        msgDestroy << newID;
-                        MessageAllClients(msgDestroy);
-                        RemoveEntities(newID);
-                    } else {
-                        MessageAllClients(msg << newMissile);
+                    if (monster) {
+                        position.value()->x -= 5;
+                        MessageAllClients(
+                            msg << EntityInformation{static_cast<u_int32_t>(entityId),
+                                *(spriteData.value()),
+                                {(position.value()->x), (position.value()->y)}});
+                    }
+                    if (missile) {
+                        position.value()->x += 20;
+                        EntityInformation newMissile = EntityInformation{
+                            static_cast<u_int32_t>(entityId), *(spriteData.value()),
+                            {(position.value()->x), (position.value()->y)}};
+                        int newID =
+                            CheckEntityMovement(newMissile, componentManager, entityManager);
+                        auto monster = componentManager.getComponent<BasicMonsterComponent>(newID);
+                        if (monster) {
+                            r_type::net::Message<TypeMessage> msgDestroy;
+                            msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
+                            msgDestroy << entityId;
+                            MessageAllClients(msgDestroy);
+                            RemoveEntities(entityId);
+
+                            msgDestroy << newID;
+                            MessageAllClients(msgDestroy);
+                            RemoveEntities(newID);
+                        } else {
+                            MessageAllClients(msg << newMissile);
+                        }
                     }
                 }
             }
