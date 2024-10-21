@@ -943,19 +943,28 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/Interface/ \
-                         @CMAKE_CURRENT_SOURCE_DIR@/Interface/include/ \
-                         @CMAKE_CURRENT_SOURCE_DIR@/Client/ \
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/Client/ \
                          @CMAKE_CURRENT_SOURCE_DIR@/Client/Interface/ \
                          @CMAKE_CURRENT_SOURCE_DIR@/Client/Interface/Include/ \
-                         @CMAKE_CURRENT_SOURCE_DIR@/Client/Interface/Include/Components/ \
-                         @CMAKE_CURRENT_SOURCE_DIR@/Client/Interface/Include/Entities/ \
-                         @CMAKE_CURRENT_SOURCE_DIR@/Client/Interface/Include/Systems/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/Client/Interface/Include/Net/ \
                          @CMAKE_CURRENT_SOURCE_DIR@/Client/Src/ \
-                         @CMAKE_CURRENT_SOURCE_DIR@/Client/Src/Components/ \
-                         @CMAKE_CURRENT_SOURCE_DIR@/Client/Src/Entities/ \
-                         @CMAKE_CURRENT_SOURCE_DIR@/Client/Src/Systems/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/ECS/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/ECS/Interface/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/ECS/Interface/Net/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/ECS/Interface/Include/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/ECS/Interface/Include/Components/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/ECS/Interface/Include/Entities/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/ECS/Interface/Include/Systems/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/ECS/Src/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/ECS/Src/Entities/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/ECS/Src/Systems/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/Interface/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/Interface/include/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/Interface/include/Net/ \
                          @CMAKE_CURRENT_SOURCE_DIR@/Server/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/Server/Interface/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/Server/Interface/Include/ \
+                         @CMAKE_CURRENT_SOURCE_DIR@/Server/Interface/Include/Net/ \
                          @CMAKE_CURRENT_SOURCE_DIR@/Server/Src/ \
 
 # This tag can be used to specify the character encoding of the source files

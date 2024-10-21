@@ -7,12 +7,13 @@
 
 #pragma once
 #include <functional>
-#include <scenes.hpp>
+#include <i_scenes.hpp>
+#include <a_scenes.hpp>
 
 struct OnClickComponent {
     bool isClicked = false;
-    std::function<Scenes *(Scenes *)> &onClick;
+    std::function<IScenes *(AScenes *)> &onClick;
 
-    OnClickComponent(std::function<Scenes *(Scenes *)> &onClickfunction)
+    OnClickComponent(std::function<IScenes *(AScenes *)> &onClickfunction)
         : onClick(onClickfunction){};
 };

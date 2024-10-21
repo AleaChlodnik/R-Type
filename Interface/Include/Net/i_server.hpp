@@ -100,16 +100,6 @@ template <typename T> class IServer {
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) = 0;
 
     /**
-     * @brief Check if player position is valid
-     *
-     * @param desc
-     * @return true
-     * @return false
-     */
-
-    virtual int CheckPlayerPosition(EntityInformation desc) = 0;
-
-    /**
      * @brief Initiate players
      *
      * @param msg

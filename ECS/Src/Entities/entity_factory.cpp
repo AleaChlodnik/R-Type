@@ -5,9 +5,11 @@
 ** entity_factory
 */
 
-#include "Components/components.hpp"
+#include "hitbox_tmp.hpp"
+#include <Components/components.hpp>
 #include <Entities/entity_factory.hpp>
 #include <SFML/Graphics.hpp>
+#include <cstdint>
 #include <cstdlib>
 
 bool CheckPositionEntity(
@@ -53,7 +55,7 @@ Entity EntityFactory::createBackground(
 
     BackgroundComponent backgroundComponent;
     PositionComponent start_position(0, 0);
-    SpriteDataComponent spriteData{SpritePath::Background, {0, 0}, {6913, 3901}, {1.0f, 1.0f}};
+    SpriteDataComponent spriteData{SpritePath::Background, {0, 0}, {6913, 3901}, {1.0f, 1.0f}, 0};
     VelocityComponent velocity{200.0f};
     OffsetComponent offset{0};
 
@@ -67,17 +69,25 @@ Entity EntityFactory::createBackground(
 }
 
 Entity EntityFactory::createPlayer(
-    EntityManager &entityManager, ComponentManager &componentManager)
+    EntityManager &entityManager, ComponentManager &componentManager, int nbOfPlayers)
 {
     Entity player = entityManager.createEntity();
 
     PlayerComponent playerComponent;
-    PositionComponent startPosition(0, 0);
+    PositionComponent startPosition(100, static_cast<float>(rand() % 600));
     // VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.0f, 1.0f}};
-    HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
+    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.0f, 1.0f}, 1};
+    HitboxComponent hitbox{
+        static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
     HealthComponent health{100, 100};
     InputComponent input{InputType::NONE};
+
+    if (nbOfPlayers == 2)
+        spriteData.spritePath = SpritePath::Ship2;
+    else if (nbOfPlayers == 3)
+        spriteData.spritePath = SpritePath::Ship3;
+    else if (nbOfPlayers == 4)
+        spriteData.spritePath = SpritePath::Ship4;
 
     componentManager.addComponent<PlayerComponent>(player.getId(), playerComponent);
     componentManager.addComponent<PositionComponent>(player.getId(), startPosition);
@@ -85,6 +95,11 @@ Entity EntityFactory::createPlayer(
     componentManager.addComponent<HealthComponent>(player.getId(), health);
     componentManager.addComponent<InputComponent>(player.getId(), input);
     componentManager.addComponent<SpriteDataComponent>(player.getId(), spriteData);
+
+    while (CheckEntityPosition(player.getId(), componentManager, entityManager) != -1) {
+        auto getPosition = componentManager.getComponent<PositionComponent>(player.getId());
+        getPosition.value()->y = static_cast<float>(rand() % 600);
+    }
 
     return player;
 }
@@ -96,8 +111,9 @@ Entity EntityFactory::createAlly(EntityManager &entityManager, ComponentManager 
     AllyComponent allyComponent;
     PositionComponent startPosition(0, 0);
     // VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.0f, 1.0f}};
-    HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
+    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.0f, 1.0f}, 2};
+    HitboxComponent hitbox{
+        static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
     HealthComponent health{100, 100};
 
     componentManager.addComponent<AllyComponent>(ally.getId(), allyComponent);
@@ -117,8 +133,9 @@ Entity EntityFactory::createBasicEnemy(
     EnemyComponent enemyComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Enemy1, {0, 0}, {80, 160}, {1.0f, 1.0f}};
-    HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
+    SpriteDataComponent spriteData{SpritePath::Enemy1, {0, 0}, {80, 160}, {1.0f, 1.0f}, 3};
+    HitboxComponent hitbox{
+        static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
     HealthComponent health{100, 100};
 
     componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
@@ -138,9 +155,10 @@ Entity EntityFactory::createBasicMonster(
 
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {136, 112}, {0.5f, 0.5f}};
+    SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {136, 112}, {0.5f, 0.5f}, 3};
     PositionComponent startPosition(1200, 500);
-    HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
+    HitboxComponent hitbox{
+        static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
     HealthComponent health{100, 100};
 
     componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
@@ -166,15 +184,22 @@ Entity EntityFactory::createBasicMonster(
 }
 
 Entity EntityFactory::createPlayerMissile(
-    EntityManager &entityManager, ComponentManager &componentManager)
+    EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId)
 {
     Entity playerMissile = entityManager.createEntity();
 
     PlayerMissileComponent playerMissileComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {0.1f, 0.1f}};
-    // HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
+    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {0.1f, 0.1f}, 1};
+    // HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x),
+    // static_cast<int>(spriteData.dimension.y)};
+
+    auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
+    if (entityPos) {
+        startPosition.x = entityPos.value()->x + 50;
+        startPosition.y = entityPos.value()->y;
+    }
 
     componentManager.addComponent<PlayerMissileComponent>(
         playerMissile.getId(), playerMissileComponent);
@@ -193,8 +218,9 @@ Entity EntityFactory::createAllyMissile(
     AllyMissileComponent allyMissileComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {1.0f, 1.0f}};
-    // HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
+    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {1.0f, 1.0f}, 2};
+    // HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x),
+    // static_cast<int>(spriteData.dimension.y)};
 
     componentManager.addComponent<AllyMissileComponent>(allyMissile.getId(), allyMissileComponent);
     componentManager.addComponent<PositionComponent>(allyMissile.getId(), startPosition);
@@ -205,15 +231,22 @@ Entity EntityFactory::createAllyMissile(
 }
 
 Entity EntityFactory::createEnemyMissile(
-    EntityManager &entityManager, ComponentManager &componentManager)
+    EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId)
 {
     Entity enemyMissile = entityManager.createEntity();
 
     EnemyMissileComponent enemyMissileComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {1.0f, 1.0f}};
-    // HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
+    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {1.0f, 1.0f}, 3};
+    // HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x),
+    // static_cast<int>(spriteData.dimension.y)};
+
+    auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
+    if (entityPos) {
+        startPosition.x = entityPos.value()->x + 50;
+        startPosition.y = entityPos.value()->y;
+    }
 
     componentManager.addComponent<EnemyMissileComponent>(
         enemyMissile.getId(), enemyMissileComponent);
@@ -226,17 +259,17 @@ Entity EntityFactory::createEnemyMissile(
 
 Entity EntityFactory::createButton(EntityManager &entityManager,
     ComponentManager &componentManager, TextureManager &textureManager, std::string text,
-    std::function<Scenes *(Scenes *)> *onClick)
+    std::function<IScenes *(AScenes *)> *onClick, float x, float y)
 {
     Entity button = entityManager.createEntity();
 
     sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
     sf::Vector2f dimension(1.0f, 1.0f);
 
-    PositionComponent pos(0, 0);
+    PositionComponent pos(x, y);
     TextComponent textComponent(text);
     OnClickComponent onClickfunction(*onClick);
-    SpriteComponent sprite(texture, pos.x, pos.y, dimension);
+    SpriteComponent sprite(texture, pos.x, pos.y, dimension, 4);
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
     componentManager.addComponent<OnClickComponent>(button.getId(), onClickfunction);
@@ -248,17 +281,18 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
 
 Entity EntityFactory::createSmallButton(EntityManager &entityManager,
     ComponentManager &componentManager, TextureManager &textureManager, std::string text,
-    std::function<Scenes *(Scenes *, Scenes::Actions)> *onClick)
+    std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x, float y)
 {
     Entity button = entityManager.createEntity();
 
-    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/small_button.png");
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Menus/small_button.png");
     sf::Vector2f scale(1.0f, 1.0f);
 
-    PositionComponent pos(0, 0);
+    PositionComponent pos(x, y);
     TextComponent textComponent(text);
     BindComponent bindComponent(*onClick);
-    SpriteComponent sprite(texture, pos.x, pos.y, scale);
+    SpriteComponent sprite(texture, pos.x, pos.y, scale, 4);
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
     componentManager.addComponent<BindComponent>(button.getId(), bindComponent);
