@@ -9,6 +9,7 @@
 
 #include "Entities/entity.hpp"
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 /**
  * @class Scenes
@@ -181,6 +182,6 @@ class Scenes {
      *
      */
     sf::RenderWindow *_window;
-    std::vector<Entity *> buttons;
+    std::vector<std::shared_ptr<Entity>> buttons;
     sf::Keyboard::Key binding;
 };

@@ -18,7 +18,9 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_BUILD_TYPE Debug)  # Set build type to Debug
+if (LINUX)
+  set(CMAKE_BUILD_TYPE Debug)  # Set build type to Debug
+endif()
 
 # # Enable AddressSanitizer
 # set(CMAKE_CXX_FLAGS
@@ -27,8 +29,10 @@ set(CMAKE_BUILD_TYPE Debug)  # Set build type to Debug
 #     "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 
 # # Add debug flags
-if(CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")
+if (LINUX)
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")
+  endif()
 endif()
 
 add_subdirectory(Interface)
@@ -41,7 +45,7 @@ add_subdirectory(Server)
 
 # first we can indicate the documentation build as an option and set it to ON by
 # default
-# option(BUILD_DOC "Build documentation" ON)
+option(BUILD_DOC "Build documentation" OFF)
 
 if (BUILD_DOC)
 # check if Doxygen is installed

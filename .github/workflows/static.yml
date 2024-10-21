@@ -4,14 +4,10 @@ name: Deploy static content to Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches:
-      - "*"
-  pull_request:
-    branches:
-      - "*"
+    branches: ["main"]
 
   # Allows you to run this workflow manually from the Actions tab
-  # workflow_dispatch:
+  workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -27,7 +23,7 @@ concurrency:
 
 jobs:
   # Single deploy job since we're just deploying
-  deploy-html-doc:
+  deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -37,42 +33,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-
-      - name: Cache apt install
-        id: cache-apt
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-apt-install
-        with:
-          path: /var/cache/apt
-          key: ${{ runner.os }}-install-${{ env.cache-name }}-${{ hashFiles('**/compile.sh') }}
-          restore-keys: |
-            ${{ runner.os }}-install-${{ env.cache-name }}-
-
-      - name: Cache cmake build
-        id: cache-cmake
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-cmake-build
-        with:
-          path: ./build
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
-      - name: Install Doxygen
-        run: sudo apt-get install -y doxygen
-
-      - name: Configure CMake and Build Documentation
-        run: |
-          cmake -S . -B build -DBUILD_DOC=ON
-          cmake --build build --target doc_doxygen
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
-          path: "./Docs/html"
+          path: '.'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

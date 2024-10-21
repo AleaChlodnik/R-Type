@@ -114,7 +114,7 @@ class EntityFactory : public IEntityFactory {
      */
     Entity createButton(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &textureManager, std::string text,
-        std::function<Scenes *(Scenes *)> *onClick);
+        std::function<Scenes *(Scenes *)> *onClick, float x = 0, float y = 0);
     /**
      * @brief Creates a small button entity.
      *
@@ -131,7 +131,7 @@ class EntityFactory : public IEntityFactory {
      */
     Entity createSmallButton(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &textureManager, std::string text,
-        std::function<Scenes *(Scenes *, Scenes::Actions)> *onClick);
+        std::function<Scenes *(Scenes *, Scenes::Actions)> *onClick, float x = 0, float y = 0);
     /**
      * @brief Creates an ally missile entity.
      *

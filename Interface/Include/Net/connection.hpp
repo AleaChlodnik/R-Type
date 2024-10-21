@@ -246,7 +246,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
                         AddToIncomingMessageQueue();
                     }
                 } else {
-                    std::cout << "[" << id << "] Read Header Fail." << std::endl;
+                    // std::cout << "[" << id << "] Read Header Fail." << std::endl;
                     m_socket.close();
                 }
             });

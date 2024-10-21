@@ -1,38 +1,4 @@
-# Developer Documentation
-
-## Standard
-
-**Formatter**: Clang with config
-**Folder Name:** PascalCase
-**File Name:**  snake\_case
-
-**Code**:
-
-- **Class:** PascalCase
-- **Function:** camelCase
-- **Variable:** camelCase
-- **Comment:** Above function & next to line (right side)
-
-**Commit:** gc \-m "\[TITLE\] name of changed item" \-m "description"
-
-- **ADD:** Add a feature
-- **UPD:** Update/modify a feature
-- **FIX:** Fix an error
-- **DEL**: Delete a file/folder
-- **MERGE**
-
-## CI / CD
-
-github action cache:
-
-- use documentation: [Github Action Cache](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows#comparing-artifacts-and-dependency-caching)
-
-auto-format:
-
-- use git-auto-commit-action:
-  - documentation: [git-auto-commit-action](https://github.com/stefanzweifel/git-auto-commit-action)
-
-## Communication Protocol
+# Communication Protocol
 
 ## Client-Server Protocol Overview
 
@@ -43,16 +9,16 @@ This document outlines the protocol used for communication between the Client an
 ## 2. Architecture Overview
 
 ```cpp
-struct vf2d {
-    float x, y;
-};
-struct entityInfo_s {
-    uint32_t nUniqueID;
-    uint32_t nAvatarID;
+vf2d:
+    float x // 4 bits
+    float y // 4 bits
 
-    vf2d vPosition;
-    vf2d vVel;
-}entityInfo_t;
+entityInfo_t:
+    uint32 nUniqueID // 4 bits
+    uint32 nAvatarID // 4 bits
+
+    vf2d vPosition
+    vf2d vVel
 ```
 
 | Message Part | Description        |

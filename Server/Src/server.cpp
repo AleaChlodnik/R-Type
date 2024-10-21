@@ -102,3 +102,37 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
     } break;
     }
 }
+
+/**
+ * @brief Sends a list of existing entities to a newly connected client for initialization.
+ *
+ * The function iterates through all existing entities and sends their information to the
+ * newly connected client, excluding specific entities such as the client itself.
+ *
+ * @param client The connection to the client.
+ * @param entityID The ID of the entity to exclude (usually the client's own entity).
+ */
+void r_type::net::Server::InitListEntities(
+    std::shared_ptr<r_type::net::Connection<TypeMessage>> client, u_int32_t entityID)
+{
+    EntityInformation entityInfo;
+    r_type::net::Message<TypeMessage> msgAddPlayer;
+    msgAddPlayer.header.id = TypeMessage::CreateEntityMessage;
+    const std::vector<Entity> entities = entityManager.getAllEntities();
+    for (const auto &entity : entities) {
+        if (entity.getId() != entityID && entity.getId() != 1) {
+            auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
+            auto sprite = componentManager.getComponent<SpriteDataComponent>(entity.getId());
+            if (playerPos && sprite) {
+                entityInfo.uniqueID = entity.getId();
+                entityInfo.vPos.x = playerPos.value()->x;
+                entityInfo.vPos.y = playerPos.value()->y;
+                entityInfo.spriteData = *(sprite.value());
+                msgAddPlayer << entityInfo;
+                MessageClient(client, msgAddPlayer);
+            }
+        }
+    }
+    msgAddPlayer.header.id = TypeMessage::FinishInitialization;
+    MessageClient(client, msgAddPlayer);
+}
