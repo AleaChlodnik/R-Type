@@ -14,10 +14,23 @@ void RenderSystem::render(ComponentManager &componentManager)
     // Draw all sprites
     const auto sprites = componentManager.getComponentMap<SpriteComponent>();
     if (sprites) {
-        for (const auto &pair : **sprites) { // Derefrences the optional and then the pointer
+        for (const auto &pair : **sprites) {
             const auto &spriteComponent = pair.second;
             auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
             if (sprite) {
+                if (sprite->type == AScenes::SpriteType::BACKGROUND) {
+                    _window.draw(sprite->sprite);
+                    break;
+                }
+            }
+        }
+        for (const auto &pair : **sprites) {
+            const auto &spriteComponent = pair.second;
+            auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
+            if (sprite) {
+                if (sprite->type == AScenes::SpriteType::BACKGROUND) {
+                    continue;
+                }
                 _window.draw(sprite->sprite);
             }
         }
@@ -45,30 +58,3 @@ void RenderSystem::render(ComponentManager &componentManager)
 
     _window.display();
 }
-
-// int entityId = pair.first;
-// if (entityId == backgroundId || entityId == 1) {
-//     continue;
-// }
-
-// Always display background first - menus
-// int backgroundId = 0;
-// auto backgroundOpt = componentManager.getComponentMap<BackgroundComponent>();
-// if (backgroundOpt) {
-//     auto &backgroundMap = **backgroundOpt;
-//     if (!backgroundMap.empty()) {
-//         auto entityId = backgroundMap.begin()->first;
-//         backgroundId = entityId;
-//     }
-//     auto bgSprite = componentManager.getComponent<SpriteComponent>(backgroundId);
-//     _window.draw(bgSprite.value()->sprite);
-// }
-// Always display background first - game
-// auto bgSpriteIt = sprites.find(1);
-// if (bgSpriteIt != sprites.end()) {
-//     const auto &spriteComponent = bgSpriteIt->second;
-//     auto bgSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-//     if (bgSprite) {
-//         _window.draw(bgSprite->sprite);
-//     }
-// }

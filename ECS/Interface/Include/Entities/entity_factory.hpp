@@ -42,7 +42,7 @@ class EntityFactory : public IEntityFactory {
      * @param componentManager The component manager to use for adding components to the entity.
      * @return The created player entity.
      */
-    Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager, int nbrOfPlayers) override;
 
     /**
      * @brief Creates a player entity.
@@ -90,14 +90,13 @@ class EntityFactory : public IEntityFactory {
      * the entity manager. It also initializes the necessary components for the player missile
      * entity using the component manager.
      *
-     * @param playerId The ID of the player.
      * @param entityManager The entity manager to add the player missile entity to.
      * @param componentManager The component manager to initialize the components for the player
-     * missile entity.
+     * @param entityId The id of the entity that shoot the missile
      * @return The created player missile entity.
      */
     Entity createPlayerMissile(
-        EntityManager &entityManager, ComponentManager &componentManager) override;
+        EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId) override;
 
     /**
      * @brief Creates a button entity.
@@ -157,8 +156,9 @@ class EntityFactory : public IEntityFactory {
      *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to add components to the entity.
+     * @param entityId The id of the entity that shoot the missile
      * @return The created enemy missile entity.
      */
     Entity createEnemyMissile(
-        EntityManager &entityManager, ComponentManager &componentManager) override;
+        EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId) override;
 };

@@ -121,6 +121,27 @@ class AScenes : virtual public IScenes {
     };
 
     /**
+     * @enum SpriteType
+     * @brief Enumeration representing the type of sprite in the game.
+     *
+     * This enumeration defines the different sprite types that need to be identified in the game.
+     * The types include:
+     * - BACKGROUND: Represents a background sprite.
+     * - PLAYER: Represents a player sprite.
+     * - ALLY: Represents an ally sprite.
+     * - ENEMY: Represents an enemy sprite.
+     * - OTHER: Represents any other type of sprite.
+     */
+    enum class SpriteType
+    {
+        BACKGROUND,
+        PLAYER,
+        ALLY,
+        ENEMY,
+        OTHER
+    };
+
+    /**
      * @brief A map that binds game actions to specific keyboard keys.
      *
      * This map associates each action defined in the Actions enum with a corresponding
@@ -172,7 +193,6 @@ class AScenes : virtual public IScenes {
     void setDisplayDaltonismChoice(bool const displayDaltonismChoice);
 
     bool getDisplayDaltonismChoice() const;
-
 
     void setDisplayGameModeChoice(bool const displayGameModeChoice);
 
