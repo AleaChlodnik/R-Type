@@ -7,13 +7,14 @@
 
 #pragma once
 
-#include "scenes.hpp"
+#include "i_scenes.hpp"
+#include "a_scenes.hpp"
 #include <functional>
 
 struct BindComponent {
     bool isHovered = false;
-    std::function<Scenes *(Scenes *, Scenes::Actions)> bind;
+    std::function<IScenes *(AScenes *, AScenes::Actions)> bind;
 
-    BindComponent(std::function<Scenes *(Scenes *, Scenes::Actions)> bindFunction)
+    BindComponent(std::function<IScenes *(AScenes *, AScenes::Actions)> bindFunction)
         : bind(bindFunction){};
 };

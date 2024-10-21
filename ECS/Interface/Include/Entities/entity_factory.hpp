@@ -8,7 +8,8 @@
 #pragma once
 
 #include "i_entity_factory.hpp"
-#include "scenes.hpp"
+#include "i_scenes.hpp"
+#include "a_scenes.hpp"
 #include <functional>
 
 /**
@@ -114,7 +115,7 @@ class EntityFactory : public IEntityFactory {
      */
     Entity createButton(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &textureManager, std::string text,
-        std::function<Scenes *(Scenes *)> *onClick, float x = 0, float y = 0);
+        std::function<IScenes *(AScenes *)> *onClick, float x = 0, float y = 0);
     /**
      * @brief Creates a small button entity.
      *
@@ -131,7 +132,7 @@ class EntityFactory : public IEntityFactory {
      */
     Entity createSmallButton(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &textureManager, std::string text,
-        std::function<Scenes *(Scenes *, Scenes::Actions)> *onClick, float x = 0, float y = 0);
+        std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0, float y = 0);
     /**
      * @brief Creates an ally missile entity.
      *

@@ -18,22 +18,7 @@
 #include <scenes.hpp>
 #include <texture_manager.hpp>
 
-Scenes::Scenes(sf::RenderWindow *window)
-{
-    this->_window = window;
-    this->currentScene = Scenes::Scene::MAIN_MENU;
-}
-
-/**
- * @brief Set the Scene object
- *
- * @param scene
- */
-void Scenes::setScene(Scenes::Scene scene)
-{
-    this->previousScene = this->currentScene;
-    this->currentScene = scene;
-}
+Scenes::Scenes(sf::RenderWindow *window) : IScenes(), AScenes(window) {}
 
 /**
  * @brief Handles events for the scene, including window close and mouse button press events.
@@ -123,7 +108,7 @@ void Scenes::mainMenu()
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
     // Create buttons
-    std::function<Scenes *(Scenes *)> onPlayButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onPlayButtonClicked = [](AScenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
         return currentScene;
     };
@@ -131,7 +116,7 @@ void Scenes::mainMenu()
     std::shared_ptr<Entity> playButton = std::make_shared<Entity>(entityFactory.createButton(
         entityManager, componentManager, textureManager, "Play", &onPlayButtonClicked, 960, 100));
 
-    std::function<Scenes *(Scenes *)> onSettingsButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onSettingsButtonClicked = [](AScenes *currentScene) {
         currentScene->setScene(Scenes::Scene::SETTINGS_MENU);
         return currentScene;
     };
@@ -139,7 +124,7 @@ void Scenes::mainMenu()
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Settings", &onSettingsButtonClicked, 960, 250));
 
-    std::function<Scenes *(Scenes *)> onQuitButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onQuitButtonClicked = [](AScenes *currentScene) {
         currentScene->setScene(Scenes::Scene::EXIT);
         return currentScene;
     };
@@ -154,7 +139,7 @@ void Scenes::mainMenu()
     sf::Clock clock;
     sf::Event event;
 
-    while (_window->isOpen() && this->currentScene == Scenes::Scene::MAIN_MENU) {
+    while (_window->isOpen() && this->_currentScene == Scenes::Scene::MAIN_MENU) {
 
         handleEvents(event, componentManager, _window, buttons, this);
 
@@ -380,7 +365,7 @@ void Scenes::inGameMenu()
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
     // Create the buttons
-    std::function<Scenes *(Scenes *)> onResumeButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onResumeButtonClicked = [](AScenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
         return currentScene;
     };
@@ -388,7 +373,7 @@ void Scenes::inGameMenu()
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Resume", &onResumeButtonClicked, 960, 100));
 
-    std::function<Scenes *(Scenes *)> onSettingsButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onSettingsButtonClicked = [](AScenes *currentScene) {
         currentScene->setScene(Scenes::Scene::SETTINGS_MENU);
         return currentScene;
     };
@@ -396,10 +381,11 @@ void Scenes::inGameMenu()
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Settings", &onSettingsButtonClicked, 960, 250));
 
-    std::function<Scenes *(Scenes *)> onReturnToMainMenuButtonClicked = [](Scenes *currentScene) {
-        currentScene->setScene(Scenes::Scene::MAIN_MENU);
-        return currentScene;
-    };
+    std::function<IScenes *(AScenes *)> onReturnToMainMenuButtonClicked =
+        [](AScenes *currentScene) {
+            currentScene->setScene(Scenes::Scene::MAIN_MENU);
+            return currentScene;
+        };
     std::shared_ptr<Entity> returnToMainMenu =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Return To Main Menu", &onReturnToMainMenuButtonClicked, 960, 500));
@@ -411,7 +397,7 @@ void Scenes::inGameMenu()
     sf::Clock clock;
     sf::Event event;
 
-    while (_window->isOpen() && this->currentScene == Scenes::Scene::IN_GAME_MENU) {
+    while (_window->isOpen() && this->_currentScene == Scenes::Scene::IN_GAME_MENU) {
 
         handleEvents(event, componentManager, _window, buttons, this);
 
@@ -426,7 +412,7 @@ void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
     TextureManager &textureManager, EntityFactory &entityFactory)
 {
-    std::function<Scenes *(Scenes *)> onNormalButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onNormalButtonClicked = [](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::NORMAL);
         return currentScene;
     };
@@ -434,7 +420,7 @@ void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Normal", &onNormalButtonClicked, 1460, 100));
 
-    std::function<Scenes *(Scenes *)> onTritanopiaButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onTritanopiaButtonClicked = [](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::TRITANOPIA);
         return currentScene;
     };
@@ -442,7 +428,7 @@ void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Tritanopia", &onTritanopiaButtonClicked, 1460, 250));
 
-    std::function<Scenes *(Scenes *)> onDeuteranopiaButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onDeuteranopiaButtonClicked = [](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::DEUTERANOPIA);
         return currentScene;
     };
@@ -450,7 +436,7 @@ void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Deuteranopia", &onDeuteranopiaButtonClicked, 1460, 400));
 
-    std::function<Scenes *(Scenes *)> onProtanopiaButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onProtanopiaButtonClicked = [](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::PROTANOPIA);
         return currentScene;
     };
@@ -468,14 +454,14 @@ void createGameModeChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
     TextureManager &textureManager, EntityFactory &entityFactory)
 {
-    std::function<Scenes *(Scenes *)> easyButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> easyButtonClicked = [](AScenes *currentScene) {
         currentScene->setGameMode(Scenes::GameMode::EASY);
         return currentScene;
     };
     std::shared_ptr<Entity> easyButton = std::make_shared<Entity>(entityFactory.createButton(
         entityManager, componentManager, textureManager, "Easy", &easyButtonClicked, 1460, 250));
 
-    std::function<Scenes *(Scenes *)> mediumButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> mediumButtonClicked = [](AScenes *currentScene) {
         currentScene->setGameMode(Scenes::GameMode::MEDIUM);
         return currentScene;
     };
@@ -483,7 +469,7 @@ void createGameModeChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Medium", &mediumButtonClicked, 1460, 400));
 
-    std::function<Scenes *(Scenes *)> hardButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> hardButtonClicked = [](AScenes *currentScene) {
         currentScene->setGameMode(Scenes::GameMode::HARD);
         return currentScene;
     };
@@ -512,8 +498,8 @@ void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
     TextureManager &textureManager, EntityFactory &entityFactory)
 {
-    std::function<Scenes *(Scenes *, Scenes::Actions)> bindKey = [](Scenes *currentScene,
-                                                                     Scenes::Actions action) {
+    std::function<IScenes *(AScenes *, AScenes::Actions)> bindKey = [](AScenes *currentScene,
+                                                                        AScenes::Actions action) {
         sf::Keyboard::Key key = waitForKey(currentScene->getRenderWindow());
         currentScene->keyBinds[action] = key;
         std::cout << currentScene->keyBinds[action] << "ok" << std::endl;
@@ -591,10 +577,10 @@ void Scenes::settingsMenu()
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
     // Create the buttons
-    std::function<Scenes *(Scenes *)> onDaltonismModeButtonClicked = [](Scenes *currentScene) {
-        currentScene->displayDaltonismChoice = !currentScene->displayDaltonismChoice;
-        currentScene->displayGameModeChoice = false;
-        currentScene->displayKeyBinds = false;
+    std::function<IScenes *(AScenes *)> onDaltonismModeButtonClicked = [](AScenes *currentScene) {
+        currentScene->setDisplayDaltonismChoice(!currentScene->getDisplayDaltonismChoice());
+        currentScene->setDisplayGameModeChoice(false);
+        currentScene->setDisplayKeyBindsChoice(false);
         currentScene->settingsMenu();
         return currentScene;
     };
@@ -603,10 +589,10 @@ void Scenes::settingsMenu()
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Daltonism Mode", &onDaltonismModeButtonClicked, 960, 100));
 
-    std::function<Scenes *(Scenes *)> onGameModeButtonClicked = [](Scenes *currentScene) {
-        currentScene->displayGameModeChoice = !currentScene->displayGameModeChoice;
-        currentScene->displayDaltonismChoice = false;
-        currentScene->displayKeyBinds = false;
+    std::function<IScenes *(AScenes *)> onGameModeButtonClicked = [](AScenes *currentScene) {
+        currentScene->setDisplayGameModeChoice(!currentScene->getDisplayGameModeChoice());
+        currentScene->setDisplayDaltonismChoice(false);
+        currentScene->setDisplayKeyBindsChoice(false);
         currentScene->settingsMenu();
         return currentScene;
     };
@@ -615,10 +601,10 @@ void Scenes::settingsMenu()
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Game Mode", &onGameModeButtonClicked, 960, 250));
 
-    std::function<Scenes *(Scenes *)> onKeyBindButtonClicked = [](Scenes *currentScene) {
-        currentScene->displayKeyBinds = !currentScene->displayKeyBinds;
-        currentScene->displayDaltonismChoice = false;
-        currentScene->displayGameModeChoice = false;
+    std::function<IScenes *(AScenes *)> onKeyBindButtonClicked = [](AScenes *currentScene) {
+        currentScene->setDisplayKeyBindsChoice(!currentScene->getDisplayKeyBindsChoice());
+        currentScene->setDisplayDaltonismChoice(false);
+        currentScene->setDisplayGameModeChoice(false);
         currentScene->settingsMenu();
         return currentScene;
     };
@@ -627,7 +613,7 @@ void Scenes::settingsMenu()
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Key Binds", &onKeyBindButtonClicked, 960, 400));
 
-    std::function<Scenes *(Scenes *)> onBackButtonClicked = [](Scenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onBackButtonClicked = [](AScenes *currentScene) {
         currentScene->setScene(currentScene->getPreviousScene());
         return currentScene;
     };
@@ -639,12 +625,12 @@ void Scenes::settingsMenu()
     buttons.push_back(keyBindsButton);
     buttons.push_back(backButton);
 
-    if (displayDaltonismChoice) {
+    if (_displayDaltonismChoice) {
         // createDaltonismChoiceButtons(
         //     &buttons, componentManager, entityManager, textureManager, entityFactory);
         sf::RectangleShape filter(sf::Vector2f((*_window).getSize().x, (*_window).getSize().y));
-        currentDaltonismMode = DaltonismMode::TRITANOPIA;
-        switch (currentDaltonismMode) {
+        _currentDaltonismMode = DaltonismMode::TRITANOPIA;
+        switch (_currentDaltonismMode) {
         case DaltonismMode::NORMAL:
             filter.setFillColor(sf::Color(0, 0, 0, 0));
             break;
@@ -660,11 +646,11 @@ void Scenes::settingsMenu()
         }
     }
 
-    if (displayGameModeChoice) {
+    if (_displayGameModeChoice) {
         // createGameModeChoiceButtons(
         //     &buttons, componentManager, entityManager, textureManager, entityFactory);
     }
-    if (displayKeyBinds) {
+    if (_displayKeyBindsChoice) {
         // createKeyBindingButtons(buttons, componentManager, entityManager, textureManager,
         // entityFactory);
     }
@@ -672,7 +658,7 @@ void Scenes::settingsMenu()
     sf::Clock clock;
     sf::Event event;
 
-    while (_window->isOpen() && this->currentScene == Scenes::Scene::SETTINGS_MENU) {
+    while (_window->isOpen() && this->_currentScene == Scenes::Scene::SETTINGS_MENU) {
 
         handleEvents(event, componentManager, _window, buttons, this);
 
@@ -693,7 +679,7 @@ void Scenes::settingsMenu()
  */
 void Scenes::render()
 {
-    switch (this->currentScene) {
+    switch (this->_currentScene) {
     case Scenes::Scene::MAIN_MENU:
         this->mainMenu();
         break;
