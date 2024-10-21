@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "hitbox_tmp.hpp"
 #include <Components/component_manager.hpp>
 #include <Components/components.hpp>
 #include <Entities/entity_factory.hpp>
@@ -271,7 +272,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                         EntityInformation newMissile = EntityInformation{
                             static_cast<u_int32_t>(entity.getId()), *(spriteData.value()),
                             {(position.value()->x), (position.value()->y)}};
-                        int newID = CheckPlayerPosition(newMissile);
+                        int newID =
+                            CheckEntityMovement(newMissile, componentManager, entityManager);
                         auto monster = componentManager.getComponent<BasicMonsterComponent>(newID);
                         if (monster) {
                             r_type::net::Message<TypeMessage> msgDestroy;
@@ -325,7 +327,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         entity.uniqueID = entityId;
         entity.vPos = entityPosition;
         entity.spriteData = *entitySprite.value();
-        uint32_t entityTouched = CheckPlayerPosition(entity);
+        uint32_t entityTouched = CheckEntityMovement(entity, componentManager, entityManager);
 
         if (entityTouched == -1) {
             auto position = componentManager.getComponent<PositionComponent>(entityId);
@@ -383,30 +385,16 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     EntityInformation InitiatePlayers(int clientId)
     {
         EntityInformation entityInfo;
-        Entity player = entityFactory.createPlayer(entityManager, componentManager);
+        Entity player = entityFactory.createPlayer(entityManager, componentManager, nbrOfPlayers);
         entityInfo.uniqueID = player.getId();
-        entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
-        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
-        if (sprite) {
-            if (nbrOfPlayers == 1)
-                sprite.value()->spritePath = SpritePath::Ship2;
-            else if (nbrOfPlayers == 2)
-                sprite.value()->spritePath = SpritePath::Ship3;
-            else if (nbrOfPlayers == 3)
-                sprite.value()->spritePath = SpritePath::Ship4;
-            entityInfo.spriteData = *(sprite.value());
-        }
-        while (CheckPlayerPosition(entityInfo) != -1) {
-            entityInfo.vPos = {100, static_cast<float>(rand() % 600)};
-        }
+        auto playerSprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
-        if (playerPos) {
-            playerPos.value()->x = entityInfo.vPos.x;
-            playerPos.value()->y = entityInfo.vPos.y;
+        if (playerSprite && playerPos) {
+            entityInfo.spriteData = *(playerSprite.value());
+            entityInfo.vPos.x = playerPos.value()->x;
+            entityInfo.vPos.y = playerPos.value()->y;
         }
-        clientPlayerID.insert_or_assign(
-            nIDCounter, entityInfo.uniqueID); // Assuming clientPlayerID is a
-                                              // std::unordered_map<uint32_t, uint32_t> or similar.
+        clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
         return entityInfo;
     }
 
@@ -422,20 +410,15 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     EntityInformation InitiateMissile(int clientId)
     {
         EntityInformation entityInfo;
-        Entity missile = entityFactory.createPlayerMissile(entityManager, componentManager);
+        uint32_t playerId = GetClientEntityId(clientId);
+        Entity missile =
+            entityFactory.createPlayerMissile(entityManager, componentManager, playerId);
         entityInfo.uniqueID = missile.getId();
-        auto playerPos =
-            componentManager.getComponent<PositionComponent>(GetClientEntityId(clientId)).value();
-        entityInfo.vPos.x = playerPos->x;
-        entityInfo.vPos.y = playerPos->y;
-        auto MissilePos =
-            componentManager.getComponent<PositionComponent>(entityInfo.uniqueID).value();
-        if (MissilePos) {
-            MissilePos->x = entityInfo.vPos.x;
-            MissilePos->y = entityInfo.vPos.y;
-        }
+        auto missilePos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
-        if (sprite) {
+        if (missilePos && sprite) {
+            entityInfo.vPos.x = missilePos.value()->x;
+            entityInfo.vPos.y = missilePos.value()->y;
             entityInfo.spriteData = *(sprite.value());
         }
         return entityInfo;
@@ -471,45 +454,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     virtual void InitListEntities(
         std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID) = 0;
-
-    /**
-     * @brief check player position to avoid collision
-     *
-     * @param desc
-     * @return true
-     * @return false
-     */
-    int CheckPlayerPosition(EntityInformation desc)
-    {
-        float descLeft, descRight, descTop, descBottom, playerLeft, playerRight, playerTop,
-            playerBottom;
-        const std::vector<Entity> entities = entityManager.getAllEntities();
-
-        for (const auto &entity : entities) {
-            if (entity.getId() != desc.uniqueID && entity.getId() != background.uniqueID) {
-                auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
-                auto playerHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
-                if (playerPos && playerHitbox) {
-
-                    descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
-                    descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
-                    descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);
-                    descBottom = desc.vPos.y + (desc.spriteData.dimension.y / 2);
-
-                    playerLeft = playerPos.value()->x - (playerHitbox.value()->w / 2);
-                    playerRight = playerPos.value()->x + (playerHitbox.value()->w / 2);
-                    playerTop = playerPos.value()->y - (playerHitbox.value()->h / 2);
-                    playerBottom = playerPos.value()->y + (playerHitbox.value()->h / 2);
-
-                    if (!(descRight < playerLeft || descLeft > playerRight ||
-                            descBottom < playerTop || descTop > playerBottom)) {
-                        return entity.getId();
-                    }
-                }
-            }
-        }
-        return -1;
-    }
 
     /**
      * @brief Callback function that is called when a client has been successfully validated.

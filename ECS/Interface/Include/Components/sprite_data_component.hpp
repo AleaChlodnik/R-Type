@@ -24,4 +24,5 @@ struct SpriteDataComponent {
     Vector<uint32_t> offSet;
     Vector<uint32_t> dimension;
     Vector<float> scale;
+    uint32_t type;
 };
