@@ -58,10 +58,11 @@ class IEntityFactory {
     virtual Entity createPlayer(
         EntityManager &entityManager, ComponentManager &componentManager, int nbrOfPlayers) = 0;
 
-     /**
+    /**
      * @brief Creates an ally entity.
      *
-     * This function creates an ally entity using the provided entity manager and component manager.
+     * This function creates an ally entity using the provided entity manager and component
+     * manager.
      *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to manage the components of the entity.
@@ -73,7 +74,8 @@ class IEntityFactory {
     /**
      * @brief Creates a basic enemy entity.
      *
-     * This function creates a basic enemy entity using the provided entity manager and component manager.
+     * This function creates a basic enemy entity using the provided entity manager and component
+     * manager.
      *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to add components to the entity.
@@ -85,7 +87,8 @@ class IEntityFactory {
     /**
      * @brief Creates a basic monster entity.
      *
-     * This function creates a basic monster entity using the provided entity manager and component manager.
+     * This function creates a basic monster entity using the provided entity manager and component
+     * manager.
      *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to add components to the entity.
@@ -97,12 +100,14 @@ class IEntityFactory {
     /**
      * @brief Creates a player missile entity.
      *
-     * This function creates a player missile entity with the specified player ID and adds it to the entity manager.
-     * It also initializes the necessary components for the player missile entity using the component manager.
+     * This function creates a player missile entity with the specified player ID and adds it to
+     * the entity manager. It also initializes the necessary components for the player missile
+     * entity using the component manager.
      *
      * @param entityId The ID of the entity that shoot the missile.
      * @param entityManager The entity manager to add the player missile entity to.
-     * @param componentManager The component manager to initialize the components for the player missile entity.
+     * @param componentManager The component manager to initialize the components for the player
+     * missile entity.
      * @return The created player missile entity.
      */
     virtual Entity createPlayerMissile(
@@ -111,7 +116,8 @@ class IEntityFactory {
     /**
      * @brief Creates an ally missile entity.
      *
-     * This function creates an ally missile entity using the provided entity manager and component manager.
+     * This function creates an ally missile entity using the provided entity manager and component
+     * manager.
      *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to manage the components of the entity.
@@ -123,7 +129,8 @@ class IEntityFactory {
     /**
      * @brief Creates an enemy missile entity.
      *
-     * This function creates an enemy missile entity using the provided entity manager and component manager.
+     * This function creates an enemy missile entity using the provided entity manager and
+     * component manager.
      *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to add components to the entity.
@@ -135,11 +142,13 @@ class IEntityFactory {
     /**
      * @brief Creates a button entity.
      *
-     * This function creates a button entity using the provided entity manager, component manager, texture manager,
-     * text, and onClick function. The button entity represents a clickable button in the game.
+     * This function creates a button entity using the provided entity manager, component manager,
+     * texture manager, text, and onClick function. The button entity represents a clickable button
+     * in the game.
      *
      * @param entityManager The entity manager used to create the button entity.
-     * @param componentManager The component manager used to manage the components of the button entity.
+     * @param componentManager The component manager used to manage the components of the button
+     * entity.
      * @param textureManager The texture manager used to load the textures for the button entity.
      * @param text The text displayed on the button.
      * @param onClick The function to be called when the button is clicked.

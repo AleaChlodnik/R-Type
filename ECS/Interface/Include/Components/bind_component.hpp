@@ -14,5 +14,6 @@ struct BindComponent {
     bool isHovered = false;
     std::function<Scenes *(Scenes *, Scenes::Actions)> bind;
 
-    BindComponent(std::function<Scenes *(Scenes *, Scenes::Actions)> bindFunction) : bind(bindFunction){};
+    BindComponent(std::function<Scenes *(Scenes *, Scenes::Actions)> bindFunction)
+        : bind(bindFunction){};
 };

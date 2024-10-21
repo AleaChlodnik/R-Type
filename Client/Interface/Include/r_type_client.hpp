@@ -14,9 +14,12 @@
 
 /**
  * @class Rtype
- * @brief The Rtype class handles the main game logic, including initialization, main menu, game loop, event handling, server message processing, game updating, and rendering.
+ * @brief The Rtype class handles the main game logic, including initialization, main menu, game
+ * loop, event handling, server message processing, game updating, and rendering.
  *
- * The Rtype class is responsible for initializing the player, managing the main menu, running the game loop, handling events, processing server messages, updating the game state, and rendering the game.
+ * The Rtype class is responsible for initializing the player, managing the main menu, running the
+ * game loop, handling events, processing server messages, updating the game state, and rendering
+ * the game.
  *
  * @section Usage
  * To use the Rtype class, create an instance of it and call the run() method to start the game.
@@ -28,13 +31,19 @@
  *
  * @section Methods
  * - Rtype(): Constructs a new Rtype object and initializes the player.
- * - void run(): Starts the main loop of the game, switching between the main menu and the game loop based on the _mainMenu variable.
- * - void mainMenu(): Displays the main menu with options to start the game, view help, toggle daltonic mode, and select speed. Handles user input for these options.
- * - void gameLoop(): Runs the main game loop, calling handleEvents, updateGame, processCommands, and render functions.
- * - void handleEvents(): Handles window and player events, such as key input, and sends updated player information to the server.
+ * - void run(): Starts the main loop of the game, switching between the main menu and the game
+ * loop based on the _mainMenu variable.
+ * - void mainMenu(): Displays the main menu with options to start the game, view help, toggle
+ * daltonic mode, and select speed. Handles user input for these options.
+ * - void gameLoop(): Runs the main game loop, calling handleEvents, updateGame, processCommands,
+ * and render functions.
+ * - void handleEvents(): Handles window and player events, such as key input, and sends updated
+ * player information to the server.
  * - void processServerMessages(): Processes messages received from the server.
- * - void updateGame(): Updates the game state, including time, position of sprites, and other game elements.
- * - void renderGame(): Renders the game, including clearing the window, drawing the background, rendering game elements, and displaying the window.
+ * - void updateGame(): Updates the game state, including time, position of sprites, and other game
+ * elements.
+ * - void renderGame(): Renders the game, including clearing the window, drawing the background,
+ * rendering game elements, and displaying the window.
  *
  * @section Private Members
  * - Scenes *_scenes: Pointer to the scenes object.

@@ -8,11 +8,11 @@
 #pragma once
 
 #include "../error_handling.hpp"
-#include "position_component.hpp"
 #include "../sprite_path.hpp"
+#include "position_component.hpp"
 #include <SFML/Graphics.hpp>
-#include <string>
 #include <cstdint>
+#include <string>
 
 template <typename T> struct Vector {
     T x;
