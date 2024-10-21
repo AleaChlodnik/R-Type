@@ -34,7 +34,7 @@ template <typename T> class AClient : virtual public IClient<T> {
     {
         try {
             asio::ip::udp::endpoint remote_endpoint =
-                asio::ip::udp::endpoint(asio::ip::address::from_string(host), port);
+                asio::ip::udp::endpoint(asio::ip::make_address(host), port);
             // std::cout << "Remote endpoint: " << remote_endpoint << std::endl;
 
             asio::ip::udp::socket socket(
