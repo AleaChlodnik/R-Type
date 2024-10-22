@@ -71,6 +71,7 @@ jobs:
   windows_install:
     runs-on: windows-latest
     timeout-minutes: 20
+    if : github.base_ref == 'main' || github.base_ref == 'dev'
     steps:
       - name: Checkout GH repository
         uses: actions/checkout@v4
@@ -101,66 +102,11 @@ jobs:
       # - name: build project
       #   run: cmake --build build -- /maxcpucount:4
 
-  # deploy-pdf-doc:
-  #   needs: [linux_install]
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 15
-  #   permissions:
-  #     # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
-  #     contents: write
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v4
-  #       with:
-  #         repository: ""
-
-  #     - name: Cache apt pdf doc install
-  #       id: cache-apt
-  #       uses: actions/cache@v4
-  #       env:
-  #         cache-name: cache-apt-pdf-doc-install
-  #       with:
-  #         path: /var/cache/apt
-  #         key: ${{ runner.os }}-apt-pdf-doc-install-${{ env.cache-name }}-${{ hashFiles('**/compile.sh') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-apt-pdf-doc-install-${{ env.cache-name }}-
-
-  #     # - name: Cache cmake build doc pdf
-  #     #   id: cache-cmake
-  #     #   uses: actions/cache@v4
-  #     #   env:
-  #     #     cache-name: cache-cmake-build-doc-pdf
-  #     #   with:
-  #     #     path: ./build
-  #     #     key: ${{ runner.os }}-build-doc-pdf-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
-  #     #     restore-keys: |
-  #     #       ${{ runner.os }}-build-doc-pdf-${{ env.cache-name }}-
-
-  #     - uses: awalsh128/cache-apt-pkgs-action@latest
-  #       with:
-  #         packages: doxygen texlive-full texlive-latex-base texlive texlive-latex-extra texlive-fonts-recommended texlive-lang-all
-  #         version: 1.0
-
-  #     - name: Configure CMake and Build Documentation
-  #       run: |
-  #         cmake -S . -B build -DBUILD_DOC=ON
-  #         cmake --build build --target doc_doxygen
-
-  #     - name: Push refman.pdf
-  #       id: git-check-refman
-  #       run: echo "modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
-
-  #     - name: Push changes
-  #       uses: stefanzweifel/git-auto-commit-action@v5
-  #       if: steps.git-check-refman.outputs.modified == 'true'
-  #       with:
-  #         commit_message: Automated Change
-
   push_to_mirror:
     timeout-minutes: 10
     needs: [linux_install]
     runs-on: ubuntu-latest
-    if: github.repository == 'Tom-Mendy/R-Type'
+    if: github.repository == 'AleaChlodnik/R-Type'
     steps:
       - uses: actions/checkout@v4
         with:
