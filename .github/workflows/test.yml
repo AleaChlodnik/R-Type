@@ -49,7 +49,7 @@ jobs:
   windows_install:
     runs-on: windows-latest
     timeout-minutes: 20
-    if : github.ref == 'main' || github.ref == 'dev'
+    if : github.ref_name == 'main' || github.ref_name == 'dev'
     steps:
       - name: Checkout GH repository
         uses: actions/checkout@v4
