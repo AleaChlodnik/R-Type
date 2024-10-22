@@ -12,7 +12,9 @@
 class CollisionSystem : public ISystem {
   public:
     CollisionSystem(ComponentManager &componentManager, EntityManager &entityManager)
-        : _componentManager(componentManager), _entityManager(entityManager) {}
+        : _componentManager(componentManager), _entityManager(entityManager)
+    {
+    }
 
     void update(float deltaTime) override { checkCollisions(); }
 

@@ -7,7 +7,8 @@
 
 #include <a_scenes.hpp>
 
-AScenes::AScenes(sf::RenderWindow *window, std::string ip, int port) : IScenes(), _window(window), _ip(ip), _port(port)
+AScenes::AScenes(sf::RenderWindow *window, std::string ip, int port)
+    : IScenes(), _window(window), _ip(ip), _port(port)
 {
     this->_currentScene = AScenes::Scene::MAIN_MENU;
 }

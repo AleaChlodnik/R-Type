@@ -68,7 +68,6 @@ class Scenes : virtual public AScenes {
      */
     void render();
 
-
     /**
      * @brief check if game should stop running
      *
