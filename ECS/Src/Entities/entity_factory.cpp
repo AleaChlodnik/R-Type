@@ -75,19 +75,24 @@ Entity EntityFactory::createPlayer(
 
     PlayerComponent playerComponent;
     PositionComponent startPosition(100, static_cast<float>(rand() % 600));
+
     // VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.0f, 1.0f}, 1};
+    SpriteDataComponent spriteData{SpritePath::Ship1, {99.6, 17.2}, {96, 48}, {1.0f, 1.0f}, 1};
     HitboxComponent hitbox{
         static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
     HealthComponent health{100, 100};
     InputComponent input{InputType::NONE};
 
-    if (nbOfPlayers == 2)
+    if (nbOfPlayers == 2) {
         spriteData.spritePath = SpritePath::Ship2;
-    else if (nbOfPlayers == 3)
+        spriteData.offSet = {99.6, spriteData.offSet.y * 2};
+    } else if (nbOfPlayers == 3) {
         spriteData.spritePath = SpritePath::Ship3;
-    else if (nbOfPlayers == 4)
+        spriteData.offSet = {99.6, spriteData.offSet.y * 3};
+    } else if (nbOfPlayers == 4) {
         spriteData.spritePath = SpritePath::Ship4;
+        spriteData.offSet = {99.6, spriteData.offSet.y * 4};
+    }
 
     componentManager.addComponent<PlayerComponent>(player.getId(), playerComponent);
     componentManager.addComponent<PositionComponent>(player.getId(), startPosition);
@@ -269,7 +274,7 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
     PositionComponent pos(x, y);
     TextComponent textComponent(text);
     OnClickComponent onClickfunction(*onClick);
-    SpriteComponent sprite(texture, pos.x, pos.y, dimension, 4);
+    SpriteComponent sprite(texture, pos.x, pos.y, dimension, SpriteType::OTHER);
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
     componentManager.addComponent<OnClickComponent>(button.getId(), onClickfunction);
@@ -292,7 +297,7 @@ Entity EntityFactory::createSmallButton(EntityManager &entityManager,
     PositionComponent pos(x, y);
     TextComponent textComponent(text);
     BindComponent bindComponent(*onClick);
-    SpriteComponent sprite(texture, pos.x, pos.y, scale, 4);
+    SpriteComponent sprite(texture, pos.x, pos.y, scale, SpriteType::OTHER);
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
     componentManager.addComponent<BindComponent>(button.getId(), bindComponent);

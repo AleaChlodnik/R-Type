@@ -49,7 +49,7 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         sf::Texture &texture =
             textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
         sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
-        SpriteComponent sprite(texture, posX, posY, scale, entity.spriteData.type);
+        SpriteComponent sprite(texture, posX, posY, scale, entity.spriteData.type, sf::IntRect(entity.spriteData.offSet.x, entity.spriteData.offSet.y, entity.spriteData.dimension.x, entity.spriteData.dimension.y));
         componentManager.addComponent<SpriteComponent>(entity.uniqueID, sprite);
     }
 

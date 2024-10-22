@@ -19,10 +19,15 @@ template <typename T> struct Vector {
     T y;
 };
 
+struct Rect {
+    Vector<float> offSet;
+    Vector<float> scale;
+};
+
 struct SpriteDataComponent {
     SpritePath spritePath;
-    Vector<uint32_t> offSet;
-    Vector<uint32_t> dimension;
+    uint32_t nbOfSprites;
     Vector<float> scale;
-    uint32_t type;
+    std::vector<Rect> rects; // do not use this in the network because it is not fixed size
+    SpriteType type;
 };

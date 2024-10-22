@@ -7,17 +7,21 @@
 
 #pragma once
 
-#include "a_scenes.hpp"
+#include <iostream>
+
+#include "sprite_type.hpp"
 #include <SFML/Graphics.hpp>
 #include <string>
 
 struct SpriteComponent {
     sf::Sprite sprite;
-    AScenes::SpriteType type;
+    SpriteType type;
+    std::vector<sf::IntRect> allRect;
 
-    SpriteComponent(sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale, int typeNb)
+    SpriteComponent(sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale,
+        SpriteType typeNb)
     {
-        type = static_cast<AScenes::SpriteType>(typeNb);
+        type = typeNb;
         sprite.setTexture(texture);
         sprite.setPosition(posX, posY);
         sprite.setScale(scale);
