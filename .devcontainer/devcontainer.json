@@ -6,18 +6,24 @@
 		"dockerfile": "Dockerfile"
 	},
 	"containerEnv": {
-		"DISPLAY": "${localEnv:DISPLAY}",
+		"DISPLAY": "${localEnv:DISPLAY}"
 	},
 	"remoteEnv": {
-		"DOCKER_BUILDKIT": "0",
+		"DOCKER_BUILDKIT": "0"
 	},
 	"runArgs": [
-		"--volume=/tmp/.X11-unix:/tmp/.X11-unix",
+		"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
 	],
-	// BASH History
 	"mounts": [
-		"source=projectname-bashhistory,target=/commandhistory,type=volume"
-	]
+		"source=.,target=/workspaces,type=bind,consistency=cached",
+		// ZSH with Zinit and Powerlevel10k
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.zshrc,target=/home/vscode/.zshrc,type=bind,consistency=cached",
+		"source=zinit,target=/home/vscode/.zinit,type=volume",
+		"source=zsh_history,target=/home/vscode/.zsh_history,type=volume",
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.p10k.zsh,target=/home/vscode/.p10k.zsh,type=bind,consistency=cached"
+	],
+	"remoteUser": "vscode",
+	"postCreateCommand": "sudo chown vscode -R /home/vscode/.zinit"
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

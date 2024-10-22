@@ -30,6 +30,8 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     libsfml-dev \
     coreutils
 
-# BASH History
-RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
-    && echo "$SNIPPET" >> "/root/.bashrc"
+
+
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends \
+    zoxide
