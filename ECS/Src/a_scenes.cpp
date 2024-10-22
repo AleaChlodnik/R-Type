@@ -7,9 +7,8 @@
 
 #include <a_scenes.hpp>
 
-AScenes::AScenes(sf::RenderWindow *window) : IScenes(), _window(window)
+AScenes::AScenes(sf::RenderWindow *window, std::string ip, int port) : IScenes(), _window(window), _ip(ip), _port(port)
 {
-    this->_window = window;
     this->_currentScene = AScenes::Scene::MAIN_MENU;
 }
 
@@ -64,3 +63,11 @@ void AScenes::setDisplayKeyBindsChoice(bool const displayKeyBindsChoice)
 }
 
 bool AScenes::getDisplayKeyBindsChoice() const { return _displayKeyBindsChoice; }
+
+void AScenes::setIp(std::string ip) { _ip = ip; }
+
+void AScenes::setPort(int port) { _port = port; }
+
+std::string AScenes::getIp() const { return _ip; }
+
+int AScenes::getPort() const { return _port; }

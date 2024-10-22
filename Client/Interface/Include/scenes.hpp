@@ -29,7 +29,7 @@ class Scenes : virtual public AScenes {
      *
      * @param window
      */
-    Scenes(sf::RenderWindow *window);
+    Scenes(sf::RenderWindow *window, std::string ip, int port);
 
     /**
      * @brief Destroy the Scenes object
@@ -76,6 +76,7 @@ class Scenes : virtual public AScenes {
      * @return false
      */
     bool shouldQuit() { return _currentScene == Scene::EXIT; }
+
     /**
      * @brief Get the RenderWindow object
      *
