@@ -6,9 +6,9 @@
 */
 
 #pragma once
+#include <a_scenes.hpp>
 #include <functional>
 #include <i_scenes.hpp>
-#include <a_scenes.hpp>
 
 struct OnClickComponent {
     bool isClicked = false;

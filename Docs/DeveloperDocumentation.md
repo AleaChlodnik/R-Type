@@ -31,3 +31,13 @@ auto-format:
 
 - use git-auto-commit-action:
   - documentation: [git-auto-commit-action](https://github.com/stefanzweifel/git-auto-commit-action)
+
+## Dev Container
+
+on linux with X11
+
+```bash
+xhost local:root
+```
+
+open the dev container with visual studio code

@@ -19,7 +19,10 @@
 #include <scenes.hpp>
 #include <texture_manager.hpp>
 
-Scenes::Scenes(sf::RenderWindow *window) : IScenes(), AScenes(window) {}
+Scenes::Scenes(sf::RenderWindow *window, std::string ip, int port)
+    : IScenes(), AScenes(window, ip, port)
+{
+}
 
 /**
  * @brief Handles events for the scene, including window close and mouse button press events.
@@ -559,7 +562,7 @@ void Scenes::render()
 void Scenes::gameLoop()
 {
     r_type::net::Client c;
-    c.Connect("127.0.0.1", 60000);
+    c.Connect(_ip, _port);
 
     EntityManager entityManager;
     ComponentManager componentManager;

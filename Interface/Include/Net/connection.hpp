@@ -12,8 +12,7 @@
 #include "message.hpp"
 #include "thread_safe_queue.hpp"
 #include "type_message.hpp"
-
-#define UNUSED __attribute__((unused))
+#include "../macro.hpp"
 
 // std::ostream &operator<<(std::ostream &os, const asio::ip::udp::socket &socket)
 // {
