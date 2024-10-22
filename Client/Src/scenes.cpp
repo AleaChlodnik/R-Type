@@ -735,7 +735,6 @@ void Scenes::gameLoop()
             _window->close();
             break;
         }
-
         systemManager.updateSystems(deltaTime);
     }
 }
