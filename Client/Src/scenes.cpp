@@ -67,9 +67,15 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
                                     if (it != buttons.end()) {
                                         int index = std::distance(buttons.begin(), it);
                                         bind.value()->bind(scenes, Scenes::Actions(index - 4));
-                                        auto text = componentManager.getComponent<TextComponent>(button->getId());
+                                        auto text = componentManager.getComponent<TextComponent>(
+                                            button->getId());
                                         if (text)
-                                            text.value()->_text = text.value()->_text.substr(0, text.value()->_text.find(":") + 1) + " " + keyToString(scenes->keyBinds[AScenes::Actions(index - 4)]);
+                                            text.value()->_text =
+                                                text.value()->_text.substr(
+                                                    0, text.value()->_text.find(":") + 1) +
+                                                " " +
+                                                keyToString(
+                                                    scenes->keyBinds[AScenes::Actions(index - 4)]);
                                     }
                                 }
                             }
@@ -348,7 +354,8 @@ sf::Keyboard::Key waitForKey(sf::RenderWindow *_window)
 
 void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
-    TextureManager &textureManager, EntityFactory &entityFactory, std::map<Scenes::Actions, sf::Keyboard::Key> &keyBinds)
+    TextureManager &textureManager, EntityFactory &entityFactory,
+    std::map<Scenes::Actions, sf::Keyboard::Key> &keyBinds)
 {
     std::function<IScenes *(AScenes *, AScenes::Actions)> bindKey = [](AScenes *currentScene,
                                                                         AScenes::Actions action) {
@@ -357,33 +364,33 @@ void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
         return currentScene;
     };
 
-    std::shared_ptr<Entity> bindUpButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Up: " + keyToString(keyBinds[Scenes::Actions::UP]), &bindKey, 1550, 100));
+    std::shared_ptr<Entity> bindUpButton = std::make_shared<Entity>(
+        entityFactory.createSmallButton(entityManager, componentManager, textureManager,
+            "Up: " + keyToString(keyBinds[Scenes::Actions::UP]), &bindKey, 1550, 100));
 
-    std::shared_ptr<Entity> bindDownButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Down: " + keyToString(keyBinds[Scenes::Actions::DOWN]), &bindKey, 1550, 250));
+    std::shared_ptr<Entity> bindDownButton = std::make_shared<Entity>(
+        entityFactory.createSmallButton(entityManager, componentManager, textureManager,
+            "Down: " + keyToString(keyBinds[Scenes::Actions::DOWN]), &bindKey, 1550, 250));
 
-    std::shared_ptr<Entity> bindLeftButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Left: " + keyToString(keyBinds[Scenes::Actions::LEFT]), &bindKey, 1300, 250));
+    std::shared_ptr<Entity> bindLeftButton = std::make_shared<Entity>(
+        entityFactory.createSmallButton(entityManager, componentManager, textureManager,
+            "Left: " + keyToString(keyBinds[Scenes::Actions::LEFT]), &bindKey, 1300, 250));
 
-    std::shared_ptr<Entity> bindRightButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Right: " + keyToString(keyBinds[Scenes::Actions::RIGHT]), &bindKey, 1800, 250));
+    std::shared_ptr<Entity> bindRightButton = std::make_shared<Entity>(
+        entityFactory.createSmallButton(entityManager, componentManager, textureManager,
+            "Right: " + keyToString(keyBinds[Scenes::Actions::RIGHT]), &bindKey, 1800, 250));
 
-    std::shared_ptr<Entity> bindFireButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Fire: " + keyToString(keyBinds[Scenes::Actions::FIRE]), &bindKey, 1550, 400));
+    std::shared_ptr<Entity> bindFireButton = std::make_shared<Entity>(
+        entityFactory.createSmallButton(entityManager, componentManager, textureManager,
+            "Fire: " + keyToString(keyBinds[Scenes::Actions::FIRE]), &bindKey, 1550, 400));
 
-    std::shared_ptr<Entity> bindPauseButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Pause: " + keyToString(keyBinds[Scenes::Actions::PAUSE]), &bindKey, 1550, 550));
+    std::shared_ptr<Entity> bindPauseButton = std::make_shared<Entity>(
+        entityFactory.createSmallButton(entityManager, componentManager, textureManager,
+            "Pause: " + keyToString(keyBinds[Scenes::Actions::PAUSE]), &bindKey, 1550, 550));
 
-    std::shared_ptr<Entity> bindQuitButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Quit: " + keyToString(keyBinds[Scenes::Actions::QUIT]), &bindKey, 1550, 700));
+    std::shared_ptr<Entity> bindQuitButton = std::make_shared<Entity>(
+        entityFactory.createSmallButton(entityManager, componentManager, textureManager,
+            "Quit: " + keyToString(keyBinds[Scenes::Actions::QUIT]), &bindKey, 1550, 700));
 
     buttons.push_back(bindUpButton);
     buttons.push_back(bindDownButton);
@@ -480,22 +487,21 @@ void Scenes::settingsMenu()
     if (_displayDaltonismChoice) {
         createDaltonismChoiceButtons(
             buttons, componentManager, entityManager, textureManager, entityFactory);
-        // sf::RectangleShape filter(sf::Vector2f((*_window).getSize().x, (*_window).getSize().y));
-        // _currentDaltonismMode = DaltonismMode::TRITANOPIA;
-        // switch (_currentDaltonismMode) {
-        // case DaltonismMode::NORMAL:
-        //     filter.setFillColor(sf::Color(0, 0, 0, 0));
-        //     break;
-        // case DaltonismMode::TRITANOPIA:
-        //     filter.setFillColor(sf::Color(255, 255, 100, 100));
-        //     break;
-        // case DaltonismMode::DEUTERANOPIA:
-        //     filter.setFillColor(sf::Color(255, 100, 255, 100));
-        //     break;
-        // case DaltonismMode::PROTANOPIA:
-        //     filter.setFillColor(sf::Color(255, 255, 100, 100));
-        //     break;
-        // }
+        sf::RectangleShape filter(sf::Vector2f((*_window).getSize().x, (*_window).getSize().y));
+        switch (_currentDaltonismMode) {
+        case DaltonismMode::NORMAL:
+            filter.setFillColor(sf::Color(0, 0, 0, 0));
+            break;
+        case DaltonismMode::TRITANOPIA:
+            filter.setFillColor(sf::Color(255, 255, 100, 100));
+            break;
+        case DaltonismMode::DEUTERANOPIA:
+            filter.setFillColor(sf::Color(255, 100, 255, 100));
+            break;
+        case DaltonismMode::PROTANOPIA:
+            filter.setFillColor(sf::Color(255, 255, 100, 100));
+            break;
+        }
     }
 
     if (_displayGameModeChoice) {
