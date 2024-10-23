@@ -10,9 +10,9 @@
 #include "../error_handling.hpp"
 #include "entity.hpp"
 #include <algorithm>
-#include <vector>
 #include <memory>
 #include <optional>
+#include <vector>
 
 /**
  * @class EntityManager
@@ -62,7 +62,7 @@ class EntityManager {
      * This function retrieves the entity with the specified ID from the entity manager. If the
      * entity is not found, an entityNotFound exception is thrown.
      */
-    std::optional<Entity*> getEntity(int entityId)
+    std::optional<Entity *> getEntity(int entityId)
     {
         for (auto &entity : entities) {
             if (entity.getId() == entityId) {
