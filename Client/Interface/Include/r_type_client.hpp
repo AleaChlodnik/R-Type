@@ -125,7 +125,7 @@ class Rtype {
      * This member variable holds a pointer to an instance of the Scenes class,
      * which is used to manage and control different scenes within the client.
      */
-    Scenes *_scenes;
+    std::unique_ptr<Scenes> _scenes;
     /**
      * @brief The main window for rendering graphics.
      *

@@ -21,12 +21,12 @@ Rtype::Rtype(std::string ip, int port)
 {
     _window.create(sf::VideoMode::getDesktopMode(), "R-Type", sf::Style::Close);
     _window.setFramerateLimit(60);
-    _scenes = new Scenes(&_window, ip, port);
+    _scenes = std::make_unique<Scenes>(&_window, ip, port);
 };
 
 void Rtype::run()
 {
-    while (!_scenes->shouldQuit() && _window.isOpen()) {
-        _scenes->render();
+    while (!_scenes.get()->shouldQuit() && _window.isOpen()) {
+        _scenes.get()->render();
     }
 }
