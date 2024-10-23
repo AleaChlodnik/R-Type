@@ -96,15 +96,15 @@ void Scenes::mainMenu()
     TextureManager textureManager;
     EntityFactory entityFactory;
 
-    SystemManager systemManager;
+    // SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(*_window, componentManager);
 
-    systemManager.addSystem(updateSystem);
-    systemManager.addSystem(renderSystem);
+    // systemManager.addSystem(updateSystem);
+    // systemManager.addSystem(renderSystem);
 
     buttons = {};
 
@@ -155,7 +155,10 @@ void Scenes::mainMenu()
 
         float deltaTime = clock.restart().asSeconds();
 
-        systemManager.updateSystems(deltaTime);
+        // systemManager.updateSystems(deltaTime);
+
+        updateSystem->update(deltaTime);
+        renderSystem->update(deltaTime);
     }
 }
 
@@ -195,15 +198,15 @@ void Scenes::inGameMenu()
     TextureManager textureManager;
     EntityFactory entityFactory;
 
-    SystemManager systemManager;
+    // SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(*_window, componentManager);
 
-    systemManager.addSystem(updateSystem);
-    systemManager.addSystem(renderSystem);
+    // systemManager.addSystem(updateSystem);
+    // systemManager.addSystem(renderSystem);
 
     buttons = {};
 
@@ -255,7 +258,10 @@ void Scenes::inGameMenu()
 
         float deltaTime = clock.restart().asSeconds();
 
-        systemManager.updateSystems(deltaTime);
+        // systemManager.updateSystems(deltaTime);
+
+        updateSystem->update(deltaTime);
+        renderSystem->update(deltaTime);
     }
 }
 
@@ -415,15 +421,15 @@ void Scenes::settingsMenu()
     TextureManager textureManager;
     EntityFactory entityFactory;
 
-    SystemManager systemManager;
+    // SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(*_window, componentManager);
 
-    systemManager.addSystem(updateSystem);
-    systemManager.addSystem(renderSystem);
+    // systemManager.addSystem(updateSystem);
+    // systemManager.addSystem(renderSystem);
 
     buttons = {};
 
@@ -524,7 +530,10 @@ void Scenes::settingsMenu()
 
         float deltaTime = clock.restart().asSeconds();
 
-        systemManager.updateSystems(deltaTime);
+        // systemManager.updateSystems(deltaTime);
+
+        updateSystem->update(deltaTime);
+        renderSystem->update(deltaTime);
     }
 }
 
@@ -567,15 +576,15 @@ void Scenes::gameLoop()
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SystemManager systemManager;
+    // SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(*_window, componentManager);
 
-    systemManager.addSystem(updateSystem);
-    systemManager.addSystem(renderSystem);
+    // systemManager.addSystem(updateSystem);
+    // systemManager.addSystem(renderSystem);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -730,6 +739,9 @@ void Scenes::gameLoop()
             break;
         }
 
-        systemManager.updateSystems(deltaTime);
+        // systemManager.updateSystems(deltaTime);
+
+        updateSystem->update(deltaTime);
+        renderSystem->update(deltaTime);
     }
 }
