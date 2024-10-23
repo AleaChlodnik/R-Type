@@ -7,12 +7,13 @@
 
 #include <Systems/move_system.hpp>
 
-void MoveSystem::moveEntities(ComponentManager &componentManager, EntityManager &entityManager, float deltaTime)
+void MoveSystem::moveEntities(
+    ComponentManager &componentManager, EntityManager &entityManager, float deltaTime)
 {
     auto entities = entityManager.getAllEntities();
     if (entities.empty())
         return;
-    
+
     for (auto &entity : entities) {
         int entityId = entity.getId();
         auto pos = componentManager.getComponent<PositionComponent>(entityId);

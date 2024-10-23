@@ -270,7 +270,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 }
 
                 // Move entities
-                _moveSystem->moveEntities(_componentManager, _entityManager, 0.5); // add real clock
+                _moveSystem->moveEntities(
+                    _componentManager, _entityManager, 0.5); // add real clock
 
                 // Compare new positions
                 if (auto positionsAfter = _componentManager.getComponentMap<PositionComponent>()) {

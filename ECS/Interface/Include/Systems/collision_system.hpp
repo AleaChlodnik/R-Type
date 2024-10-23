@@ -16,13 +16,17 @@ class CollisionSystem : public ISystem {
     {
     }
 
-    void update(float deltaTime) override { handleCollisions(this->_componentManager, this->_entityManager); }
+    void update(float deltaTime) override
+    {
+        handleCollisions(this->_componentManager, this->_entityManager);
+    }
 
     void handleCollisions(ComponentManager &componentManager, EntityManager &entityManager);
 
     bool checkCollision(ComponentManager &componentManager, int entityId1, int entityId2);
 
-    void removeCollidedEntity(ComponentManager &componentManager, EntityManager &entityManager, int entityId1, int entityId2);
+    void removeCollidedEntity(ComponentManager &componentManager, EntityManager &entityManager,
+        int entityId1, int entityId2);
 
   private:
     ComponentManager &_componentManager;

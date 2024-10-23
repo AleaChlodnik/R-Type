@@ -10,15 +10,19 @@
 #include "Systems/i_system.hpp"
 
 class MoveSystem : public ISystem {
-    public:
-        MoveSystem(ComponentManager &componentManager, EntityManager &entityManager)
-            : _componentManager(componentManager), _entityManager(entityManager) {};
+  public:
+    MoveSystem(ComponentManager &componentManager, EntityManager &entityManager)
+        : _componentManager(componentManager), _entityManager(entityManager){};
 
-        void update(float deltaTime) override {moveEntities(this->_componentManager, this->_entityManager, deltaTime);};
+    void update(float deltaTime) override
+    {
+        moveEntities(this->_componentManager, this->_entityManager, deltaTime);
+    };
 
-        void moveEntities(ComponentManager &componentManager, EntityManager &entityManager, float deltaTime);
+    void moveEntities(
+        ComponentManager &componentManager, EntityManager &entityManager, float deltaTime);
 
-    private:
-        ComponentManager &_componentManager;
-        EntityManager &_entityManager;
+  private:
+    ComponentManager &_componentManager;
+    EntityManager &_entityManager;
 };
