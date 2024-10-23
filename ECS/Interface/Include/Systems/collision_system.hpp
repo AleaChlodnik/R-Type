@@ -8,7 +8,6 @@
 #pragma once
 
 #include "Systems/i_system.hpp"
-#include <Net/a_server.hpp>
 
 class CollisionSystem : public ISystem {
   public:
@@ -21,7 +20,7 @@ class CollisionSystem : public ISystem {
 
     bool checkCollision(ComponentManager &componentManager, int entityId1, int entityId2);
 
-    void sendCollisionMessage(ComponentManager &componentManager, int entityId1, int entityId2);
+    void removeCollidedEntity(ComponentManager &componentManager, EntityManager &entityManager, int entityId1, int entityId2);
 
   private:
     ComponentManager &_componentManager;

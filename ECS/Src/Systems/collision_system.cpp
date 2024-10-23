@@ -31,6 +31,7 @@ bool CollisionSystem::checkCollision(
         else
             return true;
     }
+    return false;
 }
 
 void CollisionSystem::handleCollisions(
@@ -42,14 +43,14 @@ void CollisionSystem::handleCollisions(
         for (size_t j = i + 1; j < entities.size(); ++j) {
             int entityId2 = entities[j].getId();
             if (checkCollision(componentManager, entityId1, entityId2)) {
-                sendCollisionMessage(componentManager, entityId1, entityId2);
+                removeCollidedEntity(componentManager, entityManager, entityId1, entityId2);
             }
         }
     }
 }
 
-void CollisionSystem::sendCollisionMessage(
-    ComponentManager &componentManager, int entityId1, int entityId2)
+void CollisionSystem::removeCollidedEntity(
+    ComponentManager &componentManager, EntityManager &entityManager, int entityId1, int entityId2)
 {
     auto player1 = componentManager.getComponent<PlayerComponent>(entityId1);
     auto playerMissile1 = componentManager.getComponent<PlayerMissileComponent>(entityId1);
@@ -65,78 +66,39 @@ void CollisionSystem::sendCollisionMessage(
 
     if (player1) {
         if (enemy2 || enemyMissile2) {
-            r_type::net::Message<TypeMessage> msgDestroy;
-            msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
-            msgDestroy << entityId1;
-            MessageAllClients(msgDestroy);
-            RemoveEntities(entityId1);
-            msgDestroy << entityId2;
-            MessageAllClients(msgDestroy);
-            RemoveEntities(entityId2);
+            entityManager.removeEntity(entityId1);
+            entityManager.removeEntity(entityId2);
         }
         if (basicMonster2) {
-            r_type::net::Message<TypeMessage> msgDestroy;
-            msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
-            msgDestroy << entityId1;
-            MessageAllClients(msgDestroy);
-            RemoveEntities(entityId1);
+            entityManager.removeEntity(entityId1);
         }
     }
     if (playerMissile1) {
         if (enemy2 || basicMonster2) {
-            r_type::net::Message<TypeMessage> msgDestroy;
-            msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
-            msgDestroy << entityId2;
-            MessageAllClients(msgDestroy);
-            RemoveEntities(entityId2);
+            entityManager.removeEntity(entityId2);
         }
         if (enemyMissile2) {
-            r_type::net::Message<TypeMessage> msgDestroy;
-            msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
-            msgDestroy << entityId1;
-            MessageAllClients(msgDestroy);
-            RemoveEntities(entityId1);
-            msgDestroy << entityId2;
-            MessageAllClients(msgDestroy);
-            RemoveEntities(entityId2);
+            entityManager.removeEntity(entityId1);
+            entityManager.removeEntity(entityId2);
         }
     }
     if (player2) {
         if (enemy1 || enemyMissile1) {
-            r_type::net::Message<TypeMessage> msgDestroy;
-            msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
-            msgDestroy << entityId2;
-            MessageAllClients(msgDestroy);
-            RemoveEntities(entityId2);
-            msgDestroy << entityId1;
-            MessageAllClients(msgDestroy);
-            RemoveEntities(entityId1);
+            entityManager.removeEntity(entityId1);
+            entityManager.removeEntity(entityId2);
         }
         if (basicMonster1) {
-            r_type::net::Message<TypeMessage> msgDestroy;
-            msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
-            msgDestroy << entityId2;
-            MessageAllClients(msgDestroy);
-            RemoveEntities(entityId2);
+
+            entityManager.removeEntity(entityId2);
         }
     }
     if (playerMissile2) {
         if (enemy1 || basicMonster1) {
-            r_type::net::Message<TypeMessage> msgDestroy;
-            msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
-            msgDestroy << entityId1;
-            MessageAllClients(msgDestroy);
-            RemoveEntities(entityId1);
+            entityManager.removeEntity(entityId1);
         }
         if (enemyMissile1) {
-            r_type::net::Message<TypeMessage> msgDestroy;
-            msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
-            msgDestroy << entityId2;
-            MessageAllClients(msgDestroy);
-            RemoveEntities(entityId2);
-            msgDestroy << entityId1;
-            MessageAllClients(msgDestroy);
-            RemoveEntities(entityId1);
+            entityManager.removeEntity(entityId1);
+            entityManager.removeEntity(entityId2);
         }
     }
 }

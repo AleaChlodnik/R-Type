@@ -6,7 +6,6 @@
 */
 
 #include <Systems/move_system.hpp>
-#include <Net/a_server.hpp>
 
 void MoveSystem::moveEntities(ComponentManager &componentManager, EntityManager &entityManager, float deltaTime)
 {
@@ -32,8 +31,6 @@ void MoveSystem::moveEntities(ComponentManager &componentManager, EntityManager 
             if (playerMissile) {
                 pos.value()->x += vel.value()->speed * deltaTime;
             }
-
-            MessageAllClients( msg << EntityInformation{static_cast<u_int32_t>(entityId), *(spriteData.value()), {(pos.value()->x), (pos.value()->y)}});
         }
     }
 }

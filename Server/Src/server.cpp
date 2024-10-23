@@ -77,13 +77,13 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
     case TypeMessage::ClientConnect: {
         std::cout << "[" << client->GetID() << "]: Client Connect" << std::endl;
     } break;
-    case TypeMessage::MoveEntityMessage: {
+    case TypeMessage::MoveEntityMessage: { // This is only for the players
         UpdateEntityPosition(msg, client->GetID());
     } break;
     case TypeMessage::DestroyEntityMessage: {
         OnClientDisconnect(client, msg);
     } break;
-    case TypeMessage::CreateEntityMessage: {
+    case TypeMessage::CreateEntityMessage: { // This is for player missile creation only
         CreatableClientObject incomingObject;
         msg >> incomingObject;
         switch (incomingObject) {
