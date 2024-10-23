@@ -7,8 +7,7 @@
 
 #include <a_scenes.hpp>
 
-AScenes::AScenes(std::string ip, int port)
-    : IScenes(), _ip(ip), _port(port)
+AScenes::AScenes(std::string ip, int port) : IScenes(), _ip(ip), _port(port)
 {
     this->_currentScene = AScenes::Scene::MAIN_MENU;
 }

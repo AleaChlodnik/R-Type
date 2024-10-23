@@ -18,8 +18,7 @@
 #include <scenes.hpp>
 #include <texture_manager.hpp>
 
-Scenes::Scenes(std::string ip, int port)
-    : IScenes(), AScenes(ip, port)
+Scenes::Scenes(std::string ip, int port) : IScenes(), AScenes(ip, port)
 {
     _window.create(sf::VideoMode::getDesktopMode(), "R-Type", sf::Style::Close);
     _window.setFramerateLimit(60);

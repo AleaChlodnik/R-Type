@@ -7,8 +7,8 @@
 
 #include <iostream>
 #include <macro.hpp>
-#include <sstream>
 #include <scenes.hpp>
+#include <sstream>
 
 static bool isValidIPv4(const std::string &ip)
 {
