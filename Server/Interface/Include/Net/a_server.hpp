@@ -49,15 +49,15 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         : r_type::net::IServer<T>(),
           _asioSocket(_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
     {
+        _componentManager = ComponentManager();
         _entityManager = EntityManager();
         _entityFactory = EntityFactory();
-        _componentManager = ComponentManager();
-        _background = InitiateBackground();
 
         _moveSystem = std::make_shared<MoveSystem>(_componentManager, _entityManager);
         _collisionSystem = std::make_shared<CollisionSystem>(_componentManager, _entityManager);
 
-        _entityFactory.createBackground(_entityManager, _componentManager);
+        _background = InitiateBackground();
+        
         _entityFactory.createBasicMonster(_entityManager, _componentManager);
     }
 
@@ -149,6 +149,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                             std::move(newSocket), _clientEndpoint, _qMessagesIn);
 
                     if (OnClientConnect(newConn)) {
+                        std::cout << "OnClientConnect is true" << std::endl; /////////////////////////////////////
+
                         _deqConnections.push_back(std::move(newConn));
                         _deqConnections.back()->ConnectToClient(this, _nIDCounter++);
                         std::cout << "[" << _deqConnections.back()->GetID()
@@ -240,6 +242,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     void Update(size_t nMaxMessages = -1, bool bWait = false)
     {
+        if (_nbrOfPlayers == 0)
+            return;
         // if (bWait)
         //     _qMessagesIn.wait();
         std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
@@ -259,19 +263,17 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 msg.header.id = TypeMessage::UpdateEntity;
                 std::unordered_map<int, PositionComponent> previousPositions;
 
+                // Save previous positions
                 for (const auto &pair : **positionsBefore) {
                     int entityId = pair.first;
                     const auto positionComponent = pair.second;
                     auto position = std::any_cast<PositionComponent>(&positionComponent);
                     if (position) {
-                        // Use insert instead of [], which will not invoke default constructor
                         previousPositions.insert({entityId, *position});
                     }
                 }
-
                 // Move entities
-                _moveSystem->moveEntities(
-                    _componentManager, _entityManager, 0.5); // add real clock
+                _moveSystem->moveEntities(_componentManager, _entityManager, 0.5); // add real clock
 
                 // Compare new positions
                 if (auto positionsAfter = _componentManager.getComponentMap<PositionComponent>()) {
@@ -286,7 +288,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                                 const auto &oldPosition = it->second;
                                 if (oldPosition.x != newPosition->x ||
                                     oldPosition.y != newPosition->y) {
-                                    // Only send the message if the position has changed
                                     if (auto spriteData =
                                             _componentManager.getComponent<SpriteDataComponent>(
                                                 entityId)) {
@@ -301,25 +302,33 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     }
                 }
             }
+
             // make copy of entityIds
             std::vector<Entity> entityListCopy = _entityManager.getAllEntities();
             std::vector<int> entityIdsBefore;
             for (const auto &entity : entityListCopy) {
                 entityIdsBefore.push_back(entity.getId());
             }
-            // collision system
-            _collisionSystem->handleCollisions(_componentManager, _entityManager);
-            // compare existence and send messages
-            for (int entityId : entityIdsBefore) {
-                if (auto entity = _entityManager.getEntity(entityId)) {
-                    continue;
-                } else {
-                    r_type::net::Message<TypeMessage> msg;
-                    msg.header.id = TypeMessage::DestroyEntityMessage;
-                    msg << entityId;
-                    MessageAllClients(msg);
-                }
-            }
+
+            // for (int entityId : entityIdsBefore) {
+            //     std::cout << "Entity: " << entityId << std::endl;
+            // }
+
+            // std::cout << "done" << std::endl;
+
+            // // collision system
+            // _collisionSystem->handleCollisions(_componentManager, _entityManager);
+            // // compare existence and send messages
+            // for (int entityId : entityIdsBefore) {
+            //     if (auto entity = _entityManager.getEntity(entityId)) {
+            //         continue;
+            //     } else {
+            //         r_type::net::Message<TypeMessage> msg;
+            //         msg.header.id = TypeMessage::DestroyEntityMessage;
+            //         msg << entityId;
+            //         MessageAllClients(msg);
+            //     }
+            // }
 
             _clock += std::chrono::milliseconds(500);
         }

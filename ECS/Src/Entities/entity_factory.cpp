@@ -68,27 +68,6 @@ Entity EntityFactory::createPlayer(
     return player;
 }
 
-Entity EntityFactory::createAlly(EntityManager &entityManager, ComponentManager &componentManager)
-{
-    Entity ally = entityManager.createEntity();
-
-    AllyComponent allyComponent;
-    PositionComponent startPosition(0, 0);
-    // VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.0f, 1.0f}, 2};
-    HitboxComponent hitbox{
-        static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
-    HealthComponent health{100, 100};
-
-    componentManager.addComponent<AllyComponent>(ally.getId(), allyComponent);
-    componentManager.addComponent<PositionComponent>(ally.getId(), startPosition);
-    componentManager.addComponent<HitboxComponent>(ally.getId(), hitbox);
-    componentManager.addComponent<HealthComponent>(ally.getId(), health);
-    componentManager.addComponent<SpriteDataComponent>(ally.getId(), spriteData);
-
-    return ally;
-}
-
 Entity EntityFactory::createBasicEnemy(
     EntityManager &entityManager, ComponentManager &componentManager)
 {
@@ -119,6 +98,7 @@ Entity EntityFactory::createBasicMonster(
 
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{100.0f};
+    // VelocityComponent velocity{1.0f}; ///////////////// temp
     SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {115, 115}, {0.5f, 0.5f}, 3};
     PositionComponent startPosition(80, 60);
     HitboxComponent hitbox{
@@ -172,27 +152,6 @@ Entity EntityFactory::createPlayerMissile(
     componentManager.addComponent<HitboxComponent>(playerMissile.getId(), hitbox);
 
     return playerMissile;
-}
-
-Entity EntityFactory::createAllyMissile(
-    EntityManager &entityManager, ComponentManager &componentManager)
-{
-    Entity allyMissile = entityManager.createEntity();
-
-    AllyMissileComponent allyMissileComponent;
-    PositionComponent startPosition(0, 0);
-    VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {0.1f, 0.1f}, 1};
-    HitboxComponent hitbox{
-        static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
-
-    componentManager.addComponent<AllyMissileComponent>(allyMissile.getId(), allyMissileComponent);
-    componentManager.addComponent<PositionComponent>(allyMissile.getId(), startPosition);
-    componentManager.addComponent<VelocityComponent>(allyMissile.getId(), velocity);
-    componentManager.addComponent<SpriteDataComponent>(allyMissile.getId(), spriteData);
-    componentManager.addComponent<HitboxComponent>(allyMissile.getId(), hitbox);
-
-    return allyMissile;
 }
 
 Entity EntityFactory::createEnemyMissile(

@@ -35,6 +35,7 @@ class TextureManager {
 
         sf::Texture texture;
         if (!texture.loadFromFile(filePath)) {
+          // std::cout << "Failed to load texture: " << filePath << std::endl; ////////////////
             throw failedToLoadTexture();
         }
 

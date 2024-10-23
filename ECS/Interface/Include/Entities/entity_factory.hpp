@@ -46,18 +46,6 @@ class EntityFactory : public IEntityFactory {
         int nbrOfPlayers) override;
 
     /**
-     * @brief Creates a player entity.
-     *
-     * This function creates a player entity using the provided entity manager and component
-     * manager.
-     *
-     * @param entityManager The entity manager to use for creating the entity.
-     * @param componentManager The component manager to use for adding components to the entity.
-     * @return The created player entity.
-     */
-    Entity createAlly(EntityManager &entityManager, ComponentManager &componentManager) override;
-
-    /**
      * @brief Creates a basic enemy entity.
      *
      * This function creates a basic enemy entity using the provided entity manager and component
@@ -145,8 +133,6 @@ class EntityFactory : public IEntityFactory {
      * @return The created ally missile entity.
      *
      */
-    Entity createAllyMissile(
-        EntityManager &entityManager, ComponentManager &componentManager) override;
 
     /**
      * @brief Creates an enemy missile entity.

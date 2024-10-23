@@ -18,19 +18,18 @@ void MoveSystem::moveEntities(
         int entityId = entity.getId();
         auto pos = componentManager.getComponent<PositionComponent>(entityId);
         auto vel = componentManager.getComponent<VelocityComponent>(entityId);
-        auto spriteData = componentManager.getComponent<SpriteComponent>(entityId);
-        if (pos && vel && spriteData) {
+        if (pos && vel) {
             auto enemy = componentManager.getComponent<EnemyComponent>(entityId);
             auto basicMonster = componentManager.getComponent<BasicMonsterComponent>(entityId);
             auto playerMissile = componentManager.getComponent<PlayerMissileComponent>(entityId);
             auto enemyMissile = componentManager.getComponent<EnemyMissileComponent>(entityId);
 
             if (enemy || basicMonster || enemyMissile) {
-                pos.value()->x -= vel.value()->speed * deltaTime;
+                pos.value()->x -= 1;
             }
 
             if (playerMissile) {
-                pos.value()->x += vel.value()->speed * deltaTime;
+                pos.value()->x += 2;
             }
         }
     }

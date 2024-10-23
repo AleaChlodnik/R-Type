@@ -56,7 +56,7 @@ int main(int const argc, char const *const *const argv)
     server.Start();
 
     signal(SIGINT, signal_handler);
-    loopRunning = true;
+
     while (loopRunning) {
         server.Update(-1, true);
     }
