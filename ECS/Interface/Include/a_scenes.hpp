@@ -19,7 +19,7 @@
  */
 class AScenes : virtual public IScenes {
   public:
-    AScenes(sf::RenderWindow *window, std::string ip, int port);
+    AScenes(std::string ip, int port);
     ~AScenes() = default;
 
     /**
@@ -210,7 +210,6 @@ class AScenes : virtual public IScenes {
     int getPort() const;
 
   protected:
-    sf::RenderWindow *_window;
     GameMode _currentGameMode = GameMode::MEDIUM;
     DaltonismMode _currentDaltonismMode = DaltonismMode::NORMAL;
     Scene _currentScene = Scene::MAIN_MENU;

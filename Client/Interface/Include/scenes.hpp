@@ -30,7 +30,7 @@ class Scenes : virtual public AScenes {
      *
      * @param window
      */
-    Scenes(sf::RenderWindow *window, std::string ip, int port);
+    Scenes(std::string ip, int port);
 
     /**
      * @brief Destroy the Scenes object
@@ -82,5 +82,9 @@ class Scenes : virtual public AScenes {
      *
      * @return sf::RenderWindow*
      */
-    sf::RenderWindow *getRenderWindow() { return _window; }
+    sf::RenderWindow *getRenderWindow() { return &_window; }
+
+    void run();
+
+    sf::RenderWindow _window;
 };
