@@ -98,6 +98,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         if (m_threadContext.joinable())
             m_threadContext.join();
 
+        m_asioSocket.close();
+
         std::cout << "[SERVER] Stopped!\n";
     }
 
