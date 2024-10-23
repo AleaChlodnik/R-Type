@@ -13,6 +13,7 @@
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
 #include <Net/i_server.hpp>
+#include <Systems/systems.hpp>
 #include <cmath>
 #include <entity_struct.hpp>
 #include <unordered_map>
@@ -52,10 +53,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         entityFactory = EntityFactory();
         componentManager = ComponentManager();
 
-        std::shared_ptr<MoveSystem> moveSystem =
-            std::make_shared<MoveSystem>(componentManager, entityManager);
-        std::shared_ptr<CollisionSystem> collisionSystem =
-            std::make_shared<CollisionSystem>(componentManager, entityManager);
+        moveSystem = std::make_shared<MoveSystem>(componentManager, entityManager);
+        collisionSystem = std::make_shared<CollisionSystem>(componentManager, entityManager);
 
         entityFactory.createBackground(entityManager, componentManager);
         entityFactory.createBasicMonster(entityManager, componentManager);
@@ -248,42 +247,52 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         //     << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
         //     << std::endl;
 
-        r_type::net::Message<TypeMessage> msg;
-
         bool bUpdateEntities = false;
         while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
             500) {
             bUpdateEntities = true;
 
             // make position copy
-            if (auto positionsBeforeOpt = componentManager.getComponentMap<PositionComponent>()) {
+            if (auto positionsBefore = componentManager.getComponentMap<PositionComponent>()) {
+                r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::UpdateEntity;
                 std::unordered_map<int, PositionComponent> previousPositions;
+
                 for (const auto &pair : **positionsBefore) {
                     int entityId = pair.first;
                     const auto positionComponent = pair.second;
                     auto position = std::any_cast<PositionComponent>(&positionComponent);
-                    if (position)
-                        previousPositions[entityId] = *position;
+                    if (position) {
+                        // Use insert instead of [], which will not invoke default constructor
+                        previousPositions.insert({entityId, *position});
+                    }
                 }
-                // move system
+
+                // Move entities
                 moveSystem->moveEntities(componentManager, entityManager, 0.5); // add real clock
-                // compare pos and send messages
+
+                // Compare new positions
                 if (auto positionsAfter = componentManager.getComponentMap<PositionComponent>()) {
                     for (const auto &pair : **positionsAfter) {
                         int entityId = pair.first;
                         const auto &newPositionComponent = pair.second;
                         auto newPosition = std::any_cast<PositionComponent>(&newPositionComponent);
+
                         if (newPosition) {
                             auto it = previousPositions.find(entityId);
                             if (it != previousPositions.end()) {
                                 const auto &oldPosition = it->second;
                                 if (oldPosition.x != newPosition->x ||
                                     oldPosition.y != newPosition->y) {
-                                    MessageAllClients(
-                                        msg << EntityInformation{static_cast<u_int32_t>(entityId),
-                                            *(spriteData.value()),
-                                            {newPosition->x, newPosition->y}}); // spriteData - fix
+                                    // Only send the message if the position has changed
+                                    if (auto spriteData =
+                                            componentManager.getComponent<SpriteDataComponent>(
+                                                entityId)) {
+                                        MessageAllClients(msg
+                                            << EntityInformation{static_cast<u_int32_t>(entityId),
+                                                   *(spriteData.value()),
+                                                   {newPosition->x, newPosition->y}});
+                                    }
                                 }
                             }
                         }
@@ -291,12 +300,19 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 }
             }
             // make copy of entityIds
-            std::vector<int> entityIdsBefore = entityManager.getAllEntities();
+            std::vector<Entity> entityListCopy = entityManager.getAllEntities();
+            std::vector<int> entityIdsBefore;
+            for (const auto &entity : entityListCopy) {
+                entityIdsBefore.push_back(entity.getId());
+            }
             // collision system
             collisionSystem->handleCollisions(componentManager, entityManager);
             // compare existence and send messages
             for (int entityId : entityIdsBefore) {
-                if (!auto entity = entityManager.getEntity(entityId)) {
+                if (auto entity = entityManager.getEntity(entityId)) {
+                    continue;
+                } else {
+                    r_type::net::Message<TypeMessage> msg;
                     msg.header.id = TypeMessage::DestroyEntityMessage;
                     msg << entityId;
                     MessageAllClients(msg);
@@ -599,6 +615,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @brief An instance of EntityFactory used to create and manage game entities.
      */
     EntityFactory entityFactory;
+
+    // TEMPORARY
+    std::shared_ptr<MoveSystem> moveSystem;
+    std::shared_ptr<CollisionSystem> collisionSystem;
+
     /**
      * @brief A container that maps client IDs to player IDs.
      *
