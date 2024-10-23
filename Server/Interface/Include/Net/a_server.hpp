@@ -270,14 +270,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                         _componentManager.getComponent<PlayerMissileComponent>(entityId);
 
                     if (monster) {
-                        position.value()->x -= 5;
+                        position.value()->x -= 1;
                         MessageAllClients(
                             msg << EntityInformation{static_cast<u_int32_t>(entityId),
                                 *(spriteData.value()),
                                 {(position.value()->x), (position.value()->y)}});
                     }
                     if (missile) {
-                        position.value()->x += 20;
+                        position.value()->x += 2;
                         EntityInformation newMissile = EntityInformation{
                             static_cast<u_int32_t>(entityId), *(spriteData.value()),
                             {(position.value()->x), (position.value()->y)}};

@@ -31,6 +31,12 @@ void RenderSystem::render(ComponentManager &componentManager)
                 if (sprite->type == SpriteType::BACKGROUND) {
                     continue;
                 }
+                // sf::RectangleShape square(sf::Vector2f(sprite->hitbox_x, sprite->hitbox_y));
+                // square.setOrigin(sprite->sprite.getPosition());
+                // square.setOutlineColor(sf::Color::Red);
+                // square.setOutlineThickness(2.f);
+                // square.setFillColor(sf::Color::Transparent);
+                // _window.draw(square);
                 _window.draw(sprite->sprite);
             }
         }
