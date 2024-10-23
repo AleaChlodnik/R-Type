@@ -34,7 +34,7 @@ template <typename T> class AClient : virtual public IClient<T> {
     {
         try {
             asio::ip::udp::endpoint remote_endpoint =
-                asio::ip::udp::endpoint(asio::ip::address::from_string(host), port);
+                asio::ip::udp::endpoint(asio::ip::make_address(host), port);
             // std::cout << "Remote endpoint: " << remote_endpoint << std::endl;
 
             asio::ip::udp::socket socket(
@@ -113,7 +113,8 @@ template <typename T> class AClient : virtual public IClient<T> {
 
     void addEntity(EntityInformation entity, ComponentManager &componentManager,
         TextureManager &textureManager, sf::Vector2u windowSize);
-    void updateEntity(EntityInformation entity, ComponentManager &componentManager, sf::Vector2u windowSize);
+    void updateEntity(
+        EntityInformation entity, ComponentManager &componentManager, sf::Vector2u windowSize);
     void removeEntity(int entityId, ComponentManager &componentManager);
 
   protected:

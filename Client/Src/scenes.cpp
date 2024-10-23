@@ -15,11 +15,14 @@
 #include <creatable_client_object.hpp>
 #include <functional>
 #include <iostream>
-#include <r_type_client.hpp>
 #include <scenes.hpp>
 #include <texture_manager.hpp>
 
-Scenes::Scenes(sf::RenderWindow *window) : IScenes(), AScenes(window) {}
+Scenes::Scenes(std::string ip, int port) : IScenes(), AScenes(ip, port)
+{
+    _window.create(sf::VideoMode::getDesktopMode(), "R-Type", sf::Style::Close);
+    _window.setFramerateLimit(60);
+}
 
 /**
  * @brief Handles events for the scene, including window close and mouse button press events.
@@ -99,9 +102,9 @@ void Scenes::mainMenu()
     SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
-        std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
+        std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
-        std::make_shared<RenderSystem>(*_window, componentManager);
+        std::make_shared<RenderSystem>(_window, componentManager);
 
     systemManager.addSystem(updateSystem);
     systemManager.addSystem(renderSystem);
@@ -149,9 +152,9 @@ void Scenes::mainMenu()
     sf::Clock clock;
     sf::Event event;
 
-    while (_window->isOpen() && this->_currentScene == Scenes::Scene::MAIN_MENU) {
+    while (_window.isOpen() && this->_currentScene == Scenes::Scene::MAIN_MENU) {
 
-        handleEvents(event, componentManager, _window, buttons, this);
+        handleEvents(event, componentManager, &_window, buttons, this);
 
         float deltaTime = clock.restart().asSeconds();
 
@@ -198,9 +201,9 @@ void Scenes::inGameMenu()
     SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
-        std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
+        std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
-        std::make_shared<RenderSystem>(*_window, componentManager);
+        std::make_shared<RenderSystem>(_window, componentManager);
 
     systemManager.addSystem(updateSystem);
     systemManager.addSystem(renderSystem);
@@ -249,9 +252,9 @@ void Scenes::inGameMenu()
     sf::Clock clock;
     sf::Event event;
 
-    while (_window->isOpen() && this->_currentScene == Scenes::Scene::IN_GAME_MENU) {
+    while (_window.isOpen() && this->_currentScene == Scenes::Scene::IN_GAME_MENU) {
 
-        handleEvents(event, componentManager, _window, buttons, this);
+        handleEvents(event, componentManager, &_window, buttons, this);
 
         float deltaTime = clock.restart().asSeconds();
 
@@ -418,9 +421,9 @@ void Scenes::settingsMenu()
     SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
-        std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
+        std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
-        std::make_shared<RenderSystem>(*_window, componentManager);
+        std::make_shared<RenderSystem>(_window, componentManager);
 
     systemManager.addSystem(updateSystem);
     systemManager.addSystem(renderSystem);
@@ -488,7 +491,7 @@ void Scenes::settingsMenu()
     if (_displayDaltonismChoice) {
         // createDaltonismChoiceButtons(
         //     &buttons, componentManager, entityManager, textureManager, entityFactory);
-        sf::RectangleShape filter(sf::Vector2f((*_window).getSize().x, (*_window).getSize().y));
+        sf::RectangleShape filter(sf::Vector2f((_window).getSize().x, (_window).getSize().y));
         _currentDaltonismMode = DaltonismMode::TRITANOPIA;
         switch (_currentDaltonismMode) {
         case DaltonismMode::NORMAL:
@@ -518,9 +521,9 @@ void Scenes::settingsMenu()
     sf::Clock clock;
     sf::Event event;
 
-    while (_window->isOpen() && this->_currentScene == Scenes::Scene::SETTINGS_MENU) {
+    while (_window.isOpen() && this->_currentScene == Scenes::Scene::SETTINGS_MENU) {
 
-        handleEvents(event, componentManager, _window, buttons, this);
+        handleEvents(event, componentManager, &_window, buttons, this);
 
         float deltaTime = clock.restart().asSeconds();
 
@@ -559,7 +562,7 @@ void Scenes::render()
 void Scenes::gameLoop()
 {
     r_type::net::Client c;
-    c.Connect("127.0.0.1", 60000);
+    c.Connect(_ip, _port);
 
     EntityManager entityManager;
     ComponentManager componentManager;
@@ -572,9 +575,9 @@ void Scenes::gameLoop()
     SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
-        std::make_shared<UpdateSystem>(*_window, componentManager, entityManager);
+        std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
-        std::make_shared<RenderSystem>(*_window, componentManager);
+        std::make_shared<RenderSystem>(_window, componentManager);
 
     systemManager.addSystem(updateSystem);
     systemManager.addSystem(renderSystem);
@@ -617,12 +620,12 @@ void Scenes::gameLoop()
         msg.header.id = TypeMessage::DestroyEntityMessage;
         msg << c.getPlayerId();
         c.Send(msg);
-        _window->close();
+        _window.close();
     };
 
     while (_window->isOpen()) {
         float deltaTime = clock.restart().asSeconds();
-        while (_window->pollEvent(event)) {
+        while (_window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 death();
             }
@@ -732,9 +735,16 @@ void Scenes::gameLoop()
             }
         } else {
             std::cout << "Server Down" << std::endl;
-            _window->close();
+            _window.close();
             break;
         }
         systemManager.updateSystems(deltaTime);
+    }
+}
+
+void Scenes::run()
+{
+    while (!this->shouldQuit() && _window.isOpen()) {
+        this->render();
     }
 }

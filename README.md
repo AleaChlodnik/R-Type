@@ -1,8 +1,16 @@
 # R-Type
 
+## Authors
+
+- [@Alea Chlodnik](https://www.github.com/AleaChlodnik)
+- [@Marc.dva](https://www.github.com/Dvaking)
+- [@QuentinLeguay](https://www.github.com/QuentinLeguay)
+- [@Tom-Mendy](https://www.github.com/Tom-Mendy)
+
 ## Table of Contents
 
 - [R-Type](#r-type)
+  - [Authors](#authors)
   - [Table of Contents](#table-of-contents)
   - [General Info](#general-info)
   - [Features](#features)
@@ -17,7 +25,6 @@
   - [Tech Stack](#tech-stack)
   - [Running Tests](#running-tests)
   - [Contributing](#contributing)
-  - [Authors](#authors)
   - [Acknowledgements](#acknowledgements)
   - [Screenshots](#screenshots)
 
@@ -35,13 +42,13 @@ R-Type is a classic side-scrolling shoot 'em up game where players pilot a space
 ### Server
 
 ```bash
-./r-type_server
+./r-type_server <port>
 ```
 
 ### Client
 
 ```bash
-./r-type_client
+./r-type_client <server ip> <port>
 ```
 
 ## Installation
@@ -79,13 +86,15 @@ cmake --build build -- /maxcpucount:4
 
 [Protocol Documentation](./Docs/CumunicationProtocol.md)
 
+[Comparative Study Documentation](./Docs/ComparativeStudy.md)
+
 [Architecture Documentation](./doc_doxygen/html/index.html)
 
 ## Tech Stack
 
-**Client:** C++, SFML, ASIO
+**Client:** [C++](https://en.wikipedia.org/wiki/C++), [SFML](https://www.sfml-dev.org/), [ASIO](https://think-async.com/Asio/)
 
-**Server:** C++, ASIO
+**Server:** [C++](https://en.wikipedia.org/wiki/C++), [ASIO](https://think-async.com/Asio/)
 
 ## Running Tests
 
@@ -102,13 +111,6 @@ Contributions are always welcome!
 See `contributing.md` for ways to get started.
 
 Please adhere to this project's `code of conduct`.
-
-## Authors
-
-- [@Alea Chlodnik](https://www.github.com/AleaChlodnik)
-- [@Marc.dva](https://www.github.com/Dvaking)
-- [@QuentinLeguay](https://www.github.com/QuentinLeguay)
-- [@Tom-Mendy](https://www.github.com/Tom-Mendy)
 
 ## Acknowledgements
 

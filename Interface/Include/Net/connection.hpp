@@ -7,18 +7,17 @@
 
 #pragma once
 
+#include "../macro.hpp"
 #include "common.hpp"
 #include "i_server.hpp"
 #include "message.hpp"
 #include "thread_safe_queue.hpp"
 #include "type_message.hpp"
 
-#define UNUSED __attribute__((unused))
-
 // std::ostream &operator<<(std::ostream &os, const asio::ip::udp::socket &socket)
 // {
-//     os << socket.local_endpoint().address().to_string() << ":" << socket.local_endpoint().port();
-//     return os;
+//     os << socket.local_endpoint().address().to_string() << ":" <<
+//     socket.local_endpoint().port(); return os;
 // }
 
 // std::ostream &operator<<(std::ostream &os, const asio::ip::udp::endpoint &endpoint)
@@ -82,7 +81,11 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      * @brief Destroy the Connection object
      *
      */
-    virtual ~Connection() {}
+    virtual ~Connection()
+    {
+        if (m_socket.is_open())
+            m_socket.close();
+    }
 
     // friend std::ostream &operator<<(std::ostream &os, const Connection<T> &connection)
     // {
