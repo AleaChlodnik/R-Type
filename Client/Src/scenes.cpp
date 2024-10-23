@@ -593,9 +593,11 @@ void Scenes::gameLoop()
 
     sf::Event event;
 
-    sf::Clock clock; ///////////////////////////////////////////////////// TEMPORARY
+    sf::Clock clock;
 
-    auto updatePlayerPosition = [&](const vf2d &delta) {
+    auto pixelToPercent = [&](float v1, float v2) { return (v1 / v2) * 100; };
+
+    auto updatePlayerPosition = [&](const vf2d &delta, sf::Vector2u windowSize) {
         r_type::net::Message<TypeMessage> msg;
         vf2d playerPos;
         msg.header.id = TypeMessage::MoveEntityMessage;
@@ -603,8 +605,10 @@ void Scenes::gameLoop()
             auto &sprites = **spritesOpt;
             auto spriteComponent = sprites[c.getPlayerId()];
             auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            playerPos.x = playerSprite->sprite.getPosition().x + delta.x;
-            playerPos.y = playerSprite->sprite.getPosition().y + delta.y;
+            playerPos.x =
+                pixelToPercent(playerSprite->sprite.getPosition().x, windowSize.x) + delta.x;
+            playerPos.y =
+                pixelToPercent(playerSprite->sprite.getPosition().y, windowSize.y) + delta.y;
             msg << playerPos;
             c.Send(msg);
         }
@@ -625,7 +629,6 @@ void Scenes::gameLoop()
         c.Send(msg);
         _window.close();
     };
-
     sf::Vector2u windowSize = _window.getSize();
     while (_window.isOpen()) {
         float deltaTime = clock.restart().asSeconds();
@@ -644,19 +647,19 @@ void Scenes::gameLoop()
                     fireMissile();
                 }
                 if (event.key.code == keyBinds[Actions::QUIT]) {
-                    _window.close();
+                    death();
                 }
                 if (event.key.code == keyBinds[Actions::UP]) {
-                    updatePlayerPosition(vf2d{0, -5});
+                    updatePlayerPosition(vf2d{0, -1}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::DOWN]) {
-                    updatePlayerPosition(vf2d{0, 5});
+                    updatePlayerPosition(vf2d{0, 1}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::LEFT]) {
-                    updatePlayerPosition(vf2d{-5, 0});
+                    updatePlayerPosition(vf2d{-1, 0}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::RIGHT]) {
-                    updatePlayerPosition(vf2d{5, 0});
+                    updatePlayerPosition(vf2d{1, 0}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::PAUSE]) {
                     this->setScene(Scenes::Scene::IN_GAME_MENU);
@@ -673,6 +676,8 @@ void Scenes::gameLoop()
                     std::cout << "Server Accepted Connection" << std::endl;
                     EntityInformation entity;
                     msg >> entity;
+                    std::cout << "Entity [" << entity.uniqueID << "] pos [" << entity.vPos.x
+                              << ", " << entity.vPos.y << "]" << std::endl;
                     c.setPlayerId(entity.uniqueID);
                     c.addEntity(entity, componentManager, textureManager, windowSize);
 

@@ -14,6 +14,8 @@
 struct SpriteComponent {
     sf::Sprite sprite;
     AScenes::SpriteType type;
+    // float hitbox_x;
+    // float hitbox_y;
 
     SpriteComponent(
         sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale, int typeNb)
@@ -22,6 +24,6 @@ struct SpriteComponent {
         sprite.setTexture(texture);
         sprite.setPosition(posX, posY);
         sprite.setScale(scale);
-        sprite.setOrigin(sprite.getGlobalBounds().width / 2, sprite.getGlobalBounds().height / 2);
+        sprite.setOrigin(sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
     }
 };
