@@ -7,7 +7,8 @@
 
 #include "Systems/update_system.hpp"
 
-void UpdateSystem::updateSpritePositions(ComponentManager &componentManager, EntityManager &entityManager)
+void UpdateSystem::updateSpritePositions(
+    ComponentManager &componentManager, EntityManager &entityManager)
 {
     const auto &entities = entityManager.getAllEntities();
     if (!entities.empty()) {
@@ -18,8 +19,7 @@ void UpdateSystem::updateSpritePositions(ComponentManager &componentManager, Ent
                 if (pos) {
                     if (sprite.value()->sprite.getPosition().x != pos.value()->x ||
                         sprite.value()->sprite.getPosition().y != pos.value()->y) {
-                        sprite.value()->sprite.setPosition(
-                            pos.value()->x, pos.value()->y);
+                        sprite.value()->sprite.setPosition(pos.value()->x, pos.value()->y);
                     }
                 }
             }
@@ -54,7 +54,7 @@ void UpdateSystem::updateSpritePositions(ComponentManager &componentManager, Ent
 //         }
 //     }
 
-    /////////////////////////////////////////////////////////////////////////////// TEMPORARY
+/////////////////////////////////////////////////////////////////////////////// TEMPORARY
 //     const auto spritesOpt = componentManager.getComponentMap<SpriteComponent>();
 //     if (spritesOpt) {
 //         auto &sprites = **spritesOpt;

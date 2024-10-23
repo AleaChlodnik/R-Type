@@ -47,20 +47,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     AServer(uint16_t port)
         : r_type::net::IServer<T>(),
-          m_asioSocket(m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
+          _asioSocket(_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
     {
-        entityManager = EntityManager();
-        entityFactory = EntityFactory();
-        componentManager = ComponentManager();
+        _entityManager = EntityManager();
+        _entityFactory = EntityFactory();
+        _componentManager = ComponentManager();
+        _background = InitiateBackground();
 
-        moveSystem = std::make_shared<MoveSystem>(componentManager, entityManager);
-        collisionSystem = std::make_shared<CollisionSystem>(componentManager, entityManager);
+        _moveSystem = std::make_shared<MoveSystem>(_componentManager, _entityManager);
+        _collisionSystem = std::make_shared<CollisionSystem>(_componentManager, _entityManager);
 
-        entityFactory.createBackground(entityManager, componentManager);
-        entityFactory.createBasicMonster(entityManager, componentManager);
-        // background = InitiateBackground();
-        // entityFactory.createBasicMonster(entityManager, componentManager);
-        // entityFactory.createBasicMonster(entityManager, componentManager);
+        _entityFactory.createBackground(_entityManager, _componentManager);
+        _entityFactory.createBasicMonster(_entityManager, _componentManager);
     }
 
     /**
@@ -82,7 +80,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         try {
             WaitForClientMessage();
 
-            m_threadContext = std::thread([this]() { m_asioContext.run(); });
+            _threadContext = std::thread([this]() { _asioContext.run(); });
         } catch (std::exception &e) {
             std::cerr << "[SERVER] Exception: " << e.what() << std::endl;
             return false;
@@ -99,10 +97,13 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     void Stop()
     {
-        m_asioContext.stop();
+        _asioContext.stop();
 
-        if (m_threadContext.joinable())
-            m_threadContext.join();
+        if (_threadContext.joinable())
+            _threadContext.join();
+
+        if (_asioSocket.is_open())
+            _asioSocket.close();
 
         std::cout << "[SERVER] Stopped!\n";
     }
@@ -125,32 +126,32 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     void WaitForClientMessage()
     {
-        m_asioSocket.async_receive_from(asio::buffer(m_tempBuffer.data(), m_tempBuffer.size()),
-            m_clientEndpoint, [this](std::error_code ec, std::size_t bytes_recvd) {
-                if (m_clientEndpoint.protocol() != asio::ip::udp::v4())
+        _asioSocket.async_receive_from(asio::buffer(_tempBuffer.data(), _tempBuffer.size()),
+            _clientEndpoint, [this](std::error_code ec, std::size_t bytes_recvd) {
+                if (_clientEndpoint.protocol() != asio::ip::udp::v4())
                     return WaitForClientMessage();
                 if (!ec) {
-                    std::cout << "[SERVER] New Connection: " << m_clientEndpoint << std::endl;
+                    std::cout << "[SERVER] New Connection: " << _clientEndpoint << std::endl;
                     // check if connection already exists
-                    for (std::shared_ptr<Connection<T>> &conn : m_deqConnections) {
-                        if (conn->getEndpoint() == m_clientEndpoint) {
+                    for (std::shared_ptr<Connection<T>> &conn : _deqConnections) {
+                        if (conn->getEndpoint() == _clientEndpoint) {
                             std::cout << "[SERVER] Connection already exists" << std::endl;
                             return;
                         }
                     }
 
-                    asio::ip::udp::socket m_newSocket(
-                        m_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0));
+                    asio::ip::udp::socket newSocket(
+                        _asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0));
 
                     // create client socket
-                    std::shared_ptr<Connection<T>> newConn = std::make_shared<Connection<T>>(
-                        Connection<T>::owner::server, m_asioContext, std::move(m_newSocket),
-                        m_clientEndpoint, m_qMessagesIn);
+                    std::shared_ptr<Connection<T>> newConn =
+                        std::make_shared<Connection<T>>(Connection<T>::owner::server, _asioContext,
+                            std::move(newSocket), _clientEndpoint, _qMessagesIn);
 
                     if (OnClientConnect(newConn)) {
-                        m_deqConnections.push_back(std::move(newConn));
-                        m_deqConnections.back()->ConnectToClient(this, nIDCounter++);
-                        std::cout << "[" << m_deqConnections.back()->GetID()
+                        _deqConnections.push_back(std::move(newConn));
+                        _deqConnections.back()->ConnectToClient(this, _nIDCounter++);
+                        std::cout << "[" << _deqConnections.back()->GetID()
                                   << "] Connection Approved" << std::endl;
                     } else {
                         std::cout << "[-----] Connection Denied" << std::endl;
@@ -179,9 +180,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
             client.reset();
 
-            m_deqConnections.erase(
-                std::remove(m_deqConnections.begin(), m_deqConnections.end(), client),
-                m_deqConnections.end());
+            _deqConnections.erase(
+                std::remove(_deqConnections.begin(), _deqConnections.end(), client),
+                _deqConnections.end());
         }
     }
 
@@ -203,7 +204,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         bool bInvalidClientExists = false;
 
-        for (auto &client : m_deqConnections) {
+        for (auto &client : _deqConnections) {
             if (client && client->IsConnected()) {
                 if (client != pIgnoreClient)
                     client->Send(msg);
@@ -215,9 +216,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
 
         if (bInvalidClientExists)
-            m_deqConnections.erase(
-                std::remove(m_deqConnections.begin(), m_deqConnections.end(), nullptr),
-                m_deqConnections.end());
+            _deqConnections.erase(
+                std::remove(_deqConnections.begin(), _deqConnections.end(), nullptr),
+                _deqConnections.end());
     }
 
     /**
@@ -240,7 +241,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     void Update(size_t nMaxMessages = -1, bool bWait = false)
     {
         // if (bWait)
-        //     m_qMessagesIn.wait();
+        //     _qMessagesIn.wait();
         std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
         // std::cout
         //     << "Time: "
@@ -253,7 +254,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             bUpdateEntities = true;
 
             // make position copy
-            if (auto positionsBefore = componentManager.getComponentMap<PositionComponent>()) {
+            if (auto positionsBefore = _componentManager.getComponentMap<PositionComponent>()) {
                 r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::UpdateEntity;
                 std::unordered_map<int, PositionComponent> previousPositions;
@@ -269,10 +270,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 }
 
                 // Move entities
-                moveSystem->moveEntities(componentManager, entityManager, 0.5); // add real clock
+                _moveSystem->moveEntities(_componentManager, _entityManager, 0.5); // add real clock
 
                 // Compare new positions
-                if (auto positionsAfter = componentManager.getComponentMap<PositionComponent>()) {
+                if (auto positionsAfter = _componentManager.getComponentMap<PositionComponent>()) {
                     for (const auto &pair : **positionsAfter) {
                         int entityId = pair.first;
                         const auto &newPositionComponent = pair.second;
@@ -286,7 +287,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                                     oldPosition.y != newPosition->y) {
                                     // Only send the message if the position has changed
                                     if (auto spriteData =
-                                            componentManager.getComponent<SpriteDataComponent>(
+                                            _componentManager.getComponent<SpriteDataComponent>(
                                                 entityId)) {
                                         MessageAllClients(msg
                                             << EntityInformation{static_cast<u_int32_t>(entityId),
@@ -300,16 +301,16 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 }
             }
             // make copy of entityIds
-            std::vector<Entity> entityListCopy = entityManager.getAllEntities();
+            std::vector<Entity> entityListCopy = _entityManager.getAllEntities();
             std::vector<int> entityIdsBefore;
             for (const auto &entity : entityListCopy) {
                 entityIdsBefore.push_back(entity.getId());
             }
             // collision system
-            collisionSystem->handleCollisions(componentManager, entityManager);
+            _collisionSystem->handleCollisions(_componentManager, _entityManager);
             // compare existence and send messages
             for (int entityId : entityIdsBefore) {
-                if (auto entity = entityManager.getEntity(entityId)) {
+                if (auto entity = _entityManager.getEntity(entityId)) {
                     continue;
                 } else {
                     r_type::net::Message<TypeMessage> msg;
@@ -325,8 +326,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             _clock = newClock;
 
         size_t nMessageCount = 0;
-        while (nMessageCount < nMaxMessages && !m_qMessagesIn.empty()) {
-            auto msg = m_qMessagesIn.pop_front();
+        while (nMessageCount < nMaxMessages && !_qMessagesIn.empty()) {
+            auto msg = _qMessagesIn.pop_front();
 
             OnMessage(msg.remote, msg.msg);
 
@@ -353,15 +354,15 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         uint32_t entityId = GetClientEntityId(clientId);
         EntityInformation entity;
         vf2d entityPosition;
-        auto entitySpriteData = componentManager.getComponent<SpriteDataComponent>(entityId);
+        auto entitySpriteData = _componentManager.getComponent<SpriteDataComponent>(entityId);
         msg >> entityPosition;
         entity.uniqueID = entityId;
         entity.vPos = entityPosition;
         entity.spriteData = *entitySpriteData.value();
-        uint32_t entityTouched = CheckEntityMovement(entity, componentManager, entityManager);
+        uint32_t entityTouched = CheckEntityMovement(entity, _componentManager, _entityManager);
 
         if (entityTouched == -1) {
-            auto position = componentManager.getComponent<PositionComponent>(entityId);
+            auto position = _componentManager.getComponent<PositionComponent>(entityId);
             if (position) {
                 position.value()->x = entityPosition.x;
                 position.value()->y = entityPosition.y;
@@ -372,8 +373,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             }
         } else {
             r_type::net::Message<TypeMessage> msg;
-            componentManager.getComponent<PlayerComponent>(entityTouched);
-            if (componentManager.getComponent<PlayerComponent>(entityTouched)) {
+            _componentManager.getComponent<PlayerComponent>(entityTouched);
+            if (_componentManager.getComponent<PlayerComponent>(entityTouched)) {
                 return;
             }
             msg.header.id = TypeMessage::DestroyEntityMessage;
@@ -388,21 +389,21 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param id The client ID.
      * @return uint32_t The entity ID associated with the client.
      */
-    uint32_t GetClientEntityId(uint32_t id) { return clientPlayerID[id]; }
+    uint32_t GetClientEntityId(uint32_t id) { return _clientPlayerID[id]; }
 
     /**
      * @brief Removes a player from the game based on the client ID.
      *
      * @param id The client ID of the player to be removed.
      */
-    void RemovePlayer(uint32_t id) { clientPlayerID.erase(id); }
+    void RemovePlayer(uint32_t id) { _clientPlayerID.erase(id); }
 
     /**
      * @brief Removes entities associated with a player.
      *
      * @param id The ID of the player whose entities are to be removed.
      */
-    void RemoveEntities(uint32_t id) { entityManager.removeEntity(id); }
+    void RemoveEntities(uint32_t id) { _entityManager.removeEntity(id); }
 
     /**
      * @brief Initializes a new player entity and assigns a random position.
@@ -416,17 +417,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     EntityInformation InitiatePlayers(int clientId)
     {
         EntityInformation entityInfo;
-        Entity player = entityFactory.createPlayer(entityManager, componentManager, nbrOfPlayers);
+        Entity player =
+            _entityFactory.createPlayer(_entityManager, _componentManager, _nbrOfPlayers);
         entityInfo.uniqueID = player.getId();
         auto playerSprite =
-            componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
-        auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+            _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        auto playerPos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         if (playerSprite && playerPos) {
             entityInfo.spriteData = *(playerSprite.value());
             entityInfo.vPos.x = playerPos.value()->x;
             entityInfo.vPos.y = playerPos.value()->y;
         }
-        clientPlayerID.insert_or_assign(nIDCounter, entityInfo.uniqueID);
+        _clientPlayerID.insert_or_assign(_nIDCounter, entityInfo.uniqueID);
         return entityInfo;
     }
 
@@ -444,10 +446,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         EntityInformation entityInfo;
         uint32_t playerId = GetClientEntityId(clientId);
         Entity missile =
-            entityFactory.createPlayerMissile(entityManager, componentManager, playerId);
+            _entityFactory.createPlayerMissile(_entityManager, _componentManager, playerId);
         entityInfo.uniqueID = missile.getId();
-        auto missilePos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
-        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        auto missilePos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+        auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         if (missilePos && sprite) {
             entityInfo.vPos.x = missilePos.value()->x;
             entityInfo.vPos.y = missilePos.value()->y;
@@ -466,9 +468,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     EntityInformation InitiateBackground()
     {
         EntityInformation entityInfo;
-        Entity background = entityFactory.createBackground(entityManager, componentManager);
+        Entity background = _entityFactory.createBackground(_entityManager, _componentManager);
         entityInfo.uniqueID = background.getId();
-        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         if (sprite) {
             entityInfo.spriteData = *(sprite.value());
         }
@@ -532,7 +534,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * of type OwnedMessage<T>. It ensures that messages can be safely
      * accessed and modified by multiple threads concurrently.
      */
-    ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
+    ThreadSafeQueue<OwnedMessage<T>> _qMessagesIn;
 
     /**
      * @brief A deque that holds shared pointers to Connection objects.
@@ -543,7 +545,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      *
      * @tparam T The type of data that the Connection handles.
      */
-    std::deque<std::shared_ptr<Connection<T>>> m_deqConnections;
+    std::deque<std::shared_ptr<Connection<T>>> _deqConnections;
 
     /**
      * @brief The io_context object provides I/O services, such as sockets, that the server
@@ -552,7 +554,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * This member variable is responsible for managing asynchronous I/O operations.
      * It is part of the ASIO library, which is used for network programming.
      */
-    asio::io_context m_asioContext;
+    asio::io_context _asioContext;
     /**
      * @brief Thread object for managing the server's context operations.
      *
@@ -561,7 +563,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * It is used to ensure that the server can perform its duties without blocking
      * the main execution flow.
      */
-    std::thread m_threadContext;
+    std::thread _threadContext;
 
     /**
      * @brief A socket for sending and receiving UDP datagrams.
@@ -569,14 +571,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * This member variable represents a UDP socket using the ASIO library.
      * It is used for network communication in the server.
      */
-    asio::ip::udp::socket m_asioSocket;
+    asio::ip::udp::socket _asioSocket;
     /**
      * @brief Represents the endpoint of a client in a UDP connection.
      *
      * This member variable holds the endpoint information (IP address and port)
      * of a client in a UDP connection using the ASIO library.
      */
-    asio::ip::udp::endpoint m_clientEndpoint;
+    asio::ip::udp::endpoint _clientEndpoint;
 
     /**
      * @brief Temporary buffer used for storing data.
@@ -584,7 +586,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * This buffer is an array of 1024 bytes (uint8_t) used for temporary storage
      * of data within the server's network interface.
      */
-    std::array<uint8_t, 1024> m_tempBuffer;
+    std::array<uint8_t, 1024> _tempBuffer;
 
     /**
      * @brief Counter for generating unique network IDs.
@@ -593,7 +595,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * for network-related entities. It starts at 10000 and increments with
      * each new ID generation.
      */
-    uint32_t nIDCounter = 10000;
+    uint32_t _nIDCounter = 10000;
 
     /**
      * @brief Manages and maintains the lifecycle of various components within the server.
@@ -602,7 +604,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * components as needed. It ensures that all components are properly managed and that
      * their states are consistent throughout the server's operation.
      */
-    ComponentManager componentManager;
+    ComponentManager _componentManager;
     /**
      * @brief Manages the lifecycle and operations of entities within the server.
      *
@@ -610,15 +612,15 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * It ensures that entities are properly managed and synchronized within the server's
      * environment.
      */
-    EntityManager entityManager;
+    EntityManager _entityManager;
     /**
      * @brief An instance of EntityFactory used to create and manage game entities.
      */
-    EntityFactory entityFactory;
+    EntityFactory _entityFactory;
 
     // TEMPORARY
-    std::shared_ptr<MoveSystem> moveSystem;
-    std::shared_ptr<CollisionSystem> collisionSystem;
+    std::shared_ptr<MoveSystem> _moveSystem;
+    std::shared_ptr<CollisionSystem> _collisionSystem;
 
     /**
      * @brief A container that maps client IDs to player IDs.
@@ -630,12 +632,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * IDs. The keys are o}f type uint32_t representing the client IDs, and the values are
      * also of type uint32_t representing the player IDs.
      */
-    std::unordered_map<uint32_t, uint32_t> clientPlayerID;
+    std::unordered_map<uint32_t, uint32_t> _clientPlayerID;
 
     /**
      * @brief Number of players currently connected to the server.
      */
-    int nbrOfPlayers = 0;
+    int _nbrOfPlayers = 0;
 
     /**
      * @brief Stores the current time point from the system clock.
@@ -653,7 +655,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * in the game. It includes properties such as position, texture, and other
      * relevant attributes that define the background's appearance and behavior.
      */
-    EntityInformation background;
+    EntityInformation _background;
 };
 } // namespace net
 } // namespace r_type

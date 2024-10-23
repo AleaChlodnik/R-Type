@@ -14,16 +14,16 @@ bool r_type::net::Server::OnClientConnect(
     r_type::net::Message<TypeMessage> msg;
     msg.header.id = TypeMessage::ServerAccept;
     msg << InitiatePlayers(client->GetID());
-    nbrOfPlayers++;
+    _nbrOfPlayers++;
     MessageClient(client, msg);
 
     msg.header.id = TypeMessage::CreateEntityMessage;
     MessageAllClients(msg, client);
-    msg << background;
+    msg << _background;
     MessageClient(client, msg);
     EntityInformation entity;
     InitListEntities(client, GetClientEntityId(client.get()->GetID()));
-    const std::vector<Entity> entities = entityManager.getAllEntities();
+    const std::vector<Entity> entities = _entityManager.getAllEntities();
     return true;
 }
 
@@ -43,7 +43,7 @@ void r_type::net::Server::OnClientDisconnect(
     RemoveEntities(entityId);
     msg << entityId;
     MessageAllClients(msg, client);
-    nbrOfPlayers--;
+    _nbrOfPlayers--;
     client->Disconnect();
 }
 
@@ -118,11 +118,11 @@ void r_type::net::Server::InitListEntities(
     EntityInformation entityInfo;
     r_type::net::Message<TypeMessage> msgAddPlayer;
     msgAddPlayer.header.id = TypeMessage::CreateEntityMessage;
-    const std::vector<Entity> entities = entityManager.getAllEntities();
+    const std::vector<Entity> entities = _entityManager.getAllEntities();
     for (const auto &entity : entities) {
         if (entity.getId() != entityID && entity.getId() != 1) {
-            auto playerPos = componentManager.getComponent<PositionComponent>(entity.getId());
-            auto sprite = componentManager.getComponent<SpriteDataComponent>(entity.getId());
+            auto playerPos = _componentManager.getComponent<PositionComponent>(entity.getId());
+            auto sprite = _componentManager.getComponent<SpriteDataComponent>(entity.getId());
             if (playerPos && sprite) {
                 entityInfo.uniqueID = entity.getId();
                 entityInfo.vPos.x = playerPos.value()->x;

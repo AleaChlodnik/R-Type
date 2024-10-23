@@ -19,7 +19,7 @@
  */
 class AScenes : virtual public IScenes {
   public:
-    AScenes(sf::RenderWindow *window);
+    AScenes(std::string ip, int port);
     ~AScenes() = default;
 
     /**
@@ -202,8 +202,13 @@ class AScenes : virtual public IScenes {
 
     bool getDisplayKeyBindsChoice() const;
 
+    void setIp(std::string ip);
+    void setPort(int port);
+
+    std::string getIp() const;
+    int getPort() const;
+
   protected:
-    sf::RenderWindow *_window;
     GameMode _currentGameMode = GameMode::MEDIUM;
     DaltonismMode _currentDaltonismMode = DaltonismMode::NORMAL;
     Scene _currentScene = Scene::MAIN_MENU;
@@ -212,4 +217,21 @@ class AScenes : virtual public IScenes {
     bool _displayDaltonismChoice = false;
     bool _displayGameModeChoice = false;
     bool _displayKeyBindsChoice = false;
+
+    /**
+     * @brief The IP address of the server.
+     *
+     * This member variable stores the IP address of the server to which
+     * the client will connect. It is a string that contains the IP address
+     * in the format "xxx.xxx.xxx.xxx".
+     */
+    std::string _ip;
+    /**
+     * @brief The port number of the server.
+     *
+     * This member variable stores the port number of the server to which
+     * the client will connect. It is an integer that represents the port
+     * number on which the server is listening for incoming connections.
+     */
+    int _port;
 };
