@@ -27,10 +27,10 @@ bool CheckPositionEntity(
                 auto playerHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
                 if (playerPos && playerHitbox) {
 
-                    descLeft = desc.value()->x - (descSprite.value()->dimension.x / 2);
-                    descRight = desc.value()->x + (descSprite.value()->dimension.x / 2);
-                    descTop = desc.value()->y - (descSprite.value()->dimension.y / 2);
-                    descBottom = desc.value()->y + (descSprite.value()->dimension.y / 2);
+                    descLeft = desc.value()->x - (descSprite.value()->rects.size.x / 2);
+                    descRight = desc.value()->x + (descSprite.value()->rects.size.x / 2);
+                    descTop = desc.value()->y - (descSprite.value()->rects.size.y / 2);
+                    descBottom = desc.value()->y + (descSprite.value()->rects.size.y / 2);
 
                     playerLeft = playerPos.value()->x - (playerHitbox.value()->w / 2);
                     playerRight = playerPos.value()->x + (playerHitbox.value()->w / 2);
@@ -55,7 +55,8 @@ Entity EntityFactory::createBackground(
 
     BackgroundComponent backgroundComponent;
     PositionComponent start_position(0, 0);
-    SpriteDataComponent spriteData{SpritePath::Background, {0, 0}, {6913, 3901}, {1.0f, 1.0f}, 0};
+    SpriteDataComponent spriteData{
+        SpritePath::Background, 1, {1.0f, 1.0f}, {{0, 0}, {6913, 3901}}, SpriteType::BACKGROUND};
     VelocityComponent velocity{200.0f};
     OffsetComponent offset{0};
 
@@ -77,21 +78,22 @@ Entity EntityFactory::createPlayer(
     PositionComponent startPosition(100, static_cast<float>(rand() % 600));
 
     // VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Ship1, {99.6, 17.2}, {96, 48}, {1.0f, 1.0f}, 1};
+    SpriteDataComponent spriteData{
+        SpritePath::Ship1, 1, {1.0f, 1.0f}, {{99.6, 17.2}, {96, 48}}, SpriteType::PLAYER};
     HitboxComponent hitbox{
-        static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
+        static_cast<int>(spriteData.rects.size.x), static_cast<int>(spriteData.rects.size.y)};
     HealthComponent health{100, 100};
     InputComponent input{InputType::NONE};
 
     if (nbOfPlayers == 2) {
         spriteData.spritePath = SpritePath::Ship2;
-        spriteData.offSet = {99.6, spriteData.offSet.y * 2};
+        spriteData.rects.offSet = {99.6, spriteData.rects.offSet.y * 2};
     } else if (nbOfPlayers == 3) {
         spriteData.spritePath = SpritePath::Ship3;
-        spriteData.offSet = {99.6, spriteData.offSet.y * 3};
+        spriteData.rects.offSet = {99.6, spriteData.rects.offSet.y * 3};
     } else if (nbOfPlayers == 4) {
         spriteData.spritePath = SpritePath::Ship4;
-        spriteData.offSet = {99.6, spriteData.offSet.y * 4};
+        spriteData.rects.offSet = {99.6, spriteData.rects.offSet.y * 4};
     }
 
     componentManager.addComponent<PlayerComponent>(player.getId(), playerComponent);
@@ -116,9 +118,10 @@ Entity EntityFactory::createAlly(EntityManager &entityManager, ComponentManager 
     AllyComponent allyComponent;
     PositionComponent startPosition(0, 0);
     // VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Ship1, {16, 40}, {96, 48}, {1.0f, 1.0f}, 2};
+    SpriteDataComponent spriteData{
+        SpritePath::Ship1, 1, {1.0f, 1.0f}, {{16, 40}, {96, 48}}, SpriteType::ALLY};
     HitboxComponent hitbox{
-        static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
+        static_cast<int>(spriteData.rects.size.x), static_cast<int>(spriteData.rects.size.y)};
     HealthComponent health{100, 100};
 
     componentManager.addComponent<AllyComponent>(ally.getId(), allyComponent);
@@ -138,9 +141,10 @@ Entity EntityFactory::createBasicEnemy(
     EnemyComponent enemyComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Enemy1, {0, 0}, {80, 160}, {1.0f, 1.0f}, 3};
+    SpriteDataComponent spriteData{
+        SpritePath::Enemy1, 1, {1.0f, 1.0f}, {{0, 0}, {80, 160}}, SpriteType::ENEMY};
     HitboxComponent hitbox{
-        static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
+        static_cast<int>(spriteData.rects.size.x), static_cast<int>(spriteData.rects.size.y)};
     HealthComponent health{100, 100};
 
     componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
@@ -160,10 +164,11 @@ Entity EntityFactory::createBasicMonster(
 
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {136, 112}, {0.5f, 0.5f}, 3};
+    SpriteDataComponent spriteData{
+        SpritePath::Monster1, 1, {0.5f, 0.5f}, {{0, 0}, {1, 1}}, SpriteType::ENEMY};
     PositionComponent startPosition(1200, 500);
     HitboxComponent hitbox{
-        static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
+        static_cast<int>(spriteData.rects.size.x), static_cast<int>(spriteData.rects.size.y)};
     HealthComponent health{100, 100};
 
     componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
@@ -196,7 +201,8 @@ Entity EntityFactory::createPlayerMissile(
     PlayerMissileComponent playerMissileComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {0.1f, 0.1f}, 1};
+    SpriteDataComponent spriteData{
+        SpritePath::Missile, 1, {0.1f, 0.1f}, {{0, 0}, {16, 16}}, SpriteType::OTHER};
     // HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x),
     // static_cast<int>(spriteData.dimension.y)};
 
@@ -223,7 +229,8 @@ Entity EntityFactory::createAllyMissile(
     AllyMissileComponent allyMissileComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {1.0f, 1.0f}, 2};
+    SpriteDataComponent spriteData{
+        SpritePath::Missile, 1, {0.1f, 0.1f}, {{0, 0}, {16, 16}}, SpriteType::OTHER};
     // HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x),
     // static_cast<int>(spriteData.dimension.y)};
 
@@ -243,7 +250,8 @@ Entity EntityFactory::createEnemyMissile(
     EnemyMissileComponent enemyMissileComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {0, 0}, {16, 16}, {1.0f, 1.0f}, 3};
+    SpriteDataComponent spriteData{
+        SpritePath::Missile, 1, {0.1f, 0.1f}, {{0, 0}, {16, 16}}, SpriteType::ENEMY};
     // HitboxComponent hitbox{static_cast<int>(spriteData.dimension.x),
     // static_cast<int>(spriteData.dimension.y)};
 

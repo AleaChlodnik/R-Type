@@ -48,10 +48,10 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         float posY = windowSize.y * (entity.vPos.y / 100.0f);
         sf::Texture &texture =
             textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
+        sf::IntRect rect(entity.spriteData.rects.offSet.x, entity.spriteData.rects.offSet.y,
+            entity.spriteData.rects.size.x, entity.spriteData.rects.size.y);
         sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
-        SpriteComponent sprite(texture, posX, posY, scale, entity.spriteData.type,
-            sf::IntRect(entity.spriteData.offSet.x, entity.spriteData.offSet.y,
-                entity.spriteData.dimension.x, entity.spriteData.dimension.y));
+        SpriteComponent sprite(texture, posX, posY, scale, entity.spriteData.type, rect);
         componentManager.addComponent<SpriteComponent>(entity.uniqueID, sprite);
     }
 

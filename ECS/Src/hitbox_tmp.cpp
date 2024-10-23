@@ -54,10 +54,10 @@ int CheckEntityPosition(
 int CheckEntityMovement(
     EntityInformation desc, ComponentManager componentManager, EntityManager entityManager)
 {
-    float descLeft = desc.vPos.x - (desc.spriteData.dimension.x / 2);
-    float descRight = desc.vPos.x + (desc.spriteData.dimension.x / 2);
-    float descTop = desc.vPos.y - (desc.spriteData.dimension.y / 2);
-    float descBottom = desc.vPos.y + (desc.spriteData.dimension.y / 2);
+    float descLeft = desc.vPos.x - (desc.spriteData.rects.size.x / 2);
+    float descRight = desc.vPos.x + (desc.spriteData.rects.size.x / 2);
+    float descTop = desc.vPos.y - (desc.spriteData.rects.size.y / 2);
+    float descBottom = desc.vPos.y + (desc.spriteData.rects.size.y / 2);
 
     return CheckCollisionLogic(
         descLeft, descRight, descTop, descBottom, componentManager, entityManager, desc.uniqueID);
