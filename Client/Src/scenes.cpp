@@ -677,7 +677,8 @@ void Scenes::gameLoop()
                     EntityInformation entity;
                     msg >> entity;
                     c.setPlayerId(entity.uniqueID);
-                    std::cout << "TypeMessage::ServerAccept" << std::endl; /////////////////////////////////////// temp
+                    std::cout << "TypeMessage::ServerAccept"
+                              << std::endl; /////////////////////////////////////// temp
                     c.addEntity(entity, componentManager, textureManager, windowSize);
                 } break;
                 case TypeMessage::ServerPing: {
@@ -703,7 +704,8 @@ void Scenes::gameLoop()
                 case TypeMessage::CreateEntityMessage: {
                     EntityInformation entity;
                     msg >> entity;
-                    std::cout << "TypeMessage::CreateEntityMessage" << std::endl; /////////////////////////////////////// temp
+                    std::cout << "TypeMessage::CreateEntityMessage"
+                              << std::endl; /////////////////////////////////////// temp
                     c.addEntity(entity, componentManager, textureManager, windowSize);
                 } break;
                 case TypeMessage::CreateEntityResponse: {
@@ -715,7 +717,8 @@ void Scenes::gameLoop()
                     if (id == c.getPlayerId()) {
                         death();
                     }
-                    std::cout << "TypeMessage::DestroyEntityMessage" << std::endl; /////////////////////////////////////// temp
+                    std::cout << "TypeMessage::DestroyEntityMessage"
+                              << std::endl; /////////////////////////////////////// temp
                     c.removeEntity(id, componentManager);
                     response.header.id = TypeMessage::DestroyEntityResponse;
                     c.Send(response);

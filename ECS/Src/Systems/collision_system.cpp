@@ -67,49 +67,61 @@ void CollisionSystem::removeCollidedEntity(
     if (player1) {
         if (enemy2 || enemyMissile2) {
             entityManager.removeEntity(entityId1);
-            std::cout << "entityId1 in enemy2 || enemyMissile2 removed" << std::endl; /////////////////////////////////
+            std::cout << "entityId1 in enemy2 || enemyMissile2 removed"
+                      << std::endl; /////////////////////////////////
             entityManager.removeEntity(entityId2);
-            std::cout << "entityId2 in enemy2 || enemyMissile2 removed" << std::endl; /////////////////////////////////
+            std::cout << "entityId2 in enemy2 || enemyMissile2 removed"
+                      << std::endl; /////////////////////////////////
         }
         if (basicMonster2) {
             entityManager.removeEntity(entityId1);
-            std::cout << "entityId1 in basicMonster2 removed" << std::endl; /////////////////////////////////
+            std::cout << "entityId1 in basicMonster2 removed"
+                      << std::endl; /////////////////////////////////
         }
     }
     if (playerMissile1) {
         if (enemy2 || basicMonster2) {
             entityManager.removeEntity(entityId2);
-            std::cout << "entityId2 in enemy2 || enemyMissile2 removed" << std::endl; /////////////////////////////////
+            std::cout << "entityId2 in enemy2 || enemyMissile2 removed"
+                      << std::endl; /////////////////////////////////
         }
         if (enemyMissile2) {
             entityManager.removeEntity(entityId1);
-            std::cout << "entityId1 in enemyMissile2 removed" << std::endl; /////////////////////////////////
+            std::cout << "entityId1 in enemyMissile2 removed"
+                      << std::endl; /////////////////////////////////
             entityManager.removeEntity(entityId2);
-            std::cout << "entityId2 in enemyMissile2 removed" << std::endl; /////////////////////////////////
+            std::cout << "entityId2 in enemyMissile2 removed"
+                      << std::endl; /////////////////////////////////
         }
     }
     if (player2) {
         if (enemy1 || enemyMissile1) {
             entityManager.removeEntity(entityId1);
-            std::cout << "entityId1 in enemy1 || enemyMissile1 removed" << std::endl; /////////////////////////////////
+            std::cout << "entityId1 in enemy1 || enemyMissile1 removed"
+                      << std::endl; /////////////////////////////////
             entityManager.removeEntity(entityId2);
-            std::cout << "entityId1 in enemy2 || enemyMissile1 removed" << std::endl; /////////////////////////////////
+            std::cout << "entityId1 in enemy2 || enemyMissile1 removed"
+                      << std::endl; /////////////////////////////////
         }
         if (basicMonster1) {
             entityManager.removeEntity(entityId2);
-            std::cout << "entityId2 in basicMonster1 removed" << std::endl; /////////////////////////////////
+            std::cout << "entityId2 in basicMonster1 removed"
+                      << std::endl; /////////////////////////////////
         }
     }
     if (playerMissile2) {
         if (enemy1 || basicMonster1) {
             entityManager.removeEntity(entityId1);
-            std::cout << "entityId1 in enemy1 || basicMonster1 removed" << std::endl; /////////////////////////////////
+            std::cout << "entityId1 in enemy1 || basicMonster1 removed"
+                      << std::endl; /////////////////////////////////
         }
         if (enemyMissile1) {
             entityManager.removeEntity(entityId1);
-            std::cout << "entityId1 in enemyMissile1 removed" << std::endl; /////////////////////////////////
+            std::cout << "entityId1 in enemyMissile1 removed"
+                      << std::endl; /////////////////////////////////
             entityManager.removeEntity(entityId2);
-            std::cout << "entityId2 in enemyMissile1 removed" << std::endl; /////////////////////////////////
+            std::cout << "entityId2 in enemyMissile1 removed"
+                      << std::endl; /////////////////////////////////
         }
     }
 }

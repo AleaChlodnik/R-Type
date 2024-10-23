@@ -11,10 +11,11 @@
 bool r_type::net::Server::OnClientConnect(
     std::shared_ptr<r_type::net::Connection<TypeMessage>> client)
 {
-    std::cout << "Passed through OnClientConnect" << std::endl; /////////////////////////////////////
+    std::cout << "Passed through OnClientConnect"
+              << std::endl; /////////////////////////////////////
     r_type::net::Message<TypeMessage> msg;
     msg.header.id = TypeMessage::ServerAccept;
-    msg << InitiatePlayers(client->GetID()); 
+    msg << InitiatePlayers(client->GetID());
     _nbrOfPlayers++;
     MessageClient(client, msg);
 
