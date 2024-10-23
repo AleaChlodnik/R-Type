@@ -25,7 +25,7 @@ struct SpriteComponent {
         sprite.setPosition(posX, posY);
         sprite.setScale(scale);
         sprite.setOrigin(sprite.getGlobalBounds().width / 2, sprite.getGlobalBounds().height / 2);
-        if (rect != sf::IntRect(0,0,0,0))
+        if (rect != sf::IntRect(0, 0, 0, 0))
             sprite.setTextureRect(rect);
     }
 };
