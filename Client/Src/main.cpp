@@ -7,8 +7,8 @@
 
 #include <iostream>
 #include <macro.hpp>
-#include <r_type_client.hpp>
 #include <sstream>
+#include <scenes.hpp>
 
 static bool isValidIPv4(const std::string &ip)
 {
@@ -113,7 +113,7 @@ int main(int const argc, char const *const *argv)
         return ERROR;
     }
 
-    Rtype rtype(argv[1], atoi(argv[2]));
-    rtype.run();
+    std::unique_ptr<Scenes> scenes = std::make_unique<Scenes>(argv[1], atoi(argv[2]));
+    scenes->run();
     return OK;
 }
