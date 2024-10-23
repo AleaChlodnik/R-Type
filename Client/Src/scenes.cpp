@@ -567,7 +567,6 @@ void Scenes::gameLoop()
     EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
-    sf::Vector2u windowSize = _window->getSize();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -621,8 +620,8 @@ void Scenes::gameLoop()
         c.Send(msg);
         _window.close();
     };
-
-    while (_window->isOpen()) {
+    sf::Vector2u windowSize = _window.getSize();
+    while (_window.isOpen()) {
         float deltaTime = clock.restart().asSeconds();
         while (_window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {

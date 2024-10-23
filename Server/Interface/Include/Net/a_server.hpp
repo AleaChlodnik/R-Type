@@ -269,13 +269,13 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     auto missile =
                         _componentManager.getComponent<PlayerMissileComponent>(entityId);
 
-                    // if (monster) {
-                    //     position.value()->x -= 1;
-                    //     MessageAllClients(
-                    //         msg << EntityInformation{static_cast<u_int32_t>(entityId),
-                    //             *(spriteData.value()),
-                    //             {(position.value()->x), (position.value()->y)}});
-                    // }
+                    if (monster) {
+                        position.value()->x -= 1;
+                        MessageAllClients(
+                            msg << EntityInformation{static_cast<u_int32_t>(entityId),
+                                *(spriteData.value()),
+                                {(position.value()->x), (position.value()->y)}});
+                    }
                     if (missile) {
                         position.value()->x += 2;
                         EntityInformation newMissile = EntityInformation{
@@ -355,9 +355,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             if (_componentManager.getComponent<PlayerComponent>(entityTouched)) {
                 return;
             }
-            // msg.header.id = TypeMessage::DestroyEntityMessage;
-            // msg << entity.uniqueID;
-            // MessageAllClients(msg);
+            msg.header.id = TypeMessage::DestroyEntityMessage;
+            msg << entity.uniqueID;
+            MessageAllClients(msg);
         }
     }
 
