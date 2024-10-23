@@ -25,7 +25,7 @@ static int CheckCollisionLogic(float descLeft, float descRight, float descTop, f
                 entityBottom =
                     ((entityPos.value()->y / 100) * 1920) + (entityHitbox.value()->h / 2);
 
-                    if ((entityLeft <= descRight && entityRight >= descLeft) &&
+                if ((entityLeft <= descRight && entityRight >= descLeft) &&
                     (entityTop <= descBottom && entityBottom >= descTop)) {
                     return entity.getId();
                 }

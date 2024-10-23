@@ -569,7 +569,6 @@ void Scenes::gameLoop()
     TextureManager textureManager;
     sf::Vector2u windowSize = _window->getSize();
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     SystemManager systemManager;
@@ -588,9 +587,7 @@ void Scenes::gameLoop()
 
     sf::Clock clock;
 
-    auto pixelToPercent = [&](float v1, float v2) {
-        return (v1 / v2) * 100;
-    };
+    auto pixelToPercent = [&](float v1, float v2) { return (v1 / v2) * 100; };
 
     auto updatePlayerPosition = [&](const vf2d &delta, sf::Vector2u windowSize) {
         r_type::net::Message<TypeMessage> msg;
@@ -600,8 +597,10 @@ void Scenes::gameLoop()
             auto &sprites = **spritesOpt;
             auto spriteComponent = sprites[c.getPlayerId()];
             auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            playerPos.x = pixelToPercent(playerSprite->sprite.getPosition().x, windowSize.x) + delta.x;
-            playerPos.y =  pixelToPercent(playerSprite->sprite.getPosition().y, windowSize.y) + delta.y;
+            playerPos.x =
+                pixelToPercent(playerSprite->sprite.getPosition().x, windowSize.x) + delta.x;
+            playerPos.y =
+                pixelToPercent(playerSprite->sprite.getPosition().y, windowSize.y) + delta.y;
             msg << playerPos;
             c.Send(msg);
         }
@@ -669,7 +668,8 @@ void Scenes::gameLoop()
                     std::cout << "Server Accepted Connection" << std::endl;
                     EntityInformation entity;
                     msg >> entity;
-                    std::cout << "Entity [" << entity.uniqueID << "] pos [" << entity.vPos.x << ", " << entity.vPos.y << "]" << std::endl;
+                    std::cout << "Entity [" << entity.uniqueID << "] pos [" << entity.vPos.x
+                              << ", " << entity.vPos.y << "]" << std::endl;
                     c.setPlayerId(entity.uniqueID);
                     c.addEntity(entity, componentManager, textureManager, windowSize);
 
