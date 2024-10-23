@@ -7,7 +7,6 @@
 
 #include "hitbox_tmp.hpp"
 
-
 static int CheckCollisionLogic(float descLeft, float descRight, float descTop, float descBottom,
     ComponentManager componentManager, EntityManager entityManager, int entityId)
 {

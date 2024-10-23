@@ -251,26 +251,31 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
             const std::vector<Entity> entities = entityManager.getAllEntities();
             for (const auto &entity : entities) {
-                if (entity.getId() != 1) {
-                    auto monster =
-                        componentManager.getComponent<BasicMonsterComponent>(entity.getId());
-                    auto missile =
-                        componentManager.getComponent<PlayerMissileComponent>(entity.getId());
-                    auto position =
-                        componentManager.getComponent<PositionComponent>(entity.getId());
-                    auto spriteData =
-                        componentManager.getComponent<SpriteDataComponent>(entity.getId());
-                    if (monster && position && spriteData) {
+                int entityId = entity.getId();
+                auto player = componentManager.getComponent<PlayerComponent>(entityId);
+                auto background = componentManager.getComponent<BackgroundComponent>(entityId);
+                if (player || background) {
+                    continue;
+                }
+
+                auto position = componentManager.getComponent<PositionComponent>(entityId);
+                auto spriteData = componentManager.getComponent<SpriteDataComponent>(entityId);
+
+                if (position && spriteData) {
+                    auto monster = componentManager.getComponent<BasicMonsterComponent>(entityId);
+                    auto missile = componentManager.getComponent<PlayerMissileComponent>(entityId);
+
+                    if (monster) {
                         position.value()->x -= 5;
                         MessageAllClients(
-                            msg << EntityInformation{static_cast<u_int32_t>(entity.getId()),
+                            msg << EntityInformation{static_cast<u_int32_t>(entityId),
                                 *(spriteData.value()),
                                 {(position.value()->x), (position.value()->y)}});
                     }
-                    if (missile && position && spriteData) {
+                    if (missile) {
                         position.value()->x += 20;
                         EntityInformation newMissile = EntityInformation{
-                            static_cast<u_int32_t>(entity.getId()), *(spriteData.value()),
+                            static_cast<u_int32_t>(entityId), *(spriteData.value()),
                             {(position.value()->x), (position.value()->y)}};
                         int newID =
                             CheckEntityMovement(newMissile, componentManager, entityManager);
@@ -278,9 +283,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                         if (monster) {
                             r_type::net::Message<TypeMessage> msgDestroy;
                             msgDestroy.header.id = TypeMessage::DestroyEntityMessage;
-                            msgDestroy << entity.getId();
+                            msgDestroy << entityId;
                             MessageAllClients(msgDestroy);
-                            RemoveEntities(entity.getId());
+                            RemoveEntities(entityId);
 
                             msgDestroy << newID;
                             MessageAllClients(msgDestroy);
@@ -387,7 +392,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         EntityInformation entityInfo;
         Entity player = entityFactory.createPlayer(entityManager, componentManager, nbrOfPlayers);
         entityInfo.uniqueID = player.getId();
-        auto playerSprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        auto playerSprite =
+            componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         auto playerPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         if (playerSprite && playerPos) {
             entityInfo.spriteData = *(playerSprite.value());

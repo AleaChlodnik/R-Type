@@ -18,7 +18,10 @@
 #include <scenes.hpp>
 #include <texture_manager.hpp>
 
-Scenes::Scenes(sf::RenderWindow *window) : IScenes(), AScenes(window) {}
+Scenes::Scenes(sf::RenderWindow *window, std::string ip, int port)
+    : IScenes(), AScenes(window, ip, port)
+{
+}
 
 /**
  * @brief Handles events for the scene, including window close and mouse button press events.
@@ -557,7 +560,7 @@ void Scenes::render()
 void Scenes::gameLoop()
 {
     r_type::net::Client c;
-    c.Connect("127.0.0.1", 60000);
+    c.Connect(_ip, _port);
 
     EntityManager entityManager;
     ComponentManager componentManager;
@@ -612,6 +615,7 @@ void Scenes::gameLoop()
         _window->close();
     };
 
+    sf::Vector2u windowSize = _window->getSize();
     while (_window->isOpen()) {
         float deltaTime = clock.restart().asSeconds();
         while (_window->pollEvent(event)) {
@@ -660,7 +664,7 @@ void Scenes::gameLoop()
                     EntityInformation entity;
                     msg >> entity;
                     c.setPlayerId(entity.uniqueID);
-                    c.addEntity(entity, componentManager, textureManager);
+                    c.addEntity(entity, componentManager, textureManager, windowSize);
 
                 } break;
                 case TypeMessage::ServerPing: {
@@ -686,8 +690,8 @@ void Scenes::gameLoop()
                 case TypeMessage::CreateEntityMessage: {
                     EntityInformation entity;
                     msg >> entity;
-                    c.addEntity(entity, componentManager, textureManager);
-                    c.addEntity(entity, componentManager, textureManager);
+                    c.addEntity(entity, componentManager, textureManager, windowSize);
+                    c.addEntity(entity, componentManager, textureManager, windowSize);
                 } break;
                 case TypeMessage::CreateEntityResponse: {
                 } break;
@@ -708,7 +712,7 @@ void Scenes::gameLoop()
                     response.header.id = TypeMessage::UpdateEntityResponse;
                     EntityInformation entity;
                     msg >> entity;
-                    c.updateEntity(entity, componentManager);
+                    c.updateEntity(entity, componentManager, windowSize);
                 } break;
                 case TypeMessage::UpdateEntityResponse: {
                 } break;

@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include "a_scenes.hpp"
 #include "i_entity_factory.hpp"
 #include "i_scenes.hpp"
-#include "a_scenes.hpp"
 #include <functional>
 
 /**
@@ -42,7 +42,8 @@ class EntityFactory : public IEntityFactory {
      * @param componentManager The component manager to use for adding components to the entity.
      * @return The created player entity.
      */
-    Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager, int nbrOfPlayers) override;
+    Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager,
+        int nbrOfPlayers) override;
 
     /**
      * @brief Creates a player entity.
@@ -95,8 +96,8 @@ class EntityFactory : public IEntityFactory {
      * @param entityId The id of the entity that shoot the missile
      * @return The created player missile entity.
      */
-    Entity createPlayerMissile(
-        EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId) override;
+    Entity createPlayerMissile(EntityManager &entityManager, ComponentManager &componentManager,
+        uint32_t entityId) override;
 
     /**
      * @brief Creates a button entity.
@@ -159,6 +160,6 @@ class EntityFactory : public IEntityFactory {
      * @param entityId The id of the entity that shoot the missile
      * @return The created enemy missile entity.
      */
-    Entity createEnemyMissile(
-        EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId) override;
+    Entity createEnemyMissile(EntityManager &entityManager, ComponentManager &componentManager,
+        uint32_t entityId) override;
 };

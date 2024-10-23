@@ -59,7 +59,7 @@ class Rtype {
      * inputSystem.addEntity(player),
      * collisionSystem.addEntity(player), etc.
      */
-    Rtype();
+    Rtype(std::string ip, int port);
 
     /**
      * @brief If _mainMenu variable is true, call mainMenu. While
