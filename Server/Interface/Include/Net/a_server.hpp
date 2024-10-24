@@ -310,25 +310,19 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 entityIdsBefore.push_back(entity.getId());
             }
 
-            // for (int entityId : entityIdsBefore) {
-            //     std::cout << "Entity: " << entityId << std::endl;
-            // }
-
-            // std::cout << "done" << std::endl;
-
-            // // collision system
-            // _collisionSystem->handleCollisions(_componentManager, _entityManager);
-            // // compare existence and send messages
-            // for (int entityId : entityIdsBefore) {
-            //     if (auto entity = _entityManager.getEntity(entityId)) {
-            //         continue;
-            //     } else {
-            //         r_type::net::Message<TypeMessage> msg;
-            //         msg.header.id = TypeMessage::DestroyEntityMessage;
-            //         msg << entityId;
-            //         MessageAllClients(msg);
-            //     }
-            // }
+            // collision system
+            _collisionSystem->handleCollisions(_componentManager, _entityManager);
+            // compare existence and send messages
+            for (int entityId : entityIdsBefore) {
+                if (auto entity = _entityManager.getEntity(entityId)) {
+                    continue;
+                } else {
+                    r_type::net::Message<TypeMessage> msg;
+                    msg.header.id = TypeMessage::DestroyEntityMessage;
+                    msg << entityId;
+                    MessageAllClients(msg);
+                }
+            }
 
             _clock += std::chrono::milliseconds(500);
         }
