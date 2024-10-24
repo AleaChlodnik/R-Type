@@ -19,9 +19,11 @@ static int CheckCollisionLogic(float descLeft, float descRight, float descTop, f
             auto entityHitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
             if (entityPos && entityHitbox) {
                 entityLeft = ((entityPos.value()->x / 100) * 1080) - (entityHitbox.value()->w / 2);
-                entityRight = ((entityPos.value()->x / 100) * 1080) + (entityHitbox.value()->w / 2);
+                entityRight =
+                    ((entityPos.value()->x / 100) * 1080) + (entityHitbox.value()->w / 2);
                 entityTop = ((entityPos.value()->y / 100) * 1920) - (entityHitbox.value()->h / 2);
-                entityBottom = ((entityPos.value()->y / 100) * 1920) + (entityHitbox.value()->h / 2);
+                entityBottom =
+                    ((entityPos.value()->y / 100) * 1920) + (entityHitbox.value()->h / 2);
 
                 if ((entityLeft <= descRight && entityRight >= descLeft) &&
                     (entityTop <= descBottom && entityBottom >= descTop)) {

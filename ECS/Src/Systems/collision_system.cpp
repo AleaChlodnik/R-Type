@@ -8,7 +8,8 @@
 #include <Systems/collision_system.hpp>
 #include <vector>
 
-void CollisionSystem::removeCollidedEntity(ComponentManager &componentManager, int entityId1, int entityId2, std::vector<int> &entitiesToRemove)
+void CollisionSystem::removeCollidedEntity(ComponentManager &componentManager, int entityId1,
+    int entityId2, std::vector<int> &entitiesToRemove)
 {
     // Checking components for entity1 and entity2
     auto player1 = componentManager.getComponent<PlayerComponent>(entityId1);
@@ -123,8 +124,7 @@ void CollisionSystem::handleCollisions(
         for (size_t j = i + 1; j < entities.size(); ++j) {
             int entityId2 = entities[j].getId();
             if (checkCollision(componentManager, entityId1, entityId2)) {
-                removeCollidedEntity(
-                    componentManager, entityId1, entityId2, entitiesToRemove);
+                removeCollidedEntity(componentManager, entityId1, entityId2, entitiesToRemove);
             }
         }
     }
