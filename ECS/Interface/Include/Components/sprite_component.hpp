@@ -14,8 +14,6 @@
 struct SpriteComponent {
     sf::Sprite sprite;
     AScenes::SpriteType type;
-    // float hitbox_x;
-    // float hitbox_y;
 
     SpriteComponent(
         sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale, int typeNb)
