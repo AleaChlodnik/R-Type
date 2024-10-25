@@ -609,7 +609,8 @@ void Scenes::gameLoop()
             auto &sprites = **spritesOpt;
             auto spriteComponent = sprites[c.getPlayerId()];
             auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            // std::cout << "Player Position: " << playerSprite->sprite.getPosition().x << ", " << playerSprite->sprite.getPosition().y << std::endl; //////////
+            // std::cout << "Player Position: " << playerSprite->sprite.getPosition().x << ", " <<
+            // playerSprite->sprite.getPosition().y << std::endl; //////////
             requestedPosition.x =
                 pixelToPercent(playerSprite->sprite.getPosition().x, windowSize.x) + delta.x;
             requestedPosition.y =
