@@ -409,7 +409,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      *
      * @param id The ID of the player whose entities are to be removed.
      */
-    void RemoveEntities(uint32_t id) { _entityManager.removeEntity(id); }
+    void RemoveEntities(uint32_t id)
+    {
+        if (auto entity = _entityManager.getEntity(id)) {
+            _entityManager.removeEntity(id);
+        }
+    }
 
     /**
      * @brief Initializes a new player entity and assigns a random position.
