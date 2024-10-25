@@ -375,7 +375,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             maxY = ((entityPosition.y / 100) * SCREEN_HEIGHT) + halfHeight;
             minY = ((entityPosition.y / 100) * SCREEN_HEIGHT) - halfHeight;
 
-                if (maxX > SCREEN_WIDTH || minX < 0 || maxY > (SCREEN_HEIGHT  - 30) || minY < 0) {
+            if (maxX > SCREEN_WIDTH || minX < 0 || maxY > (SCREEN_HEIGHT - 30) || minY < 0) {
                 return;
             }
             auto pos = _componentManager.getComponent<PositionComponent>(entityId);

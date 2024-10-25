@@ -17,8 +17,8 @@ struct SpriteComponent {
     int hitboxX;
     int hitboxY;
 
-    SpriteComponent(
-        sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale, int typeNb, int dimensionX = 0, int dimensionY = 0)
+    SpriteComponent(sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale,
+        int typeNb, int dimensionX = 0, int dimensionY = 0)
     {
         type = static_cast<AScenes::SpriteType>(typeNb);
         sprite.setTexture(texture);
