@@ -22,7 +22,7 @@ bool r_type::net::Server::OnClientConnect(
     msg << _background;
     MessageClient(client, msg);
     EntityInformation entity;
-    InitListEntities(client, GetClientEntityId(client.get()->GetID()));
+    InitListEntities(client, GetClientPlayerId(client.get()->GetID()));
     const std::vector<Entity> entities = _entityManager.getAllEntities();
     return true;
 }
@@ -78,7 +78,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         std::cout << "[" << client->GetID() << "]: Client Connect" << std::endl;
     } break;
     case TypeMessage::MoveEntityMessage: { // This is only for the players
-        UpdateEntityPosition(msg, client->GetID());
+        UpdatePlayerPosition(msg, client->GetID());
     } break;
     case TypeMessage::DestroyEntityMessage: {
         OnClientDisconnect(client, msg);

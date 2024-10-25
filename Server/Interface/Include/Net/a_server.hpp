@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "hitbox_tmp.hpp"
 #include <Components/component_manager.hpp>
 #include <Components/components.hpp>
 #include <Entities/entity_factory.hpp>
@@ -16,6 +15,7 @@
 #include <Systems/systems.hpp>
 #include <cmath>
 #include <entity_struct.hpp>
+#include <macros.hpp>
 #include <unordered_map>
 
 namespace r_type {
@@ -354,38 +354,41 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param clientId The ID of the client sending the update.
      */
 
-    void UpdateEntityPosition(
+    void UpdatePlayerPosition(
         r_type::net::Message<T> &msg, uint32_t clientId) // Only for the players
     {
-        uint32_t entityId = GetClientEntityId(clientId);
+        uint32_t entityId = GetClientPlayerId(clientId);
         EntityInformation entity;
         vf2d entityPosition;
         auto entitySpriteData = _componentManager.getComponent<SpriteDataComponent>(entityId);
         msg >> entityPosition;
-        entity.uniqueID = entityId;
-        entity.vPos = entityPosition;
-        entity.spriteData = *entitySpriteData.value();
-        uint32_t entityTouched = CheckEntityMovement(entity, _componentManager, _entityManager);
 
-        if (entityTouched == -1) {
-            auto position = _componentManager.getComponent<PositionComponent>(entityId);
-            if (position) {
-                position.value()->x = entityPosition.x;
-                position.value()->y = entityPosition.y;
-                r_type::net::Message<TypeMessage> msg;
-                msg.header.id = TypeMessage::UpdateEntity;
-                msg << entity;
-                MessageAllClients(msg);
+        auto hitbox = _componentManager.getComponent<HitboxComponent>(entityId);
+
+        if (hitbox) {
+            float halfWidth = hitbox.value()->w / 4;
+            float halfHeight = hitbox.value()->h / 2;
+
+            // Adjust position to stay within screen bounds
+            entityPosition.x = std::max((halfWidth / SCREEN_WIDTH) * 100,
+                std::min(entityPosition.x, 100 - (halfWidth / SCREEN_WIDTH) * 100));
+            entityPosition.y = std::max((halfHeight / SCREEN_HEIGHT) * 100,
+                std::min(entityPosition.y, 100 - (halfHeight / SCREEN_HEIGHT) * 100));
+
+            auto pos = _componentManager.getComponent<PositionComponent>(entityId);
+            if (pos) {
+                pos.value()->x = entityPosition.x;
+                pos.value()->y = entityPosition.y;
             }
-        } else {
-            r_type::net::Message<TypeMessage> msg;
-            _componentManager.getComponent<PlayerComponent>(entityTouched);
-            if (_componentManager.getComponent<PlayerComponent>(entityTouched)) {
-                return;
-            }
-            msg.header.id = TypeMessage::DestroyEntityMessage;
-            msg << entity.uniqueID;
-            MessageAllClients(msg);
+
+            // Update entity information and send to all clients
+            entity.uniqueID = entityId;
+            entity.vPos = entityPosition;
+            entity.spriteData = *entitySpriteData.value();
+            r_type::net::Message<TypeMessage> updateMsg;
+            updateMsg.header.id = TypeMessage::UpdateEntity;
+            updateMsg << entity;
+            MessageAllClients(updateMsg);
         }
     }
 
@@ -395,7 +398,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param id The client ID.
      * @return uint32_t The entity ID associated with the client.
      */
-    uint32_t GetClientEntityId(uint32_t id) { return _clientPlayerID[id]; }
+    uint32_t GetClientPlayerId(uint32_t id) { return _clientPlayerID[id]; }
 
     /**
      * @brief Removes a player from the game based on the client ID.
@@ -456,7 +459,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     EntityInformation InitiateMissile(int clientId)
     {
         EntityInformation entityInfo;
-        uint32_t playerId = GetClientEntityId(clientId);
+        uint32_t playerId = GetClientPlayerId(clientId);
         Entity missile =
             _entityFactory.createPlayerMissile(_entityManager, _componentManager, playerId);
         entityInfo.uniqueID = missile.getId();

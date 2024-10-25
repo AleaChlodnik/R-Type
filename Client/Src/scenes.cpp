@@ -601,19 +601,20 @@ void Scenes::gameLoop()
 
     auto pixelToPercent = [&](float v1, float v2) { return (v1 / v2) * 100; };
 
-    auto updatePlayerPosition = [&](const vf2d &delta, sf::Vector2u windowSize) {
+    auto movePlayer = [&](const vf2d &delta, sf::Vector2u windowSize) {
         r_type::net::Message<TypeMessage> msg;
-        vf2d playerPos;
+        vf2d requestedPosition;
         msg.header.id = TypeMessage::MoveEntityMessage;
         if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
             auto &sprites = **spritesOpt;
             auto spriteComponent = sprites[c.getPlayerId()];
             auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            playerPos.x =
+            std::cout << "Player Position: " << playerSprite->sprite.getPosition().x << ", " << playerSprite->sprite.getPosition().y << std::endl; //////////
+            requestedPosition.x =
                 pixelToPercent(playerSprite->sprite.getPosition().x, windowSize.x) + delta.x;
-            playerPos.y =
+            requestedPosition.y =
                 pixelToPercent(playerSprite->sprite.getPosition().y, windowSize.y) + delta.y;
-            msg << playerPos;
+            msg << requestedPosition;
             c.Send(msg);
         }
     };
@@ -664,16 +665,16 @@ void Scenes::gameLoop()
                     death();
                 }
                 if (event.key.code == keyBinds[Actions::UP]) {
-                    updatePlayerPosition(vf2d{0, -1}, windowSize);
+                    movePlayer(vf2d{0, -1}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::DOWN]) {
-                    updatePlayerPosition(vf2d{0, 1}, windowSize);
+                    movePlayer(vf2d{0, 1}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::LEFT]) {
-                    updatePlayerPosition(vf2d{-1, 0}, windowSize);
+                    movePlayer(vf2d{-1, 0}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::RIGHT]) {
-                    updatePlayerPosition(vf2d{1, 0}, windowSize);
+                    movePlayer(vf2d{1, 0}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::PAUSE]) {
                     this->setScene(Scenes::Scene::IN_GAME_MENU);

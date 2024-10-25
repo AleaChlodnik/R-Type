@@ -25,6 +25,8 @@ class CollisionSystem : public ISystem {
 
     bool checkCollision(ComponentManager &componentManager, int entityId1, int entityId2);
 
+    bool checkOffScreen(ComponentManager &componentManager, int entityId);
+
     void removeCollidedEntity(ComponentManager &componentManager, int entityId1, int entityId2,
         std::vector<int> &entitiesToRemove);
 
