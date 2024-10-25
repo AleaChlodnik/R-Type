@@ -381,15 +381,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         auto hitbox = _componentManager.getComponent<HitboxComponent>(entityId);
 
         if (hitbox) {
-            float halfWidth = hitbox.value()->w / 4;
+            float halfWidth = hitbox.value()->w / 2;
             float halfHeight = hitbox.value()->h / 2;
+            float minX, maxX, minY, maxY;
 
-            // Adjust position to stay within screen bounds
-            entityPosition.x = std::max((halfWidth / SCREEN_WIDTH) * 100,
-                std::min(entityPosition.x, 100 - (halfWidth / SCREEN_WIDTH) * 100));
-            entityPosition.y = std::max((halfHeight / SCREEN_HEIGHT) * 100,
-                std::min(entityPosition.y, 100 - (halfHeight / SCREEN_HEIGHT) * 100));
+            maxX = ((entityPosition.x / 100) * SCREEN_WIDTH) + halfWidth;
+            minX = ((entityPosition.x / 100) * SCREEN_WIDTH) - halfWidth;
+            maxY = ((entityPosition.y / 100) * SCREEN_HEIGHT) + halfHeight;
+            minY = ((entityPosition.y / 100) * SCREEN_HEIGHT) - halfHeight;
 
+            if (maxX > SCREEN_WIDTH || minX < 0 || maxY > (SCREEN_HEIGHT - 30) || minY < 0) {
+                return;
+            }
             auto pos = _componentManager.getComponent<PositionComponent>(entityId);
             if (pos) {
                 pos.value()->x = entityPosition.x;
@@ -457,6 +460,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.spriteData = *(playerSprite.value());
             entityInfo.vPos.x = playerPos.value()->x;
             entityInfo.vPos.y = playerPos.value()->y;
+            entityInfo.spriteData.rect.dimension.x = playerSprite.value()->rect.dimension.x;
+            entityInfo.spriteData.rect.dimension.y = playerSprite.value()->rect.dimension.y;
         }
         _clientPlayerID.insert_or_assign(_nIDCounter, entityInfo.uniqueID);
         return entityInfo;
