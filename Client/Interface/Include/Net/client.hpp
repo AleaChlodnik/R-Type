@@ -46,11 +46,9 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
     {
         float posX = windowSize.x * (entity.vPos.x / 100.0f);
         float posY = windowSize.y * (entity.vPos.y / 100.0f);
-        // std::cout << "entityId: " << entity.uniqueID << std::endl;
-        // ///////////////////////////////// std::cout << "spritePath: " <<
-        // SpriteFactory(entity.spriteData.spritePath) << std::endl; ///
-        sf::Texture &texture =
-            textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
+        std::cout << "entityId: " << entity.uniqueID << std::endl; /////////////////////////////////
+        std::cout << "spritePath: " << SpriteFactory(entity.spriteData.spritePath) << std::endl; ///
+        sf::Texture &texture = textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
         sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
         SpriteComponent sprite(texture, posX, posY, scale, entity.spriteData.type);
         componentManager.addComponent<SpriteComponent>(entity.uniqueID, sprite);
