@@ -130,6 +130,7 @@ void CollisionSystem::handleCollisions(
     }
 
     for (int entityId : entitiesToRemove) {
+        componentManager.removeEntityFromAllComponents(entityId);
         entityManager.removeEntity(entityId);
     }
 }

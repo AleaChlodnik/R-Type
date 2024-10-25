@@ -241,6 +241,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         if (_nbrOfPlayers == 0)
             return;
+        if (_nbrOfPlayers > 0 && !_playerConnected) {
+            _playerConnected = true;
+            _clock = std::chrono::system_clock::now();
+        }
+
         // if (bWait)
         //     _qMessagesIn.wait();
         std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
@@ -279,7 +284,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                         int entityId = pair.first;
                         const auto &newPositionComponent = pair.second;
                         auto newPosition = std::any_cast<PositionComponent>(&newPositionComponent);
-
                         if (newPosition) {
                             auto it = previousPositions.find(entityId);
                             if (it != previousPositions.end()) {
@@ -405,9 +409,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      *
      * @param id The ID of the player whose entities are to be removed.
      */
-    void RemoveEntities(uint32_t id)
+    void RemoveEntity(uint32_t id)
     {
         if (auto entity = _entityManager.getEntity(id)) {
+            _componentManager.removeEntityFromAllComponents(id);
             _entityManager.removeEntity(id);
         }
     }
@@ -654,6 +659,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * point in time according to the system clock.
      */
     std::chrono::system_clock::time_point _clock = std::chrono::system_clock::now();
+    bool _playerConnected = false;
 
     /**
      * @brief Holds information about the background entity.

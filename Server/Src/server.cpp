@@ -14,8 +14,8 @@ bool r_type::net::Server::OnClientConnect(
     r_type::net::Message<TypeMessage> msg;
     msg.header.id = TypeMessage::ServerAccept;
     msg << InitiatePlayers(client->GetID());
-    _nbrOfPlayers++;
     MessageClient(client, msg);
+    _nbrOfPlayers++;
 
     msg.header.id = TypeMessage::CreateEntityMessage;
     MessageAllClients(msg, client);
@@ -39,7 +39,7 @@ void r_type::net::Server::OnClientDisconnect(
     uint32_t entityId;
     std::cout << "[" << client->GetID() << "]: Removing client" << std::endl;
     msg >> entityId;
-    RemoveEntities(entityId);
+    RemoveEntity(entityId);
     RemovePlayer(client->GetID());
     msg << entityId;
     MessageAllClients(msg, client);

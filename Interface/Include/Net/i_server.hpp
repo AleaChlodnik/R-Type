@@ -120,7 +120,7 @@ template <typename T> class IServer {
      *
      * @param entityId
      */
-    virtual void RemoveEntities(uint32_t id) = 0;
+    virtual void RemoveEntity(uint32_t id) = 0;
 
   protected:
     /**
