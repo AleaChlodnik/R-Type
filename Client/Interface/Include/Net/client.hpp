@@ -90,7 +90,8 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
             if (entitySpriteIt != sprites.end()) {
                 auto &spriteComponent = entitySpriteIt->second;
                 if (auto entitySprite = std::any_cast<SpriteComponent>(&spriteComponent)) {
-                    sf::IntRect newRect(rect.offset.x, rect.offset.y, rect.dimension.x, rect.dimension.y);
+                    sf::IntRect newRect(
+                        rect.offset.x, rect.offset.y, rect.dimension.x, rect.dimension.y);
                     entitySprite->sprite.setTextureRect(newRect);
                 }
             }
