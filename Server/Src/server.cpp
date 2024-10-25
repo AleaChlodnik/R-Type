@@ -41,6 +41,7 @@ void r_type::net::Server::OnClientDisconnect(
     uint32_t entityId;
     std::cout << "[" << client->GetID() << "]: Removing client" << std::endl;
     msg >> entityId;
+    RemoveEntities(entityId);
     RemovePlayer(client->GetID());
     msg << entityId;
     MessageAllClients(msg, client);

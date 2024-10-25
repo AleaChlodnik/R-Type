@@ -42,8 +42,9 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
     std::vector<std::shared_ptr<Entity>> buttons, Scenes *scenes)
 {
     while (_window->pollEvent(event)) {
-        if (event.type == sf::Event::Closed)
+        if (event.type == sf::Event::Closed) {
             _window->close();
+        }
         if (event.type == sf::Event::MouseButtonPressed &&
             event.mouseButton.button == sf::Mouse::Left) {
             auto pos = sf::Mouse::getPosition(*_window);
