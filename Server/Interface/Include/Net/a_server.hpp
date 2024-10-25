@@ -460,8 +460,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.spriteData = *(playerSprite.value());
             entityInfo.vPos.x = playerPos.value()->x;
             entityInfo.vPos.y = playerPos.value()->y;
-            entityInfo.spriteData.dimension.x = playerSprite.value()->dimension.x;
-            entityInfo.spriteData.dimension.y = playerSprite.value()->dimension.y;
+            entityInfo.spriteData.rect.dimension.x = playerSprite.value()->rect.dimension.x;
+            entityInfo.spriteData.rect.dimension.y = playerSprite.value()->rect.dimension.y;
         }
         _clientPlayerID.insert_or_assign(_nIDCounter, entityInfo.uniqueID);
         return entityInfo;

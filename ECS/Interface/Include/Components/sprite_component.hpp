@@ -29,5 +29,7 @@ struct SpriteComponent {
                 sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
         if (rect != sf::IntRect(0, 0, 0, 0))
             sprite.setTextureRect(rect);
+        hitboxX = rect.width;
+        hitboxY = rect.height;
     }
 };
