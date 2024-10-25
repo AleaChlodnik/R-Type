@@ -119,7 +119,7 @@ void Scenes::mainMenu()
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale, 0);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
     // Create buttons
@@ -221,7 +221,7 @@ void Scenes::inGameMenu()
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale, 0);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
     // Create the buttons
@@ -444,7 +444,7 @@ void Scenes::settingsMenu()
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale, 0);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
     // Create the buttons
@@ -748,7 +748,12 @@ void Scenes::gameLoop()
                 } break;
                 case TypeMessage::DestroyEntityResponse: {
                 } break;
-                case TypeMessage::FinishInitialization: {
+                case TypeMessage::AnimateEntityMessage: {
+                    r_type::net::Message<TypeMessage> response;
+                    uint32_t id;
+                    Rect rect;
+                    msg >> rect >> id;
+                    c.animateEntity(id, rect, componentManager);
                 } break;
                 }
             }

@@ -79,6 +79,31 @@ std::ostream &operator<<(std::ostream &os, const SpritePath &spritePath)
     return os;
 }
 
+std::ostream &operator<<(std::ostream &os, const AScenes::SpriteType &spriteType)
+{
+    switch (spriteType) {
+    case AScenes::SpriteType::BACKGROUND:
+        os << static_cast<std::string>("BACKGROUND");
+        break;
+    case AScenes::SpriteType::PLAYER:
+        os << static_cast<std::string>("PLAYER");
+        break;
+    case AScenes::SpriteType::ALLY:
+        os << static_cast<std::string>("ALLY");
+        break;
+    case AScenes::SpriteType::ENEMY:
+        os << static_cast<std::string>("ENEMY");
+        break;
+    case AScenes::SpriteType::OTHER:
+        os << static_cast<std::string>("PLAOTHERYER");
+        break;
+    default:
+        os << static_cast<std::string>("Invalid SpritePath");
+        break;
+    }
+    return os;
+}
+
 std::ostream &operator<<(std::ostream &os, const SpriteDataComponent &spriteData)
 {
     os << "SpriteDataComponent: " << std::endl;
@@ -102,8 +127,8 @@ Entity EntityFactory::createBackground(
     PositionComponent start_position(0, 0);
     // SpriteDataComponent spriteData{        SpritePath::Background1,
     // {5.624999993f, 5.624999993f}, {{0, 0}, {341.333333758, 192}}, 0};
-    SpriteDataComponent spriteData{
-        SpritePath::Background1, {1.0f, 1.0f}, {{0, 0}, {3070, 192}}, 0};
+    SpriteDataComponent spriteData{SpritePath::Background1, {5.625f, 5.625f}, {{0, 0}, {342, 192}},
+        AScenes::SpriteType::BACKGROUND};
     VelocityComponent velocity{200.0f};
     // OffsetComponent offset{0};
 
@@ -124,7 +149,8 @@ Entity EntityFactory::createPlayer(
     PlayerComponent playerComponent;
     PositionComponent startPosition(10, static_cast<float>(rand() % 80));
     // VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Ship1, {2.0f, 2.0f}, {{99.6, 0}, {33.2, 17.2}}, 1};
+    SpriteDataComponent spriteData{
+        SpritePath::Ship1, {2.0f, 2.0f}, {{99.6, 0}, {33.2, 17.2}}, AScenes::SpriteType::PLAYER};
     switch (nbOfPlayers) {
     case 1: {
         spriteData.spritePath = SpritePath::Ship2;
@@ -169,7 +195,8 @@ Entity EntityFactory::createBasicEnemy(
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{100.0f};
     // VelocityComponent velocity{1.0f}; ///////////////// temp
-    SpriteDataComponent spriteData{SpritePath::Enemy1, {2.0f, 2.0f}, {{0, 0}, {37, 36}}, 3};
+    SpriteDataComponent spriteData{
+        SpritePath::Enemy1, {2.0f, 2.0f}, {{0, 0}, {37, 36}}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(110, 60);
     HitboxComponent hitbox{static_cast<int>(spriteData.rect.dimension.x),
         static_cast<int>(spriteData.rect.dimension.y)};
@@ -200,7 +227,8 @@ Entity EntityFactory::createPlayerMissile(
     PlayerMissileComponent playerMissileComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {1.0f, 1.0f}, {{249, 88}, {16, 8}}, 1};
+    SpriteDataComponent spriteData{
+        SpritePath::Missile, {1.0f, 1.0f}, {{249, 88}, {16, 8}}, AScenes::SpriteType::PLAYER};
     HitboxComponent hitbox{static_cast<int>(spriteData.rect.dimension.x),
         static_cast<int>(spriteData.rect.dimension.y)};
 
@@ -228,7 +256,8 @@ Entity EntityFactory::createEnemyMissile(
     EnemyMissileComponent enemyMissileComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f};
-    SpriteDataComponent spriteData{SpritePath::Missile, {0.1f, 0.1f}, {{0, 0}, {16, 16}}, 1};
+    SpriteDataComponent spriteData{
+        SpritePath::Missile, {0.1f, 0.1f}, {{0, 0}, {16, 16}}, AScenes::SpriteType::PLAYER};
     HitboxComponent hitbox{static_cast<int>(spriteData.rect.dimension.x),
         static_cast<int>(spriteData.rect.dimension.y)};
 
@@ -260,7 +289,7 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
     PositionComponent pos(x, y);
     TextComponent textComponent(text);
     OnClickComponent onClickfunction(*onClick);
-    SpriteComponent sprite(texture, pos.x, pos.y, dimension, 4);
+    SpriteComponent sprite(texture, pos.x, pos.y, dimension, AScenes::SpriteType::OTHER);
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
     componentManager.addComponent<OnClickComponent>(button.getId(), onClickfunction);
@@ -283,7 +312,7 @@ Entity EntityFactory::createSmallButton(EntityManager &entityManager,
     PositionComponent pos(x, y);
     TextComponent textComponent(text);
     BindComponent bindComponent(*onClick);
-    SpriteComponent sprite(texture, pos.x, pos.y, scale, 4);
+    SpriteComponent sprite(texture, pos.x, pos.y, scale, AScenes::SpriteType::OTHER);
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
     componentManager.addComponent<BindComponent>(button.getId(), bindComponent);

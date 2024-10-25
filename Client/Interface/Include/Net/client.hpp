@@ -81,6 +81,21 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
             }
         }
     }
+
+    void animateEntity(int entityId, Rect rect, ComponentManager &componentManager)
+    {
+        if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
+            auto &sprites = **spritesOpt;
+            auto entitySpriteIt = sprites.find(entityId);
+            if (entitySpriteIt != sprites.end()) {
+                auto &spriteComponent = entitySpriteIt->second;
+                if (auto entitySprite = std::any_cast<SpriteComponent>(&spriteComponent)) {
+                    sf::IntRect newRect(rect.offset.x, rect.offset.y, rect.dimension.x, rect.dimension.y);
+                    entitySprite->sprite.setTextureRect(newRect);
+                }
+            }
+        }
+    }
 };
 } // namespace net
 } // namespace r_type

@@ -327,6 +327,20 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 }
             }
 
+            // animate system
+            for (auto entity : _entityManager.getAllEntities()) {
+                if (auto spriteData =
+                        _componentManager.getComponent<SpriteDataComponent>(entity.getId())) {
+                    if (spriteData.value()->type == AScenes::SpriteType::BACKGROUND) {
+                        spriteData.value()->rect.offset.x += 10;
+                        r_type::net::Message<TypeMessage> msg;
+                        msg.header.id = TypeMessage::AnimateEntityMessage;
+                        msg << entity.getId() << spriteData.value()->rect;
+                        MessageAllClients(msg);
+                    }
+                }
+            }
+
             _clock += std::chrono::milliseconds(500);
         }
         if (bUpdateEntities)

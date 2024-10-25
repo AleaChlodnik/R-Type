@@ -28,7 +28,7 @@ struct SpriteDataComponent {
     SpritePath spritePath;
     Vector<float> scale;
     Rect rect;
-    uint32_t type;
+    AScenes::SpriteType type;
 };
 
 std::ostream &operator<<(std::ostream &os, const SpriteDataComponent &spriteData);
