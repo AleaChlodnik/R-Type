@@ -58,7 +58,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
         _background = InitiateBackground();
 
-        _entityFactory.createBasicMonster(_entityManager, _componentManager);
+        _entityFactory.createBasicEnemy(_entityManager, _componentManager);
     }
 
     /**
