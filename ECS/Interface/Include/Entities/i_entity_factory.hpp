@@ -68,7 +68,7 @@ class IEntityFactory {
      * @param componentManager The component manager used to add components to the entity.
      * @return The created basic enemy entity.
      */
-    virtual Entity createBasicEnemy(
+    virtual Entity createShooterEnemy(
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
     /**

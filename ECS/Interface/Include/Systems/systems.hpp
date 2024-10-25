@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <Systems/auto_fire_system.hpp>
 #include <Systems/collision_system.hpp>
 #include <Systems/move_system.hpp>
 #include <Systems/render_system.hpp>

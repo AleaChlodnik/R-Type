@@ -628,7 +628,7 @@ void Scenes::gameLoop()
         if (timeSinceLastFire >= FIRE_COOLDOWN_MS) {
             r_type::net::Message<TypeMessage> msg;
             msg.header.id = TypeMessage::CreateEntityMessage;
-            msg << CreatableClientObject::MISSILE;
+            msg << CreatableClientObject::PLAYERMISSILE;
             c.Send(msg);
             lastFireTime = currentTime;
         }

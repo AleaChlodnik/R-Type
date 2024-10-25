@@ -68,25 +68,36 @@ Entity EntityFactory::createPlayer(
     return player;
 }
 
-Entity EntityFactory::createBasicEnemy(
+Entity EntityFactory::createShooterEnemy(
     EntityManager &entityManager, ComponentManager &componentManager)
 {
     Entity enemy = entityManager.createEntity();
 
     EnemyComponent enemyComponent;
-    PositionComponent startPosition(0, 0);
-    VelocityComponent velocity{100.0f};
-    SpriteDataComponent spriteData{SpritePath::Enemy1, {0, 0}, {80, 160}, {1.0f, 1.0f}, 3};
+    SpriteDataComponent spriteData{SpritePath::Enemy1, {104, 136}, {115, 115}, {0.5f, 0.5f}, 3};
+    PositionComponent startPosition{60, 80};
     HitboxComponent hitbox{
         static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
     HealthComponent health{100, 100};
+    ShootComponent shoot{std::chrono::milliseconds(5000)};
 
     componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
+    componentManager.addComponent<SpriteDataComponent>(enemy.getId(), spriteData);
     componentManager.addComponent<PositionComponent>(enemy.getId(), startPosition);
-    componentManager.addComponent<VelocityComponent>(enemy.getId(), velocity);
     componentManager.addComponent<HitboxComponent>(enemy.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(enemy.getId(), health);
-    componentManager.addComponent<SpriteDataComponent>(enemy.getId(), spriteData);
+    componentManager.addComponent<ShootComponent>(enemy.getId(), shoot);
+
+    while (CheckEntityPosition(enemy.getId(), componentManager, entityManager) != -1) {
+        auto enemyPos = componentManager.getComponent<PositionComponent>(enemy.getId());
+        if (enemyPos) {
+            enemyPos.value()->x = static_cast<float>(rand() % 100);
+            if (enemyPos.value()->x < 60) {
+                enemyPos.value()->x = 60;
+            }
+            enemyPos.value()->y = static_cast<float>(rand() % 100);
+        }
+    }
 
     return enemy;
 }
@@ -99,7 +110,7 @@ Entity EntityFactory::createBasicMonster(
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{100.0f};
     SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {115, 115}, {0.5f, 0.5f}, 3};
-    PositionComponent startPosition(80, 60);
+    PositionComponent startPosition{80, 60};
     HitboxComponent hitbox{
         static_cast<int>(spriteData.dimension.x), static_cast<int>(spriteData.dimension.y)};
     HealthComponent health{100, 100};
@@ -167,7 +178,7 @@ Entity EntityFactory::createEnemyMissile(
 
     auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
     if (entityPos) {
-        startPosition.x = entityPos.value()->x + 4;
+        startPosition.x = entityPos.value()->x - 4;
         startPosition.y = entityPos.value()->y;
     }
 

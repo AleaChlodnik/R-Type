@@ -13,7 +13,7 @@ bool r_type::net::Server::OnClientConnect(
 {
     r_type::net::Message<TypeMessage> msg;
     msg.header.id = TypeMessage::ServerAccept;
-    msg << InitiatePlayers(client->GetID());
+    msg << InitiatePlayer(client->GetID());
     MessageClient(client, msg);
     _nbrOfPlayers++;
 
@@ -87,13 +87,13 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         CreatableClientObject incomingObject;
         msg >> incomingObject;
         switch (incomingObject) {
-        case CreatableClientObject::MISSILE: {
+        case CreatableClientObject::PLAYERMISSILE: {
             r_type::net::Message<TypeMessage> ResponseMsg;
             ResponseMsg.header.id = TypeMessage::CreateEntityResponse;
             client->Send(ResponseMsg);
             r_type::net::Message<TypeMessage> MissileMsg;
             MissileMsg.header.id = TypeMessage::CreateEntityMessage;
-            MissileMsg << InitiateMissile(client->GetID());
+            MissileMsg << InitiatePlayerMissile(client->GetID());
             MessageAllClients(MissileMsg);
         } break;
         default: {

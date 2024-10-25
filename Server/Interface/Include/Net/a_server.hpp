@@ -55,8 +55,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
         _moveSystem = std::make_shared<MoveSystem>(_componentManager, _entityManager);
         _collisionSystem = std::make_shared<CollisionSystem>(_componentManager, _entityManager);
+        _autoFireSystem = std::make_shared<AutoFireSystem>(_componentManager, _entityManager);
 
         _background = InitiateBackground();
+        _entityFactory.createShooterEnemy(_entityManager, _componentManager);
         _entityFactory.createBasicMonster(_entityManager, _componentManager);
     }
 
@@ -255,7 +257,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::UpdateEntity;
                 std::unordered_map<int, PositionComponent> previousPositions;
-
                 // Save previous positions
                 for (const auto &pair : **positionsBefore) {
                     int entityId = pair.first;
@@ -313,6 +314,25 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     MessageAllClients(msg);
                 }
             }
+            // // auto fire system
+            // _autoFireSystem->handleAutoFire(_componentManager, _entityManager);
+            // // fire, then set canShoot to false
+            // auto entities = _entityManager.getAllEntities();
+            // if (!entities.empty()) {
+            //     for (auto &entity : entities) {
+            //         if (auto shootInfo =
+            //                 _componentManager.getComponent<ShootComponent>(entity.getId())) {
+            //             if (shootInfo.value()->canShoot) {
+            //                 r_type::net::Message<TypeMessage> enemyMissileMsg;
+            //                 enemyMissileMsg.header.id = TypeMessage::CreateEntityMessage;
+            //                 enemyMissileMsg << InitiateEnemyMissile(entity.getId());
+            //                 MessageAllClients(enemyMissileMsg);
+            //                 shootInfo.value()->canShoot = false;
+            //             }
+            //         }
+            //     }
+            // }
+
             _clock += std::chrono::milliseconds(500);
         }
         if (bUpdateEntities)
@@ -415,7 +435,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param clientId The client ID of the player being initialized.
      * @return EntityInformation The information of the newly created player entity.
      */
-    EntityInformation InitiatePlayers(int clientId)
+    EntityInformation InitiatePlayer(int clientId)
     {
         EntityInformation entityInfo;
         Entity player =
@@ -442,12 +462,28 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param clientId The client ID of the player firing the missile.
      * @return EntityInformation The information of the newly created missile entity.
      */
-    EntityInformation InitiateMissile(int clientId)
+    EntityInformation InitiatePlayerMissile(int clientId)
     {
         EntityInformation entityInfo;
         uint32_t playerId = GetClientPlayerId(clientId);
         Entity missile =
             _entityFactory.createPlayerMissile(_entityManager, _componentManager, playerId);
+        entityInfo.uniqueID = missile.getId();
+        auto missilePos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+        auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        if (missilePos && sprite) {
+            entityInfo.vPos.x = missilePos.value()->x;
+            entityInfo.vPos.y = missilePos.value()->y;
+            entityInfo.spriteData = *(sprite.value());
+        }
+        return entityInfo;
+    }
+
+    EntityInformation InitiateEnemyMissile(int enemyId)
+    {
+        EntityInformation entityInfo;
+        Entity missile =
+            _entityFactory.createEnemyMissile(_entityManager, _componentManager, enemyId);
         entityInfo.uniqueID = missile.getId();
         auto missilePos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
@@ -619,9 +655,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     EntityFactory _entityFactory;
 
-    // TEMPORARY
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     std::shared_ptr<MoveSystem> _moveSystem;
     std::shared_ptr<CollisionSystem> _collisionSystem;
+    std::shared_ptr<AutoFireSystem> _autoFireSystem;
 
     /**
      * @brief A container that maps client IDs to player IDs.
