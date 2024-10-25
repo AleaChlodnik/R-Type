@@ -245,20 +245,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             _playerConnected = true;
             _clock = std::chrono::system_clock::now();
         }
-
-        // if (bWait)
-        //     _qMessagesIn.wait();
         std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
-        // std::cout
-        //     << "Time: "
-        //     << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
-        //     << std::endl;
-
         bool bUpdateEntities = false;
         while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
             500) {
             bUpdateEntities = true;
-
             // make position copy
             if (auto positionsBefore = _componentManager.getComponentMap<PositionComponent>()) {
                 r_type::net::Message<TypeMessage> msg;
@@ -277,7 +268,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 // Move entities
                 _moveSystem->moveEntities(
                     _componentManager, _entityManager, 0.5); // add real clock
-
                 // Compare new positions
                 if (auto positionsAfter = _componentManager.getComponentMap<PositionComponent>()) {
                     for (const auto &pair : **positionsAfter) {
@@ -304,14 +294,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     }
                 }
             }
-
             // make copy of entityIds
             std::vector<Entity> entityListCopy = _entityManager.getAllEntities();
             std::vector<int> entityIdsBefore;
             for (const auto &entity : entityListCopy) {
                 entityIdsBefore.push_back(entity.getId());
             }
-
             // collision system
             _collisionSystem->handleCollisions(_componentManager, _entityManager);
             // compare existence and send messages
@@ -325,12 +313,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     MessageAllClients(msg);
                 }
             }
-
             _clock += std::chrono::milliseconds(500);
         }
         if (bUpdateEntities)
             _clock = newClock;
-
         size_t nMessageCount = 0;
         while (nMessageCount < nMaxMessages && !_qMessagesIn.empty()) {
             auto msg = _qMessagesIn.pop_front();

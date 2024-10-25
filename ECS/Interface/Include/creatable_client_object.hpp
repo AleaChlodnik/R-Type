@@ -17,5 +17,7 @@
 enum class CreatableClientObject : uint32_t
 {
     MISSILE,
+    PLAYERMISSILE,
+    ENEMYMISSILE,
     NONE
 };

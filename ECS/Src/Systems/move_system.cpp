@@ -25,12 +25,13 @@ void MoveSystem::moveEntities(
             auto enemyMissile = componentManager.getComponent<EnemyMissileComponent>(entityId);
 
             if (enemy || basicMonster || enemyMissile) {
-                pos.value()->x -= 1;
+                pos.value()->x -= 2;
             }
 
             if (playerMissile) {
                 pos.value()->x += 2;
             }
+
         }
     }
 }
