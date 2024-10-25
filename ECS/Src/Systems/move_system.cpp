@@ -31,7 +31,6 @@ void MoveSystem::moveEntities(
             if (playerMissile) {
                 pos.value()->x += 2;
             }
-
         }
     }
 }
