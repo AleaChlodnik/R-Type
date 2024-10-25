@@ -668,8 +668,7 @@ void Scenes::gameLoop()
             }
         }
         if (c.IsConnected()) {
-            // std::cout << "Connected to Server" << std::endl;
-            // /////////////////////////////////////
+            // std::cout << "Connected to Server" << std::endl;/////////////////////////
             if (!c.Incoming().empty()) {
                 auto msg = c.Incoming().pop_front().msg;
                 switch (msg.header.id) {
@@ -678,8 +677,6 @@ void Scenes::gameLoop()
                     EntityInformation entity;
                     msg >> entity;
                     c.setPlayerId(entity.uniqueID);
-                    std::cout << "TypeMessage::ServerAccept"
-                              << std::endl; /////////////////////////////////////// temp
                     c.addEntity(entity, componentManager, textureManager, windowSize);
                 } break;
                 case TypeMessage::ServerPing: {
@@ -705,8 +702,6 @@ void Scenes::gameLoop()
                 case TypeMessage::CreateEntityMessage: {
                     EntityInformation entity;
                     msg >> entity;
-                    std::cout << "TypeMessage::CreateEntityMessage"
-                              << std::endl; /////////////////////////////////////// temp
                     c.addEntity(entity, componentManager, textureManager, windowSize);
                 } break;
                 case TypeMessage::CreateEntityResponse: {
@@ -718,8 +713,6 @@ void Scenes::gameLoop()
                     if (id == c.getPlayerId()) {
                         death();
                     }
-                    std::cout << "TypeMessage::DestroyEntityMessage"
-                              << std::endl; /////////////////////////////////////// temp
                     c.removeEntity(id, componentManager);
                     response.header.id = TypeMessage::DestroyEntityResponse;
                     c.Send(response);
@@ -750,8 +743,7 @@ void Scenes::gameLoop()
         }
 
         // systemManager.updateSystems(deltaTime);
-
-        // updateSystem->update(deltaTime);
+        updateSystem->update(deltaTime);
         renderSystem->update(deltaTime);
     }
 }

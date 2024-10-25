@@ -98,7 +98,6 @@ Entity EntityFactory::createBasicMonster(
 
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{100.0f};
-    // VelocityComponent velocity{1.0f}; ///////////////// temp
     SpriteDataComponent spriteData{SpritePath::Monster1, {104, 136}, {115, 115}, {0.5f, 0.5f}, 3};
     PositionComponent startPosition(80, 60);
     HitboxComponent hitbox{

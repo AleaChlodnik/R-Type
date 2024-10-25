@@ -130,8 +130,6 @@ void CollisionSystem::handleCollisions(
     }
 
     for (int entityId : entitiesToRemove) {
-        // std::cout << "Removing: " << entityId << std::endl; /////////////////
         entityManager.removeEntity(entityId);
-        // std::cout << "done" << std::endl; //////////////////////////////////////////////////
     }
 }
