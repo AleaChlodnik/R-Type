@@ -19,10 +19,14 @@ template <typename T> struct Vector {
     T y;
 };
 
+struct Rect {
+    Vector<float> offset;
+    Vector<float> dimension;
+};
+
 struct SpriteDataComponent {
     SpritePath spritePath;
-    Vector<uint32_t> offSet;
-    Vector<float> dimension;
     Vector<float> scale;
+    Rect rect;
     uint32_t type;
 };

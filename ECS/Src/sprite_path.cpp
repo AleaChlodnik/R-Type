@@ -11,16 +11,16 @@ std::string SpriteFactory(SpritePath sprite)
 {
     switch (sprite) {
     case SpritePath::Ship1: {
-        return "Client/Assets/Sprites/Ships/ship1.png";
+        return "Client/Assets/Sprites/Ships/ship_sheet.gif";
     } break;
     case SpritePath::Ship2: {
-        return "Client/Assets/Sprites/Ships/ship2.png";
+        return "Client/Assets/Sprites/Ships/ship_sheet.gif";
     } break;
     case SpritePath::Ship3: {
-        return "Client/Assets/Sprites/Ships/ship3.png";
+        return "Client/Assets/Sprites/Ships/ship_sheet.gif";
     } break;
     case SpritePath::Ship4: {
-        return "Client/Assets/Sprites/Ships/ship4.png";
+        return "Client/Assets/Sprites/Ships/ship_sheet.gif";
     } break;
     case SpritePath::Enemy1: {
         return "Client/Assets/Sprites/Enemies/enemy1.png";
