@@ -15,8 +15,8 @@ struct SpriteComponent {
     sf::Sprite sprite;
     AScenes::SpriteType type;
 
-    SpriteComponent(
-        sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale, int typeNb, sf::IntRect rect = sf::IntRect(0, 0, 0, 0))
+    SpriteComponent(sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale,
+        int typeNb, sf::IntRect rect = sf::IntRect(0, 0, 0, 0))
     {
         type = static_cast<AScenes::SpriteType>(typeNb);
         sprite.setTexture(texture);
