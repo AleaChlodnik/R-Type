@@ -11,52 +11,37 @@ std::string SpriteFactory(SpritePath sprite)
 {
     switch (sprite) {
     case SpritePath::Ship1: {
-        return "Client/Assets/Sprites/Ships/ship1.png";
+        return "Client/Assets/Sprites/Ships/ship_sheet.gif";
     } break;
     case SpritePath::Ship2: {
-        return "Client/Assets/Sprites/Ships/ship2.png";
+        return "Client/Assets/Sprites/Ships/ship_sheet.gif";
     } break;
     case SpritePath::Ship3: {
-        return "Client/Assets/Sprites/Ships/ship3.png";
+        return "Client/Assets/Sprites/Ships/ship_sheet.gif";
     } break;
     case SpritePath::Ship4: {
-        return "Client/Assets/Sprites/Ships/ship4.png";
+        return "Client/Assets/Sprites/Ships/ship_sheet.gif";
     } break;
     case SpritePath::Enemy1: {
-        return "Client/Assets/Sprites/Enemies/enemy1.png";
+        return "Client/Assets/Sprites/Enemies/enemy_sheet1.gif";
     } break;
     case SpritePath::Enemy2: {
-        return "Client/Assets/Sprites/Enemies/enemy2.png";
+        return "Client/Assets/Sprites/Enemies/enemy_sheet2.gif";
     } break;
     case SpritePath::Enemy3: {
-        return "Client/Assets/Sprites/Enemies/enemy3.png";
-    } break;
-    case SpritePath::Enemy4: {
-        return "Client/Assets/Sprites/Enemies/enemy4.png";
-    } break;
-    case SpritePath::Enemy5: {
-        return "Client/Assets/Sprites/Enemies/enemy5.png";
-    } break;
-    case SpritePath::Enemy6: {
-        return "Client/Assets/Sprites/Enemies/enemy5.png";
-    } break;
-    case SpritePath::Monster1: {
-        return "Client/Assets/Sprites/Monsters/monster1.png";
-    } break;
-    case SpritePath::Monster2: {
-        return "Client/Assets/Sprites/Monsters/monster2.png";
-    } break;
-    case SpritePath::Monster3: {
-        return "Client/Assets/Sprites/Monsters/monster3.png";
-    } break;
-    case SpritePath::Monster4: {
-        return "Client/Assets/Sprites/Monsters/monster4.png";
+        return "Client/Assets/Sprites/Enemies/enemy_sheet3.gif";
     } break;
     case SpritePath::Missile: {
-        return "Client/Assets/Sprites/Missiles/missile.png";
+        return "Client/Assets/Sprites/Missiles/missile_sheet.gif";
     } break;
-    case SpritePath::Background: {
-        return "Client/Assets/Sprites/Background/background.jpg";
+    case SpritePath::Background1: {
+        return "Client/Assets/Sprites/Background/background1.png";
+    } break;
+    case SpritePath::Background2: {
+        return "Client/Assets/Sprites/Background/background1.png";
+    } break;
+    case SpritePath::Background3: {
+        return "Client/Assets/Sprites/Background/background1.png";
     } break;
     default: {
         return "";

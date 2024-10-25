@@ -19,10 +19,16 @@ template <typename T> struct Vector {
     T y;
 };
 
+struct Rect {
+    Vector<float> offset;
+    Vector<float> dimension;
+};
+
 struct SpriteDataComponent {
     SpritePath spritePath;
-    Vector<uint32_t> offSet;
-    Vector<float> dimension;
     Vector<float> scale;
-    uint32_t type;
+    Rect rect;
+    AScenes::SpriteType type;
 };
+
+std::ostream &operator<<(std::ostream &os, const SpriteDataComponent &spriteData);

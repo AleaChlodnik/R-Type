@@ -18,14 +18,16 @@ struct SpriteComponent {
     int hitboxY;
 
     SpriteComponent(sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale,
-        int typeNb, int dimensionX = 0, int dimensionY = 0)
+        AScenes::SpriteType typeNb, sf::IntRect rect = sf::IntRect(0, 0, 0, 0))
     {
-        type = static_cast<AScenes::SpriteType>(typeNb);
+        type = typeNb;
         sprite.setTexture(texture);
         sprite.setPosition(posX, posY);
         sprite.setScale(scale);
-        sprite.setOrigin(sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
-        hitboxX = dimensionX;
-        hitboxY = dimensionY;
+        if (type != AScenes::SpriteType::BACKGROUND)
+            sprite.setOrigin(
+                sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
+        if (rect != sf::IntRect(0, 0, 0, 0))
+            sprite.setTextureRect(rect);
     }
 };

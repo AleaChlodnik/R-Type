@@ -57,7 +57,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         _collisionSystem = std::make_shared<CollisionSystem>(_componentManager, _entityManager);
 
         _background = InitiateBackground();
-        _entityFactory.createBasicMonster(_entityManager, _componentManager);
+
+        _entityFactory.createBasicEnemy(_entityManager, _componentManager);
     }
 
     /**
@@ -323,6 +324,20 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     msg.header.id = TypeMessage::DestroyEntityMessage;
                     msg << entityId;
                     MessageAllClients(msg);
+                }
+            }
+
+            // animate system
+            for (auto entity : _entityManager.getAllEntities()) {
+                if (auto spriteData =
+                        _componentManager.getComponent<SpriteDataComponent>(entity.getId())) {
+                    if (spriteData.value()->type == AScenes::SpriteType::BACKGROUND) {
+                        spriteData.value()->rect.offset.x += 10;
+                        r_type::net::Message<TypeMessage> msg;
+                        msg.header.id = TypeMessage::AnimateEntityMessage;
+                        msg << entity.getId() << spriteData.value()->rect;
+                        MessageAllClients(msg);
+                    }
                 }
             }
 

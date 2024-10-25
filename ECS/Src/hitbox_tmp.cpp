@@ -61,10 +61,10 @@ int CheckEntityMovement(
 {
     float descLeft, descRight, descTop, descBottom;
 
-    descLeft = ((desc.vPos.x / 100) * SCREEN_WIDTH) - (desc.spriteData.dimension.x / 2);
-    descRight = ((desc.vPos.x / 100) * SCREEN_WIDTH) + (desc.spriteData.dimension.x / 2);
-    descTop = ((desc.vPos.y / 100) * SCREEN_HEIGHT) - (desc.spriteData.dimension.y / 2);
-    descBottom = ((desc.vPos.y / 100) * SCREEN_HEIGHT) + (desc.spriteData.dimension.y / 2);
+    descLeft = ((desc.vPos.x / 100) * SCREEN_WIDTH) - (desc.spriteData.rect.dimension.x / 2);
+    descRight = ((desc.vPos.x / 100) * SCREEN_WIDTH) + (desc.spriteData.rect.dimension.x / 2);
+    descTop = ((desc.vPos.y / 100) * SCREEN_HEIGHT) - (desc.spriteData.rect.dimension.y / 2);
+    descBottom = ((desc.vPos.y / 100) * SCREEN_HEIGHT) + (desc.spriteData.rect.dimension.y / 2);
 
     return CheckCollisionLogic(
         descLeft, descRight, descTop, descBottom, componentManager, entityManager, desc.uniqueID);

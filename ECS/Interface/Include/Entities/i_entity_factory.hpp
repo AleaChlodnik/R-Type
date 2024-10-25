@@ -72,19 +72,6 @@ class IEntityFactory {
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
     /**
-     * @brief Creates a basic monster entity.
-     *
-     * This function creates a basic monster entity using the provided entity manager and component
-     * manager.
-     *
-     * @param entityManager The entity manager used to create the entity.
-     * @param componentManager The component manager used to add components to the entity.
-     * @return The created basic monster entity.
-     */
-    virtual Entity createBasicMonster(
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
-
-    /**
      * @brief Creates a player missile entity.
      *
      * This function creates a player missile entity with the specified player ID and adds it to
