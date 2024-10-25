@@ -23,7 +23,9 @@ enum class SpritePath : uint32_t
     Enemy5,
     Enemy6,
     Missile,
-    Background,
+    Background1,
+    Background2,
+    Background3,
     Explosion,
     PowerUp,
     Boss,
@@ -32,3 +34,5 @@ enum class SpritePath : uint32_t
 };
 
 std::string SpriteFactory(SpritePath sprite);
+
+std::ostream &operator<<(std::ostream &os, const SpritePath &spritePath);

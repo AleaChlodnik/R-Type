@@ -34,8 +34,14 @@ std::string SpriteFactory(SpritePath sprite)
     case SpritePath::Missile: {
         return "Client/Assets/Sprites/Missiles/missile_sheet.gif";
     } break;
-    case SpritePath::Background: {
-        return "Client/Assets/Sprites/Background/background.jpg";
+    case SpritePath::Background1: {
+        return "Client/Assets/Sprites/Background/background1.png";
+    } break;
+    case SpritePath::Background2: {
+        return "Client/Assets/Sprites/Background/background1.png";
+    } break;
+    case SpritePath::Background3: {
+        return "Client/Assets/Sprites/Background/background1.png";
     } break;
     default: {
         return "";

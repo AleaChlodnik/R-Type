@@ -30,3 +30,5 @@ struct SpriteDataComponent {
     Rect rect;
     uint32_t type;
 };
+
+std::ostream &operator<<(std::ostream &os, const SpriteDataComponent &spriteData);

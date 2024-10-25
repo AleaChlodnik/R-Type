@@ -49,7 +49,8 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         std::cout << "entityId: " << entity.uniqueID
                   << std::endl; //////////////////////////////////
         std::cout << "spritePath: " << SpriteFactory(entity.spriteData.spritePath)
-                  << std::endl; ///////////////////
+                  << std::endl;                                        ///////////////////
+        std::cout << "spriteData: " << entity.spriteData << std::endl; ///////////////////
         sf::Texture &texture =
             textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
         sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
