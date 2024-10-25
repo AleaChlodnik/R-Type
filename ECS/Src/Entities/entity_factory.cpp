@@ -85,7 +85,8 @@ std::ostream &operator<<(std::ostream &os, const SpriteDataComponent &spriteData
     os << "spritePath: " << spriteData.spritePath << std::endl;
     os << "scale: " << spriteData.scale.x << ", " << spriteData.scale.y << std::endl;
     os << "rect: " << std::endl;
-    os << "  offset: " << spriteData.rect.offset.x << ", " << spriteData.rect.offset.y << std::endl;
+    os << "  offset: " << spriteData.rect.offset.x << ", " << spriteData.rect.offset.y
+       << std::endl;
     os << "  dimension: " << spriteData.rect.dimension.x << ", " << spriteData.rect.dimension.y
        << std::endl;
     os << "type: " << spriteData.type << std::endl;
