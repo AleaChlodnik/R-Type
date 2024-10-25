@@ -57,7 +57,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         _collisionSystem = std::make_shared<CollisionSystem>(_componentManager, _entityManager);
 
         _background = InitiateBackground();
-
         _entityFactory.createBasicMonster(_entityManager, _componentManager);
     }
 
@@ -149,9 +148,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                             std::move(newSocket), _clientEndpoint, _qMessagesIn);
 
                     if (OnClientConnect(newConn)) {
-                        std::cout << "OnClientConnect is true"
-                                  << std::endl; /////////////////////////////////////
-
                         _deqConnections.push_back(std::move(newConn));
                         _deqConnections.back()->ConnectToClient(this, _nIDCounter++);
                         std::cout << "[" << _deqConnections.back()->GetID()
