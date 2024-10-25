@@ -25,13 +25,14 @@ void MoveSystem::moveEntities(
             auto enemyMissile = componentManager.getComponent<EnemyMissileComponent>(entityId);
 
             //////////////////////////////////////////////////////////
-            if(auto enemy = componentManager.getComponent<EnemyComponent>(entityId))
+            if (auto enemy = componentManager.getComponent<EnemyComponent>(entityId))
                 std::cout << "Enemy" << std::endl;
-            if(auto basicMonster = componentManager.getComponent<BasicMonsterComponent>(entityId))
+            if (auto basicMonster = componentManager.getComponent<BasicMonsterComponent>(entityId))
                 std::cout << "Basic Monster" << std::endl;
-            if(auto playerMissile = componentManager.getComponent<PlayerMissileComponent>(entityId))
+            if (auto playerMissile =
+                    componentManager.getComponent<PlayerMissileComponent>(entityId))
                 std::cout << "Player Missile" << std::endl;
-            if(auto enemyMissile = componentManager.getComponent<EnemyMissileComponent>(entityId))
+            if (auto enemyMissile = componentManager.getComponent<EnemyMissileComponent>(entityId))
                 std::cout << "Enemy Missile" << std::endl;
             //////////////////////////////////////////////////////////
 

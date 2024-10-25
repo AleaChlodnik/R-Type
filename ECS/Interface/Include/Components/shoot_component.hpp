@@ -15,5 +15,7 @@ struct ShootComponent {
     bool canShoot;
 
     ShootComponent(std::chrono::milliseconds cooldown)
-        : nextShootTime(std::chrono::system_clock::now()), cooldownTime(cooldown) {}
+        : nextShootTime(std::chrono::system_clock::now()), cooldownTime(cooldown)
+    {
+    }
 };
