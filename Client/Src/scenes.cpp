@@ -12,6 +12,7 @@
 #include <Net/client.hpp>
 #include <Systems/system_manager.hpp>
 #include <Systems/systems.hpp>
+#include <chrono>
 #include <creatable_client_object.hpp>
 #include <functional>
 #include <iostream>
@@ -593,8 +594,10 @@ void Scenes::gameLoop()
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     sf::Event event;
-
     sf::Clock clock;
+
+    const int FIRE_COOLDOWN_MS = 500;
+    std::chrono::steady_clock::time_point lastFireTime = std::chrono::steady_clock::now();
 
     auto pixelToPercent = [&](float v1, float v2) { return (v1 / v2) * 100; };
 
@@ -616,10 +619,17 @@ void Scenes::gameLoop()
     };
 
     auto fireMissile = [&]() {
-        r_type::net::Message<TypeMessage> msg;
-        msg.header.id = TypeMessage::CreateEntityMessage;
-        msg << CreatableClientObject::MISSILE;
-        c.Send(msg);
+        auto currentTime = std::chrono::steady_clock::now();
+        auto timeSinceLastFire =
+            std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastFireTime)
+                .count();
+        if (timeSinceLastFire >= FIRE_COOLDOWN_MS) {
+            r_type::net::Message<TypeMessage> msg;
+            msg.header.id = TypeMessage::CreateEntityMessage;
+            msg << CreatableClientObject::MISSILE;
+            c.Send(msg);
+            lastFireTime = currentTime;
+        }
     };
 
     auto death = [&]() {
@@ -636,6 +646,9 @@ void Scenes::gameLoop()
         while (_window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 death();
+            }
+            if (sf::Keyboard::isKeyPressed(keyBinds[Actions::FIRE])) {
+                fireMissile();
             }
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::P) {
