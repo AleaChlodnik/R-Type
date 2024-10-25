@@ -6,8 +6,8 @@
 */
 
 #include <Systems/collision_system.hpp>
-#include <vector>
 #include <macros.hpp>
+#include <vector>
 
 void CollisionSystem::removeCollidedEntity(ComponentManager &componentManager, int entityId1,
     int entityId2, std::vector<int> &entitiesToRemove)
