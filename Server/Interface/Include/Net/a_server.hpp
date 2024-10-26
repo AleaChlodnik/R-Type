@@ -729,7 +729,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @brief
      *
      */
-
 };
 } // namespace net
 } // namespace r_type
