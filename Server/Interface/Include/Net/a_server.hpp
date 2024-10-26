@@ -475,6 +475,32 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     }
 
     /**
+     * @brief Formats the information of a given entity into an EntityInformation structure.
+     *
+     * This function retrieves the position and sprite data components of the specified entity
+     * and populates an EntityInformation structure with this data. If the entity has both
+     * position and sprite data components, their values are copied into the EntityInformation
+     * structure. If either component is missing, the EntityInformation structure will be
+     * returned with default values.
+     *
+     * @param entity The entity whose information is to be formatted.
+     * @return EntityInformation The formatted information of the entity.
+     */
+    EntityInformation FormatEntityInformation(Entity entity)
+    {
+        EntityInformation entityInfo;
+        auto entityPos = _componentManager.getComponent<PositionComponent>(entity.getId());
+        auto entitySprite = _componentManager.getComponent<SpriteDataComponent>(entity.getId());
+        if (entityPos && entitySprite) {
+            entityInfo.uniqueID = entity.getId();
+            entityInfo.vPos.x = entityPos.value()->x;
+            entityInfo.vPos.y = entityPos.value()->y;
+            entityInfo.spriteData = *(entitySprite.value());
+        }
+        return entityInfo;
+    }
+
+    /**
      * @brief Initializes a missile entity associated with a player.
      *
      * The function creates a missile entity associated with a player and assigns its
@@ -699,6 +725,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * relevant attributes that define the background's appearance and behavior.
      */
     EntityInformation _background;
+
+    /**
+     * @brief
+     *
+     */
+
 };
 } // namespace net
 } // namespace r_type

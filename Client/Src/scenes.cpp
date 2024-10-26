@@ -690,10 +690,9 @@ void Scenes::gameLoop()
                 switch (msg.header.id) {
                 case TypeMessage::ServerAccept: {
                     std::cout << "Server Accepted Connection" << std::endl;
-                    EntityInformation entity;
-                    msg >> entity;
-                    c.setPlayerId(entity.uniqueID);
-                    c.addEntity(entity, componentManager, textureManager, windowSize);
+                    r_type::net::Message<TypeMessage> response;
+                    response.header.id = TypeMessage::SendPlayer;
+                    c.Send(response);
                 } break;
                 case TypeMessage::ServerPing: {
                     std::chrono::system_clock::time_point timeNow =
@@ -709,6 +708,12 @@ void Scenes::gameLoop()
                     msg >> clientID;
                     std::cout << "Hello from [" << clientID << "]" << std::endl;
                 } break;
+                case TypeMessage::SendPlayerInformation: {
+                    EntityInformation entity;
+                    msg >> entity;
+                    c.setPlayerId(entity.uniqueID);
+                    c.addEntity(entity, componentManager, textureManager, windowSize);
+                }
                 case TypeMessage::ServerDeny: {
                 } break;
                 case TypeMessage::MessageAll: {
@@ -717,6 +722,9 @@ void Scenes::gameLoop()
                 } break;
                 case TypeMessage::CreateEntityMessage: {
                     EntityInformation entity;
+                    r_type::net::Message<TypeMessage> response;
+                    response.header.id = TypeMessage::CreateEntityResponse;
+                    c.Send(response);
                     msg >> entity;
                     c.addEntity(entity, componentManager, textureManager, windowSize);
                 } break;

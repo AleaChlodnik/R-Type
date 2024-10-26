@@ -11,19 +11,26 @@
 bool r_type::net::Server::OnClientConnect(
     std::shared_ptr<r_type::net::Connection<TypeMessage>> client)
 {
+    if (_nbrOfPlayers == 3) {
+        r_type::net::Message<TypeMessage> msg;
+        msg.header.id = TypeMessage::ServerDeny;
+        MessageClient(client, msg);
+        return false;
+    }
     r_type::net::Message<TypeMessage> msg;
     msg.header.id = TypeMessage::ServerAccept;
-    msg << InitiatePlayers(client->GetID());
     MessageClient(client, msg);
     _nbrOfPlayers++;
+    client->SetStatus(ServerStatus::INITIALISATION);
+    client->_lastMsg = msg;
+    client->_initEntities = _entityManager.getAllEntities();
 
-    msg.header.id = TypeMessage::CreateEntityMessage;
-    MessageAllClients(msg, client);
-    msg << _background;
-    MessageClient(client, msg);
-    EntityInformation entity;
+    // msg.header.id = TypeMessage::CreateEntityMessage;
+    // MessageAllClients(msg, client);
+    // msg << _background;
+    // MessageClient(client, msg);
+    // EntityInformation entity;
     InitListEntities(client, GetClientPlayerId(client.get()->GetID()));
-    const std::vector<Entity> entities = _entityManager.getAllEntities();
     return true;
 }
 
@@ -56,53 +63,101 @@ void r_type::net::Server::OnClientDisconnect(
 void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<TypeMessage>> client,
     r_type::net::Message<TypeMessage> &msg)
 {
-    switch (msg.header.id) {
-    case TypeMessage::ServerPing: {
-        std::cout << "[" << client->GetID() << "]: Server Ping" << std::endl;
+    switch (client->GetStatus()) {
+    case ServerStatus::RUNNING: {
+        switch (msg.header.id) {
+        case TypeMessage::ServerPing: {
+            std::cout << "[" << client->GetID() << "]: Server Ping" << std::endl;
 
-        // Simply bounce message back to client
-        client->Send(msg);
-    } break;
-
-    case TypeMessage::MessageAll: {
-        std::cout << "[" << client->GetID() << "]: Message All" << std::endl;
-
-        // Construct a new message and send it to all clients
-        r_type::net::Message<TypeMessage> msg;
-        msg.header.id = TypeMessage::ServerMessage;
-        msg << client->GetID();
-        MessageAllClients(msg, client);
-
-    } break;
-    case TypeMessage::ClientConnect: {
-        std::cout << "[" << client->GetID() << "]: Client Connect" << std::endl;
-    } break;
-    case TypeMessage::MoveEntityMessage: { // This is only for the players
-        UpdatePlayerPosition(msg, client->GetID());
-    } break;
-    case TypeMessage::DestroyEntityMessage: {
-        OnClientDisconnect(client, msg);
-    } break;
-    case TypeMessage::CreateEntityMessage: { // This is for player missile creation only
-        CreatableClientObject incomingObject;
-        msg >> incomingObject;
-        switch (incomingObject) {
-        case CreatableClientObject::MISSILE: {
-            r_type::net::Message<TypeMessage> ResponseMsg;
-            ResponseMsg.header.id = TypeMessage::CreateEntityResponse;
-            client->Send(ResponseMsg);
-            r_type::net::Message<TypeMessage> MissileMsg;
-            MissileMsg.header.id = TypeMessage::CreateEntityMessage;
-            MissileMsg << InitiateMissile(client->GetID());
-            MessageAllClients(MissileMsg);
+            // Simply bounce message back to client
+            client->Send(msg);
         } break;
-        default: {
+
+        case TypeMessage::MessageAll: {
+            std::cout << "[" << client->GetID() << "]: Message All" << std::endl;
+
+            // Construct a new message and send it to all clients
+            r_type::net::Message<TypeMessage> msg;
+            msg.header.id = TypeMessage::ServerMessage;
+            msg << client->GetID();
+            MessageAllClients(msg, client);
+
+        } break;
+        case TypeMessage::ClientConnect: {
+            std::cout << "[" << client->GetID() << "]: Client Connect" << std::endl;
+        } break;
+        case TypeMessage::MoveEntityMessage: { // This is only for the players
+            UpdatePlayerPosition(msg, client->GetID());
+        } break;
+        case TypeMessage::DestroyEntityMessage: {
+            OnClientDisconnect(client, msg);
+        } break;
+        case TypeMessage::CreateEntityMessage: { // This is for player missile creation only
+            CreatableClientObject incomingObject;
+            msg >> incomingObject;
+            switch (incomingObject) {
+            case CreatableClientObject::MISSILE: {
+                r_type::net::Message<TypeMessage> ResponseMsg;
+                ResponseMsg.header.id = TypeMessage::CreateEntityResponse;
+                client->Send(ResponseMsg);
+                r_type::net::Message<TypeMessage> MissileMsg;
+                MissileMsg.header.id = TypeMessage::CreateEntityMessage;
+                MissileMsg << InitiateMissile(client->GetID());
+                MessageAllClients(MissileMsg);
+            } break;
+            default: {
+            } break;
+            }
         } break;
         }
     } break;
+    case ServerStatus::WAITING: {
+        switch (msg.header.id) {
+        case TypeMessage::CreateEntityResponse: {
+            std::cout << "[" << client->GetID() << "]: Entity Created" << std::endl;
+        } break;
+        case TypeMessage::DestroyEntityResponse: {
+            std::cout << "[" << client->GetID() << "]: Entity Destroyed" << std::endl;
+        }
+        default: {
+            client->Send(client->_lastMsg);
+        } break;
+        }
+    }
+    case ServerStatus::INITIALISATION: {
+        switch (msg.header.id) {
+        case TypeMessage::SendPlayer: {
+            r_type::net::Message<TypeMessage> response;
+            response.header.id = TypeMessage::SendPlayerInformation;
+            response << InitiatePlayers(client->GetID());
+            MessageClient(client, response);
+            client->_lastMsg = response;
+        } break;
+        case TypeMessage::RecievePlayerInformation: {
+            std::cout << "[" << client->GetID() << "]: Player Information Received" << std::endl;
+            r_type::net::Message<TypeMessage> response;
+            response.header.id = TypeMessage::CreateEntityMessage;
+            response << _background;
+            client->_lastMsg = response;
+        }
+        case TypeMessage::CreateEntityResponse: {
+            std::cout << "[" << client->GetID() << "]: Entity Created" << std::endl;
+            r_type::net::Message<TypeMessage> response;
+            response.header.id = TypeMessage::CreateEntityMessage;
+            if (!client->_initEntities.empty()){
+                response << FormatEntityInformation(client->_initEntities.front());
+                client->_lastMsg = response;
+                client->_initEntities.erase(client->_initEntities.begin());
+            } else
+                client->SetStatus(ServerStatus::RUNNING);
+        } break;
+        default: {
+            client->Send(client->_lastMsg);
+        } break;
+        }
+    }
     }
 }
-
 /**
  * @brief Sends a list of existing entities to a newly connected client for initialization.
  *
