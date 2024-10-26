@@ -221,41 +221,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 _deqConnections.end());
     }
 
-    /**
-     * @brief Updates the server state and processes incoming messages.
-     *
-     * This function updates the state of entities on the server and processes incoming messages.
-     * It can optionally wait for messages and limit the number of messages processed in one call.
-     *
-     * @param nMaxMessages The maximum number of messages to process in one call. Default is -1 (no
-     * limit).
-     * @param bWait If true, the function will wait for messages to be available before processing.
-     *
-     * The function performs the following tasks:
-     * - Updates the positions of entities based on their components.
-     * - Sends updated entity information to all connected clients.
-     * - Checks for collisions between player missiles and monsters, and handles entity
-     * destruction.
-     * - Processes incoming messages from clients.
-     */
-    void Update(size_t nMaxMessages = -1, bool bWait = false)
+    void UpdateLevel(std::chrono::system_clock::time_point newClock, bool &bUpdateEntities)
     {
-        if (_nbrOfPlayers == 0)
-            return;
-        if (_nbrOfPlayers > 0 && !_playerConnected) {
-            _playerConnected = true;
-            _clock = std::chrono::system_clock::now();
-        }
-
-        // if (bWait)
-        //     _qMessagesIn.wait();
-        std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
-        // std::cout
-        //     << "Time: "
-        //     << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
-        //     << std::endl;
-
-        bool bUpdateEntities = false;
         while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
             500) {
             bUpdateEntities = true;
@@ -343,8 +310,47 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
             _clock += std::chrono::milliseconds(500);
         }
+    }
+
+    /**
+     * @brief Updates the server state and processes incoming messages.
+     *
+     * This function updates the state of entities on the server and processes incoming messages.
+     * It can optionally wait for messages and limit the number of messages processed in one call.
+     *
+     * @param nMaxMessages The maximum number of messages to process in one call. Default is -1 (no
+     * limit).
+     * @param bWait If true, the function will wait for messages to be available before processing.
+     *
+     * The function performs the following tasks:
+     * - Updates the positions of entities based on their components.
+     * - Sends updated entity information to all connected clients.
+     * - Checks for collisions between player missiles and monsters, and handles entity
+     * destruction.
+     * - Processes incoming messages from clients.
+     */
+    void Update(size_t nMaxMessages = -1, bool bWait = false)
+    {
+        if (_nbrOfPlayers == 0)
+            return;
+        if (_nbrOfPlayers > 0 && !_playerConnected) {
+            _playerConnected = true;
+            _clock = std::chrono::system_clock::now();
+        }
+        std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
+        bool bUpdateEntities = false;
+        // if (bWait)
+        //     _qMessagesIn.wait();
+        // std::cout
+        //     << "Time: "
+        //     << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
+        //     << std::endl;
         if (bUpdateEntities)
             _clock = newClock;
+        std::thread levelUpdate([this, newClock, &bUpdateEntities]() {
+            this->UpdateLevel(newClock, bUpdateEntities);
+        });
+
 
         size_t nMessageCount = 0;
         while (nMessageCount < nMaxMessages && !_qMessagesIn.empty()) {
@@ -354,6 +360,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
             nMessageCount++;
         }
+        levelUpdate.join();
     }
 
     /**
