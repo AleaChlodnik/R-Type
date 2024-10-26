@@ -351,7 +351,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             this->UpdateLevel(newClock, bUpdateEntities);
         });
 
-
         size_t nMessageCount = 0;
         while (nMessageCount < nMaxMessages && !_qMessagesIn.empty()) {
             auto msg = _qMessagesIn.pop_front();
