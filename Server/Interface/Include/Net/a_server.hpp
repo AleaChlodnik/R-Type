@@ -515,7 +515,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         Entity background = _entityFactory.createBackground(_entityManager, _componentManager);
         entityInfo.uniqueID = background.getId();
         auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
-        auto backgroundPos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+        auto backgroundPos =
+            _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         if (sprite) {
             entityInfo.spriteData = *(sprite.value());
             entityInfo.vPos.x = backgroundPos.value()->x;
