@@ -12,10 +12,10 @@
 #include "animation_component.hpp"
 #include "position_component.hpp"
 #include <SFML/Graphics.hpp>
+#include <a_scenes.hpp>
 #include <cstdint>
 #include <macros.hpp>
 #include <string>
-#include <a_scenes.hpp>
 
 struct SpriteDataComponent {
     SpritePath spritePath;
