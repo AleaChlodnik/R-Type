@@ -258,8 +258,7 @@ Entity EntityFactory::createEnemyMissile(
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{200.0f, 0.0f};
     AnimationComponent animationComponent({0, 0}, {16, 16});
-    SpriteDataComponent spriteData{
-        SpritePath::Missile, {0.1f, 0.1f}, AScenes::SpriteType::PLAYER};
+    SpriteDataComponent spriteData{SpritePath::Missile, {0.1f, 0.1f}, AScenes::SpriteType::PLAYER};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
 

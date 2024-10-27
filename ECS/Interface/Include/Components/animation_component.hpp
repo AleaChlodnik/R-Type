@@ -9,7 +9,6 @@
 
 #include <macros.hpp>
 
-
 struct AnimationComponent {
     vf2d offset;
     vf2d dimension;
@@ -17,4 +16,4 @@ struct AnimationComponent {
     AnimationComponent(vf2d _offset, vf2d _dimension) : offset(_offset), dimension(_dimension) {}
 };
 
-bool operator !=(AnimationComponent animation, AnimationComponent other);
+bool operator!=(AnimationComponent animation, AnimationComponent other);
