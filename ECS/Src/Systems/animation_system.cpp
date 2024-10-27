@@ -7,6 +7,20 @@
 
 #include <Systems/systems.hpp>
 
+/**
+ * @brief Generates a vector representing the animation state of a ship.
+ *
+ * This function takes an AnimationShip enumeration value and returns a
+ * vf2d vector that corresponds to the animation state of the ship.
+ *
+ * @param animation The animation state of the ship, represented by the
+ * AnimationShip enumeration.
+ *
+ * @return vf2d A vector representing the animation state of the ship.
+ * The x-coordinate of the vector corresponds to the frame position,
+ * and the y-coordinate is always -1 for valid states. If the animation
+ * state is not recognized, the function returns {0, 0}.
+ */
 vf2d animationShipFactory(AnimationShip animation)
 {
     switch (animation) {
@@ -30,12 +44,34 @@ vf2d animationShipFactory(AnimationShip animation)
     }
 }
 
+/**
+ * @brief Inequality operator for AnimationComponent.
+ *
+ * This operator compares two AnimationComponent objects to determine if they are not equal.
+ * Two AnimationComponent objects are considered not equal if any of their respective
+ * offset or dimension coordinates differ.
+ *
+ * @param animation The first AnimationComponent to compare.
+ * @param other The second AnimationComponent to compare.
+ * @return true if the AnimationComponent objects are not equal, false otherwise.
+ */
 bool operator!=(AnimationComponent animation, AnimationComponent other)
 {
     return (animation.offset.x != other.offset.x || animation.offset.y != other.offset.y ||
         animation.dimension.x != other.dimension.x || animation.dimension.y != other.dimension.y);
 }
 
+/**
+ * @brief Updates the animation states of entities based on their components.
+ *
+ * This function iterates through all entities and updates their animation
+ * states based on the presence and values of specific components such as
+ * AnimationComponent, PlayerComponent, VelocityComponent, and BackgroundComponent.
+ *
+ * @param componentManager Reference to the ComponentManager that handles components.
+ * @param entityManager Reference to the EntityManager that handles entities.
+ * @param deltaTime The time elapsed since the last update, used for time-based animations.
+ */
 void AnimationSystem::AnimationEntities(
     ComponentManager &componentManager, EntityManager &entityManager, float deltaTime)
 {

@@ -15,6 +15,7 @@
 #include <cstdint>
 #include <macros.hpp>
 #include <string>
+#include <a_scenes.hpp>
 
 struct SpriteDataComponent {
     SpritePath spritePath;
