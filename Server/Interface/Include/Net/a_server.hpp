@@ -133,9 +133,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 if (!ec) {
                     std::cout << "[SERVER] New Connection: " << _clientEndpoint << std::endl;
                     // check if connection already exists
-                    for (std::shared_ptr<Connection<T>> &conn : _deqConnections) {
+                    std::cout << "Client endpoint connection: " << _clientEndpoint << std::endl;
+                    for (auto &conn : _deqConnections) {
+                        std::cout << "Client endpoint: " << conn->getEndpoint() << std::endl;
                         if (conn->getEndpoint() == _clientEndpoint) {
+                            std::cout << "[" << conn->GetID() << "] Connection Approved"
+                                      << std::endl;
                             std::cout << "[SERVER] Connection already exists" << std::endl;
+                            if (OnClientConnect(conn)) {
+                                std::cout << "[SERVER] Connection already exists" << std::endl;
+                            } else {
+                                std::cout << "[-----] Connection Denied" << std::endl;
+                            }
                             return;
                         }
                     }
@@ -240,7 +249,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     void Update(size_t nMaxMessages = -1, bool bWait = false)
     {
-        if (_nbrOfPlayers == 0)
+        if (_nbrOfPlayers == 0 && !_playerConnected)
             return;
         if (_nbrOfPlayers > 0 && !_playerConnected) {
             _playerConnected = true;

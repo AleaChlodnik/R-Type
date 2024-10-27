@@ -11,6 +11,7 @@
 #include <SFML/Graphics.hpp>
 #include <cstdint>
 #include <cstdlib>
+#include <macros.hpp>
 
 std::ostream &operator<<(std::ostream &os, const SpritePath &spritePath)
 {
@@ -124,7 +125,7 @@ Entity EntityFactory::createBackground(
     Entity background = entityManager.createEntity();
 
     BackgroundComponent backgroundComponent;
-    PositionComponent start_position(0, 0);
+    PositionComponent start_position(50, 50);
     // SpriteDataComponent spriteData{        SpritePath::Background1,
     // {5.624999993f, 5.624999993f}, {{0, 0}, {341.333333758, 192}}, 0};
     SpriteDataComponent spriteData{SpritePath::Background1, {5.625f, 5.625f}, {{0, 0}, {342, 192}},
@@ -197,7 +198,7 @@ Entity EntityFactory::createBasicEnemy(
     // VelocityComponent velocity{1.0f}; ///////////////// temp
     SpriteDataComponent spriteData{
         SpritePath::Enemy1, {2.0f, 2.0f}, {{0, 0}, {37, 36}}, AScenes::SpriteType::ENEMY};
-    PositionComponent startPosition(110, 60);
+    PositionComponent startPosition(60, 60);
     HitboxComponent hitbox{static_cast<int>(spriteData.rect.dimension.x),
         static_cast<int>(spriteData.rect.dimension.y)};
     HealthComponent health{100, 100};

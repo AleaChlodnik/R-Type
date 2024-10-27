@@ -81,6 +81,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         UpdatePlayerPosition(msg, client->GetID());
     } break;
     case TypeMessage::DestroyEntityMessage: {
+        std::cout << "[" << client->GetID() << "]: Destroy Entity" << std::endl;
         OnClientDisconnect(client, msg);
     } break;
     case TypeMessage::CreateEntityMessage: { // This is for player missile creation only

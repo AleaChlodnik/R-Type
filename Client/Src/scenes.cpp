@@ -748,6 +748,8 @@ void Scenes::gameLoop()
                 } break;
                 case TypeMessage::DestroyEntityResponse: {
                 } break;
+                case TypeMessage::FinishInitialization: {
+                } break;
                 case TypeMessage::AnimateEntityMessage: {
                     r_type::net::Message<TypeMessage> response;
                     uint32_t id;
