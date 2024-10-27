@@ -126,16 +126,14 @@ Entity EntityFactory::createBackground(
 
     BackgroundComponent backgroundComponent;
     PositionComponent start_position(50, 50);
-    // SpriteDataComponent spriteData{        SpritePath::Background1,
-    // {5.624999993f, 5.624999993f}, {{0, 0}, {341.333333758, 192}}, 0};
+    // SpriteDataComponent spriteData{SpritePath::Background1, {5.625f, 5.625f}, {{0, 0}, {342,
+    // 192}}, AScenes::SpriteType::BACKGROUND};
     SpriteDataComponent spriteData{SpritePath::Background1, {5.625f, 5.625f}, {{0, 0}, {342, 192}},
         AScenes::SpriteType::BACKGROUND};
-    VelocityComponent velocity{200.0f};
     // OffsetComponent offset{0};
 
     componentManager.addComponent<BackgroundComponent>(background.getId(), backgroundComponent);
     componentManager.addComponent<PositionComponent>(background.getId(), start_position);
-    componentManager.addComponent<VelocityComponent>(background.getId(), velocity);
     // componentManager.addComponent<OffsetComponent>(background.getId(), offset);
     componentManager.addComponent<SpriteDataComponent>(background.getId(), spriteData);
 

@@ -266,7 +266,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
         bool bUpdateEntities = false;
         while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
-            500) {
+            100) {
             bUpdateEntities = true;
 
             // make position copy
@@ -341,7 +341,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 if (auto spriteData =
                         _componentManager.getComponent<SpriteDataComponent>(entity.getId())) {
                     if (spriteData.value()->type == AScenes::SpriteType::BACKGROUND) {
-                        spriteData.value()->rect.offset.x += 10;
+                        spriteData.value()->rect.offset.x += 5;
                         r_type::net::Message<TypeMessage> msg;
                         msg.header.id = TypeMessage::AnimateEntityMessage;
                         msg << entity.getId() << spriteData.value()->rect;
@@ -515,8 +515,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         Entity background = _entityFactory.createBackground(_entityManager, _componentManager);
         entityInfo.uniqueID = background.getId();
         auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        auto backgroundPos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         if (sprite) {
             entityInfo.spriteData = *(sprite.value());
+            entityInfo.vPos.x = backgroundPos.value()->x;
+            entityInfo.vPos.y = backgroundPos.value()->y;
         }
         return entityInfo;
     }
