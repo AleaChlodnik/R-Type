@@ -753,8 +753,8 @@ void Scenes::gameLoop()
                 case TypeMessage::AnimateEntityMessage: {
                     r_type::net::Message<TypeMessage> response;
                     uint32_t id;
-                    Rect rect;
-                    msg >> rect >> id;
+                    AnimationComponent rect({0, 0}, {0, 0});
+                    msg >> rect.offset >> rect.dimension >> id;
                     c.animateEntity(id, rect, componentManager);
                 } break;
                 }

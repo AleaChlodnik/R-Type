@@ -54,8 +54,8 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         sf::Texture &texture =
             textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
         sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
-        sf::IntRect rect(entity.spriteData.rect.offset.x, entity.spriteData.rect.offset.y,
-            entity.spriteData.rect.dimension.x, entity.spriteData.rect.dimension.y);
+        sf::IntRect rect(entity.animationComponent.offset.x, entity.animationComponent.offset.y,
+            entity.animationComponent.dimension.x, entity.animationComponent.dimension.y);
         SpriteComponent sprite(texture, posX, posY, scale, entity.spriteData.type, rect);
         componentManager.addComponent<SpriteComponent>(entity.uniqueID, sprite);
     }
@@ -82,7 +82,7 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         }
     }
 
-    void animateEntity(int entityId, Rect rect, ComponentManager &componentManager)
+    void animateEntity(int entityId, AnimationComponent rect, ComponentManager &componentManager)
     {
         if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
             auto &sprites = **spritesOpt;

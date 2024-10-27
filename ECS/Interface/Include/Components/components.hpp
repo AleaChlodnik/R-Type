@@ -9,6 +9,7 @@
 
 #include "ally_component.hpp"
 #include "ally_missile_component.hpp"
+#include "animation_component.hpp"
 #include "background_component.hpp"
 #include "basic_monster_component.hpp"
 #include "bind_component.hpp"
