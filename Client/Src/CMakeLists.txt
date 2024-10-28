@@ -4,8 +4,6 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 add_executable(r-type_client main.cpp scenes.cpp)
 
-target_compile_features(r-type_client PRIVATE cxx_std_17)
-
 add_dependencies(r-type_client r-type_ecs_src)
 
 if (MSVC)

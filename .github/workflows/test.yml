@@ -78,7 +78,7 @@ jobs:
       - name: compile project
         run: cmake -S . -B build
       - name: build project
-        run: cmake --build build -- /maxcpucount:4
+        run: cmake --build build -- /maxcpucount:4  /p:VcpkgEnableManifest=true
 
   push_to_mirror:
     timeout-minutes: 10

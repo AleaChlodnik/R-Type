@@ -11,14 +11,16 @@ if(LINUX)
 endif()
 if(WIN32)
   execute_process(COMMAND vcpkg integrate install)
-  execute_process(COMMAND vcpkg install sfml)
+  execute_process(COMMAND vcpkg install --triplet x64-windows)
 endif()
 
 # Set C++ Standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_BUILD_TYPE Debug) # set build type to Debug
+if (LINUX)
+  set(CMAKE_BUILD_TYPE Debug) # set build type to Debug
+endif()
 
 # if (UNIX)
 #     # Linux-specific settings (by adding a sanitizer)

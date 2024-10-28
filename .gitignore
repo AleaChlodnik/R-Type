@@ -41,3 +41,7 @@ doc_doxygen
 bin
 
 .vscode
+
+#windows
+.vs
+vcpkg_installed
