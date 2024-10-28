@@ -20,10 +20,7 @@ void AudioSystem::playBackgroundMusic(const std::string &filePath)
     }
 }
 
-void AudioSystem::stopBackgroundMusic()
-{
-    _backgroundMusic.stop();
-}
+void AudioSystem::stopBackgroundMusic() { _backgroundMusic.stop(); }
 
 void AudioSystem::playSoundEffect(const std::string &filePath)
 {
