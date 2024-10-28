@@ -8,6 +8,7 @@
 #pragma once
 
 #include <Systems/animation_system.hpp>
+#include <Systems/audio_system.hpp>
 #include <Systems/auto_fire_system.hpp>
 #include <Systems/collision_system.hpp>
 #include <Systems/move_system.hpp>
