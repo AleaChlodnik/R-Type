@@ -718,6 +718,7 @@ void Scenes::gameLoop()
                     c.addEntity(entity, componentManager, textureManager, windowSize);
                 }
                 case TypeMessage::ServerDeny: {
+                    std::cout << "Server Denied Connection" << std::endl;
                 } break;
                 case TypeMessage::MessageAll: {
                 } break;
@@ -731,15 +732,12 @@ void Scenes::gameLoop()
                     msg >> entity;
                     c.addEntity(entity, componentManager, textureManager, windowSize);
                 } break;
-                case TypeMessage::CreateEntityResponse: {
-                } break;
                 case TypeMessage::DestroyEntityMessage: {
                     r_type::net::Message<TypeMessage> response;
                     uint32_t id;
                     msg >> id;
-                    if (id == c.getPlayerId()) {
+                    if (id == c.getPlayerId())
                         death();
-                    }
                     c.removeEntity(id, componentManager);
                     response.header.id = TypeMessage::DestroyEntityResponse;
                     c.Send(response);

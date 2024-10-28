@@ -216,8 +216,13 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
         for (auto &client : _deqConnections) {
             if (client && client->IsConnected()) {
-                if (client != pIgnoreClient)
+                if (client != pIgnoreClient){
                     client->Send(msg);
+                    if (msg.header.id == TypeMessage::DestroyEntityMessage){
+                        client->_lastMsg = msg;
+                        client->SetStatus(ServerStatus::WAITING);
+                    }
+                }
             } else {
                 OnClientDisconnect(client);
                 client.reset();
@@ -374,16 +379,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             _playerConnected = true;
             _clock = std::chrono::system_clock::now();
         }
-        std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
+
         bool bUpdateEntities = false;
-        // if (bWait)
-        //     _qMessagesIn.wait();
-        // std::cout
-        //     << "Time: "
-        //     << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
-        //     << std::endl;
-        if (bUpdateEntities)
-            _clock = newClock;
+        std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
         std::thread levelUpdate([this, newClock, &bUpdateEntities]() {
             this->UpdateLevel(newClock, bUpdateEntities);
         });
@@ -397,6 +395,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             nMessageCount++;
         }
         levelUpdate.join();
+        if (bUpdateEntities)
+            _clock = newClock;
     }
 
     /**
@@ -420,9 +420,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         vf2d entityPosition;
         auto entitySpriteData = _componentManager.getComponent<SpriteDataComponent>(entityId);
         msg >> entityPosition;
-
-        if (entitySpriteData)
-            std::cout << "Player Sprite existe" << std::endl;
 
         auto hitbox = _componentManager.getComponent<HitboxComponent>(entityId);
 
@@ -532,11 +529,16 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         EntityInformation entityInfo;
         auto entityPos = _componentManager.getComponent<PositionComponent>(entity.getId());
         auto entitySprite = _componentManager.getComponent<SpriteDataComponent>(entity.getId());
+        auto animation = _componentManager.getComponent<AnimationComponent>(entity.getId());
         if (entityPos && entitySprite) {
             entityInfo.uniqueID = entity.getId();
             entityInfo.vPos.x = entityPos.value()->x;
             entityInfo.vPos.y = entityPos.value()->y;
             entityInfo.spriteData = *(entitySprite.value());
+            if (animation) {
+                entityInfo.animationComponent.dimension = animation.value()->dimension;
+                entityInfo.animationComponent.offset = animation.value()->offset;
+            }
         }
         return entityInfo;
     }
@@ -563,11 +565,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         if (missilePos && sprite) {
             entityInfo.vPos.x = missilePos.value()->x;
             entityInfo.vPos.y = missilePos.value()->y;
+            entityInfo.spriteData = *(sprite.value());
             if (animation) {
                 entityInfo.animationComponent.dimension = animation.value()->dimension;
                 entityInfo.animationComponent.offset = animation.value()->offset;
             }
-            entityInfo.spriteData = *(sprite.value());
         }
         return entityInfo;
     }
@@ -599,19 +601,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
         return entityInfo;
     }
-
-    /**
-     * @brief Sends a list of existing entities to a newly connected client for
-     * initialization.
-     *
-     * The function iterates through all existing entities and sends their information to
-     * the newly connected client, excluding specific entities such as the client itself.
-     *
-     * @param client The connection to the client.
-     * @param entityID The ID of the entity to exclude (usually the client's own entity).
-     */
-    virtual void InitListEntities(
-        std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID) = 0;
 
     /**
      * @brief Callback function that is called when a client has been successfully
