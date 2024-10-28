@@ -216,9 +216,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
         for (auto &client : _deqConnections) {
             if (client && client->IsConnected()) {
-                if (client != pIgnoreClient){
+                if (client != pIgnoreClient) {
                     client->Send(msg);
-                    if (msg.header.id == TypeMessage::DestroyEntityMessage){
+                    if (msg.header.id == TypeMessage::DestroyEntityMessage) {
                         client->_lastMsg = msg;
                         client->SetStatus(ServerStatus::WAITING);
                     }
