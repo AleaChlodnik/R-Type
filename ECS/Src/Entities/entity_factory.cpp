@@ -209,13 +209,6 @@ Entity EntityFactory::createBasicEnemy(
     componentManager.addComponent<HealthComponent>(monster.getId(), health);
     componentManager.addComponent<SpriteDataComponent>(monster.getId(), spriteData);
 
-    while (CheckEntityPosition(monster.getId(), componentManager, entityManager) != -1) {
-        auto monsterPos = componentManager.getComponent<PositionComponent>(monster.getId());
-        if (monsterPos) {
-            monsterPos.value()->y = static_cast<float>(rand() % 100);
-        }
-    }
-
     return monster;
 }
 

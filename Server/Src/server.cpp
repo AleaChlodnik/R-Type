@@ -24,12 +24,6 @@ bool r_type::net::Server::OnClientConnect(
     client->SetStatus(ServerStatus::INITIALISATION);
     client->_lastMsg = msg;
     client->_initEntities = _entityManager.getAllEntities();
-
-    // msg.header.id = TypeMessage::CreateEntityMessage;
-    // MessageAllClients(msg, client);
-    // msg << _background;
-    // MessageClient(client, msg);
-    // EntityInformation entity;
     InitListEntities(client, GetClientPlayerId(client.get()->GetID()));
     return true;
 }
@@ -63,6 +57,8 @@ void r_type::net::Server::OnClientDisconnect(
 void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<TypeMessage>> client,
     r_type::net::Message<TypeMessage> &msg)
 {
+    std::cout << "[" << client->GetID() << "]: Message Received"
+              << " server status: " << client->GetStatus() << std::endl;
     switch (client->GetStatus()) {
     case ServerStatus::RUNNING: {
         switch (msg.header.id) {
@@ -87,6 +83,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             std::cout << "[" << client->GetID() << "]: Client Connect" << std::endl;
         } break;
         case TypeMessage::MoveEntityMessage: { // This is only for the players
+            std::cout << "[" << client->GetID() << "]: Move Entity" << std::endl;
             UpdatePlayerPosition(msg, client->GetID());
         } break;
         case TypeMessage::DestroyEntityMessage: {
@@ -127,6 +124,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
     case ServerStatus::INITIALISATION: {
         switch (msg.header.id) {
         case TypeMessage::SendPlayer: {
+            std::cout << "[" << client->GetID() << "]: Player Information Sent" << std::endl;
             r_type::net::Message<TypeMessage> response;
             response.header.id = TypeMessage::SendPlayerInformation;
             response << InitiatePlayers(client->GetID());
@@ -142,14 +140,17 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         }
         case TypeMessage::CreateEntityResponse: {
             std::cout << "[" << client->GetID() << "]: Entity Created" << std::endl;
-            r_type::net::Message<TypeMessage> response;
-            response.header.id = TypeMessage::CreateEntityMessage;
             if (!client->_initEntities.empty()) {
+                std::cout << "[" << client->GetID() << "]: Sending Entity Information" << std::endl;
+                r_type::net::Message<TypeMessage> response;
+                response.header.id = TypeMessage::CreateEntityMessage;
                 response << FormatEntityInformation(client->_initEntities.front());
                 client->_lastMsg = response;
                 client->_initEntities.erase(client->_initEntities.begin());
-            } else
+            } else {
+                std::cout << "[" << client->GetID() << "]: Finished Initialization" << std::endl;
                 client->SetStatus(ServerStatus::RUNNING);
+            }
         } break;
         default: {
             client->Send(client->_lastMsg);

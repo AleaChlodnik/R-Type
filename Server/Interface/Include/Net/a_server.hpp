@@ -380,9 +380,13 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         uint32_t entityId = GetClientPlayerId(clientId);
         EntityInformation entity;
+        std::cout << "Entity ID: " << entityId << std::endl;
         vf2d entityPosition;
         auto entitySpriteData = _componentManager.getComponent<SpriteDataComponent>(entityId);
         msg >> entityPosition;
+
+        if (entitySpriteData)
+            std::cout << "Player Sprite existe" << std::endl;
 
         auto hitbox = _componentManager.getComponent<HitboxComponent>(entityId);
 

@@ -710,6 +710,9 @@ void Scenes::gameLoop()
                 } break;
                 case TypeMessage::SendPlayerInformation: {
                     EntityInformation entity;
+                    r_type::net::Message<TypeMessage> response;
+                    response.header.id = TypeMessage::RecievePlayerInformation;
+                    c.Send(response);
                     msg >> entity;
                     c.setPlayerId(entity.uniqueID);
                     c.addEntity(entity, componentManager, textureManager, windowSize);
