@@ -747,7 +747,7 @@ void Scenes::gameLoop()
                     response.header.id = TypeMessage::UpdateEntityResponse;
                     EntityInformation entity;
                     msg >> entity;
-                    c.updateEntity(entity, componentManager, windowSize);
+                    c.updateEntity(entity, componentManager, windowSize, textureManager);
                 } break;
                 case TypeMessage::UpdateEntityResponse: {
                 } break;
