@@ -24,6 +24,7 @@
 #include "player_missile_component.hpp"
 #include "position_component.hpp"
 #include "score_component.hpp"
+#include "shoot_component.hpp"
 #include "sprite_component.hpp"
 #include "sprite_data_component.hpp"
 #include "text_component.hpp"

@@ -11,6 +11,7 @@ target_sources(r-type_ecs_src PRIVATE
         Systems/animation_system.cpp
         Systems/move_system.cpp
         Systems/collision_system.cpp
+        Systems/auto_fire_system.cpp
         hitbox_tmp.cpp
         sprite_path.cpp
         a_scenes.cpp

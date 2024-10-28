@@ -97,7 +97,7 @@ template <typename T> class IServer {
      * @param clientId
      */
 
-    virtual EntityInformation InitiatePlayers(int clientId) = 0;
+    virtual EntityInformation InitiatePlayer(int clientId) = 0;
 
     /**
      * @brief Remove player

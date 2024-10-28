@@ -89,13 +89,13 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             CreatableClientObject incomingObject;
             msg >> incomingObject;
             switch (incomingObject) {
-            case CreatableClientObject::MISSILE: {
+            case CreatableClientObject::PLAYERMISSILE: {
                 r_type::net::Message<TypeMessage> ResponseMsg;
                 ResponseMsg.header.id = TypeMessage::CreateEntityResponse;
                 client->Send(ResponseMsg);
                 r_type::net::Message<TypeMessage> MissileMsg;
                 MissileMsg.header.id = TypeMessage::CreateEntityMessage;
-                MissileMsg << InitiateMissile(client->GetID());
+                MissileMsg << InitiatePlayerMissile(client->GetID());
                 MessageAllClients(MissileMsg);
             } break;
             default: {
@@ -124,7 +124,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             std::cout << "[" << client->GetID() << "]: Player Information Sent" << std::endl;
             r_type::net::Message<TypeMessage> response;
             response.header.id = TypeMessage::SendPlayerInformation;
-            response << InitiatePlayers(client->GetID());
+            response << InitiatePlayer(client->GetID());
             MessageClient(client, response);
             client->_lastMsg = response;
             response.header.id = TypeMessage::CreateEntityMessage;
