@@ -7,6 +7,7 @@
 
 #include <Net/server.hpp>
 #include <creatable_client_object.hpp>
+#include <cstdint>
 
 bool r_type::net::Server::OnClientConnect(
     std::shared_ptr<r_type::net::Connection<TypeMessage>> client)
@@ -114,7 +115,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
  * @param entityID The ID of the entity to exclude (usually the client's own entity).
  */
 void r_type::net::Server::InitListEntities(
-    std::shared_ptr<r_type::net::Connection<TypeMessage>> client, u_int32_t entityID)
+    std::shared_ptr<r_type::net::Connection<TypeMessage>> client, uint32_t entityID)
 {
     EntityInformation entityInfo;
     r_type::net::Message<TypeMessage> msgAddPlayer;

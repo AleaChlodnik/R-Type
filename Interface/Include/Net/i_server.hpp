@@ -12,6 +12,7 @@
 #include "message.hpp"
 #include "thread_safe_queue.hpp"
 #include <entity_struct.hpp>
+#include <cstdint>
 
 namespace r_type {
 namespace net {
@@ -95,7 +96,7 @@ template <typename T> class IServer {
      * @param entity
      */
     virtual void InitListEntities(
-        std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID) = 0;
+        std::shared_ptr<r_type::net::Connection<T>> client, uint32_t entityID) = 0;
 
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) = 0;
 

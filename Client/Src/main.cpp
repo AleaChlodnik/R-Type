@@ -94,23 +94,23 @@ int main(int const argc, char const *const *argv)
 
     if (argc != 3 || argv[1] == nullptr || argv[2] == nullptr) {
         std::cerr << "Usage: ./r-type_client <ip> <port>" << std::endl;
-        return ERROR;
+        return ERROR_EPITECH;
     }
 
     for (const char *p = argv[2]; *p != '\0'; ++p) {
         if (!std::isdigit(*p)) {
             std::cerr << "Port must be a number" << std::endl;
-            return ERROR;
+            return ERROR_EPITECH;
         }
     }
     if (!isValidIPv4(argv[1])) {
         std::cerr << "Invalid IP address" << std::endl;
-        return ERROR;
+        return ERROR_EPITECH;
     }
 
     if (!isValidPort(argv[2])) {
         std::cerr << "Invalid port number, 1023 < port < 65536" << std::endl;
-        return ERROR;
+        return ERROR_EPITECH;
     }
 
     std::unique_ptr<Scenes> scenes = std::make_unique<Scenes>(argv[1], atoi(argv[2]));

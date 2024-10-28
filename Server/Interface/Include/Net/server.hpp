@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include "a_server.hpp"
 
 namespace r_type {
@@ -57,7 +58,7 @@ class Server : virtual public r_type::net::AServer<TypeMessage> {
      * @param entityID The ID of the entity to exclude (usually the client's own entity).
      */
     void InitListEntities(
-        std::shared_ptr<r_type::net::Connection<TypeMessage>> client, u_int32_t entityID);
+        std::shared_ptr<r_type::net::Connection<TypeMessage>> client, uint32_t entityID);
 };
 } // namespace net
 } // namespace r_type

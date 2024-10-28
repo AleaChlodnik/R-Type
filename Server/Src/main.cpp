@@ -45,11 +45,11 @@ int main(int const argc, char const *const *const argv)
 {
     if (argc != 2) {
         std::cerr << "Usage: ./server <port>" << std::endl;
-        return ERROR;
+        return ERROR_EPITECH;
     }
     if (!isValidPort(argv[1])) {
         std::cerr << "Invalid port number, 1023 < port < 65536" << std::endl;
-        return ERROR;
+        return ERROR_EPITECH;
     }
 
     r_type::net::Server server(std::stoi(argv[1]));

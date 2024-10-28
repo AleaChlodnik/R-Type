@@ -17,6 +17,7 @@
 #include <entity_struct.hpp>
 #include <macros.hpp>
 #include <unordered_map>
+#include <cstdint>
 
 namespace r_type {
 namespace net {
@@ -306,7 +307,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                                         r_type::net::Message<TypeMessage> msg;
                                         msg.header.id = TypeMessage::UpdateEntity;
                                         MessageAllClients(msg
-                                            << EntityInformation{static_cast<u_int32_t>(entityId),
+                                            << EntityInformation{static_cast<uint32_t>(entityId),
                                                    *(spriteData.value()),
                                                    {newPosition->x, newPosition->y}});
                                     }
@@ -366,11 +367,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                             if (it != previousAnimations.end()) {
                                 const auto &oldAnimation = it->second;
                                 if (oldAnimation != *newAnimation) {
-                                    r_type::net::Message<TypeMessage> msg;
-                                    msg.header.id = TypeMessage::AnimateEntityMessage;
+                        r_type::net::Message<TypeMessage> msg;
+                        msg.header.id = TypeMessage::AnimateEntityMessage;
                                     msg << entityId << newAnimation->dimension
                                         << newAnimation->offset;
-                                    MessageAllClients(msg);
+                        MessageAllClients(msg);
                                 }
                             }
                         }
@@ -418,8 +419,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         auto hitbox = _componentManager.getComponent<HitboxComponent>(entityId);
 
         if (hitbox) {
-            float halfWidth = hitbox.value()->w / 2;
-            float halfHeight = hitbox.value()->h / 2;
+            float halfWidth = static_cast<float>(hitbox.value()->w / 2);
+            float halfHeight = static_cast<float>(hitbox.value()->h / 2);
             float minX, maxX, minY, maxY;
 
             maxX = ((entityPosition.x / 100) * SCREEN_WIDTH) + halfWidth;
@@ -576,7 +577,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param entityID The ID of the entity to exclude (usually the client's own entity).
      */
     virtual void InitListEntities(
-        std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID) = 0;
+        std::shared_ptr<r_type::net::Connection<T>> client, uint32_t entityID) = 0;
 
     /**
      * @brief Callback function that is called when a client has been successfully

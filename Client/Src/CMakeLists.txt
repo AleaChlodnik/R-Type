@@ -6,8 +6,9 @@ add_executable(r-type_client main.cpp scenes.cpp)
 
 target_compile_features(r-type_client PRIVATE cxx_std_17)
 
+add_dependencies(r-type_client r-type_ecs_src)
+
 if (MSVC)
-  # target_compile_options(r-type_client PRIVATE /W4)
   target_link_libraries(r-type_client PRIVATE r-type_interfaces r-type_client_interfaces r-type_ecs_src r-type_ecs_interfaces)
 else()
   target_compile_options(r-type_client PRIVATE -Wall -Wextra)

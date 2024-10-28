@@ -8,7 +8,12 @@
 #pragma once
 
 #define OK 0
-#define ERROR 84
+#define ERROR_EPITECH 84
 #define KO -1
 
-#define UNUSED __attribute__((unused))
+#ifdef _WIN32_WINNT
+	#define UNUSED [[maybe_unused]]
+#endif
+#ifndef _WIN32_WINNT
+    #define UNUSED __attribute__((unused))
+#endif

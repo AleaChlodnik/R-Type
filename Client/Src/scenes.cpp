@@ -152,7 +152,7 @@ void Scenes::mainMenu()
     buttons.push_back(quitButton);
 
     sf::Clock clock;
-    sf::Event event;
+    sf::Event event = {};
 
     while (_window.isOpen() && this->_currentScene == Scenes::Scene::MAIN_MENU) {
 
@@ -255,7 +255,7 @@ void Scenes::inGameMenu()
     buttons.push_back(returnToMainMenu);
 
     sf::Clock clock;
-    sf::Event event;
+    sf::Event event = {};
 
     while (_window.isOpen() && this->_currentScene == Scenes::Scene::IN_GAME_MENU) {
 
@@ -527,7 +527,7 @@ void Scenes::settingsMenu()
     }
 
     sf::Clock clock;
-    sf::Event event;
+    sf::Event event = {};
 
     while (_window.isOpen() && this->_currentScene == Scenes::Scene::SETTINGS_MENU) {
 

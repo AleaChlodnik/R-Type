@@ -1,10 +1,5 @@
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-
-add_library(r-type_ecs_src)
-
-target_sources(r-type_ecs_src PRIVATE
+add_library(r-type_ecs_src
         Entities/entity_factory.cpp
         Systems/render_system.cpp
         Systems/update_system.cpp
@@ -18,7 +13,6 @@ target_sources(r-type_ecs_src PRIVATE
 
 
 if (MSVC)
-  # target_compile_options(r-type_ecs_src PRIVATE /W4)
   target_link_libraries(r-type_ecs_src PRIVATE r-type_ecs_interfaces r-type_interfaces)
 else()
   target_compile_options(r-type_ecs_src PRIVATE -Wall -Wextra)

@@ -66,20 +66,6 @@ class AnimationSystem : public ISystem {
         : _componentManager(componentManager), _entityManager(entityManager){};
 
     /**
-     * @brief Updates the animation system.
-     *
-     * This function overrides the base class update method to update the animation
-     * system. It processes animation entities using the component manager and entity
-     * manager, and updates them based on the provided delta time.
-     *
-     * @param deltaTime The time elapsed since the last update, used to update animations.
-     */
-    void update(float deltaTime) override
-    {
-        AnimationEntities(this->_componentManager, this->_entityManager, deltaTime);
-    };
-
-    /**
      * @brief Animates entities.
      *
      * This function animates entities based on their animation components. It processes
@@ -92,6 +78,20 @@ class AnimationSystem : public ISystem {
      */
     void AnimationEntities(
         ComponentManager &componentManager, EntityManager &entityManager, float deltaTime);
+
+    /**
+     * @brief Updates the animation system.
+     *
+     * This function overrides the base class update method to update the animation
+     * system. It processes animation entities using the component manager and entity
+     * manager, and updates them based on the provided delta time.
+     *
+     * @param deltaTime The time elapsed since the last update, used to update animations.
+     */
+    void update(float deltaTime) override
+    {
+        AnimationEntities(this->_componentManager, this->_entityManager, deltaTime);
+    };
 
   private:
     /**
