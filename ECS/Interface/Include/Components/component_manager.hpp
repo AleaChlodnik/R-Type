@@ -88,6 +88,13 @@ class ComponentManager {
         }
     }
 
+    void removeEntityFromAllComponents(int entityId)
+    {
+        for (auto &component : components) {
+            component.second.erase(entityId);
+        }
+    }
+
   private:
     // unordered map of <componentType, it's unordered map of <entityId, it's
     // values for the componentType>>

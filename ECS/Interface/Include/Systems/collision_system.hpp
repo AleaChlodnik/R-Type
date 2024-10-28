@@ -16,9 +16,14 @@ class CollisionSystem : public ISystem {
     {
     }
 
-    void update(float deltaTime) override { checkCollisions(); }
+    void handleCollisions(ComponentManager &componentManager, EntityManager &entityManager);
 
-    void checkCollisions();
+    bool checkCollision(ComponentManager &componentManager, int entityId1, int entityId2);
+
+    bool checkOffScreen(ComponentManager &componentManager, int entityId);
+
+    void removeCollidedEntity(ComponentManager &componentManager, int entityId1, int entityId2,
+        std::vector<int> &entitiesToRemove);
 
   private:
     ComponentManager &_componentManager;

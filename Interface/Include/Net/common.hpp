@@ -25,3 +25,9 @@
 #include <asio.hpp>
 #include <asio/ts/buffer.hpp>
 #include <asio/ts/internet.hpp>
+
+enum ServerStatus {
+    WAITING,
+    RUNNING,
+    INITIALISATION,
+};

@@ -10,12 +10,14 @@
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
 #include <Net/client.hpp>
-#include <Systems/system_manager.hpp>
 #include <Systems/systems.hpp>
+#include <audio_manager.hpp>
+#include <chrono>
 #include <creatable_client_object.hpp>
 #include <functional>
 #include <iostream>
 #include <scenes.hpp>
+#include <sound_path.hpp>
 #include <texture_manager.hpp>
 
 Scenes::Scenes(std::string ip, int port) : IScenes(), AScenes(ip, port)
@@ -42,8 +44,9 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
     std::vector<std::shared_ptr<Entity>> buttons, Scenes *scenes)
 {
     while (_window->pollEvent(event)) {
-        if (event.type == sf::Event::Closed)
+        if (event.type == sf::Event::Closed) {
             _window->close();
+        }
         if (event.type == sf::Event::MouseButtonPressed &&
             event.mouseButton.button == sf::Mouse::Left) {
             auto pos = sf::Mouse::getPosition(*_window);
@@ -99,15 +102,10 @@ void Scenes::mainMenu()
     TextureManager textureManager;
     EntityFactory entityFactory;
 
-    SystemManager systemManager;
-
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(_window, componentManager);
-
-    systemManager.addSystem(updateSystem);
-    systemManager.addSystem(renderSystem);
 
     buttons = {};
 
@@ -117,7 +115,7 @@ void Scenes::mainMenu()
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale, 0);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
     // Create buttons
@@ -156,9 +154,10 @@ void Scenes::mainMenu()
 
         handleEvents(event, componentManager, &_window, buttons, this);
 
-        float deltaTime = clock.restart().asSeconds();
+        // float deltaTime = clock.restart().asSeconds();
 
-        systemManager.updateSystems(deltaTime);
+        updateSystem->updateSpritePositions(componentManager, entityManager);
+        renderSystem->render(componentManager);
     }
 }
 
@@ -198,15 +197,15 @@ void Scenes::inGameMenu()
     TextureManager textureManager;
     EntityFactory entityFactory;
 
-    SystemManager systemManager;
+    // SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(_window, componentManager);
 
-    systemManager.addSystem(updateSystem);
-    systemManager.addSystem(renderSystem);
+    // systemManager.addSystem(updateSystem);
+    // systemManager.addSystem(renderSystem);
 
     buttons = {};
 
@@ -216,7 +215,7 @@ void Scenes::inGameMenu()
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale, 0);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
     // Create the buttons
@@ -256,9 +255,10 @@ void Scenes::inGameMenu()
 
         handleEvents(event, componentManager, &_window, buttons, this);
 
-        float deltaTime = clock.restart().asSeconds();
+        // float deltaTime = clock.restart().asSeconds();
 
-        systemManager.updateSystems(deltaTime);
+        updateSystem->updateSpritePositions(componentManager, entityManager);
+        renderSystem->render(componentManager);
     }
 }
 
@@ -418,15 +418,15 @@ void Scenes::settingsMenu()
     TextureManager textureManager;
     EntityFactory entityFactory;
 
-    SystemManager systemManager;
+    // SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(_window, componentManager);
 
-    systemManager.addSystem(updateSystem);
-    systemManager.addSystem(renderSystem);
+    // systemManager.addSystem(updateSystem);
+    // systemManager.addSystem(renderSystem);
 
     buttons = {};
 
@@ -436,7 +436,7 @@ void Scenes::settingsMenu()
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
     sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale, 0);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
     // Create the buttons
@@ -525,9 +525,10 @@ void Scenes::settingsMenu()
 
         handleEvents(event, componentManager, &_window, buttons, this);
 
-        float deltaTime = clock.restart().asSeconds();
+        // float deltaTime = clock.restart().asSeconds();
 
-        systemManager.updateSystems(deltaTime);
+        updateSystem->updateSpritePositions(componentManager, entityManager);
+        renderSystem->render(componentManager);
     }
 }
 
@@ -567,66 +568,77 @@ void Scenes::gameLoop()
     EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
-    sf::Vector2u windowSize = _window->getSize();
+    auto audioManager = std::make_shared<AudioManager>();
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    SystemManager systemManager;
-
+    std::shared_ptr<AudioSystem> audioSystem = std::make_shared<AudioSystem>(audioManager);
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(_window, componentManager);
 
-    systemManager.addSystem(updateSystem);
-    systemManager.addSystem(renderSystem);
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     sf::Event event;
-
     sf::Clock clock;
+
+    const int FIRE_COOLDOWN_MS = 500;
+    std::chrono::steady_clock::time_point lastFireTime = std::chrono::steady_clock::now();
 
     auto pixelToPercent = [&](float v1, float v2) { return (v1 / v2) * 100; };
 
-    auto updatePlayerPosition = [&](const vf2d &delta, sf::Vector2u windowSize) {
+    auto movePlayer = [&](const vf2d &delta, sf::Vector2u windowSize) {
         r_type::net::Message<TypeMessage> msg;
-        vf2d playerPos;
+        vf2d requestedPosition;
         msg.header.id = TypeMessage::MoveEntityMessage;
         if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
             auto &sprites = **spritesOpt;
             auto spriteComponent = sprites[c.getPlayerId()];
             auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            playerPos.x =
+            requestedPosition.x =
                 pixelToPercent(playerSprite->sprite.getPosition().x, windowSize.x) + delta.x;
-            playerPos.y =
+            requestedPosition.y =
                 pixelToPercent(playerSprite->sprite.getPosition().y, windowSize.y) + delta.y;
-            msg << playerPos;
+            msg << requestedPosition;
             c.Send(msg);
         }
     };
 
     auto fireMissile = [&]() {
-        r_type::net::Message<TypeMessage> msg;
-        msg.header.id = TypeMessage::CreateEntityMessage;
-        msg << CreatableClientObject::MISSILE;
-        c.Send(msg);
+        auto currentTime = std::chrono::steady_clock::now();
+        auto timeSinceLastFire =
+            std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastFireTime)
+                .count();
+        if (timeSinceLastFire >= FIRE_COOLDOWN_MS) {
+            r_type::net::Message<TypeMessage> msg;
+            msg.header.id = TypeMessage::CreateEntityMessage;
+            msg << CreatableClientObject::PLAYERMISSILE;
+            c.Send(msg);
+            lastFireTime = currentTime;
+            audioSystem->playSoundEffect(SoundFactory(ActionType::Shot));
+        }
     };
 
     auto death = [&]() {
-        std::cout << "Closing window" << std::endl;
+        audioSystem->stopBackgroundMusic();
+        audioSystem->playSoundEffect(SoundFactory(ActionType::GameOver));
         r_type::net::Message<TypeMessage> msg;
         msg.header.id = TypeMessage::DestroyEntityMessage;
         msg << c.getPlayerId();
         c.Send(msg);
+        std::cout << "Closing window" << std::endl;
         _window.close();
     };
 
-    while (_window->isOpen()) {
-        float deltaTime = clock.restart().asSeconds();
+    sf::Vector2u windowSize = _window.getSize();
+
+    audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
+
+    while (_window.isOpen()) {
+        // float deltaTime = clock.restart().asSeconds();
         while (_window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 death();
+            }
+            if (sf::Keyboard::isKeyPressed(keyBinds[Actions::FIRE])) {
+                fireMissile();
             }
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::P) {
@@ -642,16 +654,16 @@ void Scenes::gameLoop()
                     death();
                 }
                 if (event.key.code == keyBinds[Actions::UP]) {
-                    updatePlayerPosition(vf2d{0, -1}, windowSize);
+                    movePlayer(vf2d{0, -1}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::DOWN]) {
-                    updatePlayerPosition(vf2d{0, 1}, windowSize);
+                    movePlayer(vf2d{0, 1}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::LEFT]) {
-                    updatePlayerPosition(vf2d{-1, 0}, windowSize);
+                    movePlayer(vf2d{-1, 0}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::RIGHT]) {
-                    updatePlayerPosition(vf2d{1, 0}, windowSize);
+                    movePlayer(vf2d{1, 0}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::PAUSE]) {
                     this->setScene(Scenes::Scene::IN_GAME_MENU);
@@ -659,20 +671,15 @@ void Scenes::gameLoop()
             }
         }
         if (c.IsConnected()) {
-            // std::cout << "Connected to Server" << std::endl;
-            // /////////////////////////////////////
+            // std::cout << "Connected to Server" << std::endl;/////////////////////////
             if (!c.Incoming().empty()) {
                 auto msg = c.Incoming().pop_front().msg;
                 switch (msg.header.id) {
                 case TypeMessage::ServerAccept: {
                     std::cout << "Server Accepted Connection" << std::endl;
-                    EntityInformation entity;
-                    msg >> entity;
-                    std::cout << "Entity [" << entity.uniqueID << "] pos [" << entity.vPos.x
-                              << ", " << entity.vPos.y << "]" << std::endl;
-                    c.setPlayerId(entity.uniqueID);
-                    c.addEntity(entity, componentManager, textureManager, windowSize);
-
+                    r_type::net::Message<TypeMessage> response;
+                    response.header.id = TypeMessage::SendPlayer;
+                    c.Send(response);
                 } break;
                 case TypeMessage::ServerPing: {
                     std::chrono::system_clock::time_point timeNow =
@@ -688,7 +695,17 @@ void Scenes::gameLoop()
                     msg >> clientID;
                     std::cout << "Hello from [" << clientID << "]" << std::endl;
                 } break;
+                case TypeMessage::SendPlayerInformation: {
+                    EntityInformation entity;
+                    r_type::net::Message<TypeMessage> response;
+                    response.header.id = TypeMessage::RecievePlayerInformation;
+                    c.Send(response);
+                    msg >> entity;
+                    c.setPlayerId(entity.uniqueID);
+                    c.addEntity(entity, componentManager, textureManager, windowSize);
+                } break;
                 case TypeMessage::ServerDeny: {
+                    std::cout << "Server Denied Connection" << std::endl;
                 } break;
                 case TypeMessage::MessageAll: {
                 } break;
@@ -696,20 +713,19 @@ void Scenes::gameLoop()
                 } break;
                 case TypeMessage::CreateEntityMessage: {
                     EntityInformation entity;
+                    r_type::net::Message<TypeMessage> response;
+                    response.header.id = TypeMessage::CreateEntityResponse;
+                    c.Send(response);
                     msg >> entity;
                     c.addEntity(entity, componentManager, textureManager, windowSize);
-                    c.addEntity(entity, componentManager, textureManager, windowSize);
-                } break;
-                case TypeMessage::CreateEntityResponse: {
                 } break;
                 case TypeMessage::DestroyEntityMessage: {
                     r_type::net::Message<TypeMessage> response;
                     uint32_t id;
                     msg >> id;
-                    if (id == c.getPlayerId()) {
+                    audioSystem->playSoundEffect(SoundFactory(ActionType::Explosion));
+                    if (id == c.getPlayerId())
                         death();
-                    }
-                    c.removeEntity(id, componentManager);
                     c.removeEntity(id, componentManager);
                     response.header.id = TypeMessage::DestroyEntityResponse;
                     c.Send(response);
@@ -719,7 +735,7 @@ void Scenes::gameLoop()
                     response.header.id = TypeMessage::UpdateEntityResponse;
                     EntityInformation entity;
                     msg >> entity;
-                    c.updateEntity(entity, componentManager, windowSize);
+                    c.updateEntity(entity, componentManager, windowSize, textureManager);
                 } break;
                 case TypeMessage::UpdateEntityResponse: {
                 } break;
@@ -731,6 +747,13 @@ void Scenes::gameLoop()
                 } break;
                 case TypeMessage::FinishInitialization: {
                 } break;
+                case TypeMessage::AnimateEntityMessage: {
+                    r_type::net::Message<TypeMessage> response;
+                    uint32_t id;
+                    AnimationComponent rect({0, 0}, {0, 0});
+                    msg >> rect.offset >> rect.dimension >> id;
+                    c.animateEntity(id, rect, componentManager);
+                } break;
                 }
             }
         } else {
@@ -738,7 +761,9 @@ void Scenes::gameLoop()
             _window.close();
             break;
         }
-        systemManager.updateSystems(deltaTime);
+
+        updateSystem->updateSpritePositions(componentManager, entityManager);
+        renderSystem->render(componentManager);
     }
 }
 

@@ -9,6 +9,7 @@
 
 #include "ally_component.hpp"
 #include "ally_missile_component.hpp"
+#include "animation_component.hpp"
 #include "background_component.hpp"
 #include "basic_monster_component.hpp"
 #include "bind_component.hpp"
@@ -23,6 +24,7 @@
 #include "player_missile_component.hpp"
 #include "position_component.hpp"
 #include "score_component.hpp"
+#include "shoot_component.hpp"
 #include "sprite_component.hpp"
 #include "sprite_data_component.hpp"
 #include "text_component.hpp"
