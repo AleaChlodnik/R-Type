@@ -18,7 +18,7 @@ namespace r_type {
 namespace net {
 template <typename T> class AClient : virtual public IClient<T> {
   public:
-    AClient() {}
+    AClient() { m_connection = nullptr; }
 
     virtual ~AClient() { Disconnect(); }
 
@@ -113,8 +113,8 @@ template <typename T> class AClient : virtual public IClient<T> {
 
     void addEntity(EntityInformation entity, ComponentManager &componentManager,
         TextureManager &textureManager, sf::Vector2u windowSize);
-    void updateEntity(
-        EntityInformation entity, ComponentManager &componentManager, sf::Vector2u windowSize);
+    void updateEntity(EntityInformation entity, ComponentManager &componentManager,
+        sf::Vector2u windowSize, TextureManager &textureManager);
     void removeEntity(int entityId, ComponentManager &componentManager);
 
   protected:

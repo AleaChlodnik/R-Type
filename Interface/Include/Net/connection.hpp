@@ -184,6 +184,13 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
         });
     }
 
+  public:
+    r_type::net::Message<TypeMessage> _lastMsg;
+    std::vector<Entity> _initEntities;
+
+    ServerStatus GetStatus() { return _status; }
+    void SetStatus(ServerStatus status) { _status = status; }
+
   private:
     /**
      * @brief write header message to client or server
@@ -365,6 +372,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
     uint64_t m_nHandshakeOut = 0;
     uint64_t m_nHandshakeIn = 0;
     uint64_t m_nHandshakeCheck = 0;
+    ServerStatus _status;
 };
 } // namespace net
 } // namespace r_type

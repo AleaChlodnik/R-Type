@@ -7,6 +7,9 @@
 
 #pragma once
 
-#include "collision_system.hpp"
-#include "render_system.hpp"
-#include "update_system.hpp"
+#include <Systems/animation_system.hpp>
+#include <Systems/auto_fire_system.hpp>
+#include <Systems/collision_system.hpp>
+#include <Systems/move_system.hpp>
+#include <Systems/render_system.hpp>
+#include <Systems/update_system.hpp>

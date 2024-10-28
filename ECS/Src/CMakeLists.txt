@@ -8,6 +8,10 @@ target_sources(r-type_ecs_src PRIVATE
         Entities/entity_factory.cpp
         Systems/render_system.cpp
         Systems/update_system.cpp
+        Systems/animation_system.cpp
+        Systems/move_system.cpp
+        Systems/collision_system.cpp
+        Systems/auto_fire_system.cpp
         hitbox_tmp.cpp
         sprite_path.cpp
         a_scenes.cpp
