@@ -311,16 +311,16 @@ Entity EntityFactory::createFilter(
 
     switch (mode) {
     case AScenes::DaltonismMode::PROTANOPIA:
-        filterColor = sf::Color(255, 0, 0, 128); // Red filter
+        filterColor = sf::Color(255, 153, 102, 100);
         break;
     case AScenes::DaltonismMode::DEUTERANOPIA:
-        filterColor = sf::Color(0, 255, 0, 128); // Green filter
+        filterColor = sf::Color(102, 153, 255, 100);
         break;
     case AScenes::DaltonismMode::TRITANOPIA:
-        filterColor = sf::Color(0, 0, 255, 128); // Blue filter
+        filterColor = sf::Color(255, 204, 255, 100);
         break;
     default:
-        filterColor = sf::Color(255, 255, 255, 0); // No filter
+        filterColor = sf::Color(255, 255, 255, 0);
         break;
     }
 

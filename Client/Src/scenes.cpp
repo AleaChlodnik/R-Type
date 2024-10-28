@@ -30,17 +30,17 @@ void reloadFilter(sf::RectangleShape &rectangle, AScenes::DaltonismMode mode)
         return;
     }
     switch (mode) {
-    case AScenes::DaltonismMode::NORMAL:
-        rectangle.setFillColor(sf::Color(0, 0, 0, 0));
-        break;
-    case AScenes::DaltonismMode::TRITANOPIA:
-        rectangle.setFillColor(sf::Color(255, 0, 0, 100));
+    case AScenes::DaltonismMode::PROTANOPIA:
+        rectangle.setFillColor(sf::Color(255, 153, 102, 100));
         break;
     case AScenes::DaltonismMode::DEUTERANOPIA:
-        rectangle.setFillColor(sf::Color(0, 255, 0, 100));
+        rectangle.setFillColor(sf::Color(102, 153, 255, 100));
         break;
-    case AScenes::DaltonismMode::PROTANOPIA:
-        rectangle.setFillColor(sf::Color(0, 0, 255, 100));
+    case AScenes::DaltonismMode::TRITANOPIA:
+        rectangle.setFillColor(sf::Color(255, 204, 255, 100));
+        break;
+    default:
+        rectangle.setFillColor(sf::Color(255, 255, 255, 0));
         break;
     }
 }
