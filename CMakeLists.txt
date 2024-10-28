@@ -11,7 +11,7 @@ if(LINUX)
 endif()
 if(WIN32)
   execute_process(COMMAND vcpkg integrate install)
-  execute_process(COMMAND vcpkg install --triplet x64-windows)
+  execute_process(COMMAND vcpkg install)
 endif()
 
 # Set C++ Standard

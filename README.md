@@ -77,7 +77,7 @@ Build r-type_client & r-type_server with CMake
 
 ```cmd
 cmake -S . -B build
-cmake --build build -- /maxcpucount:4  /p:VcpkgEnableManifest=true
+cmake --build build -- /p:VcpkgEnableManifest=true
 ```
 
 ## Documentation

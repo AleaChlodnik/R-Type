@@ -30,7 +30,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-install-${{ env.cache-name }}-
 
-      - name: compile project
+      - name: build project for generatorcompile project
         run: cmake -S . -B build # do apt install
 
       - name: Cache cmake build
@@ -43,7 +43,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-      - name: build project
+      - name: compile project<
         run: cmake --build build -j "$(nproc)"
 
   windows_install:
@@ -75,10 +75,10 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-      - name: compile project
+      - name: build project for generator
         run: cmake -S . -B build
-      - name: build project
-        run: cmake --build build -- /maxcpucount:4  /p:VcpkgEnableManifest=true
+      - name: compile project
+        run: cmake --build build -- /p:VcpkgEnableManifest=true
 
   push_to_mirror:
     timeout-minutes: 10

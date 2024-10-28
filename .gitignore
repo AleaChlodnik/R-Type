@@ -45,3 +45,4 @@ bin
 #windows
 .vs
 vcpkg_installed
+*.dll
