@@ -241,8 +241,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @brief Updates the game level based on the provided clock time.
      *
      * This function performs several tasks to update the game level:
-     * 1. Checks if the time difference between the new clock and the stored clock exceeds 100 milliseconds.
-     * 2. If so, it updates entity positions, handles collisions, updates animations, and processes auto-firing.
+     * 1. Checks if the time difference between the new clock and the stored clock exceeds 100
+     * milliseconds.
+     * 2. If so, it updates entity positions, handles collisions, updates animations, and processes
+     * auto-firing.
      * 3. Sends appropriate messages to clients about entity updates, creations, and destructions.
      *
      * @param newClock The new clock time point to compare with the stored clock.
@@ -385,12 +387,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      *
      * This function performs several tasks:
      * - If no players are connected, it returns immediately.
-     * - If players are connected and the player connection flag is not set, it sets the flag and updates the clock.
+     * - If players are connected and the player connection flag is not set, it sets the flag and
+     * updates the clock.
      * - Spawns a thread to update the game level.
      * - Processes up to nMaxMessages from the incoming message queue.
      * - Joins the level update thread and updates the clock if entities were updated.
      *
-     * @param nMaxMessages The maximum number of messages to process from the incoming message queue. Default is -1 (process all messages).
+     * @param nMaxMessages The maximum number of messages to process from the incoming message
+     * queue. Default is -1 (process all messages).
      * @param bWait A flag indicating whether to wait for messages. Default is false.
      */
     void Update(size_t nMaxMessages = -1, bool bWait = false)
