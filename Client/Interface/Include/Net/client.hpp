@@ -65,8 +65,8 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         componentManager.removeEntityFromComponent<SpriteComponent>(entityId);
     }
 
-    void updateEntity(
-        EntityInformation entity, ComponentManager &componentManager, sf::Vector2u windowSize, TextureManager &textureManager)
+    void updateEntity(EntityInformation entity, ComponentManager &componentManager,
+        sf::Vector2u windowSize, TextureManager &textureManager)
     {
         auto spriteEntity = componentManager.getComponent<SpriteComponent>(entity.uniqueID);
         if (spriteEntity) {
