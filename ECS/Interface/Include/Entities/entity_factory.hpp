@@ -170,5 +170,6 @@ class EntityFactory : public IEntityFactory {
      * @param mode
      * @return Entity
      */
-    Entity createFilter(EntityManager &entityManager, ComponentManager &componentManager, AScenes::DaltonismMode mode);
+    Entity createFilter(EntityManager &entityManager, ComponentManager &componentManager,
+        AScenes::DaltonismMode mode);
 };

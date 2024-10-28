@@ -22,9 +22,8 @@ void RenderSystem::render(ComponentManager &componentManager)
         }
     }
 
-    std::sort(sortedSprites.begin(), sortedSprites.end(), [](const auto &a, const auto &b) {
-        return a.second.type < b.second.type;
-    });
+    std::sort(sortedSprites.begin(), sortedSprites.end(),
+        [](const auto &a, const auto &b) { return a.second.type < b.second.type; });
 
     for (const auto &pair : sortedSprites) {
         const auto &sprite = pair.second;
