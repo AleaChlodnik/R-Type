@@ -288,10 +288,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                                                 entityId)) {
                                         r_type::net::Message<TypeMessage> msg;
                                         msg.header.id = TypeMessage::UpdateEntity;
-                                        MessageAllClients(msg
-                                            << EntityInformation{static_cast<u_int32_t>(entityId),
-                                                   *(spriteData.value()),
-                                                   {newPosition->x, newPosition->y}});
+                                        msg << FormatEntityInformation(
+                                            _entityManager.getEntity(entityId).value()->getId());
+                                        MessageAllClients(msg);
                                     }
                                 }
                             }
@@ -527,12 +526,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         auto playerPos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         auto playerAnimation =
             _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
-        if (playerSprite && playerPos) {
+        auto playerHealth = _componentManager.getComponent<HealthComponent>(entityInfo.uniqueID);
+        if (playerSprite && playerPos && playerAnimation && playerHealth) {
             entityInfo.spriteData = *(playerSprite.value());
             entityInfo.vPos.x = playerPos.value()->x;
             entityInfo.vPos.y = playerPos.value()->y;
             entityInfo.animationComponent.dimension = playerAnimation.value()->dimension;
             entityInfo.animationComponent.offset = playerAnimation.value()->offset;
+            entityInfo.life = playerHealth.value()->health;
         }
         _clientPlayerID.insert_or_assign(clientId, entityInfo.uniqueID);
         return entityInfo;
@@ -550,20 +551,24 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param entity The entity whose information is to be formatted.
      * @return EntityInformation The formatted information of the entity.
      */
-    EntityInformation FormatEntityInformation(Entity entity)
+    EntityInformation FormatEntityInformation(uint32_t entityId)
     {
         EntityInformation entityInfo;
-        auto entityPos = _componentManager.getComponent<PositionComponent>(entity.getId());
-        auto entitySprite = _componentManager.getComponent<SpriteDataComponent>(entity.getId());
-        auto animation = _componentManager.getComponent<AnimationComponent>(entity.getId());
+        auto entityPos = _componentManager.getComponent<PositionComponent>(entityId);
+        auto entitySprite = _componentManager.getComponent<SpriteDataComponent>(entityId);
+        auto animation = _componentManager.getComponent<AnimationComponent>(entityId);
+        auto entityHealth = _componentManager.getComponent<HealthComponent>(entityId);
         if (entityPos && entitySprite) {
-            entityInfo.uniqueID = entity.getId();
+            entityInfo.uniqueID = entityId;
             entityInfo.vPos.x = entityPos.value()->x;
             entityInfo.vPos.y = entityPos.value()->y;
             entityInfo.spriteData = *(entitySprite.value());
             if (animation) {
                 entityInfo.animationComponent.dimension = animation.value()->dimension;
                 entityInfo.animationComponent.offset = animation.value()->offset;
+            }
+            if (entityHealth) {
+                entityInfo.life = entityHealth.value()->health;
             }
         }
         return entityInfo;
