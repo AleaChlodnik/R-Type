@@ -81,6 +81,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         UpdatePlayerPosition(msg, client->GetID());
     } break;
     case TypeMessage::DestroyEntityMessage: {
+        std::cout << "[" << client->GetID() << "]: Destroy Entity" << std::endl;
         OnClientDisconnect(client, msg);
     } break;
     case TypeMessage::CreateEntityMessage: { // This is for player missile creation only
@@ -123,10 +124,15 @@ void r_type::net::Server::InitListEntities(
         if (entity.getId() != entityID && entity.getId() != 1) {
             auto playerPos = _componentManager.getComponent<PositionComponent>(entity.getId());
             auto sprite = _componentManager.getComponent<SpriteDataComponent>(entity.getId());
+            auto animation = _componentManager.getComponent<AnimationComponent>(entity.getId());
             if (playerPos && sprite) {
                 entityInfo.uniqueID = entity.getId();
                 entityInfo.vPos.x = playerPos.value()->x;
                 entityInfo.vPos.y = playerPos.value()->y;
+                if (animation) {
+                    entityInfo.animationComponent.dimension = animation.value()->dimension;
+                    entityInfo.animationComponent.offset = animation.value()->offset;
+                }
                 entityInfo.spriteData = *(sprite.value());
                 msgAddPlayer << entityInfo;
                 MessageClient(client, msgAddPlayer);

@@ -49,11 +49,14 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         std::cout << "entityId: " << entity.uniqueID
                   << std::endl; /////////////////////////////////
         std::cout << "spritePath: " << SpriteFactory(entity.spriteData.spritePath)
-                  << std::endl; ///
+                  << std::endl;                                        ///////////////////
+        std::cout << "spriteData: " << entity.spriteData << std::endl; ///////////////////
         sf::Texture &texture =
             textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
         sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
-        SpriteComponent sprite(texture, posX, posY, scale, entity.spriteData.type);
+        sf::IntRect rect(entity.animationComponent.offset.x, entity.animationComponent.offset.y,
+            entity.animationComponent.dimension.x, entity.animationComponent.dimension.y);
+        SpriteComponent sprite(texture, posX, posY, scale, entity.spriteData.type, rect);
         componentManager.addComponent<SpriteComponent>(entity.uniqueID, sprite);
     }
 
@@ -74,6 +77,22 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
                     float posX = windowSize.x * (entity.vPos.x / 100.0f);
                     float posY = windowSize.y * (entity.vPos.y / 100.0f);
                     entitySprite->sprite.setPosition(posX, posY);
+                }
+            }
+        }
+    }
+
+    void animateEntity(int entityId, AnimationComponent rect, ComponentManager &componentManager)
+    {
+        if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
+            auto &sprites = **spritesOpt;
+            auto entitySpriteIt = sprites.find(entityId);
+            if (entitySpriteIt != sprites.end()) {
+                auto &spriteComponent = entitySpriteIt->second;
+                if (auto entitySprite = std::any_cast<SpriteComponent>(&spriteComponent)) {
+                    sf::IntRect newRect(
+                        rect.offset.x, rect.offset.y, rect.dimension.x, rect.dimension.y);
+                    entitySprite->sprite.setTextureRect(newRect);
                 }
             }
         }
