@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <cstdint>
 #include "a_server.hpp"
+#include <cstdint>
 
 namespace r_type {
 namespace net {

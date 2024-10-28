@@ -12,7 +12,7 @@
 #define KO -1
 
 #ifdef _WIN32_WINNT
-	#define UNUSED [[maybe_unused]]
+    #define UNUSED [[maybe_unused]]
 #endif
 #ifndef _WIN32_WINNT
     #define UNUSED __attribute__((unused))

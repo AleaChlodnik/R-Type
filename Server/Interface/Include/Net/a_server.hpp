@@ -14,10 +14,10 @@
 #include <Net/i_server.hpp>
 #include <Systems/systems.hpp>
 #include <cmath>
+#include <cstdint>
 #include <entity_struct.hpp>
 #include <macros.hpp>
 #include <unordered_map>
-#include <cstdint>
 
 namespace r_type {
 namespace net {
@@ -367,11 +367,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                             if (it != previousAnimations.end()) {
                                 const auto &oldAnimation = it->second;
                                 if (oldAnimation != *newAnimation) {
-                        r_type::net::Message<TypeMessage> msg;
-                        msg.header.id = TypeMessage::AnimateEntityMessage;
+                                    r_type::net::Message<TypeMessage> msg;
+                                    msg.header.id = TypeMessage::AnimateEntityMessage;
                                     msg << entityId << newAnimation->dimension
                                         << newAnimation->offset;
-                        MessageAllClients(msg);
+                                    MessageAllClients(msg);
                                 }
                             }
                         }
