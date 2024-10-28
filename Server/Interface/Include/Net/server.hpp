@@ -46,7 +46,6 @@ class Server : virtual public r_type::net::AServer<TypeMessage> {
      */
     void OnMessage(std::shared_ptr<r_type::net::Connection<TypeMessage>> client,
         r_type::net::Message<TypeMessage> &msg);
-
 };
 } // namespace net
 } // namespace r_type
