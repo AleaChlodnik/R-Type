@@ -141,7 +141,8 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         case TypeMessage::CreateEntityResponse: {
             std::cout << "[" << client->GetID() << "]: Entity Created" << std::endl;
             if (!client->_initEntities.empty()) {
-                std::cout << "[" << client->GetID() << "]: Sending Entity Information" << std::endl;
+                std::cout << "[" << client->GetID() << "]: Sending Entity Information"
+                          << std::endl;
                 r_type::net::Message<TypeMessage> response;
                 response.header.id = TypeMessage::CreateEntityMessage;
                 response << FormatEntityInformation(client->_initEntities.front());
