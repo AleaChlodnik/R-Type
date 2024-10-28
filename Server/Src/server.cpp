@@ -57,8 +57,6 @@ void r_type::net::Server::OnClientDisconnect(
 void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<TypeMessage>> client,
     r_type::net::Message<TypeMessage> &msg)
 {
-    std::cout << "[" << client->GetID() << "]: Message Received"
-              << " server status: " << client->GetStatus() << std::endl;
     switch (client->GetStatus()) {
     case ServerStatus::RUNNING: {
         switch (msg.header.id) {

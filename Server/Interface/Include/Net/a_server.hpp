@@ -417,7 +417,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         uint32_t entityId = GetClientPlayerId(clientId);
         EntityInformation entity;
-        std::cout << "Entity ID: " << entityId << std::endl;
         vf2d entityPosition;
         auto entitySpriteData = _componentManager.getComponent<SpriteDataComponent>(entityId);
         msg >> entityPosition;
@@ -512,7 +511,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.animationComponent.dimension = playerAnimation.value()->dimension;
             entityInfo.animationComponent.offset = playerAnimation.value()->offset;
         }
-        _clientPlayerID.insert_or_assign(_nIDCounter, entityInfo.uniqueID);
+        _clientPlayerID.insert_or_assign(clientId, entityInfo.uniqueID);
         return entityInfo;
     }
 
