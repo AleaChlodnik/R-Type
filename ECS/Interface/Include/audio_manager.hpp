@@ -14,8 +14,9 @@
 #include <unordered_map>
 
 class AudioManager {
-public:
-    sf::SoundBuffer &getSoundBuffer(const std::string &filePath) {
+  public:
+    sf::SoundBuffer &getSoundBuffer(const std::string &filePath)
+    {
         // Check if sound buffer is already cached
         auto it = soundBuffers.find(filePath);
         if (it != soundBuffers.end()) {
@@ -31,6 +32,6 @@ public:
         return *buffer;
     }
 
-private:
+  private:
     std::unordered_map<std::string, std::shared_ptr<sf::SoundBuffer>> soundBuffers;
 };

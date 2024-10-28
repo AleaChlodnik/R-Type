@@ -34,18 +34,15 @@ class TextureManager {
         }
 
         auto &texture = textures[filePath];
-    if (!texture.loadFromFile(filePath)) {
-        textures.erase(filePath);
-        throw failedToLoadTexture();
-    }
+        if (!texture.loadFromFile(filePath)) {
+            textures.erase(filePath);
+            throw failedToLoadTexture();
+        }
 
         return textures[filePath];
     }
 
-    void releaseTexture(const std::string &filePath)
-{
-    textures.erase(filePath);
-}
+    void releaseTexture(const std::string &filePath) { textures.erase(filePath); }
 
   private:
     /**
