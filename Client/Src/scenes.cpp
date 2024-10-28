@@ -716,7 +716,7 @@ void Scenes::gameLoop()
                     msg >> entity;
                     c.setPlayerId(entity.uniqueID);
                     c.addEntity(entity, componentManager, textureManager, windowSize);
-                }
+                } break;
                 case TypeMessage::ServerDeny: {
                     std::cout << "Server Denied Connection" << std::endl;
                 } break;
