@@ -30,7 +30,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-install-${{ env.cache-name }}-
 
-      - name: build project for generatorcompile project
+      - name: build project for generator
         run: cmake -S . -B build # do apt install
 
       - name: Cache cmake build
@@ -43,7 +43,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-      - name: compile project<
+      - name: compile project
         run: cmake --build build -j "$(nproc)"
 
   windows_install:
