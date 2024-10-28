@@ -303,10 +303,11 @@ void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     TextureManager &textureManager, EntityFactory &entityFactory)
 {
     std::function<IScenes *(AScenes *)> onNormalButtonClicked = [&](AScenes *currentScene) {
-        currentScene->setDaltonism(Scenes::DaltonismMode::NORMAL);;
-        auto filter = componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
-        reloadFilter(filter.value()->rectangleShape,
-            AScenes::DaltonismMode::NORMAL);
+        currentScene->setDaltonism(Scenes::DaltonismMode::NORMAL);
+        ;
+        auto filter =
+            componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
+        reloadFilter(filter.value()->rectangleShape, AScenes::DaltonismMode::NORMAL);
         return currentScene;
     };
     std::shared_ptr<Entity> normalButton =
@@ -315,9 +316,9 @@ void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
 
     std::function<IScenes *(AScenes *)> onTritanopiaButtonClicked = [&](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::TRITANOPIA);
-        auto filter = componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
-        reloadFilter(filter.value()->rectangleShape,
-            AScenes::DaltonismMode::TRITANOPIA);
+        auto filter =
+            componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
+        reloadFilter(filter.value()->rectangleShape, AScenes::DaltonismMode::TRITANOPIA);
         return currentScene;
     };
     std::shared_ptr<Entity> tritanopiaButton =
@@ -326,9 +327,9 @@ void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
 
     std::function<IScenes *(AScenes *)> onDeuteranopiaButtonClicked = [&](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::DEUTERANOPIA);
-        auto filter = componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
-        reloadFilter(filter.value()->rectangleShape,
-            AScenes::DaltonismMode::DEUTERANOPIA);
+        auto filter =
+            componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
+        reloadFilter(filter.value()->rectangleShape, AScenes::DaltonismMode::DEUTERANOPIA);
         return currentScene;
     };
     std::shared_ptr<Entity> deuteranopiaButton =
@@ -337,9 +338,9 @@ void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
 
     std::function<IScenes *(AScenes *)> onProtanopiaButtonClicked = [&](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::PROTANOPIA);
-        auto filter = componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
-        reloadFilter(filter.value()->rectangleShape,
-            AScenes::DaltonismMode::PROTANOPIA);
+        auto filter =
+            componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
+        reloadFilter(filter.value()->rectangleShape, AScenes::DaltonismMode::PROTANOPIA);
         return currentScene;
     };
     std::shared_ptr<Entity> protanopiaButton =
