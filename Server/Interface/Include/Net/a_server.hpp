@@ -526,8 +526,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         auto playerPos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         auto playerAnimation =
             _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
-        auto playerHealth =
-            _componentManager.getComponent<HealthComponent>(entityInfo.uniqueID);
+        auto playerHealth = _componentManager.getComponent<HealthComponent>(entityInfo.uniqueID);
         if (playerSprite && playerPos && playerAnimation && playerHealth) {
             entityInfo.spriteData = *(playerSprite.value());
             entityInfo.vPos.x = playerPos.value()->x;
