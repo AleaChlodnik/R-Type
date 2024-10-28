@@ -84,6 +84,7 @@ void AnimationSystem::AnimationEntities(
             auto velovity = componentManager.getComponent<VelocityComponent>(entity.getId());
             if (player && velovity) {
                 if (velovity.value()->y < 0) {
+                    std::cout << "UP" << std::endl;
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_DOWN).x;
                 } else if (velovity.value()->y > 0) {
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_UP).x;

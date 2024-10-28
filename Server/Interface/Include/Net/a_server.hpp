@@ -431,9 +431,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 return;
             }
             auto pos = _componentManager.getComponent<PositionComponent>(entityId);
+            auto vel = _componentManager.getComponent<VelocityComponent>(entityId);
             if (pos) {
                 pos.value()->x = entityPosition.x;
                 pos.value()->y = entityPosition.y;
+                if (vel.value()->x == 0 && vel.value()->y == 0) {
+                    vel.value()->x = 1;
+                    vel.value()->y = 1;
+                }
             }
 
             // Update entity information and send to all clients
