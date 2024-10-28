@@ -19,8 +19,6 @@ class RenderSystem : public ISystem {
         }
     }
 
-    void update(float deltaTime) override { render(this->_componentManager); }
-
     void render(ComponentManager &componentManager);
 
   private:

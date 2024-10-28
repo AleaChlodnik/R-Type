@@ -17,11 +17,6 @@ class UpdateSystem : public ISystem {
     {
     }
 
-    void update(float deltaTime) override
-    {
-        updateSpritePositions(this->_componentManager, this->_entityManager);
-    }
-
     void updateSpritePositions(ComponentManager &componentManager, EntityManager &entityManager);
 
   private:

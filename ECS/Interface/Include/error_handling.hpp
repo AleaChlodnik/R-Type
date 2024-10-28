@@ -44,3 +44,7 @@ class entityNotFound : public std::exception {
 class failedToLoadTexture : public std::exception {
     const char *what() const noexcept override { return "Failed to load texture"; }
 };
+
+class failedToLoadSound : public std::exception {
+    const char *what() const noexcept override { return "Failed to load sound"; }
+};

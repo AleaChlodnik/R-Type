@@ -16,11 +16,6 @@ class AutoFireSystem : public ISystem {
     {
     }
 
-    void update(float deltaTime) override
-    {
-        handleAutoFire(this->_componentManager, this->_entityManager);
-    }
-
     void handleAutoFire(ComponentManager &componentManager, EntityManager &entityManager);
 
   private:
