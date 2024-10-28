@@ -28,3 +28,4 @@
 #include "text_component.hpp"
 #include "velocity_component.hpp"
 #include "weapon_component.hpp"
+#include "rectangleShapeComponent.hpp"

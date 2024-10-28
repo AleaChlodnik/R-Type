@@ -12,8 +12,8 @@
 
 struct OnClickComponent {
     bool isClicked = false;
-    std::function<IScenes *(AScenes *)> &onClick;
+    std::function<IScenes *(AScenes *)> onClick;
 
-    OnClickComponent(std::function<IScenes *(AScenes *)> &onClickfunction)
+    OnClickComponent(std::function<IScenes *(AScenes *)> onClickfunction)
         : onClick(onClickfunction){};
 };

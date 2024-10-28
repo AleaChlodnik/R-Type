@@ -23,6 +23,28 @@ Scenes::Scenes(std::string ip, int port) : IScenes(), AScenes(ip, port)
     _window.setFramerateLimit(60);
 }
 
+void reloadFilter(sf::RectangleShape &rectangle, AScenes::DaltonismMode mode)
+{
+    if (rectangle.getSize().x == 0 && rectangle.getSize().y == 0) {
+        std::cout << "no RectangleShapeComponent found." << std::endl;
+        return;
+    }
+    switch (mode) {
+    case AScenes::DaltonismMode::NORMAL:
+        rectangle.setFillColor(sf::Color(0, 0, 0, 0));
+        break;
+    case AScenes::DaltonismMode::TRITANOPIA:
+        rectangle.setFillColor(sf::Color(255, 0, 0, 100));
+        break;
+    case AScenes::DaltonismMode::DEUTERANOPIA:
+        rectangle.setFillColor(sf::Color(0, 255, 0, 100));
+        break;
+    case AScenes::DaltonismMode::PROTANOPIA:
+        rectangle.setFillColor(sf::Color(0, 0, 255, 100));
+        break;
+    }
+}
+
 /**
  * @brief Handles events for the scene, including window close and mouse button press events.
  *
@@ -106,7 +128,6 @@ void Scenes::mainMenu()
     ComponentManager componentManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-
     SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
@@ -127,6 +148,10 @@ void Scenes::mainMenu()
     sf::Vector2f scale(1.0, 1.0);
     SpriteComponent spriteComponent(texture, 0, 0, scale, 0);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
+
+    // Create filter
+    this->filter = std::make_shared<Entity>(
+        entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
 
     // Create buttons
     std::function<IScenes *(AScenes *)> onPlayButtonClicked = [](AScenes *currentScene) {
@@ -205,7 +230,6 @@ void Scenes::inGameMenu()
     ComponentManager componentManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-
     SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
@@ -226,6 +250,10 @@ void Scenes::inGameMenu()
     sf::Vector2f scale(1.0, 1.0);
     SpriteComponent spriteComponent(texture, 0, 0, scale, 0);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
+
+    // Create filter
+    this->filter = std::make_shared<Entity>(
+        entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
 
     // Create the buttons
     std::function<IScenes *(AScenes *)> onResumeButtonClicked = [](AScenes *currentScene) {
@@ -274,32 +302,44 @@ void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
     TextureManager &textureManager, EntityFactory &entityFactory)
 {
-    std::function<IScenes *(AScenes *)> onNormalButtonClicked = [](AScenes *currentScene) {
-        currentScene->setDaltonism(Scenes::DaltonismMode::NORMAL);
+    std::function<IScenes *(AScenes *)> onNormalButtonClicked = [&](AScenes *currentScene) {
+        currentScene->setDaltonism(Scenes::DaltonismMode::NORMAL);;
+        auto filter = componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
+        reloadFilter(filter.value()->rectangleShape,
+            AScenes::DaltonismMode::NORMAL);
         return currentScene;
     };
     std::shared_ptr<Entity> normalButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Normal", &onNormalButtonClicked, 1460, 100));
 
-    std::function<IScenes *(AScenes *)> onTritanopiaButtonClicked = [](AScenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onTritanopiaButtonClicked = [&](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::TRITANOPIA);
+        auto filter = componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
+        reloadFilter(filter.value()->rectangleShape,
+            AScenes::DaltonismMode::TRITANOPIA);
         return currentScene;
     };
     std::shared_ptr<Entity> tritanopiaButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Tritanopia", &onTritanopiaButtonClicked, 1460, 250));
 
-    std::function<IScenes *(AScenes *)> onDeuteranopiaButtonClicked = [](AScenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onDeuteranopiaButtonClicked = [&](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::DEUTERANOPIA);
+        auto filter = componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
+        reloadFilter(filter.value()->rectangleShape,
+            AScenes::DaltonismMode::DEUTERANOPIA);
         return currentScene;
     };
     std::shared_ptr<Entity> deuteranopiaButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, "Deuteranopia", &onDeuteranopiaButtonClicked, 1460, 400));
 
-    std::function<IScenes *(AScenes *)> onProtanopiaButtonClicked = [](AScenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onProtanopiaButtonClicked = [&](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::PROTANOPIA);
+        auto filter = componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
+        reloadFilter(filter.value()->rectangleShape,
+            AScenes::DaltonismMode::PROTANOPIA);
         return currentScene;
     };
     std::shared_ptr<Entity> protanopiaButton =
@@ -416,7 +456,6 @@ void Scenes::settingsMenu()
     ComponentManager componentManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-
     SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
@@ -437,6 +476,10 @@ void Scenes::settingsMenu()
     sf::Vector2f scale(1.0, 1.0);
     SpriteComponent spriteComponent(texture, 0, 0, scale, 0);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
+
+    // Create filter
+    this->filter = std::make_shared<Entity>(
+        entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
 
     // Create the buttons
     std::function<IScenes *(AScenes *)> onDaltonismModeButtonClicked = [](AScenes *currentScene) {
@@ -490,21 +533,6 @@ void Scenes::settingsMenu()
     if (_displayDaltonismChoice) {
         createDaltonismChoiceButtons(
             buttons, componentManager, entityManager, textureManager, entityFactory);
-        sf::RectangleShape filter(sf::Vector2f((_window).getSize().x, (_window).getSize().y));
-        switch (_currentDaltonismMode) {
-        case DaltonismMode::NORMAL:
-            filter.setFillColor(sf::Color(0, 0, 0, 0));
-            break;
-        case DaltonismMode::TRITANOPIA:
-            filter.setFillColor(sf::Color(255, 255, 100, 100));
-            break;
-        case DaltonismMode::DEUTERANOPIA:
-            filter.setFillColor(sf::Color(255, 100, 255, 100));
-            break;
-        case DaltonismMode::PROTANOPIA:
-            filter.setFillColor(sf::Color(255, 255, 100, 100));
-            break;
-        }
     }
 
     if (_displayGameModeChoice) {
@@ -565,6 +593,11 @@ void Scenes::gameLoop()
     EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
+    EntityFactory entityFactory;
+
+    // Create filter
+    this->filter = std::make_shared<Entity>(
+        entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -734,9 +767,6 @@ void Scenes::gameLoop()
 
         systemManager.updateSystems(deltaTime);
     }
-<<<<<<< HEAD
-}
-=======
 }
 
 void Scenes::run()
@@ -745,4 +775,3 @@ void Scenes::run()
         this->render();
     }
 }
->>>>>>> 35d265c5932d26750ea049186827649d8a949ac9

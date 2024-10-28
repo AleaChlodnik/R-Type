@@ -138,6 +138,7 @@ class AScenes : virtual public IScenes {
         PLAYER,
         ALLY,
         ENEMY,
+        FILTER,
         OTHER
     };
 
@@ -177,6 +178,13 @@ class AScenes : virtual public IScenes {
     AScenes::Scene getPreviousScene();
 
     /**
+     * @brief Get the Daltonism object
+     *
+     * @return DaltonismMode
+     */
+    DaltonismMode getDaltonism() const { return _currentDaltonismMode; };
+
+    /**
      * @brief Set the Daltonism object
      *
      * @param mode The daltonism mode to set
@@ -203,6 +211,7 @@ class AScenes : virtual public IScenes {
     bool getDisplayKeyBindsChoice() const;
 
     std::vector<std::shared_ptr<Entity>> buttons;
+    std::shared_ptr<Entity> filter;
     void setIp(std::string ip);
     void setPort(int port);
 

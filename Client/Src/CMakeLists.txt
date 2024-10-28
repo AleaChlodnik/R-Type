@@ -2,7 +2,7 @@
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
-add_executable(r-type_client main.cpp r-type_client.cpp scenes.cpp keyToString.cpp)
+add_executable(r-type_client main.cpp scenes.cpp keyToString.cpp)
 target_compile_features(r-type_client PRIVATE cxx_std_17)
 
 if (MSVC)

@@ -13,27 +13,22 @@ void RenderSystem::render(ComponentManager &componentManager)
 
     // Draw all sprites
     const auto sprites = componentManager.getComponentMap<SpriteComponent>();
-    if (sprites) {
-        for (const auto &pair : **sprites) {
-            const auto &spriteComponent = pair.second;
-            auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            if (sprite) {
-                if (sprite->type == AScenes::SpriteType::BACKGROUND) {
-                    _window.draw(sprite->sprite);
-                    break;
-                }
-            }
+    std::vector<std::pair<int, SpriteComponent>> sortedSprites;
+    for (const auto &pair : **sprites) {
+        const auto &spriteComponent = pair.second;
+        auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
+        if (sprite) {
+            sortedSprites.emplace_back(pair.first, *sprite);
         }
-        for (const auto &pair : **sprites) {
-            const auto &spriteComponent = pair.second;
-            auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            if (sprite) {
-                if (sprite->type == AScenes::SpriteType::BACKGROUND) {
-                    continue;
-                }
-                _window.draw(sprite->sprite);
-            }
-        }
+    }
+
+    std::sort(sortedSprites.begin(), sortedSprites.end(), [](const auto &a, const auto &b) {
+        return a.second.type < b.second.type;
+    });
+
+    for (const auto &pair : sortedSprites) {
+        const auto &sprite = pair.second;
+        _window.draw(sprite.sprite);
     }
 
     // Draw all texts
@@ -52,6 +47,18 @@ void RenderSystem::render(ComponentManager &componentManager)
                     textToDraw.setPosition(position.value()->x, position.value()->y);
                     _window.draw(textToDraw);
                 }
+            }
+        }
+    }
+
+    // Draw all rectanglesShapes
+    const auto rectangles = componentManager.getComponentMap<RectangleShapeComponent>();
+    if (rectangles) {
+        for (const auto &pair : **rectangles) {
+            const auto &rectangleComponent = pair.second;
+            auto rectangle = std::any_cast<RectangleShapeComponent>(&rectangleComponent);
+            if (rectangle) {
+                _window.draw(rectangle->rectangleShape);
             }
         }
     }
