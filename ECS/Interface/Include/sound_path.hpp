@@ -24,5 +24,3 @@ enum class ActionType : uint32_t
 };
 
 std::string SoundFactory(ActionType action);
-
-// std::ostream &operator<<(std::ostream &os, const ActionType &action);

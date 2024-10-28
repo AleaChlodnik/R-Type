@@ -269,8 +269,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     }
                 }
                 // Move entities
-                _moveSystem->moveEntities(
-                    _componentManager, _entityManager, 0.5); // add real clock
+                _moveSystem->moveEntities(_componentManager, _entityManager);
                 // Compare new positions
                 if (auto positionsAfter = _componentManager.getComponentMap<PositionComponent>()) {
                     for (const auto &pair : **positionsAfter) {
@@ -299,23 +298,59 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     }
                 }
             }
-            // make copy of entityIds
-            std::vector<Entity> entityListCopy = _entityManager.getAllEntities();
-            std::vector<int> entityIdsBefore;
-            for (const auto &entity : entityListCopy) {
-                entityIdsBefore.push_back(entity.getId());
+
+            // Collision system
+            auto entities = entityManager.getAllEntities();
+            for (size_t i = 0; i < entities.size(); ++i) {
+                int entityId1 = entities[i].getId();
+                for (size_t j = i + 1; j < entities.size(); ++j) {
+                    int entityId2 = entities[j].getId();
+                    if (_collisionSystem->checkCollision(componentManager, entityId1, entityId2)) {
+
+                        if (auto spriteData1 = _componentManager.getComponent<SpriteDataComponent>(
+                                entityId1) &&auto spriteData2 =
+                                _componentManager.getComponent<SpriteDataComponent>(entityId2)) {
+                            if (spriteData1.value()->type == EntityType::Player) {
+                                if (auto playerHealth =
+                                        _componentManager.getComponent<HealthComponent>(
+                                            entityId1)) {
+                                    if (spriteData2.value()->type == EntityType::Enemy ||
+                                        spriteData2.value()->type == EntityType::EnemyMissile) {
+                                        _componentManager.removeEntityFromAllComponents(entityId2);
+                                        _entityManager.removeEntity(entityId2);
+                                        playerHealth.value()->health -= 1;
+                                    }
+                                    if (spriteData2.value()->type == EntityType::BasicMonster) {
+                                        playerHealth.value()->health -= 1;
+                                    }
+                                    if (playerHealth.value()->health <= 0) {
+                                        _componentManager.removeEntityFromAllComponents(entityId1);
+                                        _entityManager.removeEntity(entityId1);
+                                    }
+                                }
+                            }
+                            if (spriteData1.value()->type == EntityType::PlayerMissile) {
+                                if (spriteData2.value()->type == EntityType::Enemy ||
+                                    spriteData2.value()->type == EntityType::EnemyMissile ||
+                                    spriteData2.value()->type == EntityType::BasicMonster) {
+                                    _componentManager.removeEntityFromAllComponents(entityId1);
+                                    _entityManager.removeEntity(entityId1);
+                                    _componentManager.removeEntityFromAllComponents(entityId2);
+                                    _entityManager.removeEntity(entityId2);
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            // collision system
-            _collisionSystem->handleCollisions(_componentManager, _entityManager);
-            // compare existence and send messages
-            for (int entityId : entityIdsBefore) {
-                if (auto entity = _entityManager.getEntity(entityId)) {
-                    continue;
-                } else {
-                    r_type::net::Message<TypeMessage> msg;
-                    msg.header.id = TypeMessage::DestroyEntityMessage;
-                    msg << entityId;
-                    MessageAllClients(msg);
+            auto entities = entityManager.getAllEntities();
+            for (const auto &entity : entities) {
+                int entityId = entity.getId();
+                if (_collisionSystem->checkOffScreen(componentManager, entityId)) {
+                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId) ==
+                        entitiesToRemove.end()) {
+                        entitiesToRemove.push_back(entityId);
+                    }
                 }
             }
 

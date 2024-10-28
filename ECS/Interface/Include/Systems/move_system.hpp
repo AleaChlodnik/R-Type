@@ -15,7 +15,7 @@ class MoveSystem : public ISystem {
         : _componentManager(componentManager), _entityManager(entityManager){};
 
     void moveEntities(
-        ComponentManager &componentManager, EntityManager &entityManager, float deltaTime);
+        ComponentManager &componentManager, EntityManager &entityManager);
 
   private:
     ComponentManager &_componentManager;
