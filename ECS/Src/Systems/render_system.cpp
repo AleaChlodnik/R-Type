@@ -14,6 +14,7 @@ void RenderSystem::render(ComponentManager &componentManager)
     // Draw all sprites
     const auto sprites = componentManager.getComponentMap<SpriteComponent>();
     if (sprites) {
+        // Draw background first
         for (const auto &pair : **sprites) {
             const auto &spriteComponent = pair.second;
             auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
@@ -24,6 +25,7 @@ void RenderSystem::render(ComponentManager &componentManager)
                 }
             }
         }
+        // Draw all other sprites
         for (const auto &pair : **sprites) {
             const auto &spriteComponent = pair.second;
             auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);

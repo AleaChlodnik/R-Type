@@ -38,10 +38,10 @@ std::string SpriteFactory(SpritePath sprite)
         return "Client/Assets/Sprites/Background/background1.png";
     } break;
     case SpritePath::Background2: {
-        return "Client/Assets/Sprites/Background/background1.png";
+        return "Client/Assets/Sprites/Background/background2.png";
     } break;
     case SpritePath::Background3: {
-        return "Client/Assets/Sprites/Background/background1.png";
+        return "Client/Assets/Sprites/Background/background5.png";
     } break;
     default: {
         return "";

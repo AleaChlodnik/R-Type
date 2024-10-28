@@ -9,25 +9,17 @@
 
 #include "../error_handling.hpp"
 #include "../sprite_path.hpp"
+#include "animation_component.hpp"
 #include "position_component.hpp"
 #include <SFML/Graphics.hpp>
+#include <a_scenes.hpp>
 #include <cstdint>
+#include <macros.hpp>
 #include <string>
-
-template <typename T> struct Vector {
-    T x;
-    T y;
-};
-
-struct Rect {
-    Vector<float> offset;
-    Vector<float> dimension;
-};
 
 struct SpriteDataComponent {
     SpritePath spritePath;
-    Vector<float> scale;
-    Rect rect;
+    vf2d scale;
     AScenes::SpriteType type;
 };
 

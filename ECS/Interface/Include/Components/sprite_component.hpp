@@ -24,11 +24,9 @@ struct SpriteComponent {
         sprite.setTexture(texture);
         sprite.setPosition(posX, posY);
         sprite.setScale(scale);
-        if (type != AScenes::SpriteType::BACKGROUND)
-            sprite.setOrigin(
-                sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
         if (rect != sf::IntRect(0, 0, 0, 0))
             sprite.setTextureRect(rect);
+        sprite.setOrigin(sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
         hitboxX = rect.width;
         hitboxY = rect.height;
     }

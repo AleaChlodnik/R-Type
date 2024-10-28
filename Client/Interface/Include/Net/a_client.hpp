@@ -18,7 +18,7 @@ namespace r_type {
 namespace net {
 template <typename T> class AClient : virtual public IClient<T> {
   public:
-    AClient() {}
+    AClient() { m_connection = nullptr; }
 
     virtual ~AClient() { Disconnect(); }
 

@@ -55,6 +55,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
         _moveSystem = std::make_shared<MoveSystem>(_componentManager, _entityManager);
         _collisionSystem = std::make_shared<CollisionSystem>(_componentManager, _entityManager);
+        _animationSystem = std::make_shared<AnimationSystem>(_componentManager, _entityManager);
 
         _background = InitiateBackground();
 
@@ -133,9 +134,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 if (!ec) {
                     std::cout << "[SERVER] New Connection: " << _clientEndpoint << std::endl;
                     // check if connection already exists
-                    for (std::shared_ptr<Connection<T>> &conn : _deqConnections) {
+                    std::cout << "Client endpoint connection: " << _clientEndpoint << std::endl;
+                    for (auto &conn : _deqConnections) {
+                        std::cout << "Client endpoint: " << conn->getEndpoint() << std::endl;
                         if (conn->getEndpoint() == _clientEndpoint) {
+                            std::cout << "[" << conn->GetID() << "] Connection Approved"
+                                      << std::endl;
                             std::cout << "[SERVER] Connection already exists" << std::endl;
+                            if (OnClientConnect(conn)) {
+                                std::cout << "[SERVER] Connection already exists" << std::endl;
+                            } else {
+                                std::cout << "[-----] Connection Denied" << std::endl;
+                            }
                             return;
                         }
                     }
@@ -224,13 +234,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     void UpdateLevel(std::chrono::system_clock::time_point newClock, bool &bUpdateEntities)
     {
         while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
-            500) {
+            100) {
             bUpdateEntities = true;
 
             // make position copy
             if (auto positionsBefore = _componentManager.getComponentMap<PositionComponent>()) {
-                r_type::net::Message<TypeMessage> msg;
-                msg.header.id = TypeMessage::UpdateEntity;
+
                 std::unordered_map<int, PositionComponent> previousPositions;
 
                 // Save previous positions
@@ -261,6 +270,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                                     if (auto spriteData =
                                             _componentManager.getComponent<SpriteDataComponent>(
                                                 entityId)) {
+                                        r_type::net::Message<TypeMessage> msg;
+                                        msg.header.id = TypeMessage::UpdateEntity;
                                         MessageAllClients(msg
                                             << EntityInformation{static_cast<u_int32_t>(entityId),
                                                    *(spriteData.value()),
@@ -294,16 +305,42 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 }
             }
 
-            // animate system
-            for (auto entity : _entityManager.getAllEntities()) {
-                if (auto spriteData =
-                        _componentManager.getComponent<SpriteDataComponent>(entity.getId())) {
-                    if (spriteData.value()->type == AScenes::SpriteType::BACKGROUND) {
-                        spriteData.value()->rect.offset.x += 10;
-                        r_type::net::Message<TypeMessage> msg;
-                        msg.header.id = TypeMessage::AnimateEntityMessage;
-                        msg << entity.getId() << spriteData.value()->rect;
-                        MessageAllClients(msg);
+            // Animation system
+            if (auto animationsBefore = _componentManager.getComponentMap<AnimationComponent>()) {
+
+                std::unordered_map<int, AnimationComponent> previousAnimations;
+
+                // Save previous animations
+                for (const auto &pair : **animationsBefore) {
+                    int entityId = pair.first;
+                    const auto animationComponent = pair.second;
+                    auto animation = std::any_cast<AnimationComponent>(&animationComponent);
+                    if (animation) {
+                        previousAnimations.insert({entityId, *animation});
+                    }
+                }
+                _animationSystem->AnimationEntities(_componentManager, _entityManager, 0.5);
+                // Compare new Animations
+                if (auto animationsAfter =
+                        _componentManager.getComponentMap<AnimationComponent>()) {
+                    for (const auto &pair : **animationsAfter) {
+                        int entityId = pair.first;
+                        const auto &newAnimationComponent = pair.second;
+                        auto newAnimation =
+                            std::any_cast<AnimationComponent>(&newAnimationComponent);
+                        if (newAnimation) {
+                            auto it = previousAnimations.find(entityId);
+                            if (it != previousAnimations.end()) {
+                                const auto &oldAnimation = it->second;
+                                if (oldAnimation != *newAnimation) {
+                                    r_type::net::Message<TypeMessage> msg;
+                                    msg.header.id = TypeMessage::AnimateEntityMessage;
+                                    msg << entityId << newAnimation->dimension
+                                        << newAnimation->offset;
+                                    MessageAllClients(msg);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -466,12 +503,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         auto playerSprite =
             _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         auto playerPos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+        auto playerAnimation =
+            _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
         if (playerSprite && playerPos) {
             entityInfo.spriteData = *(playerSprite.value());
             entityInfo.vPos.x = playerPos.value()->x;
             entityInfo.vPos.y = playerPos.value()->y;
-            entityInfo.spriteData.rect.dimension.x = playerSprite.value()->rect.dimension.x;
-            entityInfo.spriteData.rect.dimension.y = playerSprite.value()->rect.dimension.y;
+            entityInfo.animationComponent.dimension = playerAnimation.value()->dimension;
+            entityInfo.animationComponent.offset = playerAnimation.value()->offset;
         }
         _clientPlayerID.insert_or_assign(_nIDCounter, entityInfo.uniqueID);
         return entityInfo;
@@ -521,9 +560,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         entityInfo.uniqueID = missile.getId();
         auto missilePos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        auto animation = _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
         if (missilePos && sprite) {
             entityInfo.vPos.x = missilePos.value()->x;
             entityInfo.vPos.y = missilePos.value()->y;
+            if (animation) {
+                entityInfo.animationComponent.dimension = animation.value()->dimension;
+                entityInfo.animationComponent.offset = animation.value()->offset;
+            }
             entityInfo.spriteData = *(sprite.value());
         }
         return entityInfo;
@@ -542,8 +586,17 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         Entity background = _entityFactory.createBackground(_entityManager, _componentManager);
         entityInfo.uniqueID = background.getId();
         auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        auto backgroundPos =
+            _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+        auto animation = _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
         if (sprite) {
             entityInfo.spriteData = *(sprite.value());
+            entityInfo.vPos.x = backgroundPos.value()->x;
+            entityInfo.vPos.y = backgroundPos.value()->y;
+            if (animation) {
+                entityInfo.animationComponent.dimension = animation.value()->dimension;
+                entityInfo.animationComponent.offset = animation.value()->offset;
+            }
         }
         return entityInfo;
     }
@@ -692,6 +745,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     // TEMPORARY
     std::shared_ptr<MoveSystem> _moveSystem;
     std::shared_ptr<CollisionSystem> _collisionSystem;
+    std::shared_ptr<AnimationSystem> _animationSystem;
 
     /**
      * @brief A container that maps client IDs to player IDs.
