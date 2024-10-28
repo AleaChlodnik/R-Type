@@ -60,10 +60,10 @@ class EntityFactory : public IEntityFactory {
 
     /**
      * @brief Creates a basic monster entity.
-     * 
+     *
      * This function creates a basic monster entity using the provided entity manager and
      * component manager.
-     * 
+     *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to add components to the entity.
      * @return The created basic monster entity.

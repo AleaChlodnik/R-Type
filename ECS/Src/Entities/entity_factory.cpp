@@ -196,7 +196,8 @@ Entity EntityFactory::createShooterEnemy(
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy2, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(60, 60);
-    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x), static_cast<int>(animationComponent.dimension.y)};
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
     HealthComponent health{100, 100};
     ShootComponent shoot{std::chrono::milliseconds(5000)};
 
@@ -229,7 +230,8 @@ Entity EntityFactory::createBasicMonster(
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy1, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(60, 60);
-    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x), static_cast<int>(animationComponent.dimension.y)};
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
     HealthComponent health{100, 100};
 
     componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
