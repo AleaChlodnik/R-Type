@@ -7,8 +7,7 @@
 
 #include <Systems/move_system.hpp>
 
-void MoveSystem::moveEntities(
-    ComponentManager &componentManager, EntityManager &entityManager)
+void MoveSystem::moveEntities(ComponentManager &componentManager, EntityManager &entityManager)
 {
     auto entities = entityManager.getAllEntities();
     if (entities.empty())

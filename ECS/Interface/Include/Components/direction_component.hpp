@@ -7,7 +7,14 @@
 
 #pragma once
 
-enum Direction { UP, DOWN, LEFT, RIGHT, NONE };
+enum Direction
+{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+    NONE
+};
 
 struct DirectionComponent {
     Direction direction;
