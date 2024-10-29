@@ -6,10 +6,18 @@
 */
 
 #pragma once
-#include <iostream>
+
+#include <SFML/Graphics.hpp>
 
 struct TextComponent {
-    std::string _text;
+    sf::Text text;
 
-    TextComponent(std::string text) : _text(text) {}
+    TextComponent(sf::Font &font, const std::string &string, float posX, float posY)
+    {
+        text.setFont(font);
+        text.setString(string);
+        text.setPosition(posX, posY);
+        text.setFillColor(sf::Color::White);
+        text.setStyle(sf::Text::Bold);
+    }
 };

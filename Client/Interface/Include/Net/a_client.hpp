@@ -113,7 +113,7 @@ template <typename T> class AClient : virtual public IClient<T> {
 
     void addEntity(EntityInformation entity, ComponentManager &componentManager,
         TextureManager &textureManager, sf::Vector2u windowSize);
-    void updateEntity(EntityInformation entity, ComponentManager &componentManager,
+    void moveEntity(EntityInformation entity, ComponentManager &componentManager,
         sf::Vector2u windowSize, TextureManager &textureManager);
     void removeEntity(int entityId, ComponentManager &componentManager);
 

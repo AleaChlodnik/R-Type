@@ -285,7 +285,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                                             _componentManager.getComponent<SpriteDataComponent>(
                                                 entityId)) {
                                         r_type::net::Message<TypeMessage> msg;
-                                        msg.header.id = TypeMessage::UpdateEntity;
+                                        msg.header.id = TypeMessage::MoveEntityMessage;
                                         msg << FormatEntityInformation(
                                             _entityManager.getEntity(entityId).value()->getId());
                                         MessageAllClients(msg);
@@ -579,10 +579,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entity.uniqueID = entityId;
             entity.vPos = entityPosition;
             entity.spriteData = *entitySpriteData.value();
-            r_type::net::Message<TypeMessage> updateMsg;
-            updateMsg.header.id = TypeMessage::UpdateEntity;
-            updateMsg << entity;
-            MessageAllClients(updateMsg);
+            r_type::net::Message<TypeMessage> moveMsg;
+            moveMsg.header.id = TypeMessage::MoveEntityMessage;
+            moveMsg << entity;
+            MessageAllClients(moveMsg);
         }
     }
 
@@ -593,6 +593,16 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @return uint32_t The entity ID associated with the client.
      */
     uint32_t GetClientPlayerId(uint32_t id) { return _clientPlayerID[id]; }
+
+    uint32_t GetPlayerClientId(uint32_t id)
+    {
+        for (const auto &pair : _clientPlayerID) {
+            if (pair.second == id) {
+                return pair.first;
+            }
+        }
+        throw std::runtime_error("Player ID not found");
+    }
 
     /**
      * @brief Removes a player from the game based on the client ID.

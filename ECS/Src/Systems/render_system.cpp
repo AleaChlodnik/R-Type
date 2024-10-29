@@ -48,21 +48,14 @@ void RenderSystem::render(ComponentManager &componentManager)
     }
 
     // Draw all texts
-    const auto texts = componentManager.getComponentMap<TextComponent>();
-    if (texts) {
-        for (const auto &pair : **texts) {
-            const int id = pair.first;
-            const auto &textComponent = pair.second;
-            auto text = std::any_cast<TextComponent>(&textComponent);
-            if (text) {
-                sf::Text textToDraw(text->_text, _font);
-                auto position = componentManager.getComponent<PositionComponent>(id);
-                if (position) {
-                    textToDraw.setOrigin(textToDraw.getLocalBounds().width / 2.0f,
-                        textToDraw.getLocalBounds().height);
-                    textToDraw.setPosition(position.value()->x, position.value()->y);
-                    _window.draw(textToDraw);
-                }
+    const auto textComponents = componentManager.getComponentMap<TextComponent>();
+    if (textComponents) {
+        for (auto &pair : **textComponents) {
+            auto &textComponentData = pair.second;
+            if (auto *textComponent = std::any_cast<TextComponent>(&textComponentData)) {
+                textComponent->text.setOrigin(textComponent->text.getLocalBounds().width / 2.0f,
+                    textComponent->text.getLocalBounds().height / 2.0f);
+                _window.draw(textComponent->text);
             }
         }
     }
