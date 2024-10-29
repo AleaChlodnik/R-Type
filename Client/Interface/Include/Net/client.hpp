@@ -54,9 +54,11 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
             textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
         scaleX = (entity.ratio.x * windowSize.x) / entity.animationComponent.dimension.x;
         scaleY = (entity.ratio.y * windowSize.y) / entity.animationComponent.dimension.y;
-        std::cout << "scaleX: " << scaleX << " scaleY: " << scaleY << " windowSize.x: " << windowSize.x
-                  << " windowSize.y: " << windowSize.y << " entity.animationComponent.dimension.x: "
-                  << entity.animationComponent.dimension.x << " entity.animationComponent.dimension.y: "
+        std::cout << "scaleX: " << scaleX << " scaleY: " << scaleY
+                  << " windowSize.x: " << windowSize.x << " windowSize.y: " << windowSize.y
+                  << " entity.animationComponent.dimension.x: "
+                  << entity.animationComponent.dimension.x
+                  << " entity.animationComponent.dimension.y: "
                   << entity.animationComponent.dimension.y << std::endl;
         sf::Vector2f scale(scaleX, scaleY);
         sf::IntRect rect(entity.animationComponent.offset.x, entity.animationComponent.offset.y,
