@@ -601,11 +601,6 @@ void Scenes::gameLoop()
     EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
-    EntityFactory entityFactory;
-
-    // Create filter
-    this->filter = std::make_shared<Entity>(
-        entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
     auto audioManager = std::make_shared<AudioManager>();
 
     std::shared_ptr<AudioSystem> audioSystem = std::make_shared<AudioSystem>(audioManager);
@@ -680,7 +675,6 @@ void Scenes::gameLoop()
                 fireMissile();
             }
             if (event.type == sf::Event::KeyPressed) {
-                std::cout << keyBinds[Actions::QUIT] << std::endl;
                 if (event.key.code == sf::Keyboard::P) {
                     c.PingServer();
                 }

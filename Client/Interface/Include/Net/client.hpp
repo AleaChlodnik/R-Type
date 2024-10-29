@@ -47,6 +47,7 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         float posX = windowSize.x * (entity.vPos.x / 100.0f);
         float posY = windowSize.y * (entity.vPos.y / 100.0f);
         float scaleX, scaleY;
+        std::cout << "posX: " << posX << " posY: " << posY << std::endl;
         std::cout << "entityId: " << entity.uniqueID << std::endl;
         std::cout << "spritePath: " << SpriteFactory(entity.spriteData.spritePath) << std::endl;
         std::cout << "spriteData: " << entity.spriteData << std::endl;
@@ -93,6 +94,11 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
             if (entitySpriteIt != sprites.end()) {
                 auto &spriteComponent = entitySpriteIt->second;
                 if (auto entitySprite = std::any_cast<SpriteComponent>(&spriteComponent)) {
+                    auto pos = componentManager.getComponent<PositionComponent>(entityId);
+                    std::cout << "Animating entity " << entityId << " with new rect: "
+                              << "offset(" << rect.offset.x << ", " << rect.offset.y << "), "
+                              << "dimension(" << rect.dimension.x << ", " << rect.dimension.y << ")" << std::endl;
+                    if (pos) std::cout << "position: " << pos.value()->x << ", " << pos.value()->y << std::endl;
                     sf::IntRect newRect(
                         rect.offset.x, rect.offset.y, rect.dimension.x, rect.dimension.y);
                     entitySprite->sprite.setTextureRect(newRect);
