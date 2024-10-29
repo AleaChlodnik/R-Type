@@ -154,7 +154,6 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             }
         } break;
         default: {
-            std::cout << "[" << client->GetID() << "]: Default" << std::endl;
             client->Send(client->_lastMsg);
         } break;
         }

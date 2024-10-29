@@ -22,7 +22,7 @@
 
 Scenes::Scenes(std::string ip, int port) : IScenes(), AScenes(ip, port)
 {
-    _window.create(sf::VideoMode::getDesktopMode(), "R-Type", sf::Style::Close);
+    _window.create(sf::VideoMode::getDesktopMode(), "R-Type");
     _window.setFramerateLimit(60);
 }
 
@@ -630,6 +630,7 @@ void Scenes::gameLoop()
     sf::Vector2u windowSize = _window.getSize();
 
     audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
+    // audioSystem->playBackgroundMusic("");
 
     while (_window.isOpen()) {
         // float deltaTime = clock.restart().asSeconds();
