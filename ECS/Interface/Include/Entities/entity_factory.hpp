@@ -120,7 +120,8 @@ class EntityFactory : public IEntityFactory {
      */
     Entity createSmallButton(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &textureManager, FontManager &fontManager, std::string text,
-        std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0, float y = 0) override;
+        std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
+        float y = 0) override;
     /**
      * @brief Creates an ally missile entity.
      *
