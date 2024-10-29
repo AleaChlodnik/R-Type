@@ -252,7 +252,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     void UpdateLevel(std::chrono::system_clock::time_point newClock, bool &bUpdateEntities)
     {
-        while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() > 100) {
+        while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
+            100) {
             bUpdateEntities = true;
             // make position copy
             if (auto positionsBefore = _componentManager.getComponentMap<PositionComponent>()) {
