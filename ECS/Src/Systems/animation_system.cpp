@@ -81,31 +81,31 @@ void AnimationSystem::AnimationEntities(
         if (animation) {
             // animate system for ship
             auto player = componentManager.getComponent<PlayerComponent>(entity.getId());
-            auto velovity = componentManager.getComponent<VelocityComponent>(entity.getId());
-            if (player && velovity) {
-                if (velovity.value()->y >= -1 && velovity.value()->y < -0.6) {
+            auto velocity = componentManager.getComponent<VelocityComponent>(entity.getId());
+            if (player && velocity) {
+                if (velocity.value()->y >= -1 && velocity.value()->y < -0.6) {
                     std::cout << "UP" << std::endl;
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_DOWN).x;
-                } else if (velovity.value()->y >= -0.6 && velovity.value()->y < -0.2) {
+                } else if (velocity.value()->y >= -0.6 && velocity.value()->y < -0.2) {
                     animation.value()->offset.x =
                         animationShipFactory(AnimationShip::SHIP_FLIP_DOWN).x;
-                } else if (velovity.value()->y >= -0.2 && velovity.value()->y < 0.2) {
+                } else if (velocity.value()->y >= -0.2 && velocity.value()->y < 0.2) {
                     animation.value()->offset.x =
                         animationShipFactory(AnimationShip::SHIP_STRAIT).x;
-                } else if (velovity.value()->y >= 0.2 && velovity.value()->y < 0.6) {
+                } else if (velocity.value()->y >= 0.2 && velocity.value()->y < 0.6) {
                     animation.value()->offset.x =
                         animationShipFactory(AnimationShip::SHIP_FLIP_UP).x;
-                } else if (velovity.value()->y >= 0.6 && velovity.value()->y < 1) {
+                } else if (velocity.value()->y >= 0.6 && velocity.value()->y < 1) {
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_UP).x;
                 }
                 // } else {
                 //     animation.value()->offset.x =
                 //         animationShipFactory(AnimationShip::SHIP_STRAIT).x;
                 // }
-                if (velovity.value()->y < 0) {
-                    velovity.value()->y += 0.05;
+                if (velocity.value()->y < 0) {
+                    velocity.value()->y += 0.05;
                 } else {
-                    velovity.value()->y -= 0.05;
+                    velocity.value()->y -= 0.05;
                 }
             }
 

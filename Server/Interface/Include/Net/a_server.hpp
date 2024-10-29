@@ -257,30 +257,28 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             bUpdateEntities = true;
             // make position copy
             if (auto positionsBefore = _componentManager.getComponentMap<PositionComponent>()) {
-
                 std::unordered_map<int, PositionComponent> previousPositions;
                 // Save previous positions
-                for (const auto &pair : **positionsBefore) {
+                for (auto &pair : **positionsBefore) {
                     int entityId = pair.first;
-                    const auto positionComponent = pair.second;
+                    auto positionComponent = pair.second;
                     auto position = std::any_cast<PositionComponent>(&positionComponent);
                     if (position) {
                         previousPositions.insert({entityId, *position});
                     }
                 }
                 // Move entities
-                _moveSystem->moveEntities(
-                    _componentManager, _entityManager, 0.5); // add real clock
+                _moveSystem->moveEntities(_componentManager, _entityManager);
                 // Compare new positions
                 if (auto positionsAfter = _componentManager.getComponentMap<PositionComponent>()) {
-                    for (const auto &pair : **positionsAfter) {
+                    for (auto &pair : **positionsAfter) {
                         int entityId = pair.first;
-                        const auto &newPositionComponent = pair.second;
-                        auto newPosition = std::any_cast<PositionComponent>(&newPositionComponent);
-                        if (newPosition) {
+                        auto &newPositionComponent = pair.second;
+                        if (auto newPosition =
+                                std::any_cast<PositionComponent>(&newPositionComponent)) {
                             auto it = previousPositions.find(entityId);
                             if (it != previousPositions.end()) {
-                                const auto &oldPosition = it->second;
+                                auto &oldPosition = it->second;
                                 if (oldPosition.x != newPosition->x ||
                                     oldPosition.y != newPosition->y) {
                                     if (auto spriteData =
@@ -298,23 +296,121 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     }
                 }
             }
-            // make copy of entityIds
-            std::vector<Entity> entityListCopy = _entityManager.getAllEntities();
-            std::vector<int> entityIdsBefore;
-            for (const auto &entity : entityListCopy) {
-                entityIdsBefore.push_back(entity.getId());
+
+            // Collision system
+            std::vector<int> entitiesToRemove;
+            auto beforeCollisioneEntities = _entityManager.getAllEntities();
+            for (size_t i = 0; i < beforeCollisioneEntities.size(); ++i) {
+                int entityId1 = beforeCollisioneEntities[i].getId();
+                for (size_t j = i + 1; j < beforeCollisioneEntities.size(); ++j) {
+                    int entityId2 = beforeCollisioneEntities[j].getId();
+                    if (_collisionSystem->checkCollision(
+                            _componentManager, entityId1, entityId2)) {
+                        auto shooterEnemy1 =
+                            _componentManager.getComponent<ShootComponent>(entityId1);
+                        auto enemyMissile1 =
+                            _componentManager.getComponent<EnemyMissileComponent>(entityId1);
+                        auto basicMonster1 =
+                            _componentManager.getComponent<BasicMonsterComponent>(entityId1);
+                        auto shooterEnemy2 =
+                            _componentManager.getComponent<ShootComponent>(entityId2);
+                        auto enemyMissile2 =
+                            _componentManager.getComponent<EnemyMissileComponent>(entityId2);
+                        auto basicMonster2 =
+                            _componentManager.getComponent<BasicMonsterComponent>(entityId2);
+                        if (auto player1 =
+                                _componentManager.getComponent<PlayerComponent>(entityId1)) {
+                            if (auto playerHealth =
+                                    _componentManager.getComponent<HealthComponent>(entityId1)) {
+                                if (shooterEnemy2 || enemyMissile2) {
+                                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                            entityId2) == entitiesToRemove.end()) {
+                                        entitiesToRemove.push_back(entityId2);
+                                    }
+                                    playerHealth.value()->health -= 1;
+                                }
+                                if (basicMonster2) {
+                                    playerHealth.value()->health -= 1;
+                                }
+                                if (playerHealth.value()->health <= 0) {
+                                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                            entityId1) == entitiesToRemove.end()) {
+                                        entitiesToRemove.push_back(entityId1);
+                                    }
+                                }
+                            }
+                        } else if (auto playerMissile1 =
+                                       _componentManager.getComponent<PlayerMissileComponent>(
+                                           entityId1)) {
+                            if (shooterEnemy2 || enemyMissile2 || basicMonster2) {
+                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                        entityId1) == entitiesToRemove.end()) {
+                                    entitiesToRemove.push_back(entityId1);
+                                }
+                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                        entityId2) == entitiesToRemove.end()) {
+                                    entitiesToRemove.push_back(entityId2);
+                                }
+                            }
+                        } else if (auto player2 = _componentManager.getComponent<PlayerComponent>(
+                                       entityId2)) {
+                            if (auto playerHealth =
+                                    _componentManager.getComponent<HealthComponent>(entityId2)) {
+                                if (shooterEnemy1 || enemyMissile1) {
+                                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                            entityId1) == entitiesToRemove.end()) {
+                                        entitiesToRemove.push_back(entityId1);
+                                    }
+                                    playerHealth.value()->health -= 1;
+                                }
+                                if (basicMonster1) {
+                                    playerHealth.value()->health -= 1;
+                                }
+                                if (playerHealth.value()->health <= 0) {
+                                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                            entityId2) == entitiesToRemove.end()) {
+                                        entitiesToRemove.push_back(entityId2);
+                                    }
+                                }
+                            }
+                        } else if (auto playerMissile2 =
+                                       _componentManager.getComponent<PlayerMissileComponent>(
+                                           entityId2)) {
+                            if (shooterEnemy1 || enemyMissile1 || basicMonster1) {
+                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                        entityId1) == entitiesToRemove.end()) {
+                                    entitiesToRemove.push_back(entityId1);
+                                }
+                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                        entityId2) == entitiesToRemove.end()) {
+                                    entitiesToRemove.push_back(entityId2);
+                                }
+                            }
+                        } else {
+                            continue;
+                        }
+                    }
+                }
             }
-            // collision system
-            _collisionSystem->handleCollisions(_componentManager, _entityManager);
-            // compare existence and send messages
-            for (int entityId : entityIdsBefore) {
-                if (auto entity = _entityManager.getEntity(entityId)) {
-                    continue;
-                } else {
+            for (int entityId : entitiesToRemove) {
+                r_type::net::Message<TypeMessage> msg;
+                msg.header.id = TypeMessage::DestroyEntityMessage;
+                msg << entityId;
+                MessageAllClients(msg);
+                _componentManager.removeEntityFromAllComponents(entityId);
+                _entityManager.removeEntity(entityId);
+            }
+            // Remove entities when they go off-screen
+            auto afterCollisionEntities = _entityManager.getAllEntities();
+            for (const auto &entity : afterCollisionEntities) {
+                int entityId = entity.getId();
+                if (_collisionSystem->checkOffScreen(_componentManager, entityId)) {
                     r_type::net::Message<TypeMessage> msg;
                     msg.header.id = TypeMessage::DestroyEntityMessage;
                     msg << entityId;
                     MessageAllClients(msg);
+                    _componentManager.removeEntityFromAllComponents(entityId);
+                    _entityManager.removeEntity(entityId);
                 }
             }
 
@@ -360,24 +456,23 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
             // auto fire system
             _autoFireSystem->handleAutoFire(_componentManager, _entityManager);
-            // fire, then set canShoot to false
-            auto entities = _entityManager.getAllEntities();
-            if (!entities.empty()) {
-                for (auto &entity : entities) {
-                    if (auto shootInfo =
-                            _componentManager.getComponent<ShootComponent>(entity.getId())) {
-                        if (shootInfo.value()->canShoot) {
+            auto shootComponentMap = _componentManager.getComponentMap<ShootComponent>();
+            if (shootComponentMap) {
+                for (auto &pair : **shootComponentMap) {
+                    int entityId = pair.first;
+                    auto &shootComponent = pair.second;
+                    if (auto shootInfo = std::any_cast<ShootComponent>(&shootComponent)) {
+                        if (shootInfo->canShoot) {
                             r_type::net::Message<TypeMessage> enemyMissileMsg;
                             enemyMissileMsg.header.id = TypeMessage::CreateEntityMessage;
-                            enemyMissileMsg << InitiateEnemyMissile(entity.getId());
+                            enemyMissileMsg << InitiateEnemyMissile(entityId);
                             MessageAllClients(enemyMissileMsg);
-                            shootInfo.value()->canShoot = false;
+                            shootInfo->canShoot = false;
                         }
                     }
                 }
             }
-
-            _clock += std::chrono::milliseconds(500);
+            _clock += std::chrono::milliseconds(100);
         }
     }
 
@@ -537,15 +632,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         auto playerSprite =
             _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         auto playerPos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
-        auto playerAnimation =
-            _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
+        auto animation = _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
         auto playerHealth = _componentManager.getComponent<HealthComponent>(entityInfo.uniqueID);
-        if (playerSprite && playerPos && playerAnimation && playerHealth) {
+        if (playerSprite && playerPos && animation && playerHealth) {
+            entityInfo.ratio.x =
+                (animation.value()->dimension.x * playerSprite.value()->scale.x) / SCREEN_WIDTH;
+            entityInfo.ratio.y =
+                (animation.value()->dimension.y * playerSprite.value()->scale.y) / SCREEN_HEIGHT;
             entityInfo.spriteData = *(playerSprite.value());
             entityInfo.vPos.x = playerPos.value()->x;
             entityInfo.vPos.y = playerPos.value()->y;
-            entityInfo.animationComponent.dimension = playerAnimation.value()->dimension;
-            entityInfo.animationComponent.offset = playerAnimation.value()->offset;
+            entityInfo.animationComponent.dimension = animation.value()->dimension;
+            entityInfo.animationComponent.offset = animation.value()->offset;
             entityInfo.life = playerHealth.value()->health;
         }
         _clientPlayerID.insert_or_assign(clientId, entityInfo.uniqueID);
@@ -568,15 +666,19 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         EntityInformation entityInfo;
         auto entityPos = _componentManager.getComponent<PositionComponent>(entityId);
-        auto entitySprite = _componentManager.getComponent<SpriteDataComponent>(entityId);
+        auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityId);
         auto animation = _componentManager.getComponent<AnimationComponent>(entityId);
         auto entityHealth = _componentManager.getComponent<HealthComponent>(entityId);
-        if (entityPos && entitySprite) {
+        if (entityPos && sprite) {
             entityInfo.uniqueID = entityId;
             entityInfo.vPos.x = entityPos.value()->x;
             entityInfo.vPos.y = entityPos.value()->y;
-            entityInfo.spriteData = *(entitySprite.value());
+            entityInfo.spriteData = *(sprite.value());
             if (animation) {
+                entityInfo.ratio.x =
+                    (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;
+                entityInfo.ratio.y =
+                    (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
                 entityInfo.animationComponent.dimension = animation.value()->dimension;
                 entityInfo.animationComponent.offset = animation.value()->offset;
             }
@@ -611,6 +713,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.vPos.y = missilePos.value()->y;
             entityInfo.spriteData = *(sprite.value());
             if (animation) {
+                entityInfo.ratio.x =
+                    (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;
+                entityInfo.ratio.y =
+                    (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
                 entityInfo.animationComponent.dimension = animation.value()->dimension;
                 entityInfo.animationComponent.offset = animation.value()->offset;
             }
@@ -631,6 +737,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.vPos.x = missilePos.value()->x;
             entityInfo.vPos.y = missilePos.value()->y;
             if (animation) {
+                entityInfo.ratio.x =
+                    (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;
+                entityInfo.ratio.y =
+                    (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
                 entityInfo.animationComponent.dimension = animation.value()->dimension;
                 entityInfo.animationComponent.offset = animation.value()->offset;
             }
@@ -660,6 +770,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.vPos.x = backgroundPos.value()->x;
             entityInfo.vPos.y = backgroundPos.value()->y;
             if (animation) {
+                entityInfo.ratio.x =
+                    (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;
+                entityInfo.ratio.y =
+                    (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
                 entityInfo.animationComponent.dimension = animation.value()->dimension;
                 entityInfo.animationComponent.offset = animation.value()->offset;
             }
