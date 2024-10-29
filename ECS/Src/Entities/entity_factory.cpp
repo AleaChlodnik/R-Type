@@ -286,6 +286,12 @@ Entity EntityFactory::createEnemyMissile(
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
 
+        auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
+    if (entityPos) {
+        startPosition.x = entityPos.value()->x - 1;
+        startPosition.y = entityPos.value()->y;
+    }
+
     componentManager.addComponent<EnemyMissileComponent>(
         enemyMissile.getId(), enemyMissileComponent);
     componentManager.addComponent<PositionComponent>(enemyMissile.getId(), startPosition);
