@@ -297,16 +297,17 @@ Entity EntityFactory::createEnemyMissile(
 }
 
 Entity EntityFactory::createButton(EntityManager &entityManager,
-    ComponentManager &componentManager, TextureManager &textureManager, std::string text,
+    ComponentManager &componentManager, TextureManager &textureManager, FontManager &fontManager, std::string text,
     std::function<IScenes *(AScenes *)> *onClick, float x, float y)
 {
     Entity button = entityManager.createEntity();
 
     sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
+    sf::Font &font = fontManager.getFont("Client/Assets/Fonts/GODOFWAR.TTF");
     sf::Vector2f dimension(1.0f, 1.0f);
 
     PositionComponent pos(x, y);
-    TextComponent textComponent(text);
+    TextComponent textComponent(font, text, pos.x, pos.y);
     OnClickComponent onClickfunction(*onClick);
     SpriteComponent sprite(texture, pos.x, pos.y, dimension, AScenes::SpriteType::OTHER);
 
@@ -319,17 +320,17 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
 }
 
 Entity EntityFactory::createSmallButton(EntityManager &entityManager,
-    ComponentManager &componentManager, TextureManager &textureManager, std::string text,
+    ComponentManager &componentManager, TextureManager &textureManager, FontManager &fontManager, std::string text,
     std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x, float y)
 {
     Entity button = entityManager.createEntity();
 
-    sf::Texture &texture =
-        textureManager.getTexture("Client/Assets/Sprites/Menus/small_button.png");
+    sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/small_button.png");
+    sf::Font &font = fontManager.getFont("Client/Assets/Fonts/GODOFWAR.TTF");
     sf::Vector2f scale(1.0f, 1.0f);
 
     PositionComponent pos(x, y);
-    TextComponent textComponent(text);
+    TextComponent textComponent(font, text, pos.x, pos.y);
     BindComponent bindComponent(*onClick);
     SpriteComponent sprite(texture, pos.x, pos.y, scale, AScenes::SpriteType::OTHER);
 
