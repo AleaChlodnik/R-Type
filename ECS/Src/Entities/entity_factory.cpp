@@ -177,6 +177,33 @@ Entity EntityFactory::createPlayer(
     return player;
 }
 
+Entity EntityFactory::createBasicMonster(
+    EntityManager &entityManager, ComponentManager &componentManager)
+{
+    Entity monster = entityManager.createEntity();
+
+    BasicMonsterComponent monsterComponent;
+    VelocityComponent velocity{-1.0f, 0.0f};
+    MovementComponent movement{MovementType::WIGGLE, 0};
+    AnimationComponent animationComponent({0, 0}, {37, 36});
+    SpriteDataComponent spriteData{SpritePath::Enemy1, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
+    PositionComponent startPosition(80, 60);
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
+    HealthComponent health{0, 0};
+
+    componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
+    componentManager.addComponent<PositionComponent>(monster.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(monster.getId(), velocity);
+    componentManager.addComponent<HitboxComponent>(monster.getId(), hitbox);
+    componentManager.addComponent<HealthComponent>(monster.getId(), health);
+    componentManager.addComponent<SpriteDataComponent>(monster.getId(), spriteData);
+    componentManager.addComponent<AnimationComponent>(monster.getId(), animationComponent);
+    componentManager.addComponent<MovementComponent>(monster.getId(), movement);
+
+    return monster;
+}
+
 Entity EntityFactory::createShooterEnemy(
     EntityManager &entityManager, ComponentManager &componentManager)
 {
@@ -209,31 +236,6 @@ Entity EntityFactory::createShooterEnemy(
     }
 
     return enemy;
-}
-
-Entity EntityFactory::createBasicMonster(
-    EntityManager &entityManager, ComponentManager &componentManager)
-{
-    Entity monster = entityManager.createEntity();
-
-    BasicMonsterComponent monsterComponent;
-    VelocityComponent velocity{-2.0f, 0.0f};
-    AnimationComponent animationComponent({0, 0}, {37, 36});
-    SpriteDataComponent spriteData{SpritePath::Enemy1, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
-    PositionComponent startPosition(60, 60);
-    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
-        static_cast<int>(animationComponent.dimension.y)};
-    HealthComponent health{0, 0};
-
-    componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
-    componentManager.addComponent<PositionComponent>(monster.getId(), startPosition);
-    componentManager.addComponent<VelocityComponent>(monster.getId(), velocity);
-    componentManager.addComponent<HitboxComponent>(monster.getId(), hitbox);
-    componentManager.addComponent<HealthComponent>(monster.getId(), health);
-    componentManager.addComponent<SpriteDataComponent>(monster.getId(), spriteData);
-    componentManager.addComponent<AnimationComponent>(monster.getId(), animationComponent);
-
-    return monster;
 }
 
 Entity EntityFactory::createPlayerMissile(
