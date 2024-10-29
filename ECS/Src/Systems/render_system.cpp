@@ -59,10 +59,22 @@ void RenderSystem::render(ComponentManager &componentManager)
                 auto position = componentManager.getComponent<PositionComponent>(id);
                 if (position) {
                     textToDraw.setOrigin(textToDraw.getLocalBounds().width / 2.0f,
-                        textToDraw.getLocalBounds().height / 2.0f);
+                        textToDraw.getLocalBounds().height);
                     textToDraw.setPosition(position.value()->x, position.value()->y);
                     _window.draw(textToDraw);
                 }
+            }
+        }
+    }
+
+    // Draw all rectanglesShapes
+    const auto rectangles = componentManager.getComponentMap<RectangleShapeComponent>();
+    if (rectangles) {
+        for (const auto &pair : **rectangles) {
+            const auto &rectangleComponent = pair.second;
+            auto rectangle = std::any_cast<RectangleShapeComponent>(&rectangleComponent);
+            if (rectangle) {
+                _window.draw(rectangle->rectangleShape);
             }
         }
     }
