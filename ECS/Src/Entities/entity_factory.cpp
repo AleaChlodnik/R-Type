@@ -141,7 +141,7 @@ Entity EntityFactory::createPlayer(
 
     PlayerComponent playerComponent;
     PositionComponent startPosition(10, static_cast<float>(rand() % 80));
-    VelocityComponent velocity{3};
+    VelocityComponent velocity{0.0f, 0.0f};
     AnimationComponent animationComponent({99.6, 0}, {33.2, 17.2});
     SpriteDataComponent spriteData{SpritePath::Ship1, {2.0f, 2.0f}, AScenes::SpriteType::PLAYER};
     switch (nbOfPlayers) {
@@ -183,8 +183,7 @@ Entity EntityFactory::createShooterEnemy(
     Entity enemy = entityManager.createEntity();
 
     EnemyComponent enemyComponent;
-    VelocityComponent velocity{1};
-    DirectionComponent direction{Direction::LEFT};
+    VelocityComponent velocity{-2.0f, 0.0f};
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy2, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(60, 60);
@@ -195,7 +194,6 @@ Entity EntityFactory::createShooterEnemy(
 
     componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
     componentManager.addComponent<VelocityComponent>(enemy.getId(), velocity);
-    componentManager.addComponent<DirectionComponent>(enemy.getId(), direction);
     componentManager.addComponent<AnimationComponent>(enemy.getId(), animationComponent);
     componentManager.addComponent<SpriteDataComponent>(enemy.getId(), spriteData);
     componentManager.addComponent<PositionComponent>(enemy.getId(), startPosition);
@@ -219,8 +217,7 @@ Entity EntityFactory::createBasicMonster(
     Entity monster = entityManager.createEntity();
 
     BasicMonsterComponent monsterComponent;
-    VelocityComponent velocity{1};
-    DirectionComponent direction{Direction::LEFT};
+    VelocityComponent velocity{-2.0f, 0.0f};
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy1, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(60, 60);
@@ -231,7 +228,6 @@ Entity EntityFactory::createBasicMonster(
     componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
     componentManager.addComponent<PositionComponent>(monster.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(monster.getId(), velocity);
-    componentManager.addComponent<DirectionComponent>(monster.getId(), direction);
     componentManager.addComponent<HitboxComponent>(monster.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(monster.getId(), health);
     componentManager.addComponent<SpriteDataComponent>(monster.getId(), spriteData);
@@ -247,8 +243,7 @@ Entity EntityFactory::createPlayerMissile(
 
     PlayerMissileComponent playerMissileComponent;
     PositionComponent startPosition(0, 0);
-    VelocityComponent velocity{2};
-    DirectionComponent direction{Direction::RIGHT};
+    VelocityComponent velocity{3.0f, 0.0f};
     AnimationComponent animationComponent({249, 88}, {16, 8});
     SpriteDataComponent spriteData{SpritePath::Missile, {1.0f, 1.0f}, AScenes::SpriteType::PLAYER};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
@@ -264,7 +259,6 @@ Entity EntityFactory::createPlayerMissile(
         playerMissile.getId(), playerMissileComponent);
     componentManager.addComponent<PositionComponent>(playerMissile.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(playerMissile.getId(), velocity);
-    componentManager.addComponent<DirectionComponent>(playerMissile.getId(), direction);
     componentManager.addComponent<SpriteDataComponent>(playerMissile.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(playerMissile.getId(), hitbox);
     componentManager.addComponent<AnimationComponent>(playerMissile.getId(), animationComponent);
@@ -279,8 +273,7 @@ Entity EntityFactory::createEnemyMissile(
 
     EnemyMissileComponent enemyMissileComponent;
     PositionComponent startPosition(0, 0);
-    VelocityComponent velocity{3};
-    DirectionComponent direction{Direction::LEFT};
+    VelocityComponent velocity{-3.0f, 0.0f};
     AnimationComponent animationComponent({0, 0}, {16, 16});
     SpriteDataComponent spriteData{SpritePath::Missile, {0.1f, 0.1f}, AScenes::SpriteType::PLAYER};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
@@ -296,7 +289,6 @@ Entity EntityFactory::createEnemyMissile(
         enemyMissile.getId(), enemyMissileComponent);
     componentManager.addComponent<PositionComponent>(enemyMissile.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(enemyMissile.getId(), velocity);
-    componentManager.addComponent<DirectionComponent>(enemyMissile.getId(), direction);
     componentManager.addComponent<SpriteDataComponent>(enemyMissile.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(enemyMissile.getId(), hitbox);
     componentManager.addComponent<AnimationComponent>(enemyMissile.getId(), animationComponent);

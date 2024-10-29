@@ -17,13 +17,8 @@ void MoveSystem::moveEntities(ComponentManager &componentManager, EntityManager 
         int entityId = entity.getId();
         auto position = componentManager.getComponent<PositionComponent>(entityId);
         auto velocity = componentManager.getComponent<VelocityComponent>(entityId);
-        auto direction = componentManager.getComponent<DirectionComponent>(entityId);
-        if (position && velocity && direction) {
-            if (direction.value()->direction == Direction::LEFT) {
-                position.value()->x -= velocity.value()->speed;
-            } else if (direction.value()->direction == Direction::RIGHT) {
-                position.value()->x += velocity.value()->speed;
-            }
+        if (position && velocity) {
+            position.value()->x += velocity.value()->x;
         }
     }
 }

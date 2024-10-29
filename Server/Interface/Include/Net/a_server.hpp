@@ -561,14 +561,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             if (pos) {
                 // player go down
                 if (pos.value()->y < entityPosition.y) {
-                    vel.value()->speed -= 0.1;
-                    if (vel.value()->speed < -1) {
-                        vel.value()->speed = -1;
+                    vel.value()->y -= 0.1;
+                    if (vel.value()->y < -1) {
+                        vel.value()->y = -1;
                     }
                 } else {
-                    vel.value()->speed += 0.1;
-                    if (vel.value()->speed > 1) {
-                        vel.value()->speed = 1;
+                    vel.value()->y += 0.1;
+                    if (vel.value()->y > 1) {
+                        vel.value()->y = 1;
                     }
                 }
                 pos.value()->x = entityPosition.x;
