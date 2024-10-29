@@ -59,36 +59,23 @@ class IEntityFactory {
         EntityManager &entityManager, ComponentManager &componentManager, int nbrOfPlayers) = 0;
 
     /**
-     * @brief Creates an ally entity.
+     * @brief Creates a shooter enemy entity.
      *
-     * This function creates an ally entity using the provided entity manager and component
-     * manager.
-     *
-     * @param entityManager The entity manager used to create the entity.
-     * @param componentManager The component manager used to manage the components of the entity.
-     * @return The created ally entity.
-     */
-    virtual Entity createAlly(
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
-
-    /**
-     * @brief Creates a basic enemy entity.
-     *
-     * This function creates a basic enemy entity using the provided entity manager and component
+     * This function creates a shooter enemy entity using the provided entity manager and component
      * manager.
      *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to add components to the entity.
-     * @return The created basic enemy entity.
+     * @return The created shooter enemy entity.
      */
-    virtual Entity createBasicEnemy(
+    virtual Entity createShooterEnemy(
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
     /**
      * @brief Creates a basic monster entity.
      *
-     * This function creates a basic monster entity using the provided entity manager and component
-     * manager.
+     * This function creates a basic monster entity using the provided entity manager and
+     * component manager.
      *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to add components to the entity.
@@ -112,19 +99,6 @@ class IEntityFactory {
      */
     virtual Entity createPlayerMissile(
         EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId) = 0;
-
-    /**
-     * @brief Creates an ally missile entity.
-     *
-     * This function creates an ally missile entity using the provided entity manager and component
-     * manager.
-     *
-     * @param entityManager The entity manager used to create the entity.
-     * @param componentManager The component manager used to manage the components of the entity.
-     * @return The created ally missile entity.
-     */
-    virtual Entity createAllyMissile(
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
     /**
      * @brief Creates an enemy missile entity.

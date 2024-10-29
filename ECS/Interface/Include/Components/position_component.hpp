@@ -11,5 +11,5 @@ struct PositionComponent {
     float x;
     float y;
 
-    PositionComponent(float x, float y) : x(x), y(y) {}
+    PositionComponent(float _x, float _y) : x(_x), y(_y) {}
 };

@@ -15,12 +15,9 @@ class RenderSystem : public ISystem {
         : _window(window), _componentManager(componentManager)
     {
         if (!_font.loadFromFile("Client/Assets/Fonts/GODOFWAR.TTF")) {
-            std::cout << "Error loading font"
-                      << std::endl; ////////////////// Do proper error handling
+            std::cout << "Error loading font" << std::endl; // Do proper error handling
         }
     }
-
-    void update(float deltaTime) override { render(this->_componentManager); }
 
     void render(ComponentManager &componentManager);
 

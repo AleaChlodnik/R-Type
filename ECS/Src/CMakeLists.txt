@@ -8,8 +8,14 @@ target_sources(r-type_ecs_src PRIVATE
         Entities/entity_factory.cpp
         Systems/render_system.cpp
         Systems/update_system.cpp
+        Systems/animation_system.cpp
+        Systems/move_system.cpp
+        Systems/collision_system.cpp
+        Systems/auto_fire_system.cpp
+        Systems/audio_system.cpp
         hitbox_tmp.cpp
         sprite_path.cpp
+        sound_path.cpp
         a_scenes.cpp
 )
 
@@ -19,7 +25,7 @@ if (MSVC)
   target_link_libraries(r-type_ecs_src PRIVATE r-type_ecs_interfaces r-type_interfaces)
 else()
   target_compile_options(r-type_ecs_src PRIVATE -Wall -Wextra)
-  target_link_libraries(r-type_ecs_src PRIVATE r-type_ecs_interfaces r-type_interfaces sfml-graphics sfml-window sfml-system)
+  target_link_libraries(r-type_ecs_src PRIVATE r-type_ecs_interfaces r-type_interfaces sfml-graphics sfml-audio sfml-window sfml-system)
 endif()
 
 
