@@ -162,7 +162,7 @@ Entity EntityFactory::createPlayer(
     }
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    HealthComponent health{100, 100};
+    HealthComponent health{3, 3};
     InputComponent input{InputType::NONE};
 
     componentManager.addComponent<PlayerComponent>(player.getId(), playerComponent);
@@ -190,7 +190,7 @@ Entity EntityFactory::createShooterEnemy(
     PositionComponent startPosition(60, 60);
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    HealthComponent health{100, 100};
+    HealthComponent health{0, 0};
     ShootComponent shoot{std::chrono::milliseconds(5000)};
 
     componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
@@ -226,7 +226,7 @@ Entity EntityFactory::createBasicMonster(
     PositionComponent startPosition(60, 60);
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    HealthComponent health{100, 100};
+    HealthComponent health{0, 0};
 
     componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
     componentManager.addComponent<PositionComponent>(monster.getId(), startPosition);

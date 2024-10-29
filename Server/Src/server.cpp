@@ -144,7 +144,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
                           << std::endl;
                 r_type::net::Message<TypeMessage> response;
                 response.header.id = TypeMessage::CreateEntityMessage;
-                response << FormatEntityInformation(client->_initEntities.front());
+                response << FormatEntityInformation(client->_initEntities.front().getId());
                 client->_lastMsg = response;
                 client->Send(response);
                 client->_initEntities.erase(client->_initEntities.begin());
@@ -154,7 +154,6 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             }
         } break;
         default: {
-            std::cout << "[" << client->GetID() << "]: Default" << std::endl;
             client->Send(client->_lastMsg);
         } break;
         }

@@ -83,15 +83,30 @@ void AnimationSystem::AnimationEntities(
             auto player = componentManager.getComponent<PlayerComponent>(entity.getId());
             auto velocity = componentManager.getComponent<VelocityComponent>(entity.getId());
             if (player && velocity) {
-                if (velocity.value()->speed < 0) {
+                if (velocity.value()->speed >= -1 && velocity.value()->speed < -0.6) {
+                    std::cout << "UP" << std::endl;
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_DOWN).x;
-                } else if (velocity.value()->speed > 0) {
+                } else if (velocity.value()->speed >= -0.6 && velocity.value()->speed < -0.2) {
+                    animation.value()->offset.x =
+                        animationShipFactory(AnimationShip::SHIP_FLIP_DOWN).x;
+                } else if (velocity.value()->speed >= -0.2 && velocity.value()->speed < 0.2) {
+                    animation.value()->offset.x =
+                        animationShipFactory(AnimationShip::SHIP_STRAIT).x;
+                } else if (velocity.value()->speed >= 0.2 && velocity.value()->speed < 0.6) {
+                    animation.value()->offset.x =
+                        animationShipFactory(AnimationShip::SHIP_FLIP_UP).x;
+                } else if (velocity.value()->speed >= 0.6 && velocity.value()->speed < 1) {
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_UP).x;
                 }
                 // } else {
                 //     animation.value()->offset.x =
                 //         animationShipFactory(AnimationShip::SHIP_STRAIT).x;
                 // }
+                if (velocity.value()->speed < 0) {
+                    velocity.value()->speed += 0.05;
+                } else {
+                    velocity.value()->speed -= 0.05;
+                }
             }
 
             // animate system for background
