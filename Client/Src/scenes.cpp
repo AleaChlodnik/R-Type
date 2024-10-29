@@ -22,7 +22,7 @@
 
 Scenes::Scenes(std::string ip, int port) : IScenes(), AScenes(ip, port)
 {
-    _window.create(sf::VideoMode::getDesktopMode(), "R-Type", sf::Style::Close);
+    _window.create(sf::VideoMode::getDesktopMode(), "R-Type");
     _window.setFramerateLimit(60);
 }
 

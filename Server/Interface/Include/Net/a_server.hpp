@@ -537,15 +537,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         auto playerSprite =
             _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         auto playerPos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
-        auto playerAnimation =
-            _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
+        auto animation = _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
         auto playerHealth = _componentManager.getComponent<HealthComponent>(entityInfo.uniqueID);
-        if (playerSprite && playerPos && playerAnimation && playerHealth) {
+        if (playerSprite && playerPos && animation && playerHealth) {
+            entityInfo.ratio.x =
+                (animation.value()->dimension.x * playerSprite.value()->scale.x) / SCREEN_WIDTH;
+            entityInfo.ratio.y =
+                (animation.value()->dimension.y * playerSprite.value()->scale.y) / SCREEN_HEIGHT;
             entityInfo.spriteData = *(playerSprite.value());
             entityInfo.vPos.x = playerPos.value()->x;
             entityInfo.vPos.y = playerPos.value()->y;
-            entityInfo.animationComponent.dimension = playerAnimation.value()->dimension;
-            entityInfo.animationComponent.offset = playerAnimation.value()->offset;
+            entityInfo.animationComponent.dimension = animation.value()->dimension;
+            entityInfo.animationComponent.offset = animation.value()->offset;
             entityInfo.life = playerHealth.value()->health;
         }
         _clientPlayerID.insert_or_assign(clientId, entityInfo.uniqueID);
@@ -568,15 +571,19 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         EntityInformation entityInfo;
         auto entityPos = _componentManager.getComponent<PositionComponent>(entityId);
-        auto entitySprite = _componentManager.getComponent<SpriteDataComponent>(entityId);
+        auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityId);
         auto animation = _componentManager.getComponent<AnimationComponent>(entityId);
         auto entityHealth = _componentManager.getComponent<HealthComponent>(entityId);
-        if (entityPos && entitySprite) {
+        if (entityPos && sprite) {
             entityInfo.uniqueID = entityId;
             entityInfo.vPos.x = entityPos.value()->x;
             entityInfo.vPos.y = entityPos.value()->y;
-            entityInfo.spriteData = *(entitySprite.value());
+            entityInfo.spriteData = *(sprite.value());
             if (animation) {
+                entityInfo.ratio.x =
+                    (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;
+                entityInfo.ratio.y =
+                    (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
                 entityInfo.animationComponent.dimension = animation.value()->dimension;
                 entityInfo.animationComponent.offset = animation.value()->offset;
             }
@@ -611,6 +618,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.vPos.y = missilePos.value()->y;
             entityInfo.spriteData = *(sprite.value());
             if (animation) {
+                entityInfo.ratio.x =
+                    (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;
+                entityInfo.ratio.y =
+                    (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
                 entityInfo.animationComponent.dimension = animation.value()->dimension;
                 entityInfo.animationComponent.offset = animation.value()->offset;
             }
@@ -631,6 +642,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.vPos.x = missilePos.value()->x;
             entityInfo.vPos.y = missilePos.value()->y;
             if (animation) {
+                entityInfo.ratio.x =
+                    (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;
+                entityInfo.ratio.y =
+                    (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
                 entityInfo.animationComponent.dimension = animation.value()->dimension;
                 entityInfo.animationComponent.offset = animation.value()->offset;
             }
@@ -660,6 +675,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.vPos.x = backgroundPos.value()->x;
             entityInfo.vPos.y = backgroundPos.value()->y;
             if (animation) {
+                entityInfo.ratio.x =
+                    (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;
+                entityInfo.ratio.y =
+                    (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
                 entityInfo.animationComponent.dimension = animation.value()->dimension;
                 entityInfo.animationComponent.offset = animation.value()->offset;
             }
