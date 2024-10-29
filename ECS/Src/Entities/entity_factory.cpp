@@ -344,3 +344,37 @@ Entity EntityFactory::createSmallButton(EntityManager &entityManager,
 
     return button;
 }
+
+Entity EntityFactory::createFilter(
+    EntityManager &entityManager, ComponentManager &componentManager, AScenes::DaltonismMode mode)
+{
+    Entity filter = entityManager.createEntity();
+
+    sf::Color filterColor;
+
+    switch (mode) {
+    case AScenes::DaltonismMode::PROTANOPIA:
+        filterColor = sf::Color(255, 153, 102, 100);
+        break;
+    case AScenes::DaltonismMode::DEUTERANOPIA:
+        filterColor = sf::Color(102, 153, 255, 100);
+        break;
+    case AScenes::DaltonismMode::TRITANOPIA:
+        filterColor = sf::Color(255, 204, 255, 100);
+        break;
+    default:
+        filterColor = sf::Color(255, 255, 255, 0);
+        break;
+    }
+
+    sf::RectangleShape rectangle(sf::Vector2f(1920, 1080));
+    rectangle.setFillColor(filterColor);
+
+    RectangleShapeComponent rectangleShapeComponent(rectangle);
+
+    componentManager.addComponent<PositionComponent>(filter.getId(), PositionComponent(0, 0));
+    componentManager.addComponent<RectangleShapeComponent>(
+        filter.getId(), rectangleShapeComponent);
+
+    return filter;
+}

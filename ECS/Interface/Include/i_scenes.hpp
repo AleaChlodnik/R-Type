@@ -41,6 +41,11 @@ class IScenes {
     virtual void inGameMenu() = 0;
 
     /**
+     * @brief Displays the difficulty choices.
+     */
+    virtual void difficultyChoices() = 0;
+
+    /**
      * @brief Displays the current scene and manages its components.
      */
     virtual void render() = 0;

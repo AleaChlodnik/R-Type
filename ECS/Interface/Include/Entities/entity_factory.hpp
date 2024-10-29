@@ -148,4 +148,14 @@ class EntityFactory : public IEntityFactory {
      */
     Entity createEnemyMissile(EntityManager &entityManager, ComponentManager &componentManager,
         uint32_t entityId) override;
+    /**
+     * @brief Create a Filter object
+     *
+     * @param entityManager
+     * @param componentManager
+     * @param mode
+     * @return Entity
+     */
+    Entity createFilter(EntityManager &entityManager, ComponentManager &componentManager,
+        AScenes::DaltonismMode mode);
 };
