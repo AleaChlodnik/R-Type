@@ -98,10 +98,7 @@ void AnimationSystem::AnimationEntities(
                 } else if (velovity.value()->y >= 0.6 && velovity.value()->y < 1) {
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_UP).x;
                 }
-                // } else {
-                //     animation.value()->offset.x =
-                //         animationShipFactory(AnimationShip::SHIP_STRAIT).x;
-                // }
+                // animate system for ship velocity to get strait
                 if (velovity.value()->y < 0) {
                     velovity.value()->y += 0.05;
                 } else {
