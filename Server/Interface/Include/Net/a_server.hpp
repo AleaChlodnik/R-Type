@@ -252,17 +252,15 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     void UpdateLevel(std::chrono::system_clock::time_point newClock, bool &bUpdateEntities)
     {
-        while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
-            100) {
+        while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() > 100) {
             bUpdateEntities = true;
             // make position copy
             if (auto positionsBefore = _componentManager.getComponentMap<PositionComponent>()) {
-
                 std::unordered_map<int, PositionComponent> previousPositions;
                 // Save previous positions
-                for (const auto &pair : **positionsBefore) {
+                for (auto &pair : **positionsBefore) {
                     int entityId = pair.first;
-                    const auto positionComponent = pair.second;
+                    auto positionComponent = pair.second;
                     auto position = std::any_cast<PositionComponent>(&positionComponent);
                     if (position) {
                         previousPositions.insert({entityId, *position});
@@ -272,14 +270,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 _moveSystem->moveEntities(_componentManager, _entityManager);
                 // Compare new positions
                 if (auto positionsAfter = _componentManager.getComponentMap<PositionComponent>()) {
-                    for (const auto &pair : **positionsAfter) {
+                    for (auto &pair : **positionsAfter) {
                         int entityId = pair.first;
-                        const auto &newPositionComponent = pair.second;
-                        auto newPosition = std::any_cast<PositionComponent>(&newPositionComponent);
-                        if (newPosition) {
+                        auto &newPositionComponent = pair.second;
+                        if (auto newPosition =
+                                std::any_cast<PositionComponent>(&newPositionComponent)) {
                             auto it = previousPositions.find(entityId);
                             if (it != previousPositions.end()) {
-                                const auto &oldPosition = it->second;
+                                auto &oldPosition = it->second;
                                 if (oldPosition.x != newPosition->x ||
                                     oldPosition.y != newPosition->y) {
                                     if (auto spriteData =
@@ -300,57 +298,119 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             }
 
             // Collision system
-            auto entities = entityManager.getAllEntities();
-            for (size_t i = 0; i < entities.size(); ++i) {
-                int entityId1 = entities[i].getId();
-                for (size_t j = i + 1; j < entities.size(); ++j) {
-                    int entityId2 = entities[j].getId();
-                    if (_collisionSystem->checkCollision(componentManager, entityId1, entityId2)) {
-
-                        if (auto spriteData1 = _componentManager.getComponent<SpriteDataComponent>(
-                                entityId1) &&auto spriteData2 =
-                                _componentManager.getComponent<SpriteDataComponent>(entityId2)) {
-                            if (spriteData1.value()->type == EntityType::Player) {
-                                if (auto playerHealth =
-                                        _componentManager.getComponent<HealthComponent>(
-                                            entityId1)) {
-                                    if (spriteData2.value()->type == EntityType::Enemy ||
-                                        spriteData2.value()->type == EntityType::EnemyMissile) {
-                                        _componentManager.removeEntityFromAllComponents(entityId2);
-                                        _entityManager.removeEntity(entityId2);
-                                        playerHealth.value()->health -= 1;
+            std::vector<int> entitiesToRemove;
+            auto beforeCollisioneEntities = _entityManager.getAllEntities();
+            for (size_t i = 0; i < beforeCollisioneEntities.size(); ++i) {
+                int entityId1 = beforeCollisioneEntities[i].getId();
+                for (size_t j = i + 1; j < beforeCollisioneEntities.size(); ++j) {
+                    int entityId2 = beforeCollisioneEntities[j].getId();
+                    if (_collisionSystem->checkCollision(
+                            _componentManager, entityId1, entityId2)) {
+                        auto shooterEnemy1 =
+                            _componentManager.getComponent<ShootComponent>(entityId1);
+                        auto enemyMissile1 =
+                            _componentManager.getComponent<EnemyMissileComponent>(entityId1);
+                        auto basicMonster1 =
+                            _componentManager.getComponent<BasicMonsterComponent>(entityId1);
+                        auto shooterEnemy2 =
+                            _componentManager.getComponent<ShootComponent>(entityId2);
+                        auto enemyMissile2 =
+                            _componentManager.getComponent<EnemyMissileComponent>(entityId2);
+                        auto basicMonster2 =
+                            _componentManager.getComponent<BasicMonsterComponent>(entityId2);
+                        if (auto player1 =
+                                _componentManager.getComponent<PlayerComponent>(entityId1)) {
+                            if (auto playerHealth =
+                                    _componentManager.getComponent<HealthComponent>(entityId1)) {
+                                if (shooterEnemy2 || enemyMissile2) {
+                                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                            entityId2) == entitiesToRemove.end()) {
+                                        entitiesToRemove.push_back(entityId2);
                                     }
-                                    if (spriteData2.value()->type == EntityType::BasicMonster) {
-                                        playerHealth.value()->health -= 1;
-                                    }
-                                    if (playerHealth.value()->health <= 0) {
-                                        _componentManager.removeEntityFromAllComponents(entityId1);
-                                        _entityManager.removeEntity(entityId1);
+                                    playerHealth.value()->health -= 1;
+                                }
+                                if (basicMonster2) {
+                                    playerHealth.value()->health -= 1;
+                                }
+                                if (playerHealth.value()->health <= 0) {
+                                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                            entityId1) == entitiesToRemove.end()) {
+                                        entitiesToRemove.push_back(entityId1);
                                     }
                                 }
                             }
-                            if (spriteData1.value()->type == EntityType::PlayerMissile) {
-                                if (spriteData2.value()->type == EntityType::Enemy ||
-                                    spriteData2.value()->type == EntityType::EnemyMissile ||
-                                    spriteData2.value()->type == EntityType::BasicMonster) {
-                                    _componentManager.removeEntityFromAllComponents(entityId1);
-                                    _entityManager.removeEntity(entityId1);
-                                    _componentManager.removeEntityFromAllComponents(entityId2);
-                                    _entityManager.removeEntity(entityId2);
+                        } else if (auto playerMissile1 =
+                                       _componentManager.getComponent<PlayerMissileComponent>(
+                                           entityId1)) {
+                            if (shooterEnemy2 || enemyMissile2 || basicMonster2) {
+                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                        entityId1) == entitiesToRemove.end()) {
+                                    entitiesToRemove.push_back(entityId1);
+                                }
+                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                        entityId2) == entitiesToRemove.end()) {
+                                    entitiesToRemove.push_back(entityId2);
                                 }
                             }
+                        } else if (auto player2 = _componentManager.getComponent<PlayerComponent>(
+                                       entityId2)) {
+                            if (auto playerHealth =
+                                    _componentManager.getComponent<HealthComponent>(entityId2)) {
+                                if (shooterEnemy1 || enemyMissile1) {
+                                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                            entityId1) == entitiesToRemove.end()) {
+                                        entitiesToRemove.push_back(entityId1);
+                                    }
+                                    playerHealth.value()->health -= 1;
+                                }
+                                if (basicMonster1) {
+                                    playerHealth.value()->health -= 1;
+                                }
+                                if (playerHealth.value()->health <= 0) {
+                                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                            entityId2) == entitiesToRemove.end()) {
+                                        entitiesToRemove.push_back(entityId2);
+                                    }
+                                }
+                            }
+                        } else if (auto playerMissile2 =
+                                       _componentManager.getComponent<PlayerMissileComponent>(
+                                           entityId2)) {
+                            if (shooterEnemy1 || enemyMissile1 || basicMonster1) {
+                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                        entityId1) == entitiesToRemove.end()) {
+                                    entitiesToRemove.push_back(entityId1);
+                                }
+                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                        entityId2) == entitiesToRemove.end()) {
+                                    entitiesToRemove.push_back(entityId2);
+                                }
+                            }
+                        } else {
+                            continue;
                         }
                     }
                 }
             }
-            auto entities = entityManager.getAllEntities();
-            for (const auto &entity : entities) {
+            for (int entityId : entitiesToRemove) {
+                r_type::net::Message<TypeMessage> msg;
+                msg.header.id = TypeMessage::DestroyEntityMessage;
+                msg << entityId;
+                MessageAllClients(msg);
+                _componentManager.removeEntityFromAllComponents(entityId);
+                _entityManager.removeEntity(entityId);
+            }
+            // Remove entities when they go off-screen
+            auto afterCollisionEntities = _entityManager.getAllEntities();
+            for (const auto &entity : afterCollisionEntities) {
                 int entityId = entity.getId();
-                if (_collisionSystem->checkOffScreen(componentManager, entityId)) {
-                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId) ==
-                        entitiesToRemove.end()) {
-                        entitiesToRemove.push_back(entityId);
-                    }
+                if (_collisionSystem->checkOffScreen(_componentManager, entityId)) {
+                    r_type::net::Message<TypeMessage> msg;
+                    msg.header.id = TypeMessage::DestroyEntityMessage;
+                    msg << entityId;
+                    MessageAllClients(msg);
+                    _componentManager.removeEntityFromAllComponents(entityId);
+                    _entityManager.removeEntity(entityId);
                 }
             }
 
@@ -396,24 +456,23 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
             // auto fire system
             _autoFireSystem->handleAutoFire(_componentManager, _entityManager);
-            // fire, then set canShoot to false
-            auto entities = _entityManager.getAllEntities();
-            if (!entities.empty()) {
-                for (auto &entity : entities) {
-                    if (auto shootInfo =
-                            _componentManager.getComponent<ShootComponent>(entity.getId())) {
-                        if (shootInfo.value()->canShoot) {
+            auto shootComponentMap = _componentManager.getComponentMap<ShootComponent>();
+            if (shootComponentMap) {
+                for (auto &pair : **shootComponentMap) {
+                    int entityId = pair.first;
+                    auto &shootComponent = pair.second;
+                    if (auto shootInfo = std::any_cast<ShootComponent>(&shootComponent)) {
+                        if (shootInfo->canShoot) {
                             r_type::net::Message<TypeMessage> enemyMissileMsg;
                             enemyMissileMsg.header.id = TypeMessage::CreateEntityMessage;
-                            enemyMissileMsg << InitiateEnemyMissile(entity.getId());
+                            enemyMissileMsg << InitiateEnemyMissile(entityId);
                             MessageAllClients(enemyMissileMsg);
-                            shootInfo.value()->canShoot = false;
+                            shootInfo->canShoot = false;
                         }
                     }
                 }
             }
-
-            _clock += std::chrono::milliseconds(500);
+            _clock += std::chrono::milliseconds(100);
         }
     }
 

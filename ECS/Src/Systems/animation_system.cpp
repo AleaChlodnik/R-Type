@@ -81,11 +81,11 @@ void AnimationSystem::AnimationEntities(
         if (animation) {
             // animate system for ship
             auto player = componentManager.getComponent<PlayerComponent>(entity.getId());
-            auto velovity = componentManager.getComponent<VelocityComponent>(entity.getId());
-            if (player && velovity) {
-                if (velovity.value()->y < 0) {
+            auto velocity = componentManager.getComponent<VelocityComponent>(entity.getId());
+            if (player && velocity) {
+                if (velocity.value()->speed < 0) {
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_DOWN).x;
-                } else if (velovity.value()->y > 0) {
+                } else if (velocity.value()->speed > 0) {
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_UP).x;
                 }
                 // } else {

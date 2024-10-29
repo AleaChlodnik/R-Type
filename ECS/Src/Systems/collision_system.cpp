@@ -9,35 +9,6 @@
 #include <macros.hpp>
 #include <vector>
 
-//     if (player2) {
-//         if (enemy1 || enemyMissile1) {
-//             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
-//                 entitiesToRemove.end())
-//                 entitiesToRemove.push_back(entityId1);
-//             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
-//                 entitiesToRemove.end())
-//                 entitiesToRemove.push_back(entityId2);
-//         } else if (basicMonster1) {
-//             entitiesToRemove.push_back(entityId2);
-//         }
-//     }
-//     if (playerMissile2) {
-//         if (enemy1 || basicMonster1) {
-//             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
-//                 entitiesToRemove.end())
-//                 entitiesToRemove.push_back(entityId1);
-//         }
-//         if (enemyMissile1) {
-//             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
-//                 entitiesToRemove.end())
-//                 entitiesToRemove.push_back(entityId1);
-//             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
-//                 entitiesToRemove.end())
-//                 entitiesToRemove.push_back(entityId2);
-//         }
-//     }
-// }
-
 bool CollisionSystem::checkOffScreen(ComponentManager &componentManager, int entityId)
 {
     auto pos = componentManager.getComponent<PositionComponent>(entityId);
