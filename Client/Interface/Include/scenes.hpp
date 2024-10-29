@@ -63,6 +63,12 @@ class Scenes : virtual public AScenes {
     void inGameMenu();
 
     /**
+     * @brief displays the difficulty choices, creates all the necessary entities
+     *
+     */
+    void difficultyChoices();
+    
+    /**
      * @brief display what must be displayed (main menu, game loop, settings menu, in game menu),
      *        creates all the components needed and manages them
      *

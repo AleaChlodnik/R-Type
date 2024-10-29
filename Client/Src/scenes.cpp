@@ -131,7 +131,6 @@ void Scenes::mainMenu()
     ComponentManager componentManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    // SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
@@ -231,7 +230,6 @@ void Scenes::inGameMenu()
     ComponentManager componentManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    // SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
@@ -355,37 +353,6 @@ void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     buttons.push_back(protanopiaButton);
 }
 
-void createGameModeChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
-    ComponentManager &componentManager, EntityManager &entityManager,
-    TextureManager &textureManager, EntityFactory &entityFactory)
-{
-    std::function<IScenes *(AScenes *)> easyButtonClicked = [](AScenes *currentScene) {
-        currentScene->setGameMode(Scenes::GameMode::EASY);
-        return currentScene;
-    };
-    std::shared_ptr<Entity> easyButton = std::make_shared<Entity>(entityFactory.createButton(
-        entityManager, componentManager, textureManager, "Easy", &easyButtonClicked, 1460, 250));
-
-    std::function<IScenes *(AScenes *)> mediumButtonClicked = [](AScenes *currentScene) {
-        currentScene->setGameMode(Scenes::GameMode::MEDIUM);
-        return currentScene;
-    };
-    std::shared_ptr<Entity> mediumButton =
-        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Medium", &mediumButtonClicked, 1460, 400));
-
-    std::function<IScenes *(AScenes *)> hardButtonClicked = [](AScenes *currentScene) {
-        currentScene->setGameMode(Scenes::GameMode::HARD);
-        return currentScene;
-    };
-    std::shared_ptr<Entity> hardButton = std::make_shared<Entity>(entityFactory.createButton(
-        entityManager, componentManager, textureManager, "Hard", &hardButtonClicked, 1460, 550));
-
-    buttons.push_back(easyButton);
-    buttons.push_back(mediumButton);
-    buttons.push_back(hardButton);
-}
-
 sf::Keyboard::Key waitForKey(sf::RenderWindow *_window)
 {
     sf::Event event;
@@ -459,7 +426,6 @@ void Scenes::settingsMenu()
     ComponentManager componentManager;
     TextureManager textureManager;
     EntityFactory entityFactory;
-    // SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
@@ -487,7 +453,6 @@ void Scenes::settingsMenu()
     // Create the buttons
     std::function<IScenes *(AScenes *)> onDaltonismModeButtonClicked = [](AScenes *currentScene) {
         currentScene->setDisplayDaltonismChoice(!currentScene->getDisplayDaltonismChoice());
-        currentScene->setDisplayGameModeChoice(false);
         currentScene->setDisplayKeyBindsChoice(false);
         currentScene->settingsMenu();
         return currentScene;
@@ -495,24 +460,11 @@ void Scenes::settingsMenu()
 
     std::shared_ptr<Entity> daltonismModeButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Daltonism Mode", &onDaltonismModeButtonClicked, 960, 100));
-
-    std::function<IScenes *(AScenes *)> onGameModeButtonClicked = [](AScenes *currentScene) {
-        currentScene->setDisplayGameModeChoice(!currentScene->getDisplayGameModeChoice());
-        currentScene->setDisplayDaltonismChoice(false);
-        currentScene->setDisplayKeyBindsChoice(false);
-        currentScene->settingsMenu();
-        return currentScene;
-    };
-
-    std::shared_ptr<Entity> gameModeButton =
-        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Game Mode", &onGameModeButtonClicked, 960, 250));
+            textureManager, "Daltonism Mode", &onDaltonismModeButtonClicked, 960, 250));
 
     std::function<IScenes *(AScenes *)> onKeyBindButtonClicked = [](AScenes *currentScene) {
         currentScene->setDisplayKeyBindsChoice(!currentScene->getDisplayKeyBindsChoice());
         currentScene->setDisplayDaltonismChoice(false);
-        currentScene->setDisplayGameModeChoice(false);
         currentScene->settingsMenu();
         return currentScene;
     };
@@ -529,7 +481,6 @@ void Scenes::settingsMenu()
         entityManager, componentManager, textureManager, "Back", &onBackButtonClicked, 960, 650));
 
     buttons.push_back(daltonismModeButton);
-    buttons.push_back(gameModeButton);
     buttons.push_back(keyBindsButton);
     buttons.push_back(backButton);
 
@@ -538,10 +489,6 @@ void Scenes::settingsMenu()
             buttons, componentManager, entityManager, textureManager, entityFactory);
     }
 
-    if (_displayGameModeChoice) {
-        createGameModeChoiceButtons(
-            buttons, componentManager, entityManager, textureManager, entityFactory);
-    }
     if (_displayKeyBindsChoice) {
         createKeyBindingButtons(
             buttons, componentManager, entityManager, textureManager, entityFactory, keyBinds);
@@ -559,6 +506,63 @@ void Scenes::settingsMenu()
         updateSystem->updateSpritePositions(componentManager, entityManager);
         renderSystem->render(componentManager);
     }
+}
+
+void Scenes::difficultyChoices()
+{
+    EntityManager entityManager;
+    ComponentManager componentManager;
+    TextureManager textureManager;
+    EntityFactory entityFactory;
+
+    std::shared_ptr<UpdateSystem> updateSystem =
+        std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
+    std::shared_ptr<RenderSystem> renderSystem =
+        std::make_shared<RenderSystem>(_window, componentManager);
+
+    // systemManager.addSystem(updateSystem);
+    // systemManager.addSystem(renderSystem);
+
+    buttons = {};
+
+    // Create background
+    std::shared_ptr<Entity> background =
+        std::make_shared<Entity>(entityFactory.createBackground(entityManager, componentManager));
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Vector2f scale(1.0, 1.0);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
+    componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
+
+    // Create filter
+    this->filter = std::make_shared<Entity>(
+        entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
+
+    std::function<IScenes *(AScenes *)> easyButtonClicked = [](AScenes *currentScene) {
+        currentScene->setGameMode(Scenes::GameMode::EASY);
+        return currentScene;
+    };
+    std::shared_ptr<Entity> easyButton = std::make_shared<Entity>(entityFactory.createButton(
+        entityManager, componentManager, textureManager, "Easy", &easyButtonClicked, 1460, 250));
+
+    std::function<IScenes *(AScenes *)> mediumButtonClicked = [](AScenes *currentScene) {
+        currentScene->setGameMode(Scenes::GameMode::MEDIUM);
+        return currentScene;
+    };
+    std::shared_ptr<Entity> mediumButton =
+        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
+            textureManager, "Medium", &mediumButtonClicked, 1460, 400));
+
+    std::function<IScenes *(AScenes *)> hardButtonClicked = [](AScenes *currentScene) {
+        currentScene->setGameMode(Scenes::GameMode::HARD);
+        return currentScene;
+    };
+    std::shared_ptr<Entity> hardButton = std::make_shared<Entity>(entityFactory.createButton(
+        entityManager, componentManager, textureManager, "Hard", &hardButtonClicked, 1460, 550));
+
+    buttons.push_back(easyButton);
+    buttons.push_back(mediumButton);
+    buttons.push_back(hardButton);
 }
 
 /**

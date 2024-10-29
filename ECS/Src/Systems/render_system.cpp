@@ -13,21 +13,38 @@ void RenderSystem::render(ComponentManager &componentManager)
 
     // Draw all sprites
     const auto sprites = componentManager.getComponentMap<SpriteComponent>();
-    std::vector<std::pair<int, SpriteComponent>> sortedSprites;
-    for (const auto &pair : **sprites) {
-        const auto &spriteComponent = pair.second;
-        auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
-        if (sprite) {
-            sortedSprites.emplace_back(pair.first, *sprite);
+    if (sprites) {
+        // Draw background first
+        for (const auto &pair : **sprites) {
+            const auto &spriteComponent = pair.second;
+            auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
+            if (sprite) {
+                if (sprite->type == AScenes::SpriteType::BACKGROUND) {
+                    _window.draw(sprite->sprite);
+                    break;
+                }
+            }
         }
-    }
+        // Draw all other sprites
+        for (const auto &pair : **sprites) {
+            const auto &spriteComponent = pair.second;
+            auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
+            if (sprite) {
+                if (sprite->type == AScenes::SpriteType::BACKGROUND) {
+                    continue;
+                }
 
-    std::sort(sortedSprites.begin(), sortedSprites.end(),
-        [](const auto &a, const auto &b) { return a.second.type < b.second.type; });
+                sf::RectangleShape square(sf::Vector2f(sprite->hitboxX, sprite->hitboxY));
+                square.setPosition(sprite->sprite.getPosition());
+                square.setOrigin(sf::Vector2f(sprite->hitboxX / 2, sprite->hitboxY / 2));
+                square.setOutlineColor(sf::Color::Red);
+                square.setOutlineThickness(2.f);
+                square.setFillColor(sf::Color::Transparent);
+                _window.draw(square);
 
-    for (const auto &pair : sortedSprites) {
-        const auto &sprite = pair.second;
-        _window.draw(sprite.sprite);
+                _window.draw(sprite->sprite);
+            }
+        }
     }
 
     // Draw all texts
