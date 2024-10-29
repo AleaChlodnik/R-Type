@@ -46,16 +46,29 @@ class EntityFactory : public IEntityFactory {
         int nbrOfPlayers) override;
 
     /**
-     * @brief Creates a basic enemy entity.
+     * @brief Creates a shooter enemy entity.
      *
-     * This function creates a basic enemy entity using the provided entity manager and component
+     * This function creates a shooter enemy entity using the provided entity manager and component
      * manager.
      *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to add components to the entity.
      * @return The created basic enemy entity.
      */
-    Entity createBasicEnemy(
+    Entity createShooterEnemy(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
+
+    /**
+     * @brief Creates a basic monster entity.
+     *
+     * This function creates a basic monster entity using the provided entity manager and
+     * component manager.
+     *
+     * @param entityManager The entity manager used to create the entity.
+     * @param componentManager The component manager used to add components to the entity.
+     * @return The created basic monster entity.
+     */
+    Entity createBasicMonster(
         EntityManager &entityManager, ComponentManager &componentManager) override;
 
     /**

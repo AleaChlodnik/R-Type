@@ -14,11 +14,6 @@ class MoveSystem : public ISystem {
     MoveSystem(ComponentManager &componentManager, EntityManager &entityManager)
         : _componentManager(componentManager), _entityManager(entityManager){};
 
-    void update(float deltaTime) override
-    {
-        moveEntities(this->_componentManager, this->_entityManager, deltaTime);
-    };
-
     void moveEntities(
         ComponentManager &componentManager, EntityManager &entityManager, float deltaTime);
 

@@ -33,15 +33,16 @@ class TextureManager {
             return it->second;
         }
 
-        sf::Texture texture;
+        auto &texture = textures[filePath];
         if (!texture.loadFromFile(filePath)) {
+            textures.erase(filePath);
             throw failedToLoadTexture();
         }
 
-        textures[filePath] = std::move(texture);
-
         return textures[filePath];
     }
+
+    void releaseTexture(const std::string &filePath) { textures.erase(filePath); }
 
   private:
     /**

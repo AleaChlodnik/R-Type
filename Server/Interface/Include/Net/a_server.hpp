@@ -56,10 +56,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         _moveSystem = std::make_shared<MoveSystem>(_componentManager, _entityManager);
         _collisionSystem = std::make_shared<CollisionSystem>(_componentManager, _entityManager);
         _animationSystem = std::make_shared<AnimationSystem>(_componentManager, _entityManager);
+        _autoFireSystem = std::make_shared<AutoFireSystem>(_componentManager, _entityManager);
 
         _background = InitiateBackground();
-
-        _entityFactory.createBasicEnemy(_entityManager, _componentManager);
+        _entityFactory.createShooterEnemy(_entityManager, _componentManager);
+        _entityFactory.createBasicMonster(_entityManager, _componentManager);
     }
 
     /**
@@ -216,8 +217,13 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
         for (auto &client : _deqConnections) {
             if (client && client->IsConnected()) {
-                if (client != pIgnoreClient)
+                if (client != pIgnoreClient) {
                     client->Send(msg);
+                    if (msg.header.id == TypeMessage::DestroyEntityMessage) {
+                        client->_lastMsg = msg;
+                        client->SetStatus(ServerStatus::WAITING);
+                    }
+                }
             } else {
                 OnClientDisconnect(client);
                 client.reset();
@@ -232,49 +238,27 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     }
 
     /**
-     * @brief Updates the server state and processes incoming messages.
+     * @brief Updates the game level based on the provided clock time.
      *
-     * This function updates the state of entities on the server and processes incoming messages.
-     * It can optionally wait for messages and limit the number of messages processed in one call.
+     * This function performs several tasks to update the game level:
+     * 1. Checks if the time difference between the new clock and the stored clock exceeds 100
+     * milliseconds.
+     * 2. If so, it updates entity positions, handles collisions, updates animations, and processes
+     * auto-firing.
+     * 3. Sends appropriate messages to clients about entity updates, creations, and destructions.
      *
-     * @param nMaxMessages The maximum number of messages to process in one call. Default is -1 (no
-     * limit).
-     * @param bWait If true, the function will wait for messages to be available before processing.
-     *
-     * The function performs the following tasks:
-     * - Updates the positions of entities based on their components.
-     * - Sends updated entity information to all connected clients.
-     * - Checks for collisions between player missiles and monsters, and handles entity
-     * destruction.
-     * - Processes incoming messages from clients.
+     * @param newClock The new clock time point to compare with the stored clock.
+     * @param bUpdateEntities A boolean reference that will be set to true if entities are updated.
      */
-    void Update(size_t nMaxMessages = -1, bool bWait = false)
+    void UpdateLevel(std::chrono::system_clock::time_point newClock, bool &bUpdateEntities)
     {
-        if (_nbrOfPlayers == 0 && !_playerConnected)
-            return;
-        if (_nbrOfPlayers > 0 && !_playerConnected) {
-            _playerConnected = true;
-            _clock = std::chrono::system_clock::now();
-        }
-
-        // if (bWait)
-        //     _qMessagesIn.wait();
-        std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
-        // std::cout
-        //     << "Time: "
-        //     << std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
-        //     << std::endl;
-
-        bool bUpdateEntities = false;
         while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
             100) {
             bUpdateEntities = true;
-
             // make position copy
             if (auto positionsBefore = _componentManager.getComponentMap<PositionComponent>()) {
 
                 std::unordered_map<int, PositionComponent> previousPositions;
-
                 // Save previous positions
                 for (const auto &pair : **positionsBefore) {
                     int entityId = pair.first;
@@ -287,7 +271,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 // Move entities
                 _moveSystem->moveEntities(
                     _componentManager, _entityManager, 0.5); // add real clock
-
                 // Compare new positions
                 if (auto positionsAfter = _componentManager.getComponentMap<PositionComponent>()) {
                     for (const auto &pair : **positionsAfter) {
@@ -305,10 +288,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                                                 entityId)) {
                                         r_type::net::Message<TypeMessage> msg;
                                         msg.header.id = TypeMessage::UpdateEntity;
-                                        MessageAllClients(msg
-                                            << EntityInformation{static_cast<u_int32_t>(entityId),
-                                                   *(spriteData.value()),
-                                                   {newPosition->x, newPosition->y}});
+                                        msg << FormatEntityInformation(
+                                            _entityManager.getEntity(entityId).value()->getId());
+                                        MessageAllClients(msg);
                                     }
                                 }
                             }
@@ -316,14 +298,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     }
                 }
             }
-
             // make copy of entityIds
             std::vector<Entity> entityListCopy = _entityManager.getAllEntities();
             std::vector<int> entityIdsBefore;
             for (const auto &entity : entityListCopy) {
                 entityIdsBefore.push_back(entity.getId());
             }
-
             // collision system
             _collisionSystem->handleCollisions(_componentManager, _entityManager);
             // compare existence and send messages
@@ -378,10 +358,58 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 }
             }
 
+            // auto fire system
+            _autoFireSystem->handleAutoFire(_componentManager, _entityManager);
+            // fire, then set canShoot to false
+            auto entities = _entityManager.getAllEntities();
+            if (!entities.empty()) {
+                for (auto &entity : entities) {
+                    if (auto shootInfo =
+                            _componentManager.getComponent<ShootComponent>(entity.getId())) {
+                        if (shootInfo.value()->canShoot) {
+                            r_type::net::Message<TypeMessage> enemyMissileMsg;
+                            enemyMissileMsg.header.id = TypeMessage::CreateEntityMessage;
+                            enemyMissileMsg << InitiateEnemyMissile(entity.getId());
+                            MessageAllClients(enemyMissileMsg);
+                            shootInfo.value()->canShoot = false;
+                        }
+                    }
+                }
+            }
+
             _clock += std::chrono::milliseconds(500);
         }
-        if (bUpdateEntities)
-            _clock = newClock;
+    }
+
+    /**
+     * @brief Updates the server state, processes incoming messages, and updates the game level.
+     *
+     * This function performs several tasks:
+     * - If no players are connected, it returns immediately.
+     * - If players are connected and the player connection flag is not set, it sets the flag and
+     * updates the clock.
+     * - Spawns a thread to update the game level.
+     * - Processes up to nMaxMessages from the incoming message queue.
+     * - Joins the level update thread and updates the clock if entities were updated.
+     *
+     * @param nMaxMessages The maximum number of messages to process from the incoming message
+     * queue. Default is -1 (process all messages).
+     * @param bWait A flag indicating whether to wait for messages. Default is false.
+     */
+    void Update(size_t nMaxMessages = -1, bool bWait = false)
+    {
+        if (_nbrOfPlayers == 0)
+            return;
+        if (_nbrOfPlayers > 0 && !_playerConnected) {
+            _playerConnected = true;
+            _clock = std::chrono::system_clock::now();
+        }
+
+        bool bUpdateEntities = false;
+        std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
+        std::thread levelUpdate([this, newClock, &bUpdateEntities]() {
+            this->UpdateLevel(newClock, bUpdateEntities);
+        });
 
         size_t nMessageCount = 0;
         while (nMessageCount < nMaxMessages && !_qMessagesIn.empty()) {
@@ -391,6 +419,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
             nMessageCount++;
         }
+        levelUpdate.join();
+        if (bUpdateEntities)
+            _clock = newClock;
     }
 
     /**
@@ -497,7 +528,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param clientId The client ID of the player being initialized.
      * @return EntityInformation The information of the newly created player entity.
      */
-    EntityInformation InitiatePlayers(int clientId)
+    EntityInformation InitiatePlayer(int clientId)
     {
         EntityInformation entityInfo;
         Entity player =
@@ -508,14 +539,51 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         auto playerPos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         auto playerAnimation =
             _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
-        if (playerSprite && playerPos) {
+        auto playerHealth = _componentManager.getComponent<HealthComponent>(entityInfo.uniqueID);
+        if (playerSprite && playerPos && playerAnimation && playerHealth) {
             entityInfo.spriteData = *(playerSprite.value());
             entityInfo.vPos.x = playerPos.value()->x;
             entityInfo.vPos.y = playerPos.value()->y;
             entityInfo.animationComponent.dimension = playerAnimation.value()->dimension;
             entityInfo.animationComponent.offset = playerAnimation.value()->offset;
+            entityInfo.life = playerHealth.value()->health;
         }
-        _clientPlayerID.insert_or_assign(_nIDCounter, entityInfo.uniqueID);
+        _clientPlayerID.insert_or_assign(clientId, entityInfo.uniqueID);
+        return entityInfo;
+    }
+
+    /**
+     * @brief Formats the information of a given entity into an EntityInformation structure.
+     *
+     * This function retrieves the position and sprite data components of the specified entity
+     * and populates an EntityInformation structure with this data. If the entity has both
+     * position and sprite data components, their values are copied into the EntityInformation
+     * structure. If either component is missing, the EntityInformation structure will be
+     * returned with default values.
+     *
+     * @param entity The entity whose information is to be formatted.
+     * @return EntityInformation The formatted information of the entity.
+     */
+    EntityInformation FormatEntityInformation(uint32_t entityId)
+    {
+        EntityInformation entityInfo;
+        auto entityPos = _componentManager.getComponent<PositionComponent>(entityId);
+        auto entitySprite = _componentManager.getComponent<SpriteDataComponent>(entityId);
+        auto animation = _componentManager.getComponent<AnimationComponent>(entityId);
+        auto entityHealth = _componentManager.getComponent<HealthComponent>(entityId);
+        if (entityPos && entitySprite) {
+            entityInfo.uniqueID = entityId;
+            entityInfo.vPos.x = entityPos.value()->x;
+            entityInfo.vPos.y = entityPos.value()->y;
+            entityInfo.spriteData = *(entitySprite.value());
+            if (animation) {
+                entityInfo.animationComponent.dimension = animation.value()->dimension;
+                entityInfo.animationComponent.offset = animation.value()->offset;
+            }
+            if (entityHealth) {
+                entityInfo.life = entityHealth.value()->health;
+            }
+        }
         return entityInfo;
     }
 
@@ -528,12 +596,33 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param clientId The client ID of the player firing the missile.
      * @return EntityInformation The information of the newly created missile entity.
      */
-    EntityInformation InitiateMissile(int clientId)
+    EntityInformation InitiatePlayerMissile(int clientId)
     {
         EntityInformation entityInfo;
         uint32_t playerId = GetClientPlayerId(clientId);
         Entity missile =
             _entityFactory.createPlayerMissile(_entityManager, _componentManager, playerId);
+        entityInfo.uniqueID = missile.getId();
+        auto missilePos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+        auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        auto animation = _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
+        if (missilePos && sprite) {
+            entityInfo.vPos.x = missilePos.value()->x;
+            entityInfo.vPos.y = missilePos.value()->y;
+            entityInfo.spriteData = *(sprite.value());
+            if (animation) {
+                entityInfo.animationComponent.dimension = animation.value()->dimension;
+                entityInfo.animationComponent.offset = animation.value()->offset;
+            }
+        }
+        return entityInfo;
+    }
+
+    EntityInformation InitiateEnemyMissile(int enemyId)
+    {
+        EntityInformation entityInfo;
+        Entity missile =
+            _entityFactory.createEnemyMissile(_entityManager, _componentManager, enemyId);
         entityInfo.uniqueID = missile.getId();
         auto missilePos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
@@ -577,19 +666,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
         return entityInfo;
     }
-
-    /**
-     * @brief Sends a list of existing entities to a newly connected client for
-     * initialization.
-     *
-     * The function iterates through all existing entities and sends their information to
-     * the newly connected client, excluding specific entities such as the client itself.
-     *
-     * @param client The connection to the client.
-     * @param entityID The ID of the entity to exclude (usually the client's own entity).
-     */
-    virtual void InitListEntities(
-        std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID) = 0;
 
     /**
      * @brief Callback function that is called when a client has been successfully
@@ -719,10 +795,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     EntityFactory _entityFactory;
 
-    // TEMPORARY
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     std::shared_ptr<MoveSystem> _moveSystem;
     std::shared_ptr<CollisionSystem> _collisionSystem;
     std::shared_ptr<AnimationSystem> _animationSystem;
+    std::shared_ptr<AutoFireSystem> _autoFireSystem;
 
     /**
      * @brief A container that maps client IDs to player IDs.
@@ -759,6 +836,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * relevant attributes that define the background's appearance and behavior.
      */
     EntityInformation _background;
+
+    /**
+     * @brief
+     *
+     */
 };
 } // namespace net
 } // namespace r_type

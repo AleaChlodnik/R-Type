@@ -88,15 +88,6 @@ template <typename T> class IServer {
      */
     virtual void Update(size_t nMaxMessages = -1, bool bWait = false) = 0;
 
-    /**
-     * @brief Send all the existing entities to the client
-     *
-     * @param client
-     * @param entity
-     */
-    virtual void InitListEntities(
-        std::shared_ptr<r_type::net::Connection<T>> client, u_int32_t entityID) = 0;
-
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) = 0;
 
     /**
@@ -106,7 +97,7 @@ template <typename T> class IServer {
      * @param clientId
      */
 
-    virtual EntityInformation InitiatePlayers(int clientId) = 0;
+    virtual EntityInformation InitiatePlayer(int clientId) = 0;
 
     /**
      * @brief Remove player

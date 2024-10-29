@@ -20,6 +20,7 @@
  */
 struct EntityInformation {
     uint32_t uniqueID = 0;
+    uint32_t life = 0;
     SpriteDataComponent spriteData;
     vf2d vPos = {0, 0};
     AnimationComponent animationComponent = {{0, 0}, {0, 0}};

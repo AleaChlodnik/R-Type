@@ -166,7 +166,7 @@ Entity EntityFactory::createPlayer(
     }
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    HealthComponent health{100, 100};
+    HealthComponent health{3, 3};
     InputComponent input{InputType::NONE};
 
     componentManager.addComponent<PlayerComponent>(player.getId(), playerComponent);
@@ -186,20 +186,53 @@ Entity EntityFactory::createPlayer(
     return player;
 }
 
-Entity EntityFactory::createBasicEnemy(
+Entity EntityFactory::createShooterEnemy(
+    EntityManager &entityManager, ComponentManager &componentManager)
+{
+    Entity enemy = entityManager.createEntity();
+
+    EnemyComponent enemyComponent;
+    VelocityComponent velocity{100.0f, 0.0f};
+    AnimationComponent animationComponent({0, 0}, {37, 36});
+    SpriteDataComponent spriteData{SpritePath::Enemy2, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
+    PositionComponent startPosition(60, 60);
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
+    HealthComponent health{0, 0};
+    ShootComponent shoot{std::chrono::milliseconds(5000)};
+
+    componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
+    componentManager.addComponent<VelocityComponent>(enemy.getId(), velocity);
+    componentManager.addComponent<AnimationComponent>(enemy.getId(), animationComponent);
+    componentManager.addComponent<SpriteDataComponent>(enemy.getId(), spriteData);
+    componentManager.addComponent<PositionComponent>(enemy.getId(), startPosition);
+    componentManager.addComponent<HitboxComponent>(enemy.getId(), hitbox);
+    componentManager.addComponent<HealthComponent>(enemy.getId(), health);
+    componentManager.addComponent<ShootComponent>(enemy.getId(), shoot);
+
+    while (CheckEntityPosition(enemy.getId(), componentManager, entityManager) != -1) {
+        auto enemyPos = componentManager.getComponent<PositionComponent>(enemy.getId());
+        if (enemyPos) {
+            enemyPos.value()->y = static_cast<float>(rand() % 100);
+        }
+    }
+
+    return enemy;
+}
+
+Entity EntityFactory::createBasicMonster(
     EntityManager &entityManager, ComponentManager &componentManager)
 {
     Entity monster = entityManager.createEntity();
 
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{100.0f, 0.0f};
-    // VelocityComponent velocity{1.0f}; ///////////////// temp
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy1, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(60, 60);
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    HealthComponent health{100, 100};
+    HealthComponent health{0, 0};
 
     componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
     componentManager.addComponent<PositionComponent>(monster.getId(), startPosition);
@@ -208,13 +241,6 @@ Entity EntityFactory::createBasicEnemy(
     componentManager.addComponent<HealthComponent>(monster.getId(), health);
     componentManager.addComponent<SpriteDataComponent>(monster.getId(), spriteData);
     componentManager.addComponent<AnimationComponent>(monster.getId(), animationComponent);
-
-    while (CheckEntityPosition(monster.getId(), componentManager, entityManager) != -1) {
-        auto monsterPos = componentManager.getComponent<PositionComponent>(monster.getId());
-        if (monsterPos) {
-            monsterPos.value()->y = static_cast<float>(rand() % 100);
-        }
-    }
 
     return monster;
 }
@@ -264,7 +290,7 @@ Entity EntityFactory::createEnemyMissile(
 
     auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
     if (entityPos) {
-        startPosition.x = entityPos.value()->x + 4;
+        startPosition.x = entityPos.value()->x - 4;
         startPosition.y = entityPos.value()->y;
     }
 
