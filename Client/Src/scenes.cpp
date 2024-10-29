@@ -14,7 +14,6 @@
 #include <chrono>
 #include <creatable_client_object.hpp>
 #include <font_manager.hpp>
-#include <font_manager.hpp>
 #include <functional>
 #include <iostream>
 #include <scenes.hpp>
@@ -404,9 +403,10 @@ void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
             textureManager, fontManager, "Fire: " + keyToString(keyBinds[Scenes::Actions::FIRE]),
             &bindKey, 1550, 400));
 
-    std::shared_ptr<Entity> bindPauseButton = std::make_shared<Entity>(
-        entityFactory.createSmallButton(entityManager, componentManager, textureManager,
-            fontManager, "Pause: " + keyToString(keyBinds[Scenes::Actions::PAUSE]), &bindKey, 1550, 550));
+    std::shared_ptr<Entity> bindPauseButton =
+        std::make_shared<Entity>(entityFactory.createSmallButton(entityManager, componentManager,
+            textureManager, fontManager, "Pause: " + keyToString(keyBinds[Scenes::Actions::PAUSE]),
+            &bindKey, 1550, 550));
 
     std::shared_ptr<Entity> bindQuitButton =
         std::make_shared<Entity>(entityFactory.createSmallButton(entityManager, componentManager,
@@ -467,9 +467,9 @@ void Scenes::settingsMenu()
         return currentScene;
     };
 
-    std::shared_ptr<Entity> daltonismModeButton =
-        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, fontManager, "Daltonism Mode", &onDaltonismModeButtonClicked, 960, 250));
+    std::shared_ptr<Entity> daltonismModeButton = std::make_shared<Entity>(
+        entityFactory.createButton(entityManager, componentManager, textureManager, fontManager,
+            "Daltonism Mode", &onDaltonismModeButtonClicked, 960, 250));
 
     std::function<IScenes *(AScenes *)> onKeyBindButtonClicked = [](AScenes *currentScene) {
         currentScene->setDisplayKeyBindsChoice(!currentScene->getDisplayKeyBindsChoice());
@@ -500,8 +500,8 @@ void Scenes::settingsMenu()
     }
 
     if (_displayKeyBindsChoice) {
-        createKeyBindingButtons(buttons, componentManager, entityManager,
-            textureManager, fontManager, entityFactory, keyBinds);
+        createKeyBindingButtons(buttons, componentManager, entityManager, textureManager,
+            fontManager, entityFactory, keyBinds);
     }
 
     sf::Clock clock;
@@ -551,8 +551,9 @@ void Scenes::difficultyChoices()
         currentScene->setGameMode(Scenes::GameMode::EASY);
         return currentScene;
     };
-    std::shared_ptr<Entity> easyButton = std::make_shared<Entity>(entityFactory.createButton(
-        entityManager, componentManager, textureManager, fontManager, "Easy", &easyButtonClicked, 1460, 250));
+    std::shared_ptr<Entity> easyButton =
+        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
+            textureManager, fontManager, "Easy", &easyButtonClicked, 1460, 250));
 
     std::function<IScenes *(AScenes *)> mediumButtonClicked = [](AScenes *currentScene) {
         currentScene->setGameMode(Scenes::GameMode::MEDIUM);
@@ -566,8 +567,9 @@ void Scenes::difficultyChoices()
         currentScene->setGameMode(Scenes::GameMode::HARD);
         return currentScene;
     };
-    std::shared_ptr<Entity> hardButton = std::make_shared<Entity>(entityFactory.createButton(
-        entityManager, componentManager, textureManager, fontManager, "Hard", &hardButtonClicked, 1460, 550));
+    std::shared_ptr<Entity> hardButton =
+        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
+            textureManager, fontManager, "Hard", &hardButtonClicked, 1460, 550));
 
     buttons.push_back(easyButton);
     buttons.push_back(mediumButton);
