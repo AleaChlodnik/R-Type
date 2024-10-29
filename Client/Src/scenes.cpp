@@ -630,7 +630,7 @@ void Scenes::gameLoop()
     sf::Vector2u windowSize = _window.getSize();
 
     audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
-    //audioSystem->playBackgroundMusic("");
+    // audioSystem->playBackgroundMusic("");
 
     while (_window.isOpen()) {
         // float deltaTime = clock.restart().asSeconds();
