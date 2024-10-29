@@ -60,5 +60,17 @@ void RenderSystem::render(ComponentManager &componentManager)
         }
     }
 
+    // Draw all rectanglesShapes
+    const auto rectangles = componentManager.getComponentMap<RectangleShapeComponent>();
+    if (rectangles) {
+        for (const auto &pair : **rectangles) {
+            const auto &rectangleComponent = pair.second;
+            auto rectangle = std::any_cast<RectangleShapeComponent>(&rectangleComponent);
+            if (rectangle) {
+                _window.draw(rectangle->rectangleShape);
+            }
+        }
+    }
+
     _window.display();
 }

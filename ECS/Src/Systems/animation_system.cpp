@@ -84,7 +84,6 @@ void AnimationSystem::AnimationEntities(
             auto velocity = componentManager.getComponent<VelocityComponent>(entity.getId());
             if (player && velocity) {
                 if (velocity.value()->y >= -1 && velocity.value()->y < -0.6) {
-                    std::cout << "UP" << std::endl;
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_DOWN).x;
                 } else if (velocity.value()->y >= -0.6 && velocity.value()->y < -0.2) {
                     animation.value()->offset.x =
@@ -98,13 +97,9 @@ void AnimationSystem::AnimationEntities(
                 } else if (velocity.value()->y >= 0.6 && velocity.value()->y < 1) {
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_UP).x;
                 }
-                // } else {
-                //     animation.value()->offset.x =
-                //         animationShipFactory(AnimationShip::SHIP_STRAIT).x;
-                // }
                 if (velocity.value()->y < 0) {
                     velocity.value()->y += 0.05;
-                } else {
+                } else if (velocity.value()->y > 0) {
                     velocity.value()->y -= 0.05;
                 }
             }

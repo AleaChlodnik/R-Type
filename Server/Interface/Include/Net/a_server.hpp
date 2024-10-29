@@ -558,14 +558,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             }
             auto pos = _componentManager.getComponent<PositionComponent>(entityId);
             auto vel = _componentManager.getComponent<VelocityComponent>(entityId);
-            if (pos) {
+            if (pos && vel) {
                 // player go down
                 if (pos.value()->y < entityPosition.y) {
                     vel.value()->y -= 0.1;
                     if (vel.value()->y < -1) {
                         vel.value()->y = -1;
                     }
-                } else {
+                } else if (pos.value()->y > entityPosition.y) {
                     vel.value()->y += 0.1;
                     if (vel.value()->y > 1) {
                         vel.value()->y = 1;
