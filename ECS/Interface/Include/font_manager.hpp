@@ -9,8 +9,8 @@
 
 #include "error_handling.hpp"
 #include <SFML/Graphics.hpp>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 class FontManager {
   public:

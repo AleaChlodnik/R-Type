@@ -14,6 +14,7 @@
 #include <chrono>
 #include <creatable_client_object.hpp>
 #include <font_manager.hpp>
+#include <font_manager.hpp>
 #include <functional>
 #include <iostream>
 #include <scenes.hpp>
@@ -293,8 +294,6 @@ void Scenes::inGameMenu()
     while (_window.isOpen() && this->_currentScene == Scenes::Scene::IN_GAME_MENU) {
 
         handleEvents(event, componentManager, &_window, buttons, this);
-
-        // float deltaTime = clock.restart().asSeconds();
 
         updateSystem->updateSpritePositions(componentManager, entityManager);
         renderSystem->render(componentManager);
