@@ -707,7 +707,7 @@ void Scenes::gameLoop()
 
         if (_networkClient.IsConnected()) {
             // std::cout << "Connected to Server" << std::endl;
-            if (!_networkClient.Incoming().empty()) {
+            while (!_networkClient.Incoming().empty()) {
                 auto msg = _networkClient.Incoming().pop_front().msg;
                 HandleMessage(msg, componentManager, textureManager, windowSize, audioSystem);
             }
