@@ -72,7 +72,7 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
             float posY = windowSize.y * (newPos.y / 100.0f);
             spriteEntity.value()->sprite.setPosition(posX, posY);
         } else {
-            std::cerr << "Entity not found, id: " << id  << std::endl;
+            std::cerr << "Entity not found, id: " << id << std::endl;
         }
     }
 
