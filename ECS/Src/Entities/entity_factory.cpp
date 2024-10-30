@@ -210,7 +210,8 @@ Entity EntityFactory::createShooterEnemy(
     Entity enemy = entityManager.createEntity();
 
     EnemyComponent enemyComponent;
-    VelocityComponent velocity{-2.0f, 0.0f};
+    VelocityComponent velocity{-1.0f, 0.0f};
+    MovementComponent movement{MovementType::DIAGONAL, 0};
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy2, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(60, 60);
@@ -227,6 +228,7 @@ Entity EntityFactory::createShooterEnemy(
     componentManager.addComponent<HitboxComponent>(enemy.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(enemy.getId(), health);
     componentManager.addComponent<ShootComponent>(enemy.getId(), shoot);
+    componentManager.addComponent<MovementComponent>(enemy.getId(), movement);
 
     while (CheckEntityPosition(enemy.getId(), componentManager, entityManager) != -1) {
         auto enemyPos = componentManager.getComponent<PositionComponent>(enemy.getId());

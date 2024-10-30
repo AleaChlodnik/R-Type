@@ -166,5 +166,5 @@ enum class TypeMessage : uint32_t
      * @brief Client message.
      *
      */
-    RecievePlayerInformation,
+    ReceivePlayerInformation,
 };
