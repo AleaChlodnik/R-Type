@@ -130,7 +130,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             response.header.id = TypeMessage::CreateEntityMessage;
             MessageAllClients(response, client);
         } break;
-        case TypeMessage::RecievePlayerInformation: {
+        case TypeMessage::ReceivePlayerInformation: {
             std::cout << "[" << client->GetID() << "]: Player Information Received" << std::endl;
             r_type::net::Message<TypeMessage> response;
             response.header.id = TypeMessage::CreateEntityMessage;
