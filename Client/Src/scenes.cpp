@@ -279,9 +279,9 @@ void Scenes::inGameMenu()
             currentScene->setScene(Scenes::Scene::MAIN_MENU);
             return currentScene;
         };
-    std::shared_ptr<Entity> returnToMainMenu = std::make_shared<Entity>(
-        entityFactory.createButton(entityManager, componentManager, textureManager, fontManager,
-            "Main Menu", &onReturnToMainMenuButtonClicked, 960, 500));
+    std::shared_ptr<Entity> returnToMainMenu =
+        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
+            textureManager, fontManager, "Main Menu", &onReturnToMainMenuButtonClicked, 960, 500));
 
     buttons.push_back(resumeButton);
     buttons.push_back(settingsButton);
