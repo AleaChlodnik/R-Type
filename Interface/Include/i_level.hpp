@@ -43,7 +43,8 @@ template <typename T> class ILevel {
     virtual ~ILevel() = default;
 
     /**
-     * @brief Updates the level based on the server state, component manager, entity manager, and time.
+     * @brief Updates the level based on the server state, component manager, entity manager, and
+     * time.
      * @param server Pointer to the AServer instance.
      * @param componentManager Reference to the ComponentManager instance.
      * @param entityManager Reference to the EntityManager instance.
@@ -68,8 +69,8 @@ template <typename T> class ILevel {
      * @param entityManager Reference to the EntityManager instance.
      * @param newClock The current time point for updating movement.
      */
-    virtual void MoveUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager, EntityManager &entityManager,
-        std::chrono::system_clock::time_point newClock) = 0;
+    virtual void MoveUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
 
     /**
      * @brief Updates animations in the level.
@@ -78,7 +79,8 @@ template <typename T> class ILevel {
      * @param entityManager Reference to the EntityManager instance.
      * @param newClock The current time point for updating animations.
      */
-    virtual void AnimationUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager, EntityManager &entityManager,
+    virtual void AnimationUpdate(r_type::net::AServer<T> *server,
+        ComponentManager &componentManager, EntityManager &entityManager,
         std::chrono::system_clock::time_point newClock) = 0;
 
     /**
@@ -88,9 +90,8 @@ template <typename T> class ILevel {
      * @param entityManager Reference to the EntityManager instance.
      * @param newClock The current time point for updating firing actions.
      */
-    virtual void FireUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager, EntityManager &entityManager,
-        std::chrono::system_clock::time_point newClock) = 0;
+    virtual void FireUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
 };
 
 } // namespace r_type
-
