@@ -707,7 +707,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
     UIEntityInformation InitInfoBar(int clientId)
     {
-        std::cout << "passes through server Init info bar function" << std::endl; ////////////////////////////////
+        std::cout << "passes through server Init info bar function"
+                  << std::endl; ////////////////////////////////
         UIEntityInformation entityInfo;
         Entity infoBar = _entityFactory.createInfoBar(_entityManager, _componentManager);
         entityInfo.uniqueID = infoBar.getId();
@@ -720,7 +721,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.lives = health.value()->health;
         }
         _clientInfoBarID.insert_or_assign(clientId, entityInfo.uniqueID);
-        std::cout << "!!!!!!!!!!!!!!!!!! info bar id: " << entityInfo.uniqueID << std::endl; ////////////////////////////////
+        std::cout << "!!!!!!!!!!!!!!!!!! info bar id: " << entityInfo.uniqueID
+                  << std::endl; ////////////////////////////////
         return entityInfo;
     }
 

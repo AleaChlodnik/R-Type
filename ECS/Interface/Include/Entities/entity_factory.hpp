@@ -34,14 +34,16 @@ class EntityFactory : public IEntityFactory {
 
     /**
      * @brief Creates a bar entity.
-     * 
-     * This function creates a bar with text for displaying player information like health and score.
-     * 
+     *
+     * This function creates a bar with text for displaying player information like health and
+     * score.
+     *
      * @param entityManager The entity manager to use for creating the entity.
      * @param componentManager The component manager to use for adding components to the entity.
      * @return The created bar entity.
      */
-    Entity createInfoBar(EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createInfoBar(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
 
     /**
      * @brief Creates a player entity.

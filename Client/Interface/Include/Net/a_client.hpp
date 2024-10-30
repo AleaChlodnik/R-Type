@@ -11,8 +11,8 @@
 #include <Components/components.hpp>
 #include <Net/i_client.hpp>
 #include <entity_struct.hpp>
-#include <texture_manager.hpp>
 #include <font_manager.hpp>
+#include <texture_manager.hpp>
 #include <unordered_map>
 
 namespace r_type {

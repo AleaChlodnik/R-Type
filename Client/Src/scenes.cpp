@@ -19,7 +19,6 @@
 #include <scenes.hpp>
 #include <sound_path.hpp>
 #include <texture_manager.hpp>
-#include <font_manager.hpp>
 
 Scenes::Scenes(std::string ip, int port) : IScenes(), AScenes(ip, port)
 {
@@ -763,7 +762,8 @@ void Scenes::gameLoop()
                     response.header.id = TypeMessage::CreateInfoBar;
                     c.Send(response);
                     msg >> entity;
-                    c.initInfoBar(entity, componentManager, textureManager, fontManager, windowSize);
+                    c.initInfoBar(
+                        entity, componentManager, textureManager, fontManager, windowSize);
                 } break;
                 case TypeMessage::UpdateInfoBar: {
                     UIEntityInformation entity;
