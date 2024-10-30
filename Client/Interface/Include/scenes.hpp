@@ -7,8 +7,10 @@
 
 #pragma once
 
-#include "Entities/entity.hpp"
+#include <Entities/entity.hpp>
+#include <Net/client.hpp>
 #include <SFML/Graphics.hpp>
+#include <Systems/systems.hpp>
 #include <a_scenes.hpp>
 #include <memory>
 #include <vector>
@@ -49,6 +51,12 @@ class Scenes : virtual public AScenes {
      *
      */
     void gameLoop();
+
+    void HandleMessage(r_type::net::Message<TypeMessage> &msg, ComponentManager &componentManager,
+        TextureManager &textureManager, const sf::Vector2u &windowSize,
+        std::shared_ptr<AudioSystem> &audioSystem);
+
+    void StopGameLoop(std::shared_ptr<AudioSystem> &audioSystem);
 
     /**
      * @brief displays the settings menu, creates all the necessary entities
@@ -93,4 +101,6 @@ class Scenes : virtual public AScenes {
     void run();
 
     sf::RenderWindow _window;
+
+    r_type::net::Client _networkClient;
 };

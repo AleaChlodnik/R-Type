@@ -39,6 +39,18 @@ enum class AnimationShip : uint32_t
     SHIP_UP
 };
 
+enum class AnimationBasicMonster : uint32_t
+{
+    BASIC_MONSTER_DEFAULT,
+    BASIC_MONSTER_1,
+    BASIC_MONSTER_2,
+    BASIC_MONSTER_3,
+    BASIC_MONSTER_4,
+    BASIC_MONSTER_5,
+    BASIC_MONSTER_6,
+    BASIC_MONSTER_7
+};
+
 /**
  * @brief get if two animations are different.
  *

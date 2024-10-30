@@ -28,17 +28,9 @@ void MoveSystem::moveEntities(ComponentManager &componentManager, EntityManager 
                 movement.value()->index += 1;
             } break;
             case MovementType::DIAGONAL: {
-                switch (movement.value()->index) {
-                case 0:
-
-                    position.value()->x += velocity.value()->x;
-                    position.value()->y += velocity.value()->y;
-                    break;
-                case 1:
-                    position.value()->x -= velocity.value()->x;
-                    position.value()->y += velocity.value()->y;
-                    break;
-                }
+                position.value()->y += cos(movement.value()->index * 0.1 * M_PI) / 2;
+                position.value()->x += velocity.value()->x;
+                movement.value()->index += 1;
             } break;
             case MovementType::CIRCLE: {
                 // position.value()->y += velocity.value()->y;

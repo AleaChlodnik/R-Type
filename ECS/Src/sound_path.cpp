@@ -11,28 +11,28 @@ std::string SoundFactory(ActionType action)
 {
     switch (action) {
     case ActionType::Win: {
-        return "Client/Assets/Sounds/win.wav";
+        return "Client/Assets/Sounds/win.ogg";
     } break;
     case ActionType::Shot: {
-        return "Client/Assets/Sounds/shot.wav";
+        return "Client/Assets/Sounds/shot.ogg";
     } break;
     case ActionType::Boss: {
-        return "Client/Assets/Sounds/boss.wav";
+        return "Client/Assets/Sounds/boss.ogg";
     } break;
     case ActionType::PowerUp: {
-        return "Client/Assets/Sounds/power_up.wav";
+        return "Client/Assets/Sounds/power_up.ogg";
     } break;
     case ActionType::GameOver: {
-        return "Client/Assets/Sounds/game_over.wav";
+        return "Client/Assets/Sounds/game_over.ogg";
     } break;
     case ActionType::BossDeath: {
-        return "Client/Assets/Sounds/boss_death.wav";
+        return "Client/Assets/Sounds/boss_death.ogg";
     } break;
     case ActionType::Explosion: {
-        return "Client/Assets/Sounds/explosion.wav";
+        return "Client/Assets/Sounds/explosion.ogg";
     } break;
     case ActionType::Background: {
-        return "Client/Assets/Sounds/background.wav";
+        return "Client/Assets/Sounds/background.ogg";
     } break;
     default: {
         return "";
