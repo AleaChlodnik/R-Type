@@ -799,6 +799,14 @@ void Scenes::gameLoop()
                     msg >> rect.offset >> rect.dimension >> id;
                     c.animateEntity(id, rect, componentManager);
                 } break;
+                case TypeMessage::GameDiffuculty: {
+                } break;
+                case TypeMessage::CreateEntityResponse: {
+                } break;
+                case TypeMessage::SendPlayer: {
+                } break;
+                case TypeMessage::RecievePlayerInformation: {
+                } break;
                 }
             }
         } else {
