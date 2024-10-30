@@ -66,7 +66,8 @@ class AScenes : virtual public IScenes {
     {
         EASY,
         MEDIUM,
-        HARD
+        HARD,
+        NONE // Should never be slected by the user, only there to initialize the variable
     };
 
     /**
@@ -219,7 +220,7 @@ class AScenes : virtual public IScenes {
     int getPort() const;
 
   protected:
-    GameMode _currentGameMode = GameMode::MEDIUM;
+    GameMode _currentGameMode = GameMode::NONE;
     DaltonismMode _currentDaltonismMode = DaltonismMode::NORMAL;
     Scene _currentScene = Scene::MAIN_MENU;
     Scene _previousScene = Scene::MAIN_MENU;

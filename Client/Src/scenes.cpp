@@ -529,10 +529,8 @@ void Scenes::difficultyChoices()
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(_window, componentManager);
 
-    // systemManager.addSystem(updateSystem);
-    // systemManager.addSystem(renderSystem);
-
     buttons = {};
+
 
     // Create background
     std::shared_ptr<Entity> background =
@@ -553,7 +551,7 @@ void Scenes::difficultyChoices()
     };
     std::shared_ptr<Entity> easyButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, fontManager, "Easy", &easyButtonClicked, 1460, 250));
+            textureManager, fontManager, "Easy", &easyButtonClicked, 960, 250));
 
     std::function<IScenes *(AScenes *)> mediumButtonClicked = [](AScenes *currentScene) {
         currentScene->setGameMode(Scenes::GameMode::MEDIUM);
@@ -561,7 +559,7 @@ void Scenes::difficultyChoices()
     };
     std::shared_ptr<Entity> mediumButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, fontManager, "Medium", &mediumButtonClicked, 1460, 400));
+            textureManager, fontManager, "Medium", &mediumButtonClicked, 960, 400));
 
     std::function<IScenes *(AScenes *)> hardButtonClicked = [](AScenes *currentScene) {
         currentScene->setGameMode(Scenes::GameMode::HARD);
@@ -569,11 +567,21 @@ void Scenes::difficultyChoices()
     };
     std::shared_ptr<Entity> hardButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, fontManager, "Hard", &hardButtonClicked, 1460, 550));
+            textureManager, fontManager, "Hard", &hardButtonClicked, 960, 550));
 
     buttons.push_back(easyButton);
     buttons.push_back(mediumButton);
     buttons.push_back(hardButton);
+
+    sf::Event event;
+
+    while (_window.isOpen() && this->_currentScene == Scenes::Scene::GAME_LOOP && _currentGameMode == Scenes::GameMode::NONE) {
+
+        handleEvents(event, componentManager, &_window, buttons, this);
+
+        updateSystem->updateSpritePositions(componentManager, entityManager);
+        renderSystem->render(componentManager);
+    }
 }
 
 /**
@@ -608,6 +616,14 @@ void Scenes::gameLoop()
 {
     r_type::net::Client c;
     c.Connect(_ip, _port);
+
+    // ask server if we are the first player
+
+    // bool firstPlayer = true;
+    // if (firstPlayer)
+    //     difficultyChoices();
+
+    // launch game
 
     EntityManager entityManager;
     ComponentManager componentManager;
@@ -676,7 +692,7 @@ void Scenes::gameLoop()
     audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
     // audioSystem->playBackgroundMusic(""); // Test with quentins sound
 
-    while (_window.isOpen()) {
+    while (_window.isOpen() && this->_currentScene == Scenes::Scene::GAME_LOOP) {
         // float deltaTime = clock.restart().asSeconds();
         while (_window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -711,7 +727,8 @@ void Scenes::gameLoop()
                     movePlayer(vf2d{1, 0}, windowSize);
                 }
                 if (event.key.code == keyBinds[Actions::PAUSE]) {
-                    this->setScene(Scenes::Scene::IN_GAME_MENU);
+                    this->_previousScene = Scenes::Scene::GAME_LOOP;
+                    this->_currentScene = Scenes::Scene::IN_GAME_MENU;
                 }
             }
         }
