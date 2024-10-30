@@ -12,6 +12,7 @@
 #include <Net/i_client.hpp>
 #include <entity_struct.hpp>
 #include <texture_manager.hpp>
+#include <font_manager.hpp>
 #include <unordered_map>
 
 namespace r_type {
@@ -110,12 +111,6 @@ template <typename T> class AClient : virtual public IClient<T> {
 
     void setPlayerId(int id) { playerId = id; }
     uint32_t getPlayerId() { return playerId; }
-
-    void addEntity(EntityInformation entity, ComponentManager &componentManager,
-        TextureManager &textureManager, sf::Vector2u windowSize);
-    void moveEntity(EntityInformation entity, ComponentManager &componentManager,
-        sf::Vector2u windowSize, TextureManager &textureManager);
-    void removeEntity(int entityId, ComponentManager &componentManager);
 
   protected:
     asio::io_context m_context;

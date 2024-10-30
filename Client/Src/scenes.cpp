@@ -19,6 +19,7 @@
 #include <scenes.hpp>
 #include <sound_path.hpp>
 #include <texture_manager.hpp>
+#include <font_manager.hpp>
 
 Scenes::Scenes(std::string ip, int port) : IScenes(), AScenes(ip, port)
 {
@@ -612,6 +613,7 @@ void Scenes::gameLoop()
     EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
+    FontManager fontManager;
     auto audioManager = std::make_shared<AudioManager>();
 
     std::shared_ptr<AudioSystem> audioSystem = std::make_shared<AudioSystem>(audioManager);
@@ -674,7 +676,6 @@ void Scenes::gameLoop()
     sf::Vector2u windowSize = _window.getSize();
 
     audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
-    // audioSystem->playBackgroundMusic(""); // Test with quentins sound
 
     while (_window.isOpen()) {
         // float deltaTime = clock.restart().asSeconds();
@@ -755,6 +756,22 @@ void Scenes::gameLoop()
                 case TypeMessage::MessageAll: {
                 } break;
                 case TypeMessage::ClientConnect: {
+                } break;
+                case TypeMessage::CreateInfoBar: {
+                    UIEntityInformation entity;
+                    r_type::net::Message<TypeMessage> response;
+                    response.header.id = TypeMessage::CreateInfoBar;
+                    c.Send(response);
+                    msg >> entity;
+                    c.initInfoBar(entity, componentManager, textureManager, fontManager, windowSize);
+                } break;
+                case TypeMessage::UpdateInfoBar: {
+                    UIEntityInformation entity;
+                    r_type::net::Message<TypeMessage> response;
+                    response.header.id = TypeMessage::UpdateInfoBar;
+                    c.Send(response);
+                    msg >> entity;
+                    c.updateInfoBar(entity, componentManager, textureManager);
                 } break;
                 case TypeMessage::CreateEntityMessage: {
                     EntityInformation entity;

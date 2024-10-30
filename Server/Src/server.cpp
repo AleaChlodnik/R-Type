@@ -44,6 +44,7 @@ void r_type::net::Server::OnClientDisconnect(
     msg << entityId;
     MessageAllClients(msg, client);
     _nbrOfPlayers--;
+    RemoveInfoBar(GetClientInfoBarId(client->GetID()));
     client->Disconnect();
 }
 
@@ -123,10 +124,17 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         case TypeMessage::SendPlayer: {
             std::cout << "[" << client->GetID() << "]: Player Information Sent" << std::endl;
             r_type::net::Message<TypeMessage> response;
+
+            response.header.id = TypeMessage::CreateInfoBar;
+            response << InitInfoBar(client->GetID());
+            MessageClient(client, response);
+            client->_lastMsg = response;
+
             response.header.id = TypeMessage::SendPlayerInformation;
             response << InitiatePlayer(client->GetID());
             MessageClient(client, response);
             client->_lastMsg = response;
+
             response.header.id = TypeMessage::CreateEntityMessage;
             MessageAllClients(response, client);
         } break;

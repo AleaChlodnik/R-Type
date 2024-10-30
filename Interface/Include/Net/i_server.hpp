@@ -100,6 +100,11 @@ template <typename T> class IServer {
     virtual EntityInformation InitiatePlayer(int clientId) = 0;
 
     /**
+     * @brief Initiate player info bar
+     */
+    virtual UIEntityInformation InitInfoBar(int clientId) = 0;
+
+    /**
      * @brief Remove player
      *
      * @param clientId

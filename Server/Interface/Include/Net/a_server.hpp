@@ -237,6 +237,23 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 _deqConnections.end());
     }
 
+    UIEntityInformation UpdateInfoBar(int playerId)
+    {
+        UIEntityInformation entity;
+        int clientId = GetPlayerClientId(playerId);
+        int infoBarId = GetClientInfoBarId(clientId);
+        auto playerHealth = _componentManager.getComponent<HealthComponent>(playerId);
+        auto barSpriteData = _componentManager.getComponent<SpriteDataComponent>(infoBarId);
+        auto barTextData = _componentManager.getComponent<TextDataComponent>(infoBarId);
+        if (playerHealth && barSpriteData && barTextData) {
+            entity.uniqueID = infoBarId;
+            entity.spriteData = *(barSpriteData.value());
+            entity.textData = *(barTextData.value());
+            entity.lives = playerHealth.value()->health;
+        }
+        return entity;
+    }
+
     /**
      * @brief Updates the game level based on the provided clock time.
      *
@@ -338,6 +355,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                                         entitiesToRemove.push_back(entityId1);
                                     }
                                 }
+                                r_type::net::Message<TypeMessage> updLivesMsg;
+                                updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
+                                updLivesMsg << UpdateInfoBar(entityId1);
+                                std::shared_ptr<Connection<T>> client =
+                                    getClientById(_deqConnections, GetPlayerClientId(entityId1));
+                                if (client) {
+                                    MessageClient(client, updLivesMsg);
+                                }
                             }
                         } else if (auto playerMissile1 =
                                        _componentManager.getComponent<PlayerMissileComponent>(
@@ -371,6 +396,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                                             entityId2) == entitiesToRemove.end()) {
                                         entitiesToRemove.push_back(entityId2);
                                     }
+                                }
+                                r_type::net::Message<TypeMessage> updLivesMsg;
+                                updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
+                                updLivesMsg << UpdateInfoBar(entityId1);
+                                std::shared_ptr<Connection<T>> client =
+                                    getClientById(_deqConnections, GetPlayerClientId(entityId1));
+                                if (client) {
+                                    MessageClient(client, updLivesMsg);
                                 }
                             }
                         } else if (auto playerMissile2 =
@@ -604,6 +637,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         throw std::runtime_error("Player ID not found");
     }
 
+    uint32_t GetClientInfoBarId(uint32_t id) { return _clientInfoBarID[id]; }
+
     /**
      * @brief Removes a player from the game based on the client ID.
      *
@@ -622,6 +657,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             _componentManager.removeEntityFromAllComponents(id);
             _entityManager.removeEntity(id);
         }
+    }
+
+    void RemoveInfoBar(uint32_t infoBarId)
+    {
+        if (auto textDataComponent =
+                _componentManager.getComponent<TextDataComponent>(infoBarId)) {
+            for (uint32_t categoryId : textDataComponent.value()->categoryIds) {
+                _entityManager.removeEntity(categoryId);
+            }
+            RemoveEntity(infoBarId);
+        }
+        _clientInfoBarID.erase(infoBarId);
     }
 
     /**
@@ -643,8 +690,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         auto playerPos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         auto animation = _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
-        auto playerHealth = _componentManager.getComponent<HealthComponent>(entityInfo.uniqueID);
-        if (playerSprite && playerPos && animation && playerHealth) {
+        if (playerSprite && playerPos && animation) {
             entityInfo.ratio.x =
                 (animation.value()->dimension.x * playerSprite.value()->scale.x) / SCREEN_WIDTH;
             entityInfo.ratio.y =
@@ -654,9 +700,27 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.vPos.y = playerPos.value()->y;
             entityInfo.animationComponent.dimension = animation.value()->dimension;
             entityInfo.animationComponent.offset = animation.value()->offset;
-            entityInfo.life = playerHealth.value()->health;
         }
         _clientPlayerID.insert_or_assign(clientId, entityInfo.uniqueID);
+        return entityInfo;
+    }
+
+    UIEntityInformation InitInfoBar(int clientId)
+    {
+        std::cout << "passes through server Init info bar function" << std::endl; ////////////////////////////////
+        UIEntityInformation entityInfo;
+        Entity infoBar = _entityFactory.createInfoBar(_entityManager, _componentManager);
+        entityInfo.uniqueID = infoBar.getId();
+        auto spriteData = _componentManager.getComponent<SpriteDataComponent>(infoBar.getId());
+        auto textData = _componentManager.getComponent<TextDataComponent>(infoBar.getId());
+        auto health = _componentManager.getComponent<HealthComponent>(GetClientPlayerId(clientId));
+        if (spriteData && textData && health) {
+            entityInfo.spriteData = *(spriteData.value());
+            entityInfo.textData = *(textData.value());
+            entityInfo.lives = health.value()->health;
+        }
+        _clientInfoBarID.insert_or_assign(clientId, entityInfo.uniqueID);
+        std::cout << "!!!!!!!!!!!!!!!!!! info bar id: " << entityInfo.uniqueID << std::endl; ////////////////////////////////
         return entityInfo;
     }
 
@@ -678,7 +742,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         auto entityPos = _componentManager.getComponent<PositionComponent>(entityId);
         auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityId);
         auto animation = _componentManager.getComponent<AnimationComponent>(entityId);
-        auto entityHealth = _componentManager.getComponent<HealthComponent>(entityId);
         if (entityPos && sprite) {
             entityInfo.uniqueID = entityId;
             entityInfo.vPos.x = entityPos.value()->x;
@@ -691,9 +754,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
                 entityInfo.animationComponent.dimension = animation.value()->dimension;
                 entityInfo.animationComponent.offset = animation.value()->offset;
-            }
-            if (entityHealth) {
-                entityInfo.life = entityHealth.value()->health;
             }
         }
         return entityInfo;
@@ -789,6 +849,17 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             }
         }
         return entityInfo;
+    }
+
+    std::shared_ptr<Connection<T>> getClientById(
+        const std::deque<std::shared_ptr<Connection<T>>> &connections, uint32_t clientId)
+    {
+        for (const auto &client : connections) {
+            if (client && client->GetID() == clientId) {
+                return client;
+            }
+        }
+        return nullptr;
     }
 
     /**
@@ -936,6 +1007,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * also of type uint32_t representing the player IDs.
      */
     std::unordered_map<uint32_t, uint32_t> _clientPlayerID;
+
+    std::unordered_map<uint32_t, uint32_t> _clientInfoBarID;
 
     /**
      * @brief Number of players currently connected to the server.

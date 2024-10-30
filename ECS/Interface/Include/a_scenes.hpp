@@ -139,6 +139,7 @@ class AScenes : virtual public IScenes {
         ALLY,
         ENEMY,
         FILTER,
+        UI,
         OTHER
     };
 
