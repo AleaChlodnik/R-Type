@@ -533,6 +533,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param msg The message containing the new position of the entity.
      * @param clientId The ID of the client sending the update.
      */
+
     void UpdatePlayerPosition(vf2d entityPosition, uint32_t entityId) // Only for the players
     {
         auto entitySpriteData = _componentManager.getComponent<SpriteDataComponent>(entityId);
