@@ -285,9 +285,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                                             _componentManager.getComponent<SpriteDataComponent>(
                                                 entityId)) {
                                         r_type::net::Message<TypeMessage> msg;
+                                        vf2d newPos(newPosition->x, newPosition->y);
                                         msg.header.id = TypeMessage::MoveEntityMessage;
-                                        msg << FormatEntityInformation(
-                                            _entityManager.getEntity(entityId).value()->getId());
+                                        msg <<  entityId << newPos;
+                                        // msg << FormatEntityInformation(
+                                        //     _entityManager.getEntity(entityId).value()->getId());
                                         MessageAllClients(msg);
                                     }
                                 }
@@ -531,9 +533,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param msg The message containing the new position of the entity.
      * @param clientId The ID of the client sending the update.
      */
-
-    void UpdatePlayerPosition(
-        vf2d entityPosition, uint32_t entityId) // Only for the players
+    void UpdatePlayerPosition(vf2d entityPosition, uint32_t entityId) // Only for the players
     {
         auto entitySpriteData = _componentManager.getComponent<SpriteDataComponent>(entityId);
         EntityInformation entity;
@@ -573,12 +573,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             }
 
             // Update entity information and send to all clients
-            entity.uniqueID = entityId;
-            entity.vPos = entityPosition;
+            uint32_t id = entityId;
+            vf2d newPos = entityPosition;
+            std::cout << "id: " << id << std::endl;
+            std::cout << "New position: " << newPos.x << " " << newPos.y << std::endl;
             entity.spriteData = *entitySpriteData.value();
             r_type::net::Message<TypeMessage> moveMsg;
             moveMsg.header.id = TypeMessage::MoveEntityMessage;
-            moveMsg << entity;
+            moveMsg << id << newPos;
             MessageAllClients(moveMsg);
         }
     }

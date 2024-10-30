@@ -639,6 +639,8 @@ void Scenes::gameLoop()
                 pixelToPercent(playerSprite->sprite.getPosition().x, windowSize.x) + delta.x;
             requestedPosition.y =
                 pixelToPercent(playerSprite->sprite.getPosition().y, windowSize.y) + delta.y;
+            std::cout << "Requested Position: " << requestedPosition.x << ", "
+                      << requestedPosition.y << std::endl;
             msg << requestedPosition;
             _networkClient.Send(msg);
         }
@@ -786,8 +788,11 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         r_type::net::Message<TypeMessage> response;
         response.header.id = TypeMessage::MoveEntityResponse;
         EntityInformation entity;
-        msg >> entity;
-        _networkClient.moveEntity(entity, componentManager, windowSize, textureManager);
+        vf2d newPos;
+        uint32_t id;
+        msg >> newPos >> id;
+        std::cout << "Moving Entity: " << id << " to " << newPos.x << ", " << newPos.y << std::endl;
+        _networkClient.moveEntity(id, newPos, componentManager, windowSize, textureManager);
     } break;
     case TypeMessage::MoveEntityResponse: {
     } break;
