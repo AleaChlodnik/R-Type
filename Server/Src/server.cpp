@@ -81,11 +81,9 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         } break;
         case TypeMessage::MoveEntityMessage: { // This is only for the players
             uint32_t entityId = GetClientPlayerId(client->GetID());
-            vf2d entityPosition;
-            msg >> entityPosition;
-            std::cout << "[" << client->GetID() << "]: Move Entity to" << entityPosition.x << ", "
-                      << entityPosition.y << std::endl;
-            UpdatePlayerPosition(entityPosition, entityId);
+            PlayerMovement playerMovement;
+            msg >> playerMovement;
+            UpdatePlayerPosition(playerMovement, entityId);
         } break;
         case TypeMessage::DestroyEntityMessage: {
             OnClientDisconnect(client, msg);

@@ -287,7 +287,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                                         r_type::net::Message<TypeMessage> msg;
                                         vf2d newPos(newPosition->x, newPosition->y);
                                         msg.header.id = TypeMessage::MoveEntityMessage;
-                                        msg <<  entityId << newPos;
+                                        msg << entityId << newPos;
                                         // msg << FormatEntityInformation(
                                         //     _entityManager.getEntity(entityId).value()->getId());
                                         MessageAllClients(msg);
@@ -534,54 +534,65 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param clientId The ID of the client sending the update.
      */
 
-    void UpdatePlayerPosition(vf2d entityPosition, uint32_t entityId) // Only for the players
+    void UpdatePlayerPosition(PlayerMovement direction, uint32_t entityId) // Only for the players
     {
         auto entitySpriteData = _componentManager.getComponent<SpriteDataComponent>(entityId);
         EntityInformation entity;
 
         auto hitbox = _componentManager.getComponent<HitboxComponent>(entityId);
+        auto pos = _componentManager.getComponent<PositionComponent>(entityId);
 
-        if (hitbox) {
+        vf2d newPos = {pos.value()->x, pos.value()->y};
+        switch (direction) {
+        case PlayerMovement::UP: {
+            newPos.y -= 1;
+        } break;
+        case PlayerMovement::DOWN: {
+            newPos.y += 1;
+        } break;
+        case PlayerMovement::LEFT: {
+            newPos.x -= 1;
+        } break;
+        case PlayerMovement::RIGHT: {
+            newPos.x += 1;
+        } break;
+        }
+
+        if (hitbox && pos) {
             float halfWidth = hitbox.value()->w / 2;
             float halfHeight = hitbox.value()->h / 2;
             float minX, maxX, minY, maxY;
 
-            maxX = ((entityPosition.x / 100) * SCREEN_WIDTH) + halfWidth;
-            minX = ((entityPosition.x / 100) * SCREEN_WIDTH) - halfWidth;
-            maxY = ((entityPosition.y / 100) * SCREEN_HEIGHT) + halfHeight;
-            minY = ((entityPosition.y / 100) * SCREEN_HEIGHT) - halfHeight;
+            maxX = ((newPos.x / 100) * SCREEN_WIDTH) + halfWidth;
+            minX = ((newPos.x / 100) * SCREEN_WIDTH) - halfWidth;
+            maxY = ((newPos.y / 100) * SCREEN_HEIGHT) + halfHeight;
+            minY = ((newPos.y / 100) * SCREEN_HEIGHT) - halfHeight;
 
             if (maxX > SCREEN_WIDTH || minX < 0 || maxY > (SCREEN_HEIGHT - 30) || minY < 0) {
                 return;
             }
-            auto pos = _componentManager.getComponent<PositionComponent>(entityId);
             auto vel = _componentManager.getComponent<VelocityComponent>(entityId);
             if (pos && vel) {
                 // player go down
-                if (pos.value()->y < entityPosition.y) {
+                if (pos.value()->y < newPos.y) {
                     vel.value()->y -= 0.1;
                     if (vel.value()->y < -1) {
                         vel.value()->y = -1;
                     }
-                } else if (pos.value()->y > entityPosition.y) {
+                } else if (pos.value()->y > newPos.y) {
                     vel.value()->y += 0.1;
                     if (vel.value()->y > 1) {
                         vel.value()->y = 1;
                     }
                 }
-                pos.value()->x = entityPosition.x;
-                pos.value()->y = entityPosition.y;
+                pos.value()->x = newPos.x;
+                pos.value()->y = newPos.y;
             }
 
             // Update entity information and send to all clients
-            uint32_t id = entityId;
-            vf2d newPos = entityPosition;
-            std::cout << "id: " << id << std::endl;
-            std::cout << "New position: " << newPos.x << " " << newPos.y << std::endl;
-            entity.spriteData = *entitySpriteData.value();
             r_type::net::Message<TypeMessage> moveMsg;
             moveMsg.header.id = TypeMessage::MoveEntityMessage;
-            moveMsg << id << newPos;
+            moveMsg << entityId << newPos;
             MessageAllClients(moveMsg);
         }
     }

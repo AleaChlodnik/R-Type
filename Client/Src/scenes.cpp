@@ -627,23 +627,12 @@ void Scenes::gameLoop()
 
     auto pixelToPercent = [&](float v1, float v2) { return (v1 / v2) * 100; };
 
-    auto movePlayer = [&](const vf2d &delta, sf::Vector2u windowSize) {
+    auto movePlayer = [this](PlayerMovement playerMovement) {
         r_type::net::Message<TypeMessage> msg;
         vf2d requestedPosition;
         msg.header.id = TypeMessage::MoveEntityMessage;
-        if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
-            auto &sprites = **spritesOpt;
-            auto spriteComponent = sprites[_networkClient.getPlayerId()];
-            auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            requestedPosition.x =
-                pixelToPercent(playerSprite->sprite.getPosition().x, windowSize.x) + delta.x;
-            requestedPosition.y =
-                pixelToPercent(playerSprite->sprite.getPosition().y, windowSize.y) + delta.y;
-            std::cout << "Requested Position: " << requestedPosition.x << ", "
-                      << requestedPosition.y << std::endl;
-            msg << requestedPosition;
-            _networkClient.Send(msg);
-        }
+        msg << playerMovement;
+        _networkClient.Send(msg);
     };
 
     auto fireMissile = [&]() {
@@ -686,13 +675,13 @@ void Scenes::gameLoop()
                 } else if (event.key.code == keyBinds[Actions::QUIT]) {
                     StopGameLoop(audioSystem);
                 } else if (event.key.code == keyBinds[Actions::UP]) {
-                    movePlayer(vf2d{0, -1}, windowSize);
+                    movePlayer(PlayerMovement::UP);
                 } else if (event.key.code == keyBinds[Actions::DOWN]) {
-                    movePlayer(vf2d{0, 1}, windowSize);
+                    movePlayer(PlayerMovement::DOWN);
                 } else if (event.key.code == keyBinds[Actions::LEFT]) {
-                    movePlayer(vf2d{-1, 0}, windowSize);
+                    movePlayer(PlayerMovement::LEFT);
                 } else if (event.key.code == keyBinds[Actions::RIGHT]) {
-                    movePlayer(vf2d{1, 0}, windowSize);
+                    movePlayer(PlayerMovement::RIGHT);
                 } else if (event.key.code == keyBinds[Actions::PAUSE]) {
                     this->setScene(Scenes::Scene::IN_GAME_MENU);
                 }
@@ -791,7 +780,8 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         vf2d newPos;
         uint32_t id;
         msg >> newPos >> id;
-        std::cout << "Moving Entity: " << id << " to " << newPos.x << ", " << newPos.y << std::endl;
+        std::cout << "Moving Entity: " << id << " to " << newPos.x << ", " << newPos.y
+                  << std::endl;
         _networkClient.moveEntity(id, newPos, componentManager, windowSize, textureManager);
     } break;
     case TypeMessage::MoveEntityResponse: {
