@@ -67,8 +67,8 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         componentManager.removeEntityFromComponent<SpriteComponent>(entityId);
     }
 
-    void moveEntity(uint32_t id, vf2d newPos, ComponentManager &componentManager,
-        sf::Vector2u windowSize)
+    void moveEntity(
+        uint32_t id, vf2d newPos, ComponentManager &componentManager, sf::Vector2u windowSize)
     {
         auto spriteEntity = componentManager.getComponent<SpriteComponent>(id);
         if (spriteEntity) {

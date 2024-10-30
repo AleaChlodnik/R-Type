@@ -93,8 +93,9 @@ template <typename T> class ILevel {
     virtual void FireUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager,
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
 
-    virtual void CollisionUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager,
-        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
+    virtual void CollisionUpdate(r_type::net::AServer<T> *server,
+        ComponentManager &componentManager, EntityManager &entityManager,
+        std::chrono::system_clock::time_point newClock) = 0;
 };
 
 } // namespace r_type
