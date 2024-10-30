@@ -122,16 +122,12 @@ Entity EntityFactory::createBackground(
 
     BackgroundComponent backgroundComponent;
     PositionComponent start_position(50, 50);
-    // SpriteDataComponent spriteData{SpritePath::Background1, {5.625f, 5.625f}, {{0, 0}, {342,
-    // 192}}, AScenes::SpriteType::BACKGROUND};
     AnimationComponent animationComponent({0, 0}, {342, 192});
     SpriteDataComponent spriteData{
         SpritePath::Background1, {5.625f, 5.625f}, AScenes::SpriteType::BACKGROUND};
-    // OffsetComponent offset{0};
 
     componentManager.addComponent<BackgroundComponent>(background.getId(), backgroundComponent);
     componentManager.addComponent<PositionComponent>(background.getId(), start_position);
-    // componentManager.addComponent<OffsetComponent>(background.getId(), offset);
     componentManager.addComponent<SpriteDataComponent>(background.getId(), spriteData);
     componentManager.addComponent<AnimationComponent>(background.getId(), animationComponent);
 
@@ -178,12 +174,34 @@ Entity EntityFactory::createPlayer(
     componentManager.addComponent<VelocityComponent>(player.getId(), velocity);
     componentManager.addComponent<AnimationComponent>(player.getId(), animationComponent);
 
-    while (CheckEntityPosition(player.getId(), componentManager, entityManager) != -1) {
-        auto getPosition = componentManager.getComponent<PositionComponent>(player.getId());
-        getPosition.value()->y = static_cast<float>(rand() % 80);
-    }
-
     return player;
+}
+
+Entity EntityFactory::createBasicMonster(
+    EntityManager &entityManager, ComponentManager &componentManager)
+{
+    Entity monster = entityManager.createEntity();
+
+    BasicMonsterComponent monsterComponent;
+    VelocityComponent velocity{-1.0f, 0.0f};
+    MovementComponent movement{MovementType::WIGGLE, 0};
+    AnimationComponent animationComponent({0, 0}, {37, 36});
+    SpriteDataComponent spriteData{SpritePath::Enemy1, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
+    PositionComponent startPosition(80, 60);
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
+    HealthComponent health{0, 0};
+
+    componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
+    componentManager.addComponent<PositionComponent>(monster.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(monster.getId(), velocity);
+    componentManager.addComponent<HitboxComponent>(monster.getId(), hitbox);
+    componentManager.addComponent<HealthComponent>(monster.getId(), health);
+    componentManager.addComponent<SpriteDataComponent>(monster.getId(), spriteData);
+    componentManager.addComponent<AnimationComponent>(monster.getId(), animationComponent);
+    componentManager.addComponent<MovementComponent>(monster.getId(), movement);
+
+    return monster;
 }
 
 Entity EntityFactory::createShooterEnemy(
@@ -192,7 +210,8 @@ Entity EntityFactory::createShooterEnemy(
     Entity enemy = entityManager.createEntity();
 
     EnemyComponent enemyComponent;
-    VelocityComponent velocity{100.0f, 0.0f};
+    VelocityComponent velocity{-1.0f, 0.0f};
+    MovementComponent movement{MovementType::DIAGONAL, 0};
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy2, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(60, 60);
@@ -209,6 +228,7 @@ Entity EntityFactory::createShooterEnemy(
     componentManager.addComponent<HitboxComponent>(enemy.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(enemy.getId(), health);
     componentManager.addComponent<ShootComponent>(enemy.getId(), shoot);
+    componentManager.addComponent<MovementComponent>(enemy.getId(), movement);
 
     while (CheckEntityPosition(enemy.getId(), componentManager, entityManager) != -1) {
         auto enemyPos = componentManager.getComponent<PositionComponent>(enemy.getId());
@@ -220,31 +240,6 @@ Entity EntityFactory::createShooterEnemy(
     return enemy;
 }
 
-Entity EntityFactory::createBasicMonster(
-    EntityManager &entityManager, ComponentManager &componentManager)
-{
-    Entity monster = entityManager.createEntity();
-
-    BasicMonsterComponent monsterComponent;
-    VelocityComponent velocity{100.0f, 0.0f};
-    AnimationComponent animationComponent({0, 0}, {37, 36});
-    SpriteDataComponent spriteData{SpritePath::Enemy1, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
-    PositionComponent startPosition(60, 60);
-    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
-        static_cast<int>(animationComponent.dimension.y)};
-    HealthComponent health{0, 0};
-
-    componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
-    componentManager.addComponent<PositionComponent>(monster.getId(), startPosition);
-    componentManager.addComponent<VelocityComponent>(monster.getId(), velocity);
-    componentManager.addComponent<HitboxComponent>(monster.getId(), hitbox);
-    componentManager.addComponent<HealthComponent>(monster.getId(), health);
-    componentManager.addComponent<SpriteDataComponent>(monster.getId(), spriteData);
-    componentManager.addComponent<AnimationComponent>(monster.getId(), animationComponent);
-
-    return monster;
-}
-
 Entity EntityFactory::createPlayerMissile(
     EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId)
 {
@@ -252,7 +247,7 @@ Entity EntityFactory::createPlayerMissile(
 
     PlayerMissileComponent playerMissileComponent;
     PositionComponent startPosition(0, 0);
-    VelocityComponent velocity{200.0f, 0.0f};
+    VelocityComponent velocity{3.0f, 0.0f};
     AnimationComponent animationComponent({249, 88}, {16, 8});
     SpriteDataComponent spriteData{SpritePath::Missile, {1.0f, 1.0f}, AScenes::SpriteType::PLAYER};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
@@ -282,7 +277,7 @@ Entity EntityFactory::createEnemyMissile(
 
     EnemyMissileComponent enemyMissileComponent;
     PositionComponent startPosition(0, 0);
-    VelocityComponent velocity{200.0f, 0.0f};
+    VelocityComponent velocity{-3.0f, 0.0f};
     AnimationComponent animationComponent({0, 0}, {16, 16});
     SpriteDataComponent spriteData{SpritePath::Missile, {0.1f, 0.1f}, AScenes::SpriteType::PLAYER};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
@@ -290,7 +285,7 @@ Entity EntityFactory::createEnemyMissile(
 
     auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
     if (entityPos) {
-        startPosition.x = entityPos.value()->x - 4;
+        startPosition.x = entityPos.value()->x - 1;
         startPosition.y = entityPos.value()->y;
     }
 
@@ -306,16 +301,17 @@ Entity EntityFactory::createEnemyMissile(
 }
 
 Entity EntityFactory::createButton(EntityManager &entityManager,
-    ComponentManager &componentManager, TextureManager &textureManager, std::string text,
-    std::function<IScenes *(AScenes *)> *onClick, float x, float y)
+    ComponentManager &componentManager, TextureManager &textureManager, FontManager &fontManager,
+    std::string text, std::function<IScenes *(AScenes *)> *onClick, float x, float y)
 {
     Entity button = entityManager.createEntity();
 
     sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
+    sf::Font &font = fontManager.getFont("Client/Assets/Fonts/GODOFWAR.TTF");
     sf::Vector2f dimension(1.0f, 1.0f);
 
     PositionComponent pos(x, y);
-    TextComponent textComponent(text);
+    TextComponent textComponent(font, text, pos.x, pos.y);
     OnClickComponent onClickfunction(*onClick);
     SpriteComponent sprite(texture, pos.x, pos.y, dimension, AScenes::SpriteType::OTHER);
 
@@ -328,17 +324,19 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
 }
 
 Entity EntityFactory::createSmallButton(EntityManager &entityManager,
-    ComponentManager &componentManager, TextureManager &textureManager, std::string text,
-    std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x, float y)
+    ComponentManager &componentManager, TextureManager &textureManager, FontManager &fontManager,
+    std::string text, std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x,
+    float y)
 {
     Entity button = entityManager.createEntity();
 
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Menus/small_button.png");
+    sf::Font &font = fontManager.getFont("Client/Assets/Fonts/GODOFWAR.TTF");
     sf::Vector2f scale(1.0f, 1.0f);
 
     PositionComponent pos(x, y);
-    TextComponent textComponent(text);
+    TextComponent textComponent(font, text, pos.x, pos.y);
     BindComponent bindComponent(*onClick);
     SpriteComponent sprite(texture, pos.x, pos.y, scale, AScenes::SpriteType::OTHER);
 
@@ -348,4 +346,38 @@ Entity EntityFactory::createSmallButton(EntityManager &entityManager,
     componentManager.addComponent<SpriteComponent>(button.getId(), sprite);
 
     return button;
+}
+
+Entity EntityFactory::createFilter(
+    EntityManager &entityManager, ComponentManager &componentManager, AScenes::DaltonismMode mode)
+{
+    Entity filter = entityManager.createEntity();
+
+    sf::Color filterColor;
+
+    switch (mode) {
+    case AScenes::DaltonismMode::PROTANOPIA:
+        filterColor = sf::Color(255, 153, 102, 100);
+        break;
+    case AScenes::DaltonismMode::DEUTERANOPIA:
+        filterColor = sf::Color(102, 153, 255, 100);
+        break;
+    case AScenes::DaltonismMode::TRITANOPIA:
+        filterColor = sf::Color(255, 204, 255, 100);
+        break;
+    default:
+        filterColor = sf::Color(255, 255, 255, 0);
+        break;
+    }
+
+    sf::RectangleShape rectangle(sf::Vector2f(1920, 1080));
+    rectangle.setFillColor(filterColor);
+
+    RectangleShapeComponent rectangleShapeComponent(rectangle);
+
+    componentManager.addComponent<PositionComponent>(filter.getId(), PositionComponent(0, 0));
+    componentManager.addComponent<RectangleShapeComponent>(
+        filter.getId(), rectangleShapeComponent);
+
+    return filter;
 }

@@ -48,3 +48,7 @@ class failedToLoadTexture : public std::exception {
 class failedToLoadSound : public std::exception {
     const char *what() const noexcept override { return "Failed to load sound"; }
 };
+
+class failedToLoadFont : public std::exception {
+    const char *what() const noexcept override { return "Failed to load font"; }
+};

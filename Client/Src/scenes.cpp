@@ -5,7 +5,6 @@
 ** scenes
 */
 
-#include <Components/component_manager.hpp>
 #include <Components/components.hpp>
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
@@ -14,6 +13,7 @@
 #include <audio_manager.hpp>
 #include <chrono>
 #include <creatable_client_object.hpp>
+#include <font_manager.hpp>
 #include <functional>
 #include <iostream>
 #include <scenes.hpp>
@@ -24,6 +24,28 @@ Scenes::Scenes(std::string ip, int port) : IScenes(), AScenes(ip, port)
 {
     _window.create(sf::VideoMode::getDesktopMode(), "R-Type");
     _window.setFramerateLimit(60);
+}
+
+void reloadFilter(sf::RectangleShape &rectangle, AScenes::DaltonismMode mode)
+{
+    if (rectangle.getSize().x == 0 && rectangle.getSize().y == 0) {
+        std::cout << "no RectangleShapeComponent found." << std::endl;
+        return;
+    }
+    switch (mode) {
+    case AScenes::DaltonismMode::PROTANOPIA:
+        rectangle.setFillColor(sf::Color(255, 153, 102, 100));
+        break;
+    case AScenes::DaltonismMode::DEUTERANOPIA:
+        rectangle.setFillColor(sf::Color(102, 153, 255, 100));
+        break;
+    case AScenes::DaltonismMode::TRITANOPIA:
+        rectangle.setFillColor(sf::Color(255, 204, 255, 100));
+        break;
+    default:
+        rectangle.setFillColor(sf::Color(255, 255, 255, 0));
+        break;
+    }
 }
 
 /**
@@ -73,7 +95,16 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
                                     auto it = std::find(buttons.begin(), buttons.end(), button);
                                     if (it != buttons.end()) {
                                         int index = std::distance(buttons.begin(), it);
-                                        bind.value()->bind(scenes, Scenes::Actions(index));
+                                        bind.value()->bind(scenes, Scenes::Actions(index - 4));
+                                        auto text = componentManager.getComponent<TextComponent>(
+                                            button->getId());
+                                        if (text) {
+                                            std::string str = text.value()->text.getString();
+                                            str = str.substr(0, str.find(":") + 1) + " " +
+                                                keyToString(
+                                                    scenes->keyBinds[AScenes::Actions(index - 4)]);
+                                            text.value()->text.setString(str);
+                                        }
                                     }
                                 }
                             }
@@ -100,6 +131,7 @@ void Scenes::mainMenu()
     EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
+    FontManager fontManager;
     EntityFactory entityFactory;
 
     std::shared_ptr<UpdateSystem> updateSystem =
@@ -118,14 +150,19 @@ void Scenes::mainMenu()
     SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
+    // Create filter
+    this->filter = std::make_shared<Entity>(
+        entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
+
     // Create buttons
     std::function<IScenes *(AScenes *)> onPlayButtonClicked = [](AScenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
         return currentScene;
     };
 
-    std::shared_ptr<Entity> playButton = std::make_shared<Entity>(entityFactory.createButton(
-        entityManager, componentManager, textureManager, "Play", &onPlayButtonClicked, 960, 100));
+    std::shared_ptr<Entity> playButton =
+        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
+            textureManager, fontManager, "Play", &onPlayButtonClicked, 960, 100));
 
     std::function<IScenes *(AScenes *)> onSettingsButtonClicked = [](AScenes *currentScene) {
         currentScene->setScene(Scenes::Scene::SETTINGS_MENU);
@@ -133,15 +170,16 @@ void Scenes::mainMenu()
     };
     std::shared_ptr<Entity> settingsButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Settings", &onSettingsButtonClicked, 960, 250));
+            textureManager, fontManager, "Settings", &onSettingsButtonClicked, 960, 250));
 
     std::function<IScenes *(AScenes *)> onQuitButtonClicked = [](AScenes *currentScene) {
         currentScene->setScene(Scenes::Scene::EXIT);
         return currentScene;
     };
 
-    std::shared_ptr<Entity> quitButton = std::make_shared<Entity>(entityFactory.createButton(
-        entityManager, componentManager, textureManager, "Quit", &onQuitButtonClicked, 960, 500));
+    std::shared_ptr<Entity> quitButton =
+        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
+            textureManager, fontManager, "Quit", &onQuitButtonClicked, 960, 500));
 
     buttons.push_back(playButton);
     buttons.push_back(settingsButton);
@@ -153,8 +191,6 @@ void Scenes::mainMenu()
     while (_window.isOpen() && this->_currentScene == Scenes::Scene::MAIN_MENU) {
 
         handleEvents(event, componentManager, &_window, buttons, this);
-
-        // float deltaTime = clock.restart().asSeconds();
 
         updateSystem->updateSpritePositions(componentManager, entityManager);
         renderSystem->render(componentManager);
@@ -195,9 +231,8 @@ void Scenes::inGameMenu()
     EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
+    FontManager fontManager;
     EntityFactory entityFactory;
-
-    // SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
@@ -218,6 +253,10 @@ void Scenes::inGameMenu()
     SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
+    // Create filter
+    this->filter = std::make_shared<Entity>(
+        entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
+
     // Create the buttons
     std::function<IScenes *(AScenes *)> onResumeButtonClicked = [](AScenes *currentScene) {
         currentScene->setScene(Scenes::Scene::GAME_LOOP);
@@ -225,7 +264,7 @@ void Scenes::inGameMenu()
     };
     std::shared_ptr<Entity> resumeButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Resume", &onResumeButtonClicked, 960, 100));
+            textureManager, fontManager, "Resume", &onResumeButtonClicked, 960, 100));
 
     std::function<IScenes *(AScenes *)> onSettingsButtonClicked = [](AScenes *currentScene) {
         currentScene->setScene(Scenes::Scene::SETTINGS_MENU);
@@ -233,16 +272,16 @@ void Scenes::inGameMenu()
     };
     std::shared_ptr<Entity> settingsButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Settings", &onSettingsButtonClicked, 960, 250));
+            textureManager, fontManager, "Settings", &onSettingsButtonClicked, 960, 250));
 
     std::function<IScenes *(AScenes *)> onReturnToMainMenuButtonClicked =
         [](AScenes *currentScene) {
             currentScene->setScene(Scenes::Scene::MAIN_MENU);
             return currentScene;
         };
-    std::shared_ptr<Entity> returnToMainMenu =
-        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Return To Main Menu", &onReturnToMainMenuButtonClicked, 960, 500));
+    std::shared_ptr<Entity> returnToMainMenu = std::make_shared<Entity>(
+        entityFactory.createButton(entityManager, componentManager, textureManager, fontManager,
+            "Return To Main Menu", &onReturnToMainMenuButtonClicked, 960, 500));
 
     buttons.push_back(resumeButton);
     buttons.push_back(settingsButton);
@@ -255,8 +294,6 @@ void Scenes::inGameMenu()
 
         handleEvents(event, componentManager, &_window, buttons, this);
 
-        // float deltaTime = clock.restart().asSeconds();
-
         updateSystem->updateSpritePositions(componentManager, entityManager);
         renderSystem->render(componentManager);
     }
@@ -264,39 +301,52 @@ void Scenes::inGameMenu()
 
 void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
-    TextureManager &textureManager, EntityFactory &entityFactory)
+    TextureManager &textureManager, FontManager fontManager, EntityFactory &entityFactory)
 {
-    std::function<IScenes *(AScenes *)> onNormalButtonClicked = [](AScenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onNormalButtonClicked = [&](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::NORMAL);
+        ;
+        auto filter =
+            componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
+        reloadFilter(filter.value()->rectangleShape, AScenes::DaltonismMode::NORMAL);
         return currentScene;
     };
     std::shared_ptr<Entity> normalButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Normal", &onNormalButtonClicked, 1460, 100));
+            textureManager, fontManager, "Normal", &onNormalButtonClicked, 1460, 100));
 
-    std::function<IScenes *(AScenes *)> onTritanopiaButtonClicked = [](AScenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onTritanopiaButtonClicked = [&](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::TRITANOPIA);
+        auto filter =
+            componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
+        reloadFilter(filter.value()->rectangleShape, AScenes::DaltonismMode::TRITANOPIA);
         return currentScene;
     };
     std::shared_ptr<Entity> tritanopiaButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Tritanopia", &onTritanopiaButtonClicked, 1460, 250));
+            textureManager, fontManager, "Tritanopia", &onTritanopiaButtonClicked, 1460, 250));
 
-    std::function<IScenes *(AScenes *)> onDeuteranopiaButtonClicked = [](AScenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onDeuteranopiaButtonClicked = [&](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::DEUTERANOPIA);
+        auto filter =
+            componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
+        reloadFilter(filter.value()->rectangleShape, AScenes::DaltonismMode::DEUTERANOPIA);
         return currentScene;
     };
     std::shared_ptr<Entity> deuteranopiaButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Deuteranopia", &onDeuteranopiaButtonClicked, 1460, 400));
+            textureManager, fontManager, "Deuteranopia", &onDeuteranopiaButtonClicked, 1460, 400));
 
-    std::function<IScenes *(AScenes *)> onProtanopiaButtonClicked = [](AScenes *currentScene) {
+    std::function<IScenes *(AScenes *)> onProtanopiaButtonClicked = [&](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::PROTANOPIA);
+        auto filter =
+            componentManager.getComponent<RectangleShapeComponent>(currentScene->filter->getId());
+        reloadFilter(filter.value()->rectangleShape, AScenes::DaltonismMode::PROTANOPIA);
         return currentScene;
     };
     std::shared_ptr<Entity> protanopiaButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Protanopia", &onProtanopiaButtonClicked, 1460, 550));
+            textureManager, fontManager, "Protanopia", &onProtanopiaButtonClicked, 1460, 550));
 
     buttons.push_back(normalButton);
     buttons.push_back(tritanopiaButton);
@@ -304,40 +354,8 @@ void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     buttons.push_back(protanopiaButton);
 }
 
-void createGameModeChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
-    ComponentManager &componentManager, EntityManager &entityManager,
-    TextureManager &textureManager, EntityFactory &entityFactory)
-{
-    std::function<IScenes *(AScenes *)> easyButtonClicked = [](AScenes *currentScene) {
-        currentScene->setGameMode(Scenes::GameMode::EASY);
-        return currentScene;
-    };
-    std::shared_ptr<Entity> easyButton = std::make_shared<Entity>(entityFactory.createButton(
-        entityManager, componentManager, textureManager, "Easy", &easyButtonClicked, 1460, 250));
-
-    std::function<IScenes *(AScenes *)> mediumButtonClicked = [](AScenes *currentScene) {
-        currentScene->setGameMode(Scenes::GameMode::MEDIUM);
-        return currentScene;
-    };
-    std::shared_ptr<Entity> mediumButton =
-        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Medium", &mediumButtonClicked, 1460, 400));
-
-    std::function<IScenes *(AScenes *)> hardButtonClicked = [](AScenes *currentScene) {
-        currentScene->setGameMode(Scenes::GameMode::HARD);
-        return currentScene;
-    };
-    std::shared_ptr<Entity> hardButton = std::make_shared<Entity>(entityFactory.createButton(
-        entityManager, componentManager, textureManager, "Hard", &hardButtonClicked, 1460, 550));
-
-    buttons.push_back(easyButton);
-    buttons.push_back(mediumButton);
-    buttons.push_back(hardButton);
-}
-
 sf::Keyboard::Key waitForKey(sf::RenderWindow *_window)
 {
-    std::cout << "Waiting for key" << std::endl;
     sf::Event event;
     while (true) {
         while (_window->pollEvent(event)) {
@@ -350,51 +368,50 @@ sf::Keyboard::Key waitForKey(sf::RenderWindow *_window)
 
 void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
-    TextureManager &textureManager, EntityFactory &entityFactory)
+    TextureManager &textureManager, FontManager fontManager, EntityFactory &entityFactory,
+    std::map<Scenes::Actions, sf::Keyboard::Key> &keyBinds)
 {
     std::function<IScenes *(AScenes *, AScenes::Actions)> bindKey = [](AScenes *currentScene,
                                                                         AScenes::Actions action) {
         sf::Keyboard::Key key = waitForKey(currentScene->getRenderWindow());
         currentScene->keyBinds[action] = key;
-        std::cout << currentScene->keyBinds[action] << "ok" << std::endl;
         return currentScene;
     };
 
     std::shared_ptr<Entity> bindUpButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Up : ", &bindKey, 1650, 100));
+        std::make_shared<Entity>(entityFactory.createSmallButton(entityManager, componentManager,
+            textureManager, fontManager, "Up: " + keyToString(keyBinds[Scenes::Actions::UP]),
+            &bindKey, 1550, 100));
 
     std::shared_ptr<Entity> bindDownButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Down : ", &bindKey, 1650, 250));
+        std::make_shared<Entity>(entityFactory.createSmallButton(entityManager, componentManager,
+            textureManager, fontManager, "Down: " + keyToString(keyBinds[Scenes::Actions::DOWN]),
+            &bindKey, 1550, 250));
 
     std::shared_ptr<Entity> bindLeftButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Left : ", &bindKey, 1400, 250));
+        std::make_shared<Entity>(entityFactory.createSmallButton(entityManager, componentManager,
+            textureManager, fontManager, "Left: " + keyToString(keyBinds[Scenes::Actions::LEFT]),
+            &bindKey, 1300, 250));
 
     std::shared_ptr<Entity> bindRightButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Right : ", &bindKey, 1900, 250));
+        std::make_shared<Entity>(entityFactory.createSmallButton(entityManager, componentManager,
+            textureManager, fontManager, "Right: " + keyToString(keyBinds[Scenes::Actions::RIGHT]),
+            &bindKey, 1800, 250));
 
     std::shared_ptr<Entity> bindFireButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Fire : ", &bindKey, 1650, 400));
+        std::make_shared<Entity>(entityFactory.createSmallButton(entityManager, componentManager,
+            textureManager, fontManager, "Fire: " + keyToString(keyBinds[Scenes::Actions::FIRE]),
+            &bindKey, 1550, 400));
 
     std::shared_ptr<Entity> bindPauseButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Pause : ", &bindKey, 1650, 550));
-
-    // Entity bindPauseButton = entityFactory.createSmallButton(
-    //     entityManager, componentManager, textureManager, "Pause : ", &bindKey);
-    // pos = componentManager.getComponent<PositionComponent>(bindPauseButton.get()->getId());
-    // if (pos) {
-    //     pos.value()->x = 1560;
-    //     pos.value()->y = 750;
-    // }
+        std::make_shared<Entity>(entityFactory.createSmallButton(entityManager, componentManager,
+            textureManager, fontManager, "Pause: " + keyToString(keyBinds[Scenes::Actions::PAUSE]),
+            &bindKey, 1550, 550));
 
     std::shared_ptr<Entity> bindQuitButton =
-        std::make_shared<Entity>(entityFactory.createSmallButton(
-            entityManager, componentManager, textureManager, "Quit : ", &bindKey, 1650, 700));
+        std::make_shared<Entity>(entityFactory.createSmallButton(entityManager, componentManager,
+            textureManager, fontManager, "Quit: " + keyToString(keyBinds[Scenes::Actions::QUIT]),
+            &bindKey, 1550, 700));
 
     buttons.push_back(bindUpButton);
     buttons.push_back(bindDownButton);
@@ -416,9 +433,8 @@ void Scenes::settingsMenu()
     EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
+    FontManager fontManager;
     EntityFactory entityFactory;
-
-    // SystemManager systemManager;
 
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
@@ -439,83 +455,53 @@ void Scenes::settingsMenu()
     SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
     componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
 
+    // Create filter
+    this->filter = std::make_shared<Entity>(
+        entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
+
     // Create the buttons
     std::function<IScenes *(AScenes *)> onDaltonismModeButtonClicked = [](AScenes *currentScene) {
         currentScene->setDisplayDaltonismChoice(!currentScene->getDisplayDaltonismChoice());
-        currentScene->setDisplayGameModeChoice(false);
         currentScene->setDisplayKeyBindsChoice(false);
         currentScene->settingsMenu();
         return currentScene;
     };
 
-    std::shared_ptr<Entity> daltonismModeButton =
-        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Daltonism Mode", &onDaltonismModeButtonClicked, 960, 100));
-
-    std::function<IScenes *(AScenes *)> onGameModeButtonClicked = [](AScenes *currentScene) {
-        currentScene->setDisplayGameModeChoice(!currentScene->getDisplayGameModeChoice());
-        currentScene->setDisplayDaltonismChoice(false);
-        currentScene->setDisplayKeyBindsChoice(false);
-        currentScene->settingsMenu();
-        return currentScene;
-    };
-
-    std::shared_ptr<Entity> gameModeButton =
-        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Game Mode", &onGameModeButtonClicked, 960, 250));
+    std::shared_ptr<Entity> daltonismModeButton = std::make_shared<Entity>(
+        entityFactory.createButton(entityManager, componentManager, textureManager, fontManager,
+            "Daltonism Mode", &onDaltonismModeButtonClicked, 960, 250));
 
     std::function<IScenes *(AScenes *)> onKeyBindButtonClicked = [](AScenes *currentScene) {
         currentScene->setDisplayKeyBindsChoice(!currentScene->getDisplayKeyBindsChoice());
         currentScene->setDisplayDaltonismChoice(false);
-        currentScene->setDisplayGameModeChoice(false);
         currentScene->settingsMenu();
         return currentScene;
     };
 
     std::shared_ptr<Entity> keyBindsButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, "Key Binds", &onKeyBindButtonClicked, 960, 400));
+            textureManager, fontManager, "Key Binds", &onKeyBindButtonClicked, 960, 400));
 
     std::function<IScenes *(AScenes *)> onBackButtonClicked = [](AScenes *currentScene) {
         currentScene->setScene(currentScene->getPreviousScene());
         return currentScene;
     };
-    std::shared_ptr<Entity> backButton = std::make_shared<Entity>(entityFactory.createButton(
-        entityManager, componentManager, textureManager, "Back", &onBackButtonClicked, 960, 650));
+    std::shared_ptr<Entity> backButton =
+        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
+            textureManager, fontManager, "Back", &onBackButtonClicked, 960, 650));
 
     buttons.push_back(daltonismModeButton);
-    buttons.push_back(gameModeButton);
     buttons.push_back(keyBindsButton);
     buttons.push_back(backButton);
 
     if (_displayDaltonismChoice) {
-        // createDaltonismChoiceButtons(
-        //     &buttons, componentManager, entityManager, textureManager, entityFactory);
-        sf::RectangleShape filter(sf::Vector2f((_window).getSize().x, (_window).getSize().y));
-        _currentDaltonismMode = DaltonismMode::TRITANOPIA;
-        switch (_currentDaltonismMode) {
-        case DaltonismMode::NORMAL:
-            filter.setFillColor(sf::Color(0, 0, 0, 0));
-            break;
-        case DaltonismMode::TRITANOPIA:
-            filter.setFillColor(sf::Color(255, 255, 100, 100));
-            break;
-        case DaltonismMode::DEUTERANOPIA:
-            filter.setFillColor(sf::Color(255, 100, 255, 100));
-            break;
-        case DaltonismMode::PROTANOPIA:
-            filter.setFillColor(sf::Color(255, 255, 100, 100));
-            break;
-        }
+        createDaltonismChoiceButtons(
+            buttons, componentManager, entityManager, textureManager, fontManager, entityFactory);
     }
 
-    if (_displayGameModeChoice) {
-        // createGameModeChoiceButtons(
-        //     &buttons, componentManager, entityManager, textureManager, entityFactory);
-    }
     if (_displayKeyBindsChoice) {
-        // createKeyBindingButtons(buttons, componentManager, entityManager, textureManager,
-        // entityFactory);
+        createKeyBindingButtons(buttons, componentManager, entityManager, textureManager,
+            fontManager, entityFactory, keyBinds);
     }
 
     sf::Clock clock;
@@ -525,11 +511,69 @@ void Scenes::settingsMenu()
 
         handleEvents(event, componentManager, &_window, buttons, this);
 
-        // float deltaTime = clock.restart().asSeconds();
-
         updateSystem->updateSpritePositions(componentManager, entityManager);
         renderSystem->render(componentManager);
     }
+}
+
+void Scenes::difficultyChoices()
+{
+    EntityManager entityManager;
+    ComponentManager componentManager;
+    TextureManager textureManager;
+    FontManager fontManager;
+    EntityFactory entityFactory;
+
+    std::shared_ptr<UpdateSystem> updateSystem =
+        std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
+    std::shared_ptr<RenderSystem> renderSystem =
+        std::make_shared<RenderSystem>(_window, componentManager);
+
+    // systemManager.addSystem(updateSystem);
+    // systemManager.addSystem(renderSystem);
+
+    buttons = {};
+
+    // Create background
+    std::shared_ptr<Entity> background =
+        std::make_shared<Entity>(entityFactory.createBackground(entityManager, componentManager));
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Vector2f scale(1.0, 1.0);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
+    componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
+
+    // Create filter
+    this->filter = std::make_shared<Entity>(
+        entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
+
+    std::function<IScenes *(AScenes *)> easyButtonClicked = [](AScenes *currentScene) {
+        currentScene->setGameMode(Scenes::GameMode::EASY);
+        return currentScene;
+    };
+    std::shared_ptr<Entity> easyButton =
+        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
+            textureManager, fontManager, "Easy", &easyButtonClicked, 1460, 250));
+
+    std::function<IScenes *(AScenes *)> mediumButtonClicked = [](AScenes *currentScene) {
+        currentScene->setGameMode(Scenes::GameMode::MEDIUM);
+        return currentScene;
+    };
+    std::shared_ptr<Entity> mediumButton =
+        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
+            textureManager, fontManager, "Medium", &mediumButtonClicked, 1460, 400));
+
+    std::function<IScenes *(AScenes *)> hardButtonClicked = [](AScenes *currentScene) {
+        currentScene->setGameMode(Scenes::GameMode::HARD);
+        return currentScene;
+    };
+    std::shared_ptr<Entity> hardButton =
+        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
+            textureManager, fontManager, "Hard", &hardButtonClicked, 1460, 550));
+
+    buttons.push_back(easyButton);
+    buttons.push_back(mediumButton);
+    buttons.push_back(hardButton);
 }
 
 /**
@@ -562,8 +606,7 @@ void Scenes::render()
 
 void Scenes::gameLoop()
 {
-    r_type::net::Client c;
-    c.Connect(_ip, _port);
+    _networkClient.Connect(_ip, _port);
 
     EntityManager entityManager;
     ComponentManager componentManager;
@@ -584,21 +627,12 @@ void Scenes::gameLoop()
 
     auto pixelToPercent = [&](float v1, float v2) { return (v1 / v2) * 100; };
 
-    auto movePlayer = [&](const vf2d &delta, sf::Vector2u windowSize) {
+    auto movePlayer = [this](PlayerMovement playerMovement) {
         r_type::net::Message<TypeMessage> msg;
         vf2d requestedPosition;
         msg.header.id = TypeMessage::MoveEntityMessage;
-        if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
-            auto &sprites = **spritesOpt;
-            auto spriteComponent = sprites[c.getPlayerId()];
-            auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            requestedPosition.x =
-                pixelToPercent(playerSprite->sprite.getPosition().x, windowSize.x) + delta.x;
-            requestedPosition.y =
-                pixelToPercent(playerSprite->sprite.getPosition().y, windowSize.y) + delta.y;
-            msg << requestedPosition;
-            c.Send(msg);
-        }
+        msg << playerMovement;
+        _networkClient.Send(msg);
     };
 
     auto fireMissile = [&]() {
@@ -610,161 +644,180 @@ void Scenes::gameLoop()
             r_type::net::Message<TypeMessage> msg;
             msg.header.id = TypeMessage::CreateEntityMessage;
             msg << CreatableClientObject::PLAYERMISSILE;
-            c.Send(msg);
+            _networkClient.Send(msg);
             lastFireTime = currentTime;
             audioSystem->playSoundEffect(SoundFactory(ActionType::Shot));
         }
     };
 
-    auto death = [&]() {
-        audioSystem->stopBackgroundMusic();
-        audioSystem->playSoundEffect(SoundFactory(ActionType::GameOver));
-        r_type::net::Message<TypeMessage> msg;
-        msg.header.id = TypeMessage::DestroyEntityMessage;
-        msg << c.getPlayerId();
-        c.Send(msg);
-        std::cout << "Closing window" << std::endl;
-        _window.close();
-    };
-
     sf::Vector2u windowSize = _window.getSize();
 
     audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
+    // audioSystem->playBackgroundMusic(""); // Test with quentins sound
 
     while (_window.isOpen()) {
         // float deltaTime = clock.restart().asSeconds();
         while (_window.pollEvent(event)) {
+
             if (event.type == sf::Event::Closed) {
-                death();
+                StopGameLoop(audioSystem);
             }
             if (sf::Keyboard::isKeyPressed(keyBinds[Actions::FIRE])) {
                 fireMissile();
             }
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::P) {
-                    c.PingServer();
-                }
-                if (event.key.code == sf::Keyboard::V) {
-                    c.MessageAll();
-                }
-                if (event.key.code == keyBinds[Actions::FIRE]) {
+                    _networkClient.PingServer();
+                } else if (event.key.code == sf::Keyboard::V) {
+                    _networkClient.MessageAll();
+                } else if (event.key.code == keyBinds[Actions::FIRE]) {
                     fireMissile();
-                }
-                if (event.key.code == keyBinds[Actions::QUIT]) {
-                    death();
-                }
-                if (event.key.code == keyBinds[Actions::UP]) {
-                    movePlayer(vf2d{0, -1}, windowSize);
-                }
-                if (event.key.code == keyBinds[Actions::DOWN]) {
-                    movePlayer(vf2d{0, 1}, windowSize);
-                }
-                if (event.key.code == keyBinds[Actions::LEFT]) {
-                    movePlayer(vf2d{-1, 0}, windowSize);
-                }
-                if (event.key.code == keyBinds[Actions::RIGHT]) {
-                    movePlayer(vf2d{1, 0}, windowSize);
-                }
-                if (event.key.code == keyBinds[Actions::PAUSE]) {
+                } else if (event.key.code == keyBinds[Actions::QUIT]) {
+                    StopGameLoop(audioSystem);
+                } else if (event.key.code == keyBinds[Actions::UP]) {
+                    movePlayer(PlayerMovement::UP);
+                } else if (event.key.code == keyBinds[Actions::DOWN]) {
+                    movePlayer(PlayerMovement::DOWN);
+                } else if (event.key.code == keyBinds[Actions::LEFT]) {
+                    movePlayer(PlayerMovement::LEFT);
+                } else if (event.key.code == keyBinds[Actions::RIGHT]) {
+                    movePlayer(PlayerMovement::RIGHT);
+                } else if (event.key.code == keyBinds[Actions::PAUSE]) {
                     this->setScene(Scenes::Scene::IN_GAME_MENU);
                 }
             }
         }
-        if (c.IsConnected()) {
-            // std::cout << "Connected to Server" << std::endl;/////////////////////////
-            if (!c.Incoming().empty()) {
-                auto msg = c.Incoming().pop_front().msg;
-                switch (msg.header.id) {
-                case TypeMessage::ServerAccept: {
-                    std::cout << "Server Accepted Connection" << std::endl;
-                    r_type::net::Message<TypeMessage> response;
-                    response.header.id = TypeMessage::SendPlayer;
-                    c.Send(response);
-                } break;
-                case TypeMessage::ServerPing: {
-                    std::chrono::system_clock::time_point timeNow =
-                        std::chrono::system_clock::now();
-                    std::chrono::system_clock::time_point timeThen;
-                    msg >> timeThen;
-                    std::cout << "Ping: "
-                              << std::chrono::duration<double>(timeNow - timeThen).count()
-                              << std::endl;
-                } break;
-                case TypeMessage::ServerMessage: {
-                    uint32_t clientID;
-                    msg >> clientID;
-                    std::cout << "Hello from [" << clientID << "]" << std::endl;
-                } break;
-                case TypeMessage::SendPlayerInformation: {
-                    EntityInformation entity;
-                    r_type::net::Message<TypeMessage> response;
-                    response.header.id = TypeMessage::RecievePlayerInformation;
-                    c.Send(response);
-                    msg >> entity;
-                    c.setPlayerId(entity.uniqueID);
-                    c.addEntity(entity, componentManager, textureManager, windowSize);
-                } break;
-                case TypeMessage::ServerDeny: {
-                    std::cout << "Server Denied Connection" << std::endl;
-                } break;
-                case TypeMessage::MessageAll: {
-                } break;
-                case TypeMessage::ClientConnect: {
-                } break;
-                case TypeMessage::CreateEntityMessage: {
-                    EntityInformation entity;
-                    r_type::net::Message<TypeMessage> response;
-                    response.header.id = TypeMessage::CreateEntityResponse;
-                    c.Send(response);
-                    msg >> entity;
-                    c.addEntity(entity, componentManager, textureManager, windowSize);
-                } break;
-                case TypeMessage::DestroyEntityMessage: {
-                    r_type::net::Message<TypeMessage> response;
-                    uint32_t id;
-                    msg >> id;
-                    audioSystem->playSoundEffect(SoundFactory(ActionType::Explosion));
-                    if (id == c.getPlayerId())
-                        death();
-                    c.removeEntity(id, componentManager);
-                    response.header.id = TypeMessage::DestroyEntityResponse;
-                    c.Send(response);
-                } break;
-                case TypeMessage::UpdateEntity: {
-                    r_type::net::Message<TypeMessage> response;
-                    response.header.id = TypeMessage::UpdateEntityResponse;
-                    EntityInformation entity;
-                    msg >> entity;
-                    c.updateEntity(entity, componentManager, windowSize, textureManager);
-                } break;
-                case TypeMessage::UpdateEntityResponse: {
-                } break;
-                case TypeMessage::MoveEntityMessage: {
-                } break;
-                case TypeMessage::MoveEntityResponse: {
-                } break;
-                case TypeMessage::DestroyEntityResponse: {
-                } break;
-                case TypeMessage::FinishInitialization: {
-                } break;
-                case TypeMessage::AnimateEntityMessage: {
-                    r_type::net::Message<TypeMessage> response;
-                    uint32_t id;
-                    AnimationComponent rect({0, 0}, {0, 0});
-                    msg >> rect.offset >> rect.dimension >> id;
-                    c.animateEntity(id, rect, componentManager);
-                } break;
-                }
+
+        if (_networkClient.IsConnected()) {
+            // std::cout << "Connected to Server" << std::endl;
+            while (!_networkClient.Incoming().empty()) {
+                auto msg = _networkClient.Incoming().pop_front().msg;
+                HandleMessage(msg, componentManager, textureManager, windowSize, audioSystem);
             }
         } else {
             std::cout << "Server Down" << std::endl;
             _window.close();
-            break;
         }
+        // updateSystem->updateSpritePositions(componentManager, entityManager);
 
-        updateSystem->updateSpritePositions(componentManager, entityManager);
+        std::thread displayUpdate(
+            [this, updateSystem, renderSystem, &componentManager, &entityManager]() {
+                updateSystem->updateSpritePositions(componentManager, entityManager);
+            });
+
+        displayUpdate.join();
         renderSystem->render(componentManager);
     }
+}
+
+void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
+    ComponentManager &componentManager, TextureManager &textureManager,
+    const sf::Vector2u &windowSize, std::shared_ptr<AudioSystem> &audioSystem)
+{
+    switch (msg.header.id) {
+    case TypeMessage::ServerAccept: {
+        std::cout << "Server Accepted Connection" << std::endl;
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::SendPlayer;
+        _networkClient.Send(response);
+    } break;
+    case TypeMessage::ServerPing: {
+        std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
+        std::chrono::system_clock::time_point timeThen;
+        msg >> timeThen;
+        std::cout << "Ping: " << std::chrono::duration<double>(timeNow - timeThen).count()
+                  << std::endl;
+    } break;
+    case TypeMessage::ServerMessage: {
+        uint32_t clientID;
+        msg >> clientID;
+        std::cout << "Hello from [" << clientID << "]" << std::endl;
+    } break;
+    case TypeMessage::SendPlayerInformation: {
+        EntityInformation entity;
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::ReceivePlayerInformation;
+        _networkClient.Send(response);
+        msg >> entity;
+        _networkClient.setPlayerId(entity.uniqueID);
+        _networkClient.addEntity(entity, componentManager, textureManager, windowSize);
+    } break;
+    case TypeMessage::ServerDeny: {
+        std::cout << "Server Denied Connection" << std::endl;
+    } break;
+    case TypeMessage::MessageAll: {
+    } break;
+    case TypeMessage::ClientConnect: {
+    } break;
+    case TypeMessage::CreateEntityMessage: {
+        EntityInformation entity;
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::CreateEntityResponse;
+        _networkClient.Send(response);
+        msg >> entity;
+        _networkClient.addEntity(entity, componentManager, textureManager, windowSize);
+    } break;
+    case TypeMessage::DestroyEntityMessage: {
+        r_type::net::Message<TypeMessage> response;
+        uint32_t id;
+        msg >> id;
+        audioSystem->playSoundEffect(SoundFactory(ActionType::Explosion));
+        if (id == _networkClient.getPlayerId()) {
+            StopGameLoop(audioSystem);
+        }
+        _networkClient.removeEntity(id, componentManager);
+        response.header.id = TypeMessage::DestroyEntityResponse;
+        _networkClient.Send(response);
+    } break;
+    case TypeMessage::UpdateEntity: {
+    } break;
+    case TypeMessage::UpdateEntityResponse: {
+    } break;
+    case TypeMessage::MoveEntityMessage: {
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::MoveEntityResponse;
+        EntityInformation entity;
+        vf2d newPos;
+        uint32_t id;
+        msg >> newPos >> id;
+        std::cout << "Moving Entity: " << id << " to " << newPos.x << ", " << newPos.y
+                  << std::endl;
+        _networkClient.moveEntity(id, newPos, componentManager, windowSize, textureManager);
+    } break;
+    case TypeMessage::MoveEntityResponse: {
+    } break;
+    case TypeMessage::DestroyEntityResponse: {
+    } break;
+    case TypeMessage::FinishInitialization: {
+    } break;
+    case TypeMessage::AnimateEntityMessage: {
+        r_type::net::Message<TypeMessage> response;
+        uint32_t id;
+        AnimationComponent rect({0, 0}, {0, 0});
+        msg >> rect.offset >> rect.dimension >> id;
+        _networkClient.animateEntity(id, rect, componentManager);
+    } break;
+    case TypeMessage::GameDiffuculty: {
+    } break;
+    case TypeMessage::CreateEntityResponse: {
+    } break;
+    case TypeMessage::SendPlayer: {
+    } break;
+    case TypeMessage::ReceivePlayerInformation: {
+    } break;
+    }
+}
+
+void Scenes::StopGameLoop(std::shared_ptr<AudioSystem> &audioSystem)
+{
+    audioSystem->stopBackgroundMusic();
+    audioSystem->playSoundEffect(SoundFactory(ActionType::GameOver));
+    r_type::net::Message<TypeMessage> msg;
+    msg.header.id = TypeMessage::DestroyEntityMessage;
+    msg << _networkClient.getPlayerId();
+    _networkClient.Send(msg);
+    std::cout << "Closing window" << std::endl;
+    _window.close();
 }
 
 void Scenes::run()

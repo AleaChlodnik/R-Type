@@ -80,7 +80,10 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             std::cout << "[" << client->GetID() << "]: Client Connect" << std::endl;
         } break;
         case TypeMessage::MoveEntityMessage: { // This is only for the players
-            UpdatePlayerPosition(msg, client->GetID());
+            uint32_t entityId = GetClientPlayerId(client->GetID());
+            PlayerMovement playerMovement;
+            msg >> playerMovement;
+            UpdatePlayerPosition(playerMovement, entityId);
         } break;
         case TypeMessage::DestroyEntityMessage: {
             OnClientDisconnect(client, msg);
@@ -130,7 +133,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             response.header.id = TypeMessage::CreateEntityMessage;
             MessageAllClients(response, client);
         } break;
-        case TypeMessage::RecievePlayerInformation: {
+        case TypeMessage::ReceivePlayerInformation: {
             std::cout << "[" << client->GetID() << "]: Player Information Received" << std::endl;
             r_type::net::Message<TypeMessage> response;
             response.header.id = TypeMessage::CreateEntityMessage;

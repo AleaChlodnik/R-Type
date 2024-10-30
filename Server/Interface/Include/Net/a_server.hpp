@@ -293,57 +293,66 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param clientId The ID of the client sending the update.
      */
 
-    void UpdatePlayerPosition(
-        r_type::net::Message<T> &msg, uint32_t clientId) // Only for the players
+    void UpdatePlayerPosition(PlayerMovement direction, uint32_t entityId) // Only for the players
     {
-        uint32_t entityId = GetClientPlayerId(clientId);
-        EntityInformation entity;
-        vf2d entityPosition;
         auto entitySpriteData = _componentManager.getComponent<SpriteDataComponent>(entityId);
-        msg >> entityPosition;
+        EntityInformation entity;
 
         auto hitbox = _componentManager.getComponent<HitboxComponent>(entityId);
+        auto pos = _componentManager.getComponent<PositionComponent>(entityId);
 
-        if (hitbox) {
+        vf2d newPos = {pos.value()->x, pos.value()->y};
+        switch (direction) {
+        case PlayerMovement::UP: {
+            newPos.y -= 1;
+        } break;
+        case PlayerMovement::DOWN: {
+            newPos.y += 1;
+        } break;
+        case PlayerMovement::LEFT: {
+            newPos.x -= 1;
+        } break;
+        case PlayerMovement::RIGHT: {
+            newPos.x += 1;
+        } break;
+        }
+
+        if (hitbox && pos) {
             float halfWidth = hitbox.value()->w / 2;
             float halfHeight = hitbox.value()->h / 2;
             float minX, maxX, minY, maxY;
 
-            maxX = ((entityPosition.x / 100) * SCREEN_WIDTH) + halfWidth;
-            minX = ((entityPosition.x / 100) * SCREEN_WIDTH) - halfWidth;
-            maxY = ((entityPosition.y / 100) * SCREEN_HEIGHT) + halfHeight;
-            minY = ((entityPosition.y / 100) * SCREEN_HEIGHT) - halfHeight;
+            maxX = ((newPos.x / 100) * SCREEN_WIDTH) + halfWidth;
+            minX = ((newPos.x / 100) * SCREEN_WIDTH) - halfWidth;
+            maxY = ((newPos.y / 100) * SCREEN_HEIGHT) + halfHeight;
+            minY = ((newPos.y / 100) * SCREEN_HEIGHT) - halfHeight;
 
             if (maxX > SCREEN_WIDTH || minX < 0 || maxY > (SCREEN_HEIGHT - 30) || minY < 0) {
                 return;
             }
-            auto pos = _componentManager.getComponent<PositionComponent>(entityId);
             auto vel = _componentManager.getComponent<VelocityComponent>(entityId);
-            if (pos) {
+            if (pos && vel) {
                 // player go down
-                if (pos.value()->y < entityPosition.y) {
+                if (pos.value()->y < newPos.y) {
                     vel.value()->y -= 0.1;
                     if (vel.value()->y < -1) {
                         vel.value()->y = -1;
                     }
-                } else {
+                } else if (pos.value()->y > newPos.y) {
                     vel.value()->y += 0.1;
                     if (vel.value()->y > 1) {
                         vel.value()->y = 1;
                     }
                 }
-                pos.value()->x = entityPosition.x;
-                pos.value()->y = entityPosition.y;
+                pos.value()->x = newPos.x;
+                pos.value()->y = newPos.y;
             }
 
             // Update entity information and send to all clients
-            entity.uniqueID = entityId;
-            entity.vPos = entityPosition;
-            entity.spriteData = *entitySpriteData.value();
-            r_type::net::Message<TypeMessage> updateMsg;
-            updateMsg.header.id = TypeMessage::UpdateEntity;
-            updateMsg << entity;
-            MessageAllClients(updateMsg);
+            r_type::net::Message<TypeMessage> moveMsg;
+            moveMsg.header.id = TypeMessage::MoveEntityMessage;
+            moveMsg << entityId << newPos;
+            MessageAllClients(moveMsg);
         }
     }
 
@@ -354,6 +363,16 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @return uint32_t The entity ID associated with the client.
      */
     uint32_t GetClientPlayerId(uint32_t id) { return _clientPlayerID[id]; }
+
+    uint32_t GetPlayerClientId(uint32_t id)
+    {
+        for (const auto &pair : _clientPlayerID) {
+            if (pair.second == id) {
+                return pair.first;
+            }
+        }
+        throw std::runtime_error("Player ID not found");
+    }
 
     /**
      * @brief Removes a player from the game based on the client ID.

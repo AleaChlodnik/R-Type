@@ -67,16 +67,16 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         componentManager.removeEntityFromComponent<SpriteComponent>(entityId);
     }
 
-    void updateEntity(EntityInformation entity, ComponentManager &componentManager,
+    void moveEntity(uint32_t id, vf2d newPos, ComponentManager &componentManager,
         sf::Vector2u windowSize, TextureManager &textureManager)
     {
-        auto spriteEntity = componentManager.getComponent<SpriteComponent>(entity.uniqueID);
+        auto spriteEntity = componentManager.getComponent<SpriteComponent>(id);
         if (spriteEntity) {
-            float posX = windowSize.x * (entity.vPos.x / 100.0f);
-            float posY = windowSize.y * (entity.vPos.y / 100.0f);
+            float posX = windowSize.x * (newPos.x / 100.0f);
+            float posY = windowSize.y * (newPos.y / 100.0f);
             spriteEntity.value()->sprite.setPosition(posX, posY);
         } else {
-            addEntity(entity, componentManager, textureManager, windowSize);
+            std::cerr << "Entity not found, id: " << id << std::endl;
         }
     }
 

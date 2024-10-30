@@ -102,8 +102,8 @@ class EntityFactory : public IEntityFactory {
      *
      */
     Entity createButton(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &textureManager, std::string text,
-        std::function<IScenes *(AScenes *)> *onClick, float x = 0, float y = 0);
+        TextureManager &textureManager, FontManager &fontManager, std::string text,
+        std::function<IScenes *(AScenes *)> *onClick, float x = 0, float y = 0) override;
     /**
      * @brief Creates a small button entity.
      *
@@ -119,8 +119,9 @@ class EntityFactory : public IEntityFactory {
      *
      */
     Entity createSmallButton(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &textureManager, std::string text,
-        std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0, float y = 0);
+        TextureManager &textureManager, FontManager &fontManager, std::string text,
+        std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
+        float y = 0) override;
     /**
      * @brief Creates an ally missile entity.
      *
@@ -148,4 +149,14 @@ class EntityFactory : public IEntityFactory {
      */
     Entity createEnemyMissile(EntityManager &entityManager, ComponentManager &componentManager,
         uint32_t entityId) override;
+    /**
+     * @brief Create a Filter object
+     *
+     * @param entityManager
+     * @param componentManager
+     * @param mode
+     * @return Entity
+     */
+    Entity createFilter(EntityManager &entityManager, ComponentManager &componentManager,
+        AScenes::DaltonismMode mode);
 };

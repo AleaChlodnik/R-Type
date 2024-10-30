@@ -10,6 +10,7 @@
 #include "Components/component_manager.hpp"
 #include "entity.hpp"
 #include "entity_manager.hpp"
+#include "font_manager.hpp"
 #include "texture_manager.hpp"
 
 // Abstract Entity Factory
@@ -129,6 +130,12 @@ class IEntityFactory {
      * @return The created button entity.
      */
     virtual Entity createButton(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &textureManager, std::string text,
+        TextureManager &textureManager, FontManager &fontManager, std::string text,
         std::function<IScenes *(AScenes *)> *onClick, float x, float y) = 0;
+
+    virtual Entity createSmallButton(EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &textureManager,
+        FontManager &fontManager, std::string text,
+        std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
+        float y = 0) = 0;
 };

@@ -39,8 +39,42 @@ vf2d animationShipFactory(AnimationShip animation)
     case AnimationShip::SHIP_UP: {
         return {132.8, -1};
     } break;
-    default:
+    default: {
         return {0, 0};
+    }
+    }
+}
+
+vf2d animationBasicMonsterFactory(AnimationBasicMonster animation)
+{
+    switch (animation) {
+    case AnimationBasicMonster::BASIC_MONSTER_DEFAULT: {
+        return {0, -1};
+    } break;
+    case AnimationBasicMonster::BASIC_MONSTER_1: {
+        return {32.8, -1};
+    } break;
+    case AnimationBasicMonster::BASIC_MONSTER_2: {
+        return {32.8 * 2, -1};
+    } break;
+    case AnimationBasicMonster::BASIC_MONSTER_3: {
+        return {32.8 * 3, -1};
+    } break;
+    case AnimationBasicMonster::BASIC_MONSTER_4: {
+        return {32.8 * 4, -1};
+    } break;
+    case AnimationBasicMonster::BASIC_MONSTER_5: {
+        return {32.8 * 5, -1};
+    } break;
+    case AnimationBasicMonster::BASIC_MONSTER_6: {
+        return {32.8 * 6, -1};
+    } break;
+    case AnimationBasicMonster::BASIC_MONSTER_7: {
+        return {32.8 * 7, -1};
+    } break;
+    default: {
+        return {0, 0};
+    }
     }
 }
 
@@ -81,31 +115,64 @@ void AnimationSystem::AnimationEntities(
         if (animation) {
             // animate system for ship
             auto player = componentManager.getComponent<PlayerComponent>(entity.getId());
-            auto velovity = componentManager.getComponent<VelocityComponent>(entity.getId());
-            if (player && velovity) {
-                if (velovity.value()->y >= -1 && velovity.value()->y < -0.6) {
-                    std::cout << "UP" << std::endl;
+            auto velocity = componentManager.getComponent<VelocityComponent>(entity.getId());
+            if (player && velocity) {
+                if (velocity.value()->y >= -1 && velocity.value()->y < -0.6) {
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_DOWN).x;
-                } else if (velovity.value()->y >= -0.6 && velovity.value()->y < -0.2) {
+                } else if (velocity.value()->y >= -0.6 && velocity.value()->y < -0.2) {
                     animation.value()->offset.x =
                         animationShipFactory(AnimationShip::SHIP_FLIP_DOWN).x;
-                } else if (velovity.value()->y >= -0.2 && velovity.value()->y < 0.2) {
+                } else if (velocity.value()->y >= -0.2 && velocity.value()->y < 0.2) {
                     animation.value()->offset.x =
                         animationShipFactory(AnimationShip::SHIP_STRAIT).x;
-                } else if (velovity.value()->y >= 0.2 && velovity.value()->y < 0.6) {
+                } else if (velocity.value()->y >= 0.2 && velocity.value()->y < 0.6) {
                     animation.value()->offset.x =
                         animationShipFactory(AnimationShip::SHIP_FLIP_UP).x;
-                } else if (velovity.value()->y >= 0.6 && velovity.value()->y < 1) {
+                } else if (velocity.value()->y >= 0.6 && velocity.value()->y < 1) {
                     animation.value()->offset.x = animationShipFactory(AnimationShip::SHIP_UP).x;
                 }
-                // } else {
-                //     animation.value()->offset.x =
-                //         animationShipFactory(AnimationShip::SHIP_STRAIT).x;
-                // }
-                if (velovity.value()->y < 0) {
-                    velovity.value()->y += 0.05;
-                } else {
-                    velovity.value()->y -= 0.05;
+                if (velocity.value()->y < 0) {
+                    velocity.value()->y += 0.05;
+                } else if (velocity.value()->y > 0) {
+                    velocity.value()->y -= 0.05;
+                }
+            }
+            auto basicMonster =
+                componentManager.getComponent<BasicMonsterComponent>(entity.getId());
+            if (basicMonster) {
+                if (animation.value()->offset.x ==
+                    animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_DEFAULT).x) {
+                    animation.value()->offset.x =
+                        animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_1).x;
+                } else if (animation.value()->offset.x ==
+                    animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_1).x) {
+                    animation.value()->offset.x =
+                        animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_2).x;
+                } else if (animation.value()->offset.x ==
+                    animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_2).x) {
+                    animation.value()->offset.x =
+                        animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_3).x;
+                } else if (animation.value()->offset.x ==
+                    animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_3).x) {
+                    animation.value()->offset.x =
+                        animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_4).x;
+                } else if (animation.value()->offset.x ==
+                    animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_4).x) {
+                    animation.value()->offset.x =
+                        animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_5).x;
+                } else if (animation.value()->offset.x ==
+                    animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_5).x) {
+                    animation.value()->offset.x =
+                        animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_6).x;
+                } else if (animation.value()->offset.x ==
+                    animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_6).x) {
+                    animation.value()->offset.x =
+                        animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_7).x;
+                } else if (animation.value()->offset.x ==
+                    animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_7).x) {
+                    animation.value()->offset.x =
+                        animationBasicMonsterFactory(AnimationBasicMonster::BASIC_MONSTER_DEFAULT)
+                            .x;
                 }
             }
 

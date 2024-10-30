@@ -7,12 +7,15 @@
 
 #pragma once
 
-#include "Entities/entity.hpp"
+#include <Entities/entity.hpp>
+#include <Net/client.hpp>
 #include <SFML/Graphics.hpp>
+#include <Systems/systems.hpp>
 #include <a_scenes.hpp>
 #include <memory>
 #include <vector>
 
+std::string keyToString(sf::Keyboard::Key key);
 /**
  * @class Scenes
  * @brief Represents a class that manages different scenes in a game.
@@ -49,6 +52,12 @@ class Scenes : virtual public AScenes {
      */
     void gameLoop();
 
+    void HandleMessage(r_type::net::Message<TypeMessage> &msg, ComponentManager &componentManager,
+        TextureManager &textureManager, const sf::Vector2u &windowSize,
+        std::shared_ptr<AudioSystem> &audioSystem);
+
+    void StopGameLoop(std::shared_ptr<AudioSystem> &audioSystem);
+
     /**
      * @brief displays the settings menu, creates all the necessary entities
      *
@@ -60,6 +69,12 @@ class Scenes : virtual public AScenes {
      *
      */
     void inGameMenu();
+
+    /**
+     * @brief displays the difficulty choices, creates all the necessary entities
+     *
+     */
+    void difficultyChoices();
 
     /**
      * @brief display what must be displayed (main menu, game loop, settings menu, in game menu),
@@ -86,4 +101,6 @@ class Scenes : virtual public AScenes {
     void run();
 
     sf::RenderWindow _window;
+
+    r_type::net::Client _networkClient;
 };
