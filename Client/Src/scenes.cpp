@@ -677,29 +677,21 @@ void Scenes::gameLoop()
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::P) {
                     _networkClient.PingServer();
-                }
-                if (event.key.code == sf::Keyboard::V) {
+                } else if (event.key.code == sf::Keyboard::V) {
                     _networkClient.MessageAll();
-                }
-                if (event.key.code == keyBinds[Actions::FIRE]) {
+                } else if (event.key.code == keyBinds[Actions::FIRE]) {
                     fireMissile();
-                }
-                if (event.key.code == keyBinds[Actions::QUIT]) {
+                } else if (event.key.code == keyBinds[Actions::QUIT]) {
                     StopGameLoop(audioSystem);
-                }
-                if (event.key.code == keyBinds[Actions::UP]) {
+                } else if (event.key.code == keyBinds[Actions::UP]) {
                     movePlayer(vf2d{0, -1}, windowSize);
-                }
-                if (event.key.code == keyBinds[Actions::DOWN]) {
+                } else if (event.key.code == keyBinds[Actions::DOWN]) {
                     movePlayer(vf2d{0, 1}, windowSize);
-                }
-                if (event.key.code == keyBinds[Actions::LEFT]) {
+                } else if (event.key.code == keyBinds[Actions::LEFT]) {
                     movePlayer(vf2d{-1, 0}, windowSize);
-                }
-                if (event.key.code == keyBinds[Actions::RIGHT]) {
+                } else if (event.key.code == keyBinds[Actions::RIGHT]) {
                     movePlayer(vf2d{1, 0}, windowSize);
-                }
-                if (event.key.code == keyBinds[Actions::PAUSE]) {
+                } else if (event.key.code == keyBinds[Actions::PAUSE]) {
                     this->setScene(Scenes::Scene::IN_GAME_MENU);
                 }
             }
