@@ -815,7 +815,14 @@ void Scenes::gameLoop()
             break;
         }
 
-        updateSystem->updateSpritePositions(componentManager, entityManager);
+        // updateSystem->updateSpritePositions(componentManager, entityManager);
+
+        std::thread displayUpdate(
+            [this, updateSystem, renderSystem, &componentManager, &entityManager]() {
+                updateSystem->updateSpritePositions(componentManager, entityManager);
+            });
+
+        displayUpdate.join();
         renderSystem->render(componentManager);
     }
 }
