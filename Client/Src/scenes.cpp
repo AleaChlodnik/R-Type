@@ -239,9 +239,6 @@ void Scenes::inGameMenu()
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(_window, componentManager);
 
-    // systemManager.addSystem(updateSystem);
-    // systemManager.addSystem(renderSystem);
-
     buttons = {};
 
     // Create background
@@ -441,9 +438,6 @@ void Scenes::settingsMenu()
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(_window, componentManager);
 
-    // systemManager.addSystem(updateSystem);
-    // systemManager.addSystem(renderSystem);
-
     buttons = {};
 
     // Create background
@@ -620,14 +614,6 @@ void Scenes::gameLoop()
     } else
         std::cout << "Already connected to server" << std::endl;
 
-    // ask server if we are the first player and set firstPlayer accordingly
-
-    // bool firstPlayer = false; // set to false for now to not have to choose each time
-    // if (firstPlayer)
-    //     difficultyChoices();
-
-    // send difficulty selected to server (stocked in _currentGameMode)
-
     EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
@@ -748,9 +734,18 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     switch (msg.header.id) {
     case TypeMessage::ServerAccept: {
         std::cout << "Server Accepted Connection" << std::endl;
+        int nbPlayer;
+        msg >> nbPlayer;
         r_type::net::Message<TypeMessage> response;
-        response.header.id = TypeMessage::SendPlayer;
-        _networkClient.Send(response);
+        if (nbPlayer == 0) {
+            response.header.id = TypeMessage::GameDifficulty;
+            response << _currentGameMode;
+            _networkClient.Send(response);
+            difficultyChoices();
+        } else {
+            response.header.id = TypeMessage::SendPlayer;
+            _networkClient.Send(response);
+        }
     } break;
     case TypeMessage::ServerPing: {
         std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
@@ -824,7 +819,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         msg >> rect.offset >> rect.dimension >> id;
         _networkClient.animateEntity(id, rect, componentManager);
     } break;
-    case TypeMessage::GameDiffuculty: {
+    case TypeMessage::GameDifficulty: {
     } break;
     case TypeMessage::CreateEntityResponse: {
     } break;

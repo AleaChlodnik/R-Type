@@ -101,7 +101,7 @@ enum class TypeMessage : uint32_t
      * @brief Server message
      *
      */
-    GameDiffuculty,
+    GameDifficulty,
     /**
      * @brief Server message.
      *

@@ -19,6 +19,7 @@ bool r_type::net::Server::OnClientConnect(
     }
     r_type::net::Message<TypeMessage> msg;
     msg.header.id = TypeMessage::ServerAccept;
+    msg << _nbrOfPlayers;
     MessageClient(client, msg);
     _nbrOfPlayers++;
     client->SetStatus(ServerStatus::INITIALISATION);
@@ -122,6 +123,17 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         switch (msg.header.id) {
         case TypeMessage::SendPlayer: {
             std::cout << "[" << client->GetID() << "]: Player Information Sent" << std::endl;
+            r_type::net::Message<TypeMessage> response;
+            response.header.id = TypeMessage::SendPlayerInformation;
+            response << InitiatePlayer(client->GetID());
+            MessageClient(client, response);
+            client->_lastMsg = response;
+            response.header.id = TypeMessage::CreateEntityMessage;
+            MessageAllClients(response, client);
+        } break;
+        case TypeMessage::GameDifficulty: {
+            std::cout << "[" << client->GetID() << "]: Game Difficulty Received" << std::endl;
+            // store game difficulty
             r_type::net::Message<TypeMessage> response;
             response.header.id = TypeMessage::SendPlayerInformation;
             response << InitiatePlayer(client->GetID());
