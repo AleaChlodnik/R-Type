@@ -168,3 +168,11 @@ enum class TypeMessage : uint32_t
      */
     ReceivePlayerInformation,
 };
+
+enum class PlayerMovement : uint32_t
+{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+};

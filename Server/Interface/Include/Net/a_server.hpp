@@ -533,13 +533,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
 
     void UpdatePlayerPosition(
-        r_type::net::Message<T> &msg, uint32_t clientId) // Only for the players
+        vf2d entityPosition, uint32_t entityId) // Only for the players
     {
-        uint32_t entityId = GetClientPlayerId(clientId);
-        EntityInformation entity;
-        vf2d entityPosition;
         auto entitySpriteData = _componentManager.getComponent<SpriteDataComponent>(entityId);
-        msg >> entityPosition;
+        EntityInformation entity;
 
         auto hitbox = _componentManager.getComponent<HitboxComponent>(entityId);
 
