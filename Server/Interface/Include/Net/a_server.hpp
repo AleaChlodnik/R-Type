@@ -15,6 +15,7 @@
 #include <Systems/systems.hpp>
 #include <cmath>
 #include <entity_struct.hpp>
+#include <level.hpp>
 #include <macros.hpp>
 #include <unordered_map>
 
@@ -52,11 +53,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         _componentManager = ComponentManager();
         _entityManager = EntityManager();
         _entityFactory = EntityFactory();
-
-        _moveSystem = std::make_shared<MoveSystem>(_componentManager, _entityManager);
-        _collisionSystem = std::make_shared<CollisionSystem>(_componentManager, _entityManager);
-        _animationSystem = std::make_shared<AnimationSystem>(_componentManager, _entityManager);
-        _autoFireSystem = std::make_shared<AutoFireSystem>(_componentManager, _entityManager);
+        _level = r_type::Level<T>();
+        _level.SetSystem(_componentManager, _entityManager);
 
         _background = InitiateBackground();
         _entityFactory.createShooterEnemy(_entityManager, _componentManager);
@@ -238,150 +236,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     }
 
     /**
-     * @brief Updates the game level based on the provided clock time.
-     *
-     * This function performs several tasks to update the game level:
-     * 1. Checks if the time difference between the new clock and the stored clock exceeds 100
-     * milliseconds.
-     * 2. If so, it updates entity positions, handles collisions, updates animations, and processes
-     * auto-firing.
-     * 3. Sends appropriate messages to clients about entity updates, creations, and destructions.
-     *
-     * @param newClock The new clock time point to compare with the stored clock.
-     * @param bUpdateEntities A boolean reference that will be set to true if entities are updated.
-     */
-    void UpdateLevel(std::chrono::system_clock::time_point newClock, bool &bUpdateEntities)
-    {
-        while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
-            100) {
-            bUpdateEntities = true;
-            // make position copy
-            if (auto positionsBefore = _componentManager.getComponentMap<PositionComponent>()) {
-
-                std::unordered_map<int, PositionComponent> previousPositions;
-                // Save previous positions
-                for (const auto &pair : **positionsBefore) {
-                    int entityId = pair.first;
-                    const auto positionComponent = pair.second;
-                    auto position = std::any_cast<PositionComponent>(&positionComponent);
-                    if (position) {
-                        previousPositions.insert({entityId, *position});
-                    }
-                }
-                // Move entities
-                _moveSystem->moveEntities(
-                    _componentManager, _entityManager, 0.5); // add real clock
-                // Compare new positions
-                if (auto positionsAfter = _componentManager.getComponentMap<PositionComponent>()) {
-                    for (const auto &pair : **positionsAfter) {
-                        int entityId = pair.first;
-                        const auto &newPositionComponent = pair.second;
-                        auto newPosition = std::any_cast<PositionComponent>(&newPositionComponent);
-                        if (newPosition) {
-                            auto it = previousPositions.find(entityId);
-                            if (it != previousPositions.end()) {
-                                const auto &oldPosition = it->second;
-                                if (oldPosition.x != newPosition->x ||
-                                    oldPosition.y != newPosition->y) {
-                                    if (auto spriteData =
-                                            _componentManager.getComponent<SpriteDataComponent>(
-                                                entityId)) {
-                                        r_type::net::Message<TypeMessage> msg;
-                                        msg.header.id = TypeMessage::UpdateEntity;
-                                        msg << FormatEntityInformation(
-                                            _entityManager.getEntity(entityId).value()->getId());
-                                        MessageAllClients(msg);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            // make copy of entityIds
-            std::vector<Entity> entityListCopy = _entityManager.getAllEntities();
-            std::vector<int> entityIdsBefore;
-            for (const auto &entity : entityListCopy) {
-                entityIdsBefore.push_back(entity.getId());
-            }
-            // collision system
-            _collisionSystem->handleCollisions(_componentManager, _entityManager);
-            // compare existence and send messages
-            for (int entityId : entityIdsBefore) {
-                if (auto entity = _entityManager.getEntity(entityId)) {
-                    continue;
-                } else {
-                    r_type::net::Message<TypeMessage> msg;
-                    msg.header.id = TypeMessage::DestroyEntityMessage;
-                    msg << entityId;
-                    MessageAllClients(msg);
-                }
-            }
-
-            // Animation system
-            if (auto animationsBefore = _componentManager.getComponentMap<AnimationComponent>()) {
-
-                std::unordered_map<int, AnimationComponent> previousAnimations;
-
-                // Save previous animations
-                for (const auto &pair : **animationsBefore) {
-                    int entityId = pair.first;
-                    const auto animationComponent = pair.second;
-                    auto animation = std::any_cast<AnimationComponent>(&animationComponent);
-                    if (animation) {
-                        previousAnimations.insert({entityId, *animation});
-                    }
-                }
-                _animationSystem->AnimationEntities(_componentManager, _entityManager, 0.5);
-                // Compare new Animations
-                if (auto animationsAfter =
-                        _componentManager.getComponentMap<AnimationComponent>()) {
-                    for (const auto &pair : **animationsAfter) {
-                        int entityId = pair.first;
-                        const auto &newAnimationComponent = pair.second;
-                        auto newAnimation =
-                            std::any_cast<AnimationComponent>(&newAnimationComponent);
-                        if (newAnimation) {
-                            auto it = previousAnimations.find(entityId);
-                            if (it != previousAnimations.end()) {
-                                const auto &oldAnimation = it->second;
-                                if (oldAnimation != *newAnimation) {
-                                    r_type::net::Message<TypeMessage> msg;
-                                    msg.header.id = TypeMessage::AnimateEntityMessage;
-                                    msg << entityId << newAnimation->dimension
-                                        << newAnimation->offset;
-                                    MessageAllClients(msg);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // auto fire system
-            _autoFireSystem->handleAutoFire(_componentManager, _entityManager);
-            // fire, then set canShoot to false
-            auto entities = _entityManager.getAllEntities();
-            if (!entities.empty()) {
-                for (auto &entity : entities) {
-                    if (auto shootInfo =
-                            _componentManager.getComponent<ShootComponent>(entity.getId())) {
-                        if (shootInfo.value()->canShoot) {
-                            r_type::net::Message<TypeMessage> enemyMissileMsg;
-                            enemyMissileMsg.header.id = TypeMessage::CreateEntityMessage;
-                            enemyMissileMsg << InitiateEnemyMissile(entity.getId());
-                            MessageAllClients(enemyMissileMsg);
-                            shootInfo.value()->canShoot = false;
-                        }
-                    }
-                }
-            }
-
-            _clock += std::chrono::milliseconds(500);
-        }
-    }
-
-    /**
      * @brief Updates the server state, processes incoming messages, and updates the game level.
      *
      * This function performs several tasks:
@@ -404,11 +258,13 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             _playerConnected = true;
             _clock = std::chrono::system_clock::now();
         }
+        _level.SetSystem(_componentManager, _entityManager);
 
         bool bUpdateEntities = false;
         std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
-        std::thread levelUpdate([this, newClock, &bUpdateEntities]() {
-            this->UpdateLevel(newClock, bUpdateEntities);
+
+        std::thread t_level([this, newClock, &bUpdateEntities]() {
+            _level.Update(this, _componentManager, _entityManager, newClock, &bUpdateEntities);
         });
 
         size_t nMessageCount = 0;
@@ -419,7 +275,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
             nMessageCount++;
         }
-        levelUpdate.join();
+        t_level.join();
         if (bUpdateEntities)
             _clock = newClock;
     }
@@ -697,6 +553,58 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) {}
 
+    /**
+     * @brief Retrieves the component manager associated with the server.
+     *
+     * This function provides access to the component manager, which is responsible for managing
+     * the components associated with entities in the game. It allows for the retrieval and
+     * manipulation of entity components, enabling the game logic to interact with them as needed.
+     *
+     * @return ComponentManager& A reference to the component manager instance.
+     */
+    ComponentManager GetComponentManager() override { return _componentManager; }
+
+    /**
+     * @brief Retrieves the entity manager associated with the server.
+     *
+     * This function returns the entity manager responsible for creating, managing, and removing
+     * entities in the game. The entity manager handles the lifecycle of entities and ensures that
+     * they are correctly processed within the game's systems.
+     *
+     * @return EntityManager& A reference to the entity manager instance.
+     */
+    EntityManager &GetEntityManager() override { return _entityManager; }
+
+    /**
+     * @brief Retrieves the entity factory associated with the server.
+     *
+     * This function provides access to the entity factory, which is responsible for creating
+     * new entities in the game. The entity factory provides methods to instantiate various types
+     * of entities, such as players, missiles, and background elements, ensuring that they are
+     * correctly initialized with the necessary components.
+     *
+     * @return EntityFactory& A reference to the entity factory instance.
+     */
+    EntityFactory &GetEntityFactory() override { return _entityFactory; }
+
+    /**
+     * @brief Retrieves the current clock time of the server.
+     *
+     * This function returns the current time point of the server's clock, which can be used
+     * for time-related calculations, such as updating game state, handling animations,
+     * or scheduling events. It provides a consistent reference point for the server's operations.
+     *
+     * @return std::chrono::system_clock::time_point The current time point of the server's clock.
+     */
+    std::chrono::system_clock::time_point GetClock() override { return _clock; }
+
+    /**
+     * @brief Set the Clock object
+     *
+     * @param clock
+     */
+    void SetClock(std::chrono::system_clock::time_point clock) { _clock = clock; }
+
   protected:
     /**
      * @brief on client connect event
@@ -815,10 +723,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     EntityFactory _entityFactory;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    std::shared_ptr<MoveSystem> _moveSystem;
-    std::shared_ptr<CollisionSystem> _collisionSystem;
-    std::shared_ptr<AnimationSystem> _animationSystem;
-    std::shared_ptr<AutoFireSystem> _autoFireSystem;
 
     /**
      * @brief A container that maps client IDs to player IDs.
@@ -856,10 +760,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     EntityInformation _background;
 
-    /**
-     * @brief
-     *
-     */
+    r_type::Level<T> _level;
 };
 } // namespace net
 } // namespace r_type
