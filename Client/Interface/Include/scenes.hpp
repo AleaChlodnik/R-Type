@@ -8,10 +8,10 @@
 #pragma once
 
 #include <Entities/entity.hpp>
+#include <Net/client.hpp>
 #include <SFML/Graphics.hpp>
 #include <Systems/systems.hpp>
 #include <a_scenes.hpp>
-#include <Net/client.hpp>
 #include <memory>
 #include <vector>
 
