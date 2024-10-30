@@ -287,7 +287,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                                         r_type::net::Message<TypeMessage> msg;
                                         vf2d newPos(newPosition->x, newPosition->y);
                                         msg.header.id = TypeMessage::MoveEntityMessage;
-                                        msg <<  entityId << newPos;
+                                        msg << entityId << newPos;
                                         // msg << FormatEntityInformation(
                                         //     _entityManager.getEntity(entityId).value()->getId());
                                         MessageAllClients(msg);
