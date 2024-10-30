@@ -531,7 +531,6 @@ void Scenes::difficultyChoices()
 
     buttons = {};
 
-
     // Create background
     std::shared_ptr<Entity> background =
         std::make_shared<Entity>(entityFactory.createBackground(entityManager, componentManager));
@@ -575,7 +574,8 @@ void Scenes::difficultyChoices()
 
     sf::Event event;
 
-    while (_window.isOpen() && this->_currentScene == Scenes::Scene::GAME_LOOP && _currentGameMode == Scenes::GameMode::NONE) {
+    while (_window.isOpen() && this->_currentScene == Scenes::Scene::GAME_LOOP &&
+        _currentGameMode == Scenes::GameMode::NONE) {
 
         handleEvents(event, componentManager, &_window, buttons, this);
 
