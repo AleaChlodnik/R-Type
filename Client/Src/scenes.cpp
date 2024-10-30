@@ -669,7 +669,7 @@ void Scenes::gameLoop()
         while (_window.pollEvent(event)) {
 
             if (event.type == sf::Event::Closed) {
-                StopGameLoop();
+                StopGameLoop(audioSystem);
             }
             if (sf::Keyboard::isKeyPressed(keyBinds[Actions::FIRE])) {
                 fireMissile();
@@ -685,7 +685,7 @@ void Scenes::gameLoop()
                     fireMissile();
                 }
                 if (event.key.code == keyBinds[Actions::QUIT]) {
-                    StopGameLoop();
+                    StopGameLoop(audioSystem);
                 }
                 if (event.key.code == keyBinds[Actions::UP]) {
                     movePlayer(vf2d{0, -1}, windowSize);
@@ -780,7 +780,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         msg >> id;
         audioSystem->playSoundEffect(SoundFactory(ActionType::Explosion));
         if (id == _networkClient.getPlayerId()) {
-            StopGameLoop();
+            StopGameLoop(audioSystem);
         }
         _networkClient.removeEntity(id, componentManager);
         response.header.id = TypeMessage::DestroyEntityResponse;
@@ -821,10 +821,10 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     }
 }
 
-void Scenes::StopGameLoop()
+void Scenes::StopGameLoop(std::shared_ptr<AudioSystem> &audioSystem)
 {
-    // audioSystem->stopBackgroundMusic();
-    // audioSystem->playSoundEffect(SoundFactory(ActionType::GameOver));
+    audioSystem->stopBackgroundMusic();
+    audioSystem->playSoundEffect(SoundFactory(ActionType::GameOver));
     r_type::net::Message<TypeMessage> msg;
     msg.header.id = TypeMessage::DestroyEntityMessage;
     msg << _networkClient.getPlayerId();

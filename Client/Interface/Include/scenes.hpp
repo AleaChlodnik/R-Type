@@ -8,10 +8,10 @@
 #pragma once
 
 #include <Entities/entity.hpp>
+#include <Net/client.hpp>
 #include <SFML/Graphics.hpp>
 #include <Systems/systems.hpp>
 #include <a_scenes.hpp>
-#include <Net/client.hpp>
 #include <memory>
 #include <vector>
 
@@ -56,7 +56,7 @@ class Scenes : virtual public AScenes {
         TextureManager &textureManager, const sf::Vector2u &windowSize,
         std::shared_ptr<AudioSystem> &audioSystem);
 
-    void StopGameLoop();
+    void StopGameLoop(std::shared_ptr<AudioSystem> &audioSystem);
 
     /**
      * @brief displays the settings menu, creates all the necessary entities
