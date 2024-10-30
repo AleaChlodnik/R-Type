@@ -281,7 +281,7 @@ void Scenes::inGameMenu()
         };
     std::shared_ptr<Entity> returnToMainMenu = std::make_shared<Entity>(
         entityFactory.createButton(entityManager, componentManager, textureManager, fontManager,
-            "Return To Main Menu", &onReturnToMainMenuButtonClicked, 960, 500));
+            "Main Menu", &onReturnToMainMenuButtonClicked, 960, 500));
 
     buttons.push_back(resumeButton);
     buttons.push_back(settingsButton);
@@ -614,15 +614,19 @@ void Scenes::render()
 
 void Scenes::gameLoop()
 {
-    _networkClient.Connect(_ip, _port);
+    if (!_networkClient.IsConnected()) {
+        std::cout << "Connecting to server" << std::endl;
+        _networkClient.Connect(_ip, _port);
+    } else
+        std::cout << "Already connected to server" << std::endl;
 
-    // ask server if we are the first player
+    // ask server if we are the first player and set firstPlayer accordingly
 
-    // bool firstPlayer = true;
+    // bool firstPlayer = false; // set to false for now to not have to choose each time
     // if (firstPlayer)
     //     difficultyChoices();
 
-    // launch game
+    // send difficulty selected to server (stocked in _currentGameMode)
 
     EntityManager entityManager;
     ComponentManager componentManager;
@@ -708,6 +712,7 @@ void Scenes::gameLoop()
                 if (event.key.code == keyBinds[Actions::PAUSE]) {
                     this->_previousScene = Scenes::Scene::GAME_LOOP;
                     this->_currentScene = Scenes::Scene::IN_GAME_MENU;
+                    this->inGameMenu();
                 }
             }
         }
@@ -732,6 +737,8 @@ void Scenes::gameLoop()
         displayUpdate.join();
         renderSystem->render(componentManager);
     }
+    std::cout << "ta mere" << std::endl;
+    StopGameLoop(audioSystem);
 }
 
 void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
@@ -836,8 +843,8 @@ void Scenes::StopGameLoop(std::shared_ptr<AudioSystem> &audioSystem)
     msg.header.id = TypeMessage::DestroyEntityMessage;
     msg << _networkClient.getPlayerId();
     _networkClient.Send(msg);
-    std::cout << "Closing window" << std::endl;
-    _window.close();
+    std::cout << "Sending client back to the main menu" << std::endl;
+    _currentScene = Scenes::Scene::MAIN_MENU;
 }
 
 void Scenes::run()
