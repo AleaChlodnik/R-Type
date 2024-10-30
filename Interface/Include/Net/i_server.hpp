@@ -7,11 +7,16 @@
 
 #pragma once
 
+#include <Entities/entity_manager.hpp>
+#include <Entities/entity_factory.hpp>
+#include <Components/component_manager.hpp>
+#include <Net/type_message.hpp>
 #include "common.hpp"
 #include "connection.hpp"
 #include "message.hpp"
 #include "thread_safe_queue.hpp"
 #include <entity_struct.hpp>
+
 
 namespace r_type {
 namespace net {
@@ -80,7 +85,7 @@ template <typename T> class IServer {
      * @param msg Le message contenant la nouvelle position de l'entité.
      * @param clientId L'ID du client qui envoie la mise à jour.
      */
-    virtual void UpdatePlayerPosition(Message<T> &msg, uint32_t clientId) = 0;
+    virtual void UpdatePlayerPosition(PlayerMovement direction, uint32_t entityId) = 0;
 
     /**
      * @brief Attend un message d'un client de manière asynchrone.

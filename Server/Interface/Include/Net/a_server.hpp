@@ -11,8 +11,8 @@
 #include <Components/components.hpp>
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
-#include <Net/i_server.hpp>
 #include <Systems/systems.hpp>
+#include <Net/i_server.hpp>
 #include <cmath>
 #include <entity_struct.hpp>
 #include <level.hpp>
@@ -293,7 +293,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param clientId The ID of the client sending the update.
      */
 
-    void UpdatePlayerPosition(PlayerMovement direction, uint32_t entityId) // Only for the players
+    void UpdatePlayerPosition(PlayerMovement direction, uint32_t entityId) override
     {
         auto entitySpriteData = _componentManager.getComponent<SpriteDataComponent>(entityId);
         EntityInformation entity;

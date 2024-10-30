@@ -332,8 +332,8 @@ template <typename T> class Level : virtual public ILevel<T> {
                     if (shootInfo->canShoot) {
                         r_type::net::Message<TypeMessage> enemyMissileMsg;
                         enemyMissileMsg.header.id = TypeMessage::CreateEntityMessage;
-                        enemyMissileMsg << InitiateEnemyMissile(entityId);
-                        MessageAllClients(enemyMissileMsg);
+                        enemyMissileMsg << server->InitiateEnemyMissile(entityId);
+                        server->MessageAllClients(enemyMissileMsg);
                         shootInfo->canShoot = false;
                     }
                 }

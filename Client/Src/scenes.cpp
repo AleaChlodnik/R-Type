@@ -625,8 +625,6 @@ void Scenes::gameLoop()
     const int FIRE_COOLDOWN_MS = 500;
     std::chrono::steady_clock::time_point lastFireTime = std::chrono::steady_clock::now();
 
-    auto pixelToPercent = [&](float v1, float v2) { return (v1 / v2) * 100; };
-
     auto movePlayer = [this](PlayerMovement playerMovement) {
         r_type::net::Message<TypeMessage> msg;
         vf2d requestedPosition;
@@ -782,7 +780,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         msg >> newPos >> id;
         std::cout << "Moving Entity: " << id << " to " << newPos.x << ", " << newPos.y
                   << std::endl;
-        _networkClient.moveEntity(id, newPos, componentManager, windowSize, textureManager);
+        _networkClient.moveEntity(id, newPos, componentManager, windowSize);
     } break;
     case TypeMessage::MoveEntityResponse: {
     } break;
