@@ -707,9 +707,14 @@ void Scenes::gameLoop()
 
         if (_networkClient.IsConnected()) {
             // std::cout << "Connected to Server" << std::endl;
-            if (!_networkClient.Incoming().empty()) {
+            std::vector<std::thread> threadList;
+            while (!_networkClient.Incoming().empty()) {
                 auto msg = _networkClient.Incoming().pop_front().msg;
-                HandleMessage(msg, componentManager, textureManager, windowSize, audioSystem);
+                HandleMessage(
+                    msg, componentManager, textureManager, windowSize, audioSystem, threadList);
+            }
+            for (auto &thread : threadList) {
+                thread.join();
             }
         } else {
             std::cout << "Server Down" << std::endl;
@@ -729,7 +734,8 @@ void Scenes::gameLoop()
 
 void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     ComponentManager &componentManager, TextureManager &textureManager,
-    const sf::Vector2u &windowSize, std::shared_ptr<AudioSystem> &audioSystem)
+    const sf::Vector2u &windowSize, std::shared_ptr<AudioSystem> &audioSystem,
+    std::vector<std::thread> &threadList)
 {
     switch (msg.header.id) {
     case TypeMessage::ServerAccept: {
@@ -795,7 +801,13 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         response.header.id = TypeMessage::MoveEntityResponse;
         EntityInformation entity;
         msg >> entity;
-        _networkClient.moveEntity(entity, componentManager, windowSize, textureManager);
+        // for (auto &thread : threadList) {
+        //     thread.join();
+        // }
+        threadList.push_back(
+            std::thread([this, entity, &componentManager, windowSize, &textureManager]() {
+                _networkClient.moveEntity(entity, componentManager, windowSize, textureManager);
+            }));
     } break;
     case TypeMessage::MoveEntityResponse: {
     } break;
@@ -808,7 +820,9 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         uint32_t id;
         AnimationComponent rect({0, 0}, {0, 0});
         msg >> rect.offset >> rect.dimension >> id;
-        _networkClient.animateEntity(id, rect, componentManager);
+        threadList.push_back(std::thread([this, id, rect, &componentManager]() {
+            _networkClient.animateEntity(id, rect, componentManager);
+        }));
     } break;
     case TypeMessage::GameDiffuculty: {
     } break;
