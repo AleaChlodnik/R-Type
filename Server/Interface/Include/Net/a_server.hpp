@@ -11,8 +11,8 @@
 #include <Components/components.hpp>
 #include <Entities/entity_factory.hpp>
 #include <Entities/entity_manager.hpp>
-#include <Systems/systems.hpp>
 #include <Net/i_server.hpp>
+#include <Systems/systems.hpp>
 #include <cmath>
 #include <entity_struct.hpp>
 #include <level.hpp>
