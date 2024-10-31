@@ -272,7 +272,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     // void UpdateLevel(std::chrono::system_clock::time_point newClock, bool &bUpdateEntities)
     // {
-    //     while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count() >
+    //     while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
+    //     >
     //         100) {
     //         bUpdateEntities = true;
     //         // make position copy
@@ -290,7 +291,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     //             // Move entities
     //             _moveSystem->moveEntities(_componentManager, _entityManager);
     //             // Compare new positions
-    //             if (auto positionsAfter = _componentManager.getComponentMap<PositionComponent>()) {
+    //             if (auto positionsAfter =
+    //             _componentManager.getComponentMap<PositionComponent>()) {
     //                 for (auto &pair : **positionsAfter) {
     //                     int entityId = pair.first;
     //                     auto &newPositionComponent = pair.second;
@@ -341,9 +343,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     //                     if (auto player1 =
     //                             _componentManager.getComponent<PlayerComponent>(entityId1)) {
     //                         if (auto playerHealth =
-    //                                 _componentManager.getComponent<HealthComponent>(entityId1)) {
+    //                                 _componentManager.getComponent<HealthComponent>(entityId1))
+    //                                 {
     //                             if (shooterEnemy2 || enemyMissile2) {
-    //                                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+    //                                 if (std::find(entitiesToRemove.begin(),
+    //                                 entitiesToRemove.end(),
     //                                         entityId2) == entitiesToRemove.end()) {
     //                                     entitiesToRemove.push_back(entityId2);
     //                                 }
@@ -353,7 +357,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     //                                 playerHealth.value()->health -= 1;
     //                             }
     //                             if (playerHealth.value()->health <= 0) {
-    //                                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+    //                                 if (std::find(entitiesToRemove.begin(),
+    //                                 entitiesToRemove.end(),
     //                                         entityId1) == entitiesToRemove.end()) {
     //                                     entitiesToRemove.push_back(entityId1);
     //                                 }
@@ -362,7 +367,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     //                             updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
     //                             updLivesMsg << UpdateInfoBar(entityId1);
     //                             std::shared_ptr<Connection<T>> client =
-    //                                 getClientById(_deqConnections, GetPlayerClientId(entityId1));
+    //                                 getClientById(_deqConnections,
+    //                                 GetPlayerClientId(entityId1));
     //                             if (client) {
     //                                 MessageClient(client, updLivesMsg);
     //                             }
@@ -380,12 +386,15 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     //                                 entitiesToRemove.push_back(entityId2);
     //                             }
     //                         }
-    //                     } else if (auto player2 = _componentManager.getComponent<PlayerComponent>(
+    //                     } else if (auto player2 =
+    //                     _componentManager.getComponent<PlayerComponent>(
     //                                    entityId2)) {
     //                         if (auto playerHealth =
-    //                                 _componentManager.getComponent<HealthComponent>(entityId2)) {
+    //                                 _componentManager.getComponent<HealthComponent>(entityId2))
+    //                                 {
     //                             if (shooterEnemy1 || enemyMissile1) {
-    //                                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+    //                                 if (std::find(entitiesToRemove.begin(),
+    //                                 entitiesToRemove.end(),
     //                                         entityId1) == entitiesToRemove.end()) {
     //                                     entitiesToRemove.push_back(entityId1);
     //                                 }
@@ -395,7 +404,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     //                                 playerHealth.value()->health -= 1;
     //                             }
     //                             if (playerHealth.value()->health <= 0) {
-    //                                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+    //                                 if (std::find(entitiesToRemove.begin(),
+    //                                 entitiesToRemove.end(),
     //                                         entityId2) == entitiesToRemove.end()) {
     //                                     entitiesToRemove.push_back(entityId2);
     //                                 }
@@ -404,7 +414,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     //                             updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
     //                             updLivesMsg << UpdateInfoBar(entityId1);
     //                             std::shared_ptr<Connection<T>> client =
-    //                                 getClientById(_deqConnections, GetPlayerClientId(entityId2));
+    //                                 getClientById(_deqConnections,
+    //                                 GetPlayerClientId(entityId2));
     //                             if (client) {
     //                                 MessageClient(client, updLivesMsg);
     //                             }
@@ -451,7 +462,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     //         }
 
     //         // Animation system
-    //         if (auto animationsBefore = _componentManager.getComponentMap<AnimationComponent>()) {
+    //         if (auto animationsBefore = _componentManager.getComponentMap<AnimationComponent>())
+    //         {
 
     //             std::unordered_map<int, AnimationComponent> previousAnimations;
 

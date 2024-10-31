@@ -690,7 +690,8 @@ void Scenes::gameLoop()
             // std::cout << "Connected to Server" << std::endl;
             while (!_networkClient.Incoming().empty()) {
                 auto msg = _networkClient.Incoming().pop_front().msg;
-                HandleMessage(msg, componentManager, textureManager, fontManager, windowSize, audioSystem);
+                HandleMessage(
+                    msg, componentManager, textureManager, fontManager, windowSize, audioSystem);
             }
         } else {
             std::cout << "Server Down" << std::endl;
