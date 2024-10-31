@@ -64,7 +64,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         // _entityFactory.createShooterEnemy(_entityManager, _componentManager);
         // _entityFactory.createBasicMonster(_entityManager, _componentManager);
         // _entityFactory.createBasicMonster(_entityManager, _componentManager);
-        // _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
+        _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
     }
 
     /**
