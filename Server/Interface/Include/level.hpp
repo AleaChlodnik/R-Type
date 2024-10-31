@@ -197,6 +197,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                                                       server->GetPlayerClientId(entityId1)),
                                 updLivesMsg);
                         }
+                        // when player collides with power up
                         if (powerUp2) {
                             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                     entityId2) == entitiesToRemove.end()) {
@@ -205,7 +206,6 @@ template <typename T> class Level : virtual public ILevel<T> {
                             Entity weapon = entityFactory.createForceWeapon(
                                 entityManager, componentManager, entityId1);
                             entitiesToAdd.push_back(weapon.getId());
-                            std::cout << "Weapon force created" << std::endl;
                         }
                     } else if (playerMissile1) {
                         if (shooterEnemy2 || enemyMissile2 || basicMonster2) {
@@ -243,6 +243,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                                                       server->GetPlayerClientId(entityId2)),
                                 updLivesMsg);
                         }
+                        // when player collides with power up
                         if (powerUp1) {
                             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                     entityId1) == entitiesToRemove.end()) {
@@ -251,7 +252,6 @@ template <typename T> class Level : virtual public ILevel<T> {
                             Entity weapon = entityFactory.createForceWeapon(
                                 entityManager, componentManager, entityId2);
                             entitiesToAdd.push_back(weapon.getId());
-                            std::cout << "Weapon force created" << std::endl;
                         }
                     } else if (playerMissile2) {
                         if (shooterEnemy1 || enemyMissile1 || basicMonster1) {
@@ -275,7 +275,6 @@ template <typename T> class Level : virtual public ILevel<T> {
             msg.header.id = TypeMessage::CreateEntityMessage;
             msg << server->InitiateWeaponForce(entityId);
             server->MessageAllClients(msg);
-            std::cout << "Weapon force send" << std::endl;
         }
         // Remove entities
         for (int entityId : entitiesToRemove) {
