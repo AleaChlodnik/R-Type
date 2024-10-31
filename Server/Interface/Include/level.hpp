@@ -149,39 +149,32 @@ template <typename T> class Level : virtual public ILevel<T> {
                         componentManager, entityId1, entityId2)) {
                     // component of entity 1
                     auto player1 = componentManager.getComponent<PlayerComponent>(entityId1);
-                    auto shooterEnemy1 = componentManager.getComponent<ShootComponent>(entityId1);
                     auto playerMissile1 =
                         componentManager.getComponent<PlayerMissileComponent>(entityId1);
                     auto enemyMissile1 =
                         componentManager.getComponent<EnemyMissileComponent>(entityId1);
                     auto playerHealth1 = componentManager.getComponent<HealthComponent>(entityId1);
-                    auto basicMonster1 =
-                        componentManager.getComponent<BasicMonsterComponent>(entityId1);
                     auto powerUp1 = componentManager.getComponent<PowerUpComponent>(entityId1);
+                    auto enemy1 = componentManager.getComponent<EnemyComponent>(entityId1);
 
                     // component of entity 2
-                    auto shooterEnemy2 = componentManager.getComponent<ShootComponent>(entityId2);
                     auto enemyMissile2 =
                         componentManager.getComponent<EnemyMissileComponent>(entityId2);
-                    auto basicMonster2 =
-                        componentManager.getComponent<BasicMonsterComponent>(entityId2);
                     auto player2 = componentManager.getComponent<PlayerComponent>(entityId2);
                     auto playerHealth2 = componentManager.getComponent<HealthComponent>(entityId2);
                     auto playerMissile2 =
                         componentManager.getComponent<PlayerMissileComponent>(entityId2);
                     auto powerUp2 = componentManager.getComponent<PowerUpComponent>(entityId2);
+                    auto enemy2 = componentManager.getComponent<EnemyComponent>(entityId2);
 
                     // Handle collision
                     if (player1) {
                         if (playerHealth1) {
-                            if (shooterEnemy2 || enemyMissile2) {
+                            if (enemy2 || enemyMissile2) {
                                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                         entityId2) == entitiesToRemove.end()) {
                                     entitiesToRemove.push_back(entityId2);
                                 }
-                                playerHealth1.value()->health -= 1;
-                            }
-                            if (basicMonster2) {
                                 playerHealth1.value()->health -= 1;
                             }
                             if (playerHealth1.value()->health <= 0) {
@@ -208,7 +201,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                             entitiesToAdd.push_back(weapon.getId());
                         }
                     } else if (playerMissile1) {
-                        if (shooterEnemy2 || enemyMissile2 || basicMonster2) {
+                        if (enemy2 || enemyMissile2) {
                             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                     entityId1) == entitiesToRemove.end()) {
                                 entitiesToRemove.push_back(entityId1);
@@ -220,14 +213,11 @@ template <typename T> class Level : virtual public ILevel<T> {
                         }
                     } else if (player2) {
                         if (playerHealth2) {
-                            if (shooterEnemy1 || enemyMissile1) {
+                            if (enemy1 || enemyMissile1) {
                                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                         entityId1) == entitiesToRemove.end()) {
                                     entitiesToRemove.push_back(entityId1);
                                 }
-                                playerHealth2.value()->health -= 1;
-                            }
-                            if (basicMonster1) {
                                 playerHealth2.value()->health -= 1;
                             }
                             if (playerHealth2.value()->health <= 0) {
@@ -254,7 +244,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                             entitiesToAdd.push_back(weapon.getId());
                         }
                     } else if (playerMissile2) {
-                        if (shooterEnemy1 || enemyMissile1 || basicMonster1) {
+                        if (enemy1 || enemyMissile1) {
                             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                     entityId1) == entitiesToRemove.end()) {
                                 entitiesToRemove.push_back(entityId1);

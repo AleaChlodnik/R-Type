@@ -201,6 +201,7 @@ Entity EntityFactory::createBasicMonster(
 {
     Entity monster = entityManager.createEntity();
 
+    EnemyComponent enemyComponent;
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{-1.0f, 0.0f};
     MovementComponent movement{MovementType::WIGGLE, 0};
@@ -211,6 +212,7 @@ Entity EntityFactory::createBasicMonster(
         static_cast<int>(animationComponent.dimension.y)};
     HealthComponent health{0, 0};
 
+    componentManager.addComponent<EnemyComponent>(monster.getId(), enemyComponent);
     componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
     componentManager.addComponent<PositionComponent>(monster.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(monster.getId(), velocity);
