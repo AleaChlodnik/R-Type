@@ -256,6 +256,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         int clientId = GetPlayerClientId(playerId);
         int infoBarId = GetClientInfoBarId(clientId);
         auto playerHealth = _componentManager.getComponent<HealthComponent>(playerId);
+        auto playerScore = _componentManager.getComponent<ScoreComponent>(playerId);
         auto barSpriteData = _componentManager.getComponent<SpriteDataComponent>(infoBarId);
         auto barTextData = _componentManager.getComponent<TextDataComponent>(infoBarId);
         if (playerHealth && barSpriteData && barTextData) {
@@ -263,6 +264,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entity.spriteData = *(barSpriteData.value());
             entity.textData = *(barTextData.value());
             entity.lives = playerHealth.value()->health;
+            entity.score = playerScore.value()->score;
         }
         return entity;
     }
