@@ -555,7 +555,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
 
         std::thread t_level([this, newClock, &bUpdateEntities]() {
-            _level.Update(this, _componentManager, _entityManager, newClock, &bUpdateEntities);
+            _level.Update(this, _componentManager, _entityManager, _entityFactory, newClock,
+                &bUpdateEntities);
         });
 
         size_t nMessageCount = 0;
@@ -844,6 +845,29 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 entityInfo.animationComponent.offset = animation.value()->offset;
             }
             entityInfo.spriteData = *(sprite.value());
+        }
+        return entityInfo;
+    }
+
+    EntityInformation InitiateWeaponForce(int entityId)
+    {
+        EntityInformation entityInfo;
+        entityInfo.uniqueID = entityId;
+        auto position = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+        auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        auto animation = _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
+        if (position && sprite) {
+            entityInfo.vPos.x = position.value()->x;
+            entityInfo.vPos.y = position.value()->y;
+            entityInfo.spriteData = *(sprite.value());
+            if (animation) {
+                entityInfo.ratio.x =
+                    (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;
+                entityInfo.ratio.y =
+                    (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
+                entityInfo.animationComponent.dimension = animation.value()->dimension;
+                entityInfo.animationComponent.offset = animation.value()->offset;
+            }
         }
         return entityInfo;
     }
