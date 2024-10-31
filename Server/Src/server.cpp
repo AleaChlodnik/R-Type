@@ -109,8 +109,8 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
                         MissileMsg << InitiatePlayerMissile(missile.getId());
                         MessageAllClients(MissileMsg);
                     } else {
-                        Entity missile = _entityFactory.createForceWeapon(_entityManager,
-                            _componentManager, frontComponent.value()->targetId);
+                        Entity missile = _entityFactory.createForceWeapon(
+                            _entityManager, _componentManager, frontComponent.value()->targetId);
                         r_type::net::Message<TypeMessage> MissileMsg;
                         MissileMsg.header.id = TypeMessage::CreateEntityMessage;
                         MissileMsg << InitiatePlayerMissile(missile.getId());
