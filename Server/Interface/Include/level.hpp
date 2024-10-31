@@ -214,7 +214,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                             }
                             r_type::net::Message<TypeMessage> updLivesMsg;
                             updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
-                            updLivesMsg << server->UpdateInfoBar(entityId1);
+                            updLivesMsg << server->UpdateInfoBar(entityId2);
                             server->MessageClient(server->getClientById(server->_deqConnections,
                                                       server->GetPlayerClientId(entityId2)),
                                 updLivesMsg);

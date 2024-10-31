@@ -18,6 +18,7 @@
 #include <level.hpp>
 #include <macros.hpp>
 #include <unordered_map>
+#include <error_handling.hpp>
 
 namespace r_type {
 namespace net {
@@ -243,6 +244,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     UIEntityInformation UpdateInfoBar(int playerId)
     {
         UIEntityInformation entity;
+        std::cout << "playerId: " << playerId << std::endl; /////////////////
         int clientId = GetPlayerClientId(playerId);
         int infoBarId = GetClientInfoBarId(clientId);
         auto playerHealth = _componentManager.getComponent<HealthComponent>(playerId);
@@ -660,7 +662,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 return pair.first;
             }
         }
-        throw std::runtime_error("Player ID not found");
+        throw playerIdNotFound();
     }
 
     uint32_t GetClientInfoBarId(uint32_t id) { return _clientInfoBarID[id]; }
@@ -1078,7 +1080,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * right: player ID
      *
      * This unordered map is used to associate client IDs with their corresponding player
-     * IDs. The keys are o}f type uint32_t representing the client IDs, and the values are
+     * IDs. The keys are of type uint32_t representing the client IDs, and the values are
      * also of type uint32_t representing the player IDs.
      */
     std::unordered_map<uint32_t, uint32_t> _clientPlayerID;
