@@ -218,14 +218,16 @@ template <typename T> class Level : virtual public ILevel<T> {
                                 entitiesToRemove.push_back(entityId2);
                             }
                             int playerId = playerMissile1.value()->playerId;
-                            if (auto playerScore = componentManager.getComponent<ScoreComponent>(
-                                    playerId)) {
+                            if (auto playerScore =
+                                    componentManager.getComponent<ScoreComponent>(playerId)) {
                                 playerScore.value()->score += 100;
                             }
                             r_type::net::Message<TypeMessage> updScoreMsg;
                             updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
                             updScoreMsg << server->UpdateInfoBar(playerId);
-                            server->MessageClient(server->getClientById(server->_deqConnections, server->GetPlayerClientId(playerId)), updScoreMsg);
+                            server->MessageClient(server->getClientById(server->_deqConnections,
+                                                      server->GetPlayerClientId(playerId)),
+                                updScoreMsg);
                         }
                     } else if (player2) {
                         if (playerHealth2) {
@@ -273,14 +275,16 @@ template <typename T> class Level : virtual public ILevel<T> {
                                 entitiesToRemove.push_back(entityId2);
                             }
                             int playerId = playerMissile2.value()->playerId;
-                            if (auto playerScore = componentManager.getComponent<ScoreComponent>(
-                                    playerId)) {
+                            if (auto playerScore =
+                                    componentManager.getComponent<ScoreComponent>(playerId)) {
                                 playerScore.value()->score += 100;
                             }
                             r_type::net::Message<TypeMessage> updScoreMsg;
                             updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
                             updScoreMsg << server->UpdateInfoBar(playerId);
-                            server->MessageClient(server->getClientById(server->_deqConnections, server->GetPlayerClientId(playerId)), updScoreMsg);
+                            server->MessageClient(server->getClientById(server->_deqConnections,
+                                                      server->GetPlayerClientId(playerId)),
+                                updScoreMsg);
                         }
                     }
                 }
