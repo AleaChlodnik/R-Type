@@ -51,17 +51,18 @@ jobs:
           packages: doxygen texlive-full texlive-latex-base texlive texlive-latex-extra texlive-fonts-recommended texlive-lang-all
           version: 1.0
 
+      - name: Initialize TeX Live Formats
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y texlive-full
+          sudo fmtutil-sys --all
+
       - name: Configure CMake and Build Documentation
         run: |
           cmake -S . -B build -DBUILD_DOC=ON
           cmake --build build --target doc_doxygen
 
-      - name: Check for changes
-        id: git-check-refman
-        run: echo "modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
-
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
-        if: steps.git-check-refman.outputs.modified == 'true'
         with:
           commit_message: Automated Change

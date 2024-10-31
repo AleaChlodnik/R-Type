@@ -611,6 +611,7 @@ void Scenes::gameLoop()
     EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
+    FontManager fontManager;
     auto audioManager = std::make_shared<AudioManager>();
 
     std::shared_ptr<AudioSystem> audioSystem = std::make_shared<AudioSystem>(audioManager);
@@ -651,7 +652,6 @@ void Scenes::gameLoop()
     sf::Vector2u windowSize = _window.getSize();
 
     audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
-    // audioSystem->playBackgroundMusic(""); // Test with quentins sound
 
     while (_window.isOpen()) {
         // float deltaTime = clock.restart().asSeconds();
@@ -690,7 +690,8 @@ void Scenes::gameLoop()
             // std::cout << "Connected to Server" << std::endl;
             while (!_networkClient.Incoming().empty()) {
                 auto msg = _networkClient.Incoming().pop_front().msg;
-                HandleMessage(msg, componentManager, textureManager, windowSize, audioSystem);
+                HandleMessage(
+                    msg, componentManager, textureManager, fontManager, windowSize, audioSystem);
             }
         } else {
             std::cout << "Server Down" << std::endl;
@@ -709,7 +710,7 @@ void Scenes::gameLoop()
 }
 
 void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
-    ComponentManager &componentManager, TextureManager &textureManager,
+    ComponentManager &componentManager, TextureManager &textureManager, FontManager &fontManager,
     const sf::Vector2u &windowSize, std::shared_ptr<AudioSystem> &audioSystem)
 {
     switch (msg.header.id) {
@@ -747,6 +748,23 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     } break;
     case TypeMessage::ClientConnect: {
     } break;
+    case TypeMessage::CreateInfoBar: {
+        UIEntityInformation entity;
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::CreateInfoBar;
+        _networkClient.Send(response);
+        msg >> entity;
+        _networkClient.initInfoBar(
+            entity, componentManager, textureManager, fontManager, windowSize);
+    } break;
+    case TypeMessage::UpdateInfoBar: {
+        UIEntityInformation entity;
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::UpdateInfoBar;
+        _networkClient.Send(response);
+        msg >> entity;
+        _networkClient.updateInfoBar(entity, componentManager, textureManager);
+    } break;
     case TypeMessage::CreateEntityMessage: {
         EntityInformation entity;
         r_type::net::Message<TypeMessage> response;
@@ -778,8 +796,6 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         vf2d newPos;
         uint32_t id;
         msg >> newPos >> id;
-        std::cout << "Moving Entity: " << id << " to " << newPos.x << ", " << newPos.y
-                  << std::endl;
         _networkClient.moveEntity(id, newPos, componentManager, windowSize);
     } break;
     case TypeMessage::MoveEntityResponse: {

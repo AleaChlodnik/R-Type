@@ -40,17 +40,17 @@ template <typename T> class Level : virtual public ILevel<T> {
      * updated.
      */
     void Update(r_type::net::AServer<T> *server, ComponentManager &componentManager,
-        EntityManager &entityManager, std::chrono::system_clock::time_point newClock,
-        bool *bUpdateEntities) override
+        EntityManager &entityManager, EntityFactory &entityFactory,
+        std::chrono::system_clock::time_point newClock, bool *bUpdateEntities) override
     {
         while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - server->GetClock())
                    .count() > 100) {
             *bUpdateEntities = true;
 
             MoveUpdate(server, componentManager, entityManager, newClock);
-            CollisionUpdate(server, componentManager, entityManager, newClock);
+            CollisionUpdate(server, componentManager, entityManager, entityFactory, newClock);
             AnimationUpdate(server, componentManager, entityManager, newClock);
-            FireUpdate(server, componentManager, entityManager, newClock);
+            FireUpdate(server, componentManager, entityManager, entityFactory, newClock);
             LevelOne(server, componentManager, entityManager, newClock);
             server->SetClock(server->GetClock() + std::chrono::milliseconds(500));
         }
@@ -134,49 +134,81 @@ template <typename T> class Level : virtual public ILevel<T> {
     }
 
     void CollisionUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager,
-        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
+        EntityManager &entityManager, EntityFactory &entityFactory,
+        std::chrono::system_clock::time_point newClock) override
     {
         std::vector<int> entitiesToRemove;
-        auto beforeCollisioneEntities = entityManager.getAllEntities();
-        for (size_t i = 0; i < beforeCollisioneEntities.size(); ++i) {
-            int entityId1 = beforeCollisioneEntities[i].getId();
-            for (size_t j = i + 1; j < beforeCollisioneEntities.size(); ++j) {
-                int entityId2 = beforeCollisioneEntities[j].getId();
+        std::vector<int> entitiesToAdd;
+        auto beforeCollisionEntities = entityManager.getAllEntities();
+
+        for (size_t i = 0; i < beforeCollisionEntities.size(); ++i) {
+            int entityId1 = beforeCollisionEntities[i].getId();
+            for (size_t j = i + 1; j < beforeCollisionEntities.size(); ++j) {
+                int entityId2 = beforeCollisionEntities[j].getId();
+                // Check for collision
                 if (_collisionSystem.get()->checkCollision(
                         componentManager, entityId1, entityId2)) {
+                    // component of entity 1
+                    auto player1 = componentManager.getComponent<PlayerComponent>(entityId1);
                     auto shooterEnemy1 = componentManager.getComponent<ShootComponent>(entityId1);
+                    auto playerMissile1 =
+                        componentManager.getComponent<PlayerMissileComponent>(entityId1);
                     auto enemyMissile1 =
                         componentManager.getComponent<EnemyMissileComponent>(entityId1);
+                    auto playerHealth1 = componentManager.getComponent<HealthComponent>(entityId1);
                     auto basicMonster1 =
                         componentManager.getComponent<BasicMonsterComponent>(entityId1);
+                    auto powerUp1 = componentManager.getComponent<PowerUpComponent>(entityId1);
+
+                    // component of entity 2
                     auto shooterEnemy2 = componentManager.getComponent<ShootComponent>(entityId2);
                     auto enemyMissile2 =
                         componentManager.getComponent<EnemyMissileComponent>(entityId2);
                     auto basicMonster2 =
                         componentManager.getComponent<BasicMonsterComponent>(entityId2);
-                    if (auto player1 = componentManager.getComponent<PlayerComponent>(entityId1)) {
-                        if (auto playerHealth =
-                                componentManager.getComponent<HealthComponent>(entityId1)) {
+                    auto player2 = componentManager.getComponent<PlayerComponent>(entityId2);
+                    auto playerHealth2 = componentManager.getComponent<HealthComponent>(entityId2);
+                    auto playerMissile2 =
+                        componentManager.getComponent<PlayerMissileComponent>(entityId2);
+                    auto powerUp2 = componentManager.getComponent<PowerUpComponent>(entityId2);
+
+                    // Handle collision
+                    if (player1) {
+                        if (playerHealth1) {
                             if (shooterEnemy2 || enemyMissile2) {
                                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                         entityId2) == entitiesToRemove.end()) {
                                     entitiesToRemove.push_back(entityId2);
                                 }
-                                playerHealth.value()->health -= 1;
+                                playerHealth1.value()->health -= 1;
                             }
                             if (basicMonster2) {
-                                playerHealth.value()->health -= 1;
+                                playerHealth1.value()->health -= 1;
                             }
-                            if (playerHealth.value()->health <= 0) {
+                            if (playerHealth1.value()->health <= 0) {
                                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                         entityId1) == entitiesToRemove.end()) {
                                     entitiesToRemove.push_back(entityId1);
                                 }
                             }
+                            r_type::net::Message<TypeMessage> updLivesMsg;
+                            updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
+                            updLivesMsg << server->UpdateInfoBar(entityId1);
+                            server->MessageClient(server->getClientById(server->_deqConnections,
+                                                      server->GetPlayerClientId(entityId1)),
+                                updLivesMsg);
                         }
-                    } else if (auto playerMissile1 =
-                                   componentManager.getComponent<PlayerMissileComponent>(
-                                       entityId1)) {
+                        // when player collides with power up
+                        if (powerUp2) {
+                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                    entityId2) == entitiesToRemove.end()) {
+                                entitiesToRemove.push_back(entityId2);
+                            }
+                            Entity weapon = entityFactory.createForceWeapon(
+                                entityManager, componentManager, entityId1);
+                            entitiesToAdd.push_back(weapon.getId());
+                        }
+                    } else if (playerMissile1) {
                         if (shooterEnemy2 || enemyMissile2 || basicMonster2) {
                             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                     entityId1) == entitiesToRemove.end()) {
@@ -187,30 +219,42 @@ template <typename T> class Level : virtual public ILevel<T> {
                                 entitiesToRemove.push_back(entityId2);
                             }
                         }
-                    } else if (auto player2 =
-                                   componentManager.getComponent<PlayerComponent>(entityId2)) {
-                        if (auto playerHealth =
-                                componentManager.getComponent<HealthComponent>(entityId2)) {
+                    } else if (player2) {
+                        if (playerHealth2) {
                             if (shooterEnemy1 || enemyMissile1) {
                                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                         entityId1) == entitiesToRemove.end()) {
                                     entitiesToRemove.push_back(entityId1);
                                 }
-                                playerHealth.value()->health -= 1;
+                                playerHealth2.value()->health -= 1;
                             }
                             if (basicMonster1) {
-                                playerHealth.value()->health -= 1;
+                                playerHealth2.value()->health -= 1;
                             }
-                            if (playerHealth.value()->health <= 0) {
+                            if (playerHealth2.value()->health <= 0) {
                                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                         entityId2) == entitiesToRemove.end()) {
                                     entitiesToRemove.push_back(entityId2);
                                 }
                             }
+                            r_type::net::Message<TypeMessage> updLivesMsg;
+                            updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
+                            updLivesMsg << server->UpdateInfoBar(entityId2);
+                            server->MessageClient(server->getClientById(server->_deqConnections,
+                                                      server->GetPlayerClientId(entityId2)),
+                                updLivesMsg);
                         }
-                    } else if (auto playerMissile2 =
-                                   componentManager.getComponent<PlayerMissileComponent>(
-                                       entityId2)) {
+                        // when player collides with power up
+                        if (powerUp1) {
+                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                    entityId1) == entitiesToRemove.end()) {
+                                entitiesToRemove.push_back(entityId1);
+                            }
+                            Entity weapon = entityFactory.createForceWeapon(
+                                entityManager, componentManager, entityId2);
+                            entitiesToAdd.push_back(weapon.getId());
+                        }
+                    } else if (playerMissile2) {
                         if (shooterEnemy1 || enemyMissile1 || basicMonster1) {
                             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                     entityId1) == entitiesToRemove.end()) {
@@ -221,12 +265,19 @@ template <typename T> class Level : virtual public ILevel<T> {
                                 entitiesToRemove.push_back(entityId2);
                             }
                         }
-                    } else {
-                        continue;
                     }
                 }
             }
         }
+
+        // Add entities
+        for (int entityId : entitiesToAdd) {
+            r_type::net::Message<TypeMessage> msg;
+            msg.header.id = TypeMessage::CreateEntityMessage;
+            msg << server->InitiateWeaponForce(entityId);
+            server->MessageAllClients(msg);
+        }
+        // Remove entities
         for (int entityId : entitiesToRemove) {
             r_type::net::Message<TypeMessage> msg;
             msg.header.id = TypeMessage::DestroyEntityMessage;
@@ -320,7 +371,8 @@ template <typename T> class Level : virtual public ILevel<T> {
      * @param newClock The current time point used for timing events.
      */
     void FireUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager,
-        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
+        EntityManager &entityManager, EntityFactory &entityFactory,
+        std::chrono::system_clock::time_point newClock) override
     {
         // auto fire system
         _autoFireSystem->handleAutoFire(componentManager, entityManager);
@@ -331,11 +383,22 @@ template <typename T> class Level : virtual public ILevel<T> {
                 auto &shootComponent = pair.second;
                 if (auto shootInfo = std::any_cast<ShootComponent>(&shootComponent)) {
                     if (shootInfo->canShoot) {
-                        r_type::net::Message<TypeMessage> enemyMissileMsg;
-                        enemyMissileMsg.header.id = TypeMessage::CreateEntityMessage;
-                        enemyMissileMsg << server->InitiateEnemyMissile(entityId);
-                        server->MessageAllClients(enemyMissileMsg);
-                        shootInfo->canShoot = false;
+                        auto weapon = componentManager.getComponent<WeaponComponent>(entityId);
+                        if (weapon) {
+                            Entity missile = entityFactory.createPlayerMissile(
+                                entityManager, componentManager, entityId);
+                            r_type::net::Message<TypeMessage> weaponMissileMsg;
+                            weaponMissileMsg.header.id = TypeMessage::CreateEntityMessage;
+                            weaponMissileMsg << server->InitiatePlayerMissile(missile.getId());
+                            server->MessageAllClients(weaponMissileMsg);
+                            shootInfo->canShoot = false;
+                        } else {
+                            r_type::net::Message<TypeMessage> enemyMissileMsg;
+                            enemyMissileMsg.header.id = TypeMessage::CreateEntityMessage;
+                            enemyMissileMsg << server->InitiateEnemyMissile(entityId);
+                            server->MessageAllClients(enemyMissileMsg);
+                            shootInfo->canShoot = false;
+                        }
                     }
                 }
             }

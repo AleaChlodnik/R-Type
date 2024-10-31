@@ -7,16 +7,15 @@
 
 #pragma once
 
-#include <Entities/entity_manager.hpp>
-#include <Entities/entity_factory.hpp>
-#include <Components/component_manager.hpp>
-#include <Net/type_message.hpp>
 #include "common.hpp"
 #include "connection.hpp"
 #include "message.hpp"
 #include "thread_safe_queue.hpp"
+#include <Components/component_manager.hpp>
+#include <Entities/entity_factory.hpp>
+#include <Entities/entity_manager.hpp>
+#include <Net/type_message.hpp>
 #include <entity_struct.hpp>
-
 
 namespace r_type {
 namespace net {
@@ -104,6 +103,11 @@ template <typename T> class IServer {
     virtual uint32_t GetClientPlayerId(uint32_t id) = 0;
 
     /**
+     * @brief Initiate player info bar
+     */
+    virtual UIEntityInformation InitInfoBar(int clientId) = 0;
+
+    /**
      * @brief Removes a player from the game based on the client ID.
      *
      * @param id The client ID of the player to be removed.
@@ -151,6 +155,8 @@ template <typename T> class IServer {
      * @return EntityInformation The information of the newly created enemy missile entity.
      */
     virtual EntityInformation InitiateEnemyMissile(int enemyId) = 0;
+
+    virtual EntityInformation InitiateWeaponForce(int entityId) = 0;
 
     /**
      * @brief Initializes a background entity.

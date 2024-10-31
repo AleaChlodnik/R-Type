@@ -16,6 +16,8 @@ target_sources(r-type_ecs_src PRIVATE
         hitbox_tmp.cpp
         sprite_path.cpp
         sound_path.cpp
+        font_path.cpp
+        game_text.cpp
         a_scenes.cpp
 )
 
