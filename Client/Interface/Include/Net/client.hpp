@@ -49,12 +49,15 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
 
         sf::Texture &texture =
             textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
-        sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
+        float desiredWidth = windowWidth;
+        float desiredHeight = windowHeight * 0.10f;
+        sf::Vector2f scale(
+            desiredWidth / texture.getSize().x, desiredHeight / texture.getSize().y);
         SpriteComponent spriteComponent(texture, 0, 0, scale, entity.spriteData.type);
         componentManager.addComponent<SpriteComponent>(entity.uniqueID, spriteComponent);
 
         if (auto spriteEntity = componentManager.getComponent<SpriteComponent>(entity.uniqueID)) {
-            spriteEntity.value()->sprite.setPosition(windowWidth * 0.5f, windowHeight * 0.95f);
+            spriteEntity.value()->sprite.setPosition(windowWidth / 2, windowHeight * 0.95f);
             sf::Font &font = fontManager.getFont(FontFactory(entity.textData.fontPath));
 
             sf::FloatRect spriteBounds = spriteEntity.value()->sprite.getLocalBounds();
@@ -88,7 +91,8 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
                     textComponent.value()->text.setString(displayText);
                 }
             }
-            sf::Vector2u newWindowSize = {windowWidth, windowHeight - (barHeight * 0.68)};
+            sf::Vector2u newWindowSize = {
+                windowSize.x, static_cast<unsigned int>(windowHeight - desiredHeight - 1)};
             return newWindowSize;
         }
         return windowSize;

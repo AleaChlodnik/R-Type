@@ -184,18 +184,18 @@ template <typename T> class Level : virtual public ILevel<T> {
                             if (basicMonster2) {
                                 playerHealth1.value()->health -= 1;
                             }
-                            if (playerHealth1.value()->health <= 0) {
-                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                        entityId1) == entitiesToRemove.end()) {
-                                    entitiesToRemove.push_back(entityId1);
-                                }
-                            }
                             r_type::net::Message<TypeMessage> updLivesMsg;
                             updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
                             updLivesMsg << server->UpdateInfoBar(entityId1);
                             server->MessageClient(server->getClientById(server->_deqConnections,
                                                       server->GetPlayerClientId(entityId1)),
                                 updLivesMsg);
+                            if (playerHealth1.value()->health <= 0) {
+                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                        entityId1) == entitiesToRemove.end()) {
+                                    entitiesToRemove.push_back(entityId1);
+                                }
+                            }
                         }
                         // when player collides with power up
                         if (powerUp2) {
@@ -217,6 +217,15 @@ template <typename T> class Level : virtual public ILevel<T> {
                                     entityId2) == entitiesToRemove.end()) {
                                 entitiesToRemove.push_back(entityId2);
                             }
+                            int playerId = playerMissile1.value()->playerId;
+                            if (auto playerScore = componentManager.getComponent<ScoreComponent>(
+                                    playerId)) {
+                                playerScore.value()->score += 100;
+                            }
+                            r_type::net::Message<TypeMessage> updScoreMsg;
+                            updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
+                            updScoreMsg << server->UpdateInfoBar(playerId);
+                            server->MessageClient(server->getClientById(server->_deqConnections, server->GetPlayerClientId(playerId)), updScoreMsg);
                         }
                     } else if (player2) {
                         if (playerHealth2) {
@@ -230,18 +239,18 @@ template <typename T> class Level : virtual public ILevel<T> {
                             if (basicMonster1) {
                                 playerHealth2.value()->health -= 1;
                             }
-                            if (playerHealth2.value()->health <= 0) {
-                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                        entityId2) == entitiesToRemove.end()) {
-                                    entitiesToRemove.push_back(entityId2);
-                                }
-                            }
                             r_type::net::Message<TypeMessage> updLivesMsg;
                             updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
                             updLivesMsg << server->UpdateInfoBar(entityId2);
                             server->MessageClient(server->getClientById(server->_deqConnections,
                                                       server->GetPlayerClientId(entityId2)),
                                 updLivesMsg);
+                            if (playerHealth2.value()->health <= 0) {
+                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                        entityId2) == entitiesToRemove.end()) {
+                                    entitiesToRemove.push_back(entityId2);
+                                }
+                            }
                         }
                         // when player collides with power up
                         if (powerUp1) {
@@ -263,6 +272,15 @@ template <typename T> class Level : virtual public ILevel<T> {
                                     entityId2) == entitiesToRemove.end()) {
                                 entitiesToRemove.push_back(entityId2);
                             }
+                            int playerId = playerMissile2.value()->playerId;
+                            if (auto playerScore = componentManager.getComponent<ScoreComponent>(
+                                    playerId)) {
+                                playerScore.value()->score += 100;
+                            }
+                            r_type::net::Message<TypeMessage> updScoreMsg;
+                            updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
+                            updScoreMsg << server->UpdateInfoBar(playerId);
+                            server->MessageClient(server->getClientById(server->_deqConnections, server->GetPlayerClientId(playerId)), updScoreMsg);
                         }
                     }
                 }

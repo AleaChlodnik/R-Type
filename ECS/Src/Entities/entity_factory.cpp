@@ -96,7 +96,7 @@ std::ostream &operator<<(std::ostream &os, const AScenes::SpriteType &spriteType
         os << static_cast<std::string>("ENEMY");
         break;
     case AScenes::SpriteType::OTHER:
-        os << static_cast<std::string>("PLAOTHERYER");
+        os << static_cast<std::string>("OTHER");
         break;
     default:
         os << static_cast<std::string>("Invalid SpritePath");
@@ -141,8 +141,8 @@ Entity EntityFactory::createInfoBar(
     Entity livesCategory = entityManager.createEntity();
     Entity scoreCategory = entityManager.createEntity();
 
-    SpriteDataComponent spriteData{SpritePath::Bar, {5.0f, 1.8f}, AScenes::SpriteType::UI};
-    TextDataComponent textData{FontPath::MAIN, static_cast<uint32_t>(50),
+    SpriteDataComponent spriteData{SpritePath::Bar, {0, 0}, AScenes::SpriteType::UI};
+    TextDataComponent textData{FontPath::MAIN, static_cast<uint32_t>(60),
         {static_cast<uint32_t>(livesCategory.getId()),
             static_cast<uint32_t>(scoreCategory.getId())},
         {GameText::Lives, GameText::Score}, static_cast<uint32_t>(2)};
@@ -161,6 +161,7 @@ Entity EntityFactory::createPlayer(
     PlayerComponent playerComponent;
     PositionComponent startPosition(10, static_cast<float>(rand() % 80));
     VelocityComponent velocity{0.0f, 0.0f};
+    ScoreComponent score{0};
     AnimationComponent animationComponent({99.6, 0}, {33.2, 17.2});
     SpriteDataComponent spriteData{SpritePath::Ship1, {2.0f, 2.0f}, AScenes::SpriteType::PLAYER};
     switch (nbOfPlayers) {
@@ -186,12 +187,13 @@ Entity EntityFactory::createPlayer(
 
     componentManager.addComponent<PlayerComponent>(player.getId(), playerComponent);
     componentManager.addComponent<PositionComponent>(player.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(player.getId(), velocity);
+    componentManager.addComponent<ScoreComponent>(player.getId(), score);
+    componentManager.addComponent<AnimationComponent>(player.getId(), animationComponent);
+    componentManager.addComponent<SpriteDataComponent>(player.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(player.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(player.getId(), health);
     componentManager.addComponent<InputComponent>(player.getId(), input);
-    componentManager.addComponent<SpriteDataComponent>(player.getId(), spriteData);
-    componentManager.addComponent<VelocityComponent>(player.getId(), velocity);
-    componentManager.addComponent<AnimationComponent>(player.getId(), animationComponent);
 
     return player;
 }
@@ -271,7 +273,8 @@ Entity EntityFactory::createPlayerMissile(
 {
     Entity playerMissile = entityManager.createEntity();
 
-    PlayerMissileComponent playerMissileComponent;
+    // PlayerMissileComponent playerMissileComponent{static_cast<int>(entityId)};
+    PlayerMissileComponent playerMissileComponent{entityId};
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{3.0f, 0.0f};
     AnimationComponent animationComponent({249, 88}, {16, 8});
