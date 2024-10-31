@@ -10,6 +10,7 @@
 #include <Components/component_manager.hpp>
 #include <Components/components.hpp>
 #include <cmath>
+#include <game_struct.h>
 
 #include <i_level.hpp>
 
@@ -133,6 +134,18 @@ template <typename T> class Level : virtual public ILevel<T> {
         }
     }
 
+    /**
+     * @brief Updates the collision status of entities in the game.
+     *
+     * This function checks for collisions between entities and handles the consequences
+     * of those collisions, such as updating health, removing entities, and adding new entities.
+     * It also handles entities that go off-screen.
+     *
+     * @param server Pointer to the server instance.
+     * @param componentManager Reference to the component manager.
+     * @param entityManager Reference to the entity manager.
+     * @param newClock The current time point for the update.
+     */
     void CollisionUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager,
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
     {
@@ -509,25 +522,53 @@ template <typename T> class Level : virtual public ILevel<T> {
         }
     }
 
+    /**
+     * @brief Handles the spawning of entities for Level One.
+     *
+     * This function is responsible for spawning basic monsters and shooter enemies
+     * at specific intervals defined by the game parameters. It checks the elapsed
+     * time since the last spawn of each entity type and spawns new entities if the
+     * required time has passed.
+     *
+     * @param server Pointer to the server instance.
+     * @param componentManager Reference to the ComponentManager instance.
+     * @param entityManager Reference to the EntityManager instance.
+     * @param newClock The current time point used for timing calculations.
+     */
     void LevelOne(r_type::net::AServer<T> *server, ComponentManager &componentManager,
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
     {
         if (std::chrono::duration_cast<std::chrono::seconds>(
                 server->GetClock() - _basicMonsterSpawnTime)
-                .count() > 3) {
-            SpawnEntity(server, entityManager, componentManager, 5,
+                .count() > _gameParameters.spawnTimeBasicMonster) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfBasicMonster,
                 EntityFactory::EnemyType::BasicMonster);
             _basicMonsterSpawnTime = server->GetClock();
         }
         if (std::chrono::duration_cast<std::chrono::seconds>(
                 server->GetClock() - _shooterEnemySpawnTime)
-                .count() > 2) {
-            SpawnEntity(server, entityManager, componentManager, 2,
+                .count() > _gameParameters.spawnTimeShooterEnemy) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfShooterEnemy,
                 EntityFactory::EnemyType::ShooterEnemy);
             _shooterEnemySpawnTime = server->GetClock();
         }
     }
 
+    /**
+     * @brief Spawns a specified number of enemy entities in the game.
+     *
+     * This function creates and spawns a specified number of enemy entities of a given type
+     * at random positions within the game world. The enemy entities are then broadcasted to
+     * all connected clients.
+     *
+     * @tparam T The type of the server.
+     * @param server A pointer to the server instance.
+     * @param entityManager Reference to the EntityManager responsible for managing entities.
+     * @param componentManager Reference to the ComponentManager responsible for managing
+     * components.
+     * @param nbrOfEnemy The number of enemy entities to spawn.
+     * @param enemyType The type of enemy to spawn (e.g., BasicMonster, ShooterEnemy).
+     */
     void SpawnEntity(r_type::net::AServer<T> *server, EntityManager &entityManager,
         ComponentManager &componentManager, int nbrOfEnemy, EntityFactory::EnemyType enemyType)
     {
@@ -576,17 +617,27 @@ template <typename T> class Level : virtual public ILevel<T> {
         }
     }
 
+    /**
+     * @brief Sets the game difficulty based on the provided game parameters.
+     *
+     * This function sets the game difficulty based on the provided game parameters.
+     *
+     * @param gameParameters The game parameters to set the difficulty.
+     */
+    void SetGameParameters(GameParameters gameParameters) { _gameParameters = gameParameters; }
+
   protected:
     std::shared_ptr<MoveSystem> _moveSystem;
     std::shared_ptr<CollisionSystem> _collisionSystem;
     std::shared_ptr<AnimationSystem> _animationSystem;
     std::shared_ptr<AutoFireSystem> _autoFireSystem;
 
-    r_type::TypeLevel _levelType;
     std::chrono::system_clock::time_point _basicMonsterSpawnTime =
         std::chrono::system_clock::now();
     std::chrono::system_clock::time_point _shooterEnemySpawnTime =
         std::chrono::system_clock::now();
     std::chrono::system_clock::time_point _spawnTimeMonsterThree;
+
+    GameParameters _gameParameters;
 };
 } // namespace r_type
