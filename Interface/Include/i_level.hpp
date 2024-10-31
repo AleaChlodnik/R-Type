@@ -52,8 +52,8 @@ template <typename T> class ILevel {
      * @param bUpdateEntities Flag to indicate whether to update entities.
      */
     virtual void Update(r_type::net::AServer<T> *server, ComponentManager &componentManager,
-        EntityManager &entityManager, EntityFactory &entityFactory,
-        std::chrono::system_clock::time_point newClock, bool *bUpdateEntities) = 0;
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock,
+        bool *bUpdateEntities) = 0;
 
     /**
      * @brief Sets up the system with the given component and entity managers.
@@ -91,8 +91,7 @@ template <typename T> class ILevel {
      * @param newClock The current time point for updating firing actions.
      */
     virtual void FireUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager,
-        EntityManager &entityManager, EntityFactory &entityFactory,
-        std::chrono::system_clock::time_point newClock) = 0;
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
 
     /**
      * @brief Updates the collision state of the game entities.

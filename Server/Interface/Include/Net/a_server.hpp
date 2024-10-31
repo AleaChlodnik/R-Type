@@ -60,16 +60,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         _level.SetSystem(_componentManager, _entityManager);
 
         _background = InitiateBackground();
-<<<<<<< HEAD
         // _entityFactory.createShooterEnemy(_entityManager, _componentManager);
-        // _entityFactory.createBasicMonster(_entityManager, _componentManager, 60 , 60);
-=======
-        _entityFactory.createShooterEnemy(_entityManager, _componentManager);
-        _entityFactory.createShooterEnemy(_entityManager, _componentManager);
-        _entityFactory.createBasicMonster(_entityManager, _componentManager);
-        _entityFactory.createBasicMonster(_entityManager, _componentManager);
-        _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
->>>>>>> dba0b3af8eabe904792b7405423bda635eb0bfe6
+        // _entityFactory.createShooterEnemy(_entityManager, _componentManager);
+        // _entityFactory.createBasicMonster(_entityManager, _componentManager);
+        // _entityFactory.createBasicMonster(_entityManager, _componentManager);
+        // _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
     }
 
     /**

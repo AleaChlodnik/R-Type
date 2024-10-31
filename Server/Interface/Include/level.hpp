@@ -40,17 +40,17 @@ template <typename T> class Level : virtual public ILevel<T> {
      * updated.
      */
     void Update(r_type::net::AServer<T> *server, ComponentManager &componentManager,
-        EntityManager &entityManager, EntityFactory &entityFactory,
-        std::chrono::system_clock::time_point newClock, bool *bUpdateEntities) override
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock,
+        bool *bUpdateEntities) override
     {
         while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - server->GetClock())
                    .count() > 100) {
             *bUpdateEntities = true;
 
             MoveUpdate(server, componentManager, entityManager, newClock);
-            CollisionUpdate(server, componentManager, entityManager, entityFactory, newClock);
+            CollisionUpdate(server, componentManager, entityManager, newClock);
             AnimationUpdate(server, componentManager, entityManager, newClock);
-            FireUpdate(server, componentManager, entityManager, entityFactory, newClock);
+            FireUpdate(server, componentManager, entityManager, newClock);
             LevelOne(server, componentManager, entityManager, newClock);
             server->SetClock(server->GetClock() + std::chrono::milliseconds(500));
         }
@@ -134,8 +134,7 @@ template <typename T> class Level : virtual public ILevel<T> {
     }
 
     void CollisionUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager,
-        EntityManager &entityManager, EntityFactory &entityFactory,
-        std::chrono::system_clock::time_point newClock) override
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
     {
         std::vector<int> entitiesToRemove;
         std::vector<int> entitiesToAdd;
@@ -204,7 +203,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                                     entityId2) == entitiesToRemove.end()) {
                                 entitiesToRemove.push_back(entityId2);
                             }
-                            Entity weapon = entityFactory.createForceWeapon(
+                            Entity weapon = server->GetEntityFactory().createForceWeapon(
                                 entityManager, componentManager, entityId1);
                             entitiesToAdd.push_back(weapon.getId());
                         }
@@ -250,7 +249,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                                     entityId1) == entitiesToRemove.end()) {
                                 entitiesToRemove.push_back(entityId1);
                             }
-                            Entity weapon = entityFactory.createForceWeapon(
+                            Entity weapon = server->GetEntityFactory().createForceWeapon(
                                 entityManager, componentManager, entityId2);
                             entitiesToAdd.push_back(weapon.getId());
                         }
@@ -371,8 +370,7 @@ template <typename T> class Level : virtual public ILevel<T> {
      * @param newClock The current time point used for timing events.
      */
     void FireUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager,
-        EntityManager &entityManager, EntityFactory &entityFactory,
-        std::chrono::system_clock::time_point newClock) override
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
     {
         // auto fire system
         _autoFireSystem->handleAutoFire(componentManager, entityManager);
@@ -385,7 +383,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                     if (shootInfo->canShoot) {
                         auto weapon = componentManager.getComponent<WeaponComponent>(entityId);
                         if (weapon) {
-                            Entity missile = entityFactory.createPlayerMissile(
+                            Entity missile = server->GetEntityFactory().createPlayerMissile(
                                 entityManager, componentManager, entityId);
                             r_type::net::Message<TypeMessage> weaponMissileMsg;
                             weaponMissileMsg.header.id = TypeMessage::CreateEntityMessage;
@@ -411,22 +409,21 @@ template <typename T> class Level : virtual public ILevel<T> {
         if (std::chrono::duration_cast<std::chrono::seconds>(
                 server->GetClock() - _basicMonsterSpawnTime)
                 .count() > 3) {
-            SpawnEntity(server, entityManager, componentManager, server->GetEntityFactory(), 5,
+            SpawnEntity(server, entityManager, componentManager, 5,
                 EntityFactory::EnemyType::BasicMonster);
             _basicMonsterSpawnTime = server->GetClock();
         }
         if (std::chrono::duration_cast<std::chrono::seconds>(
                 server->GetClock() - _shooterEnemySpawnTime)
                 .count() > 2) {
-            SpawnEntity(server, entityManager, componentManager, server->GetEntityFactory(), 2,
+            SpawnEntity(server, entityManager, componentManager, 2,
                 EntityFactory::EnemyType::ShooterEnemy);
             _shooterEnemySpawnTime = server->GetClock();
         }
     }
 
     void SpawnEntity(r_type::net::AServer<T> *server, EntityManager &entityManager,
-        ComponentManager &componentManager, EntityFactory entityFactory, int nbrOfEnemy,
-        EntityFactory::EnemyType enemyType)
+        ComponentManager &componentManager, int nbrOfEnemy, EntityFactory::EnemyType enemyType)
     {
         switch (enemyType) {
         case EntityFactory::EnemyType::BasicMonster: {
@@ -435,8 +432,8 @@ template <typename T> class Level : virtual public ILevel<T> {
             posY = static_cast<int>((rand() % 70) + 10);
             posX = 100;
             while (i < nbrOfEnemy) {
-                Entity Monster =
-                    entityFactory.createBasicMonster(entityManager, componentManager, posX, posY);
+                Entity Monster = server->GetEntityFactory().createBasicMonster(
+                    entityManager, componentManager, posX, posY);
                 posY += (static_cast<int>(rand() % 10) - static_cast<int>(rand() % 10));
                 if (posY > 90)
                     posY = static_cast<int>((rand() % 70) + 10);
@@ -454,8 +451,8 @@ template <typename T> class Level : virtual public ILevel<T> {
             posX = 99;
             posY = static_cast<int>((rand() % 70) + 10);
             while (i < nbrOfEnemy) {
-                Entity ShooterEnemy =
-                    entityFactory.createShooterEnemy(entityManager, componentManager, posX, posY);
+                Entity ShooterEnemy = server->GetEntityFactory().createShooterEnemy(
+                    entityManager, componentManager, posX, posY);
                 posX += 5;
                 posY += (static_cast<int>(rand() % 20) - static_cast<int>(rand() % 10));
 
