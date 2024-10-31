@@ -24,9 +24,9 @@ enum class TypeLevel
 /**
  * @brief Game parameters struct.
  *
- * This struct contains the parameters for the game, such as the number of basic monsters, the spawn
- * time (on second) for basic monsters, the number of shooter enemies, the spawn time (on second) for shooter enemies, and
- * the level type.
+ * This struct contains the parameters for the game, such as the number of basic monsters, the
+ * spawn time (on second) for basic monsters, the number of shooter enemies, the spawn time (on
+ * second) for shooter enemies, and the level type.
  */
 
 struct GameParameters {
@@ -38,4 +38,3 @@ struct GameParameters {
 
     TypeLevel levelType;
 };
-
