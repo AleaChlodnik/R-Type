@@ -328,8 +328,8 @@ Entity EntityFactory::createPowerUpBlueLaserCrystal(
     componentManager.addComponent<SpriteDataComponent>(
         powerUpBlueLaserCrystal.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(powerUpBlueLaserCrystal.getId(), hitbox);
-    componentManager.addComponent<AnimationComponent>(powerUpBlueLaserCrystal.getId(),
-    animationComponent);
+    componentManager.addComponent<AnimationComponent>(
+        powerUpBlueLaserCrystal.getId(), animationComponent);
 
     return powerUpBlueLaserCrystal;
 }
