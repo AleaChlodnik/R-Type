@@ -117,6 +117,9 @@ class IEntityFactory {
     virtual Entity createForceWeapon(
         EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId) = 0;
 
+    virtual Entity createForceMissile(
+        EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId) = 0;
+
     virtual Entity createPowerUpBlueLaserCrystal(
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
 

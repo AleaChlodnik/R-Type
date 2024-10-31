@@ -103,6 +103,9 @@ class EntityFactory : public IEntityFactory {
     Entity createForceWeapon(EntityManager &entityManager, ComponentManager &componentManager,
         uint32_t entityId) override;
 
+    Entity createForceMissile(EntityManager &entityManager, ComponentManager &componentManager,
+        uint32_t entityId) override;
+
     Entity createPowerUpBlueLaserCrystal(
         EntityManager &entityManager, ComponentManager &componentManager) override;
     /**

@@ -306,26 +306,57 @@ Entity EntityFactory::createPlayerMissile(
 Entity EntityFactory::createForceWeapon(
     EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId)
 {
-    Entity playerMissile = entityManager.createEntity();
+    Entity forceWeapon = entityManager.createEntity();
 
-    WeaponComponent weaponComponent(1.0f, 0.0f, 0.0f);
+    WeaponComponent weaponComponent(entityId, 1);
     PositionComponent startPosition(10, 50);
     VelocityComponent velocity{1.0f, 0.0f};
     AnimationComponent animationComponent({300, 35}, {24, 16});
-    ShootComponent shoot{std::chrono::milliseconds(500)};
+    ShootComponent shoot(std::chrono::milliseconds(500));
     SpriteDataComponent spriteData{SpritePath::Weapon, {2.0f, 2.0f}, AScenes::SpriteType::WEAPON};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
 
-    componentManager.addComponent<WeaponComponent>(playerMissile.getId(), weaponComponent);
-    componentManager.addComponent<PositionComponent>(playerMissile.getId(), startPosition);
-    componentManager.addComponent<VelocityComponent>(playerMissile.getId(), velocity);
-    componentManager.addComponent<SpriteDataComponent>(playerMissile.getId(), spriteData);
-    componentManager.addComponent<HitboxComponent>(playerMissile.getId(), hitbox);
-    componentManager.addComponent<AnimationComponent>(playerMissile.getId(), animationComponent);
-    componentManager.addComponent<ShootComponent>(playerMissile.getId(), shoot);
+    componentManager.addComponent<WeaponComponent>(forceWeapon.getId(), weaponComponent);
+    componentManager.addComponent<PositionComponent>(forceWeapon.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(forceWeapon.getId(), velocity);
+    componentManager.addComponent<SpriteDataComponent>(forceWeapon.getId(), spriteData);
+    componentManager.addComponent<HitboxComponent>(forceWeapon.getId(), hitbox);
+    componentManager.addComponent<AnimationComponent>(forceWeapon.getId(), animationComponent);
+    componentManager.addComponent<ShootComponent>(forceWeapon.getId(), shoot);
 
-    return playerMissile;
+    return forceWeapon;
+}
+
+Entity EntityFactory::createForceMissile(
+    EntityManager &entityManager, ComponentManager &componentManager, uint32_t forceId)
+{
+    Entity forceMissile = entityManager.createEntity();
+
+    // PlayerMissileComponent forceMissileComponent{static_cast<int>(forceId)};
+    ForceMissileComponent forceMissileComponent{forceId};
+    PositionComponent startPosition(0, 0);
+    VelocityComponent velocity{3.0f, 0.0f};
+    AnimationComponent animationComponent({249, 88}, {16, 8});
+    SpriteDataComponent spriteData{SpritePath::Missile, {1.0f, 1.0f}, AScenes::SpriteType::PLAYER};
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
+
+    auto entityPos = componentManager.getComponent<PositionComponent>(forceId);
+    if (entityPos) {
+        startPosition.x = entityPos.value()->x + 1;
+        startPosition.y = entityPos.value()->y;
+    }
+
+    componentManager.addComponent<ForceMissileComponent>(
+        forceMissile.getId(), forceMissileComponent);
+    componentManager.addComponent<PositionComponent>(forceMissile.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(forceMissile.getId(), velocity);
+    componentManager.addComponent<SpriteDataComponent>(forceMissile.getId(), spriteData);
+    componentManager.addComponent<HitboxComponent>(forceMissile.getId(), hitbox);
+    componentManager.addComponent<AnimationComponent>(forceMissile.getId(), animationComponent);
+
+    return forceMissile;
 }
 
 Entity EntityFactory::createPowerUpBlueLaserCrystal(

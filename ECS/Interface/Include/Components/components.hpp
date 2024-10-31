@@ -15,6 +15,7 @@
 #include "bind_component.hpp"
 #include "enemy_component.hpp"
 #include "enemy_missile_component.hpp"
+#include "force_missile_component.hpp"
 #include "front_component.hpp"
 #include "health_component.hpp"
 #include "hitbox_component.hpp"

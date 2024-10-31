@@ -7,13 +7,11 @@
 
 #pragma once
 
-struct WeaponComponent {
-    float damage;
-    float fire_rate;
-    float bullet_speed;
+#include <cstdint>
 
-    WeaponComponent(float _damage, float _fire_rate, float _bullet_speed)
-        : damage(_damage), fire_rate(_fire_rate), bullet_speed(_bullet_speed)
-    {
-    }
+struct WeaponComponent {
+    uint32_t playerId;
+    uint32_t level;
+
+    WeaponComponent(uint32_t _playerId, uint32_t _level) : playerId(_playerId), level(_level) {}
 };

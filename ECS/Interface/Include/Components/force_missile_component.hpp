@@ -9,6 +9,6 @@
 
 #include <cstdint>
 
-struct PlayerMissileComponent {
-    uint32_t playerId;
+struct ForceMissileComponent {
+    uint32_t forceId;
 };

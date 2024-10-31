@@ -157,6 +157,8 @@ template <typename T> class Level : virtual public ILevel<T> {
                     auto powerUp1 = componentManager.getComponent<PowerUpComponent>(entityId1);
                     auto enemy1 = componentManager.getComponent<EnemyComponent>(entityId1);
                     auto weapon1 = componentManager.getComponent<WeaponComponent>(entityId1);
+                    auto forceMissile1 =
+                        componentManager.getComponent<ForceMissileComponent>(entityId1);
 
                     // component of entity 2
                     auto enemyMissile2 =
@@ -168,6 +170,8 @@ template <typename T> class Level : virtual public ILevel<T> {
                     auto powerUp2 = componentManager.getComponent<PowerUpComponent>(entityId2);
                     auto enemy2 = componentManager.getComponent<EnemyComponent>(entityId2);
                     auto weapon2 = componentManager.getComponent<WeaponComponent>(entityId2);
+                    auto forceMissile2 =
+                        componentManager.getComponent<ForceMissileComponent>(entityId2);
 
                     // Handle collision
                     if (player1) {
@@ -241,6 +245,33 @@ template <typename T> class Level : virtual public ILevel<T> {
                                                       server->GetPlayerClientId(playerId)),
                                 updScoreMsg);
                         }
+                    } else if (forceMissile1) {
+                        if (enemy2 || enemyMissile2) {
+                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                    entityId1) == entitiesToRemove.end()) {
+                                entitiesToRemove.push_back(entityId1);
+                            }
+                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                    entityId2) == entitiesToRemove.end()) {
+                                entitiesToRemove.push_back(entityId2);
+                            }
+                            auto weapon = componentManager.getComponent<WeaponComponent>(
+                                forceMissile1.value()->forceId);
+                            if (weapon) {
+                                int playerId = weapon.value()->playerId;
+                                if (auto playerScore =
+                                        componentManager.getComponent<ScoreComponent>(playerId)) {
+                                    playerScore.value()->score += 100;
+                                }
+                                r_type::net::Message<TypeMessage> updScoreMsg;
+                                updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
+                                updScoreMsg << server->UpdateInfoBar(playerId);
+                                server->MessageClient(
+                                    server->getClientById(server->_deqConnections,
+                                        server->GetPlayerClientId(playerId)),
+                                    updScoreMsg);
+                            }
+                        }
                     } else if (player2) {
                         if (playerHealth2) {
                             if (enemy1 || enemyMissile1) {
@@ -311,6 +342,33 @@ template <typename T> class Level : virtual public ILevel<T> {
                             server->MessageClient(server->getClientById(server->_deqConnections,
                                                       server->GetPlayerClientId(playerId)),
                                 updScoreMsg);
+                        }
+                    } else if (forceMissile2) {
+                        if (enemy1 || enemyMissile1) {
+                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                    entityId1) == entitiesToRemove.end()) {
+                                entitiesToRemove.push_back(entityId1);
+                            }
+                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                    entityId2) == entitiesToRemove.end()) {
+                                entitiesToRemove.push_back(entityId2);
+                            }
+                            auto weapon = componentManager.getComponent<WeaponComponent>(
+                                forceMissile2.value()->forceId);
+                            if (weapon) {
+                                int playerId = weapon.value()->playerId;
+                                if (auto playerScore =
+                                        componentManager.getComponent<ScoreComponent>(playerId)) {
+                                    playerScore.value()->score += 100;
+                                }
+                                r_type::net::Message<TypeMessage> updScoreMsg;
+                                updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
+                                updScoreMsg << server->UpdateInfoBar(playerId);
+                                server->MessageClient(
+                                    server->getClientById(server->_deqConnections,
+                                        server->GetPlayerClientId(playerId)),
+                                    updScoreMsg);
+                            }
                         }
                     }
                 }
@@ -431,7 +489,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                     if (shootInfo->canShoot) {
                         auto weapon = componentManager.getComponent<WeaponComponent>(entityId);
                         if (weapon) {
-                            Entity missile = server->GetEntityFactory().createPlayerMissile(
+                            Entity missile = server->GetEntityFactory().createForceMissile(
                                 entityManager, componentManager, entityId);
                             r_type::net::Message<TypeMessage> weaponMissileMsg;
                             weaponMissileMsg.header.id = TypeMessage::CreateEntityMessage;
