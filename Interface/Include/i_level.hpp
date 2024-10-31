@@ -52,8 +52,8 @@ template <typename T> class ILevel {
      * @param bUpdateEntities Flag to indicate whether to update entities.
      */
     virtual void Update(r_type::net::AServer<T> *server, ComponentManager &componentManager,
-        EntityManager &entityManager, std::chrono::system_clock::time_point newClock,
-        bool *bUpdateEntities) = 0;
+        EntityManager &entityManager, EntityFactory &entityFactory,
+        std::chrono::system_clock::time_point newClock, bool *bUpdateEntities) = 0;
 
     /**
      * @brief Sets up the system with the given component and entity managers.
@@ -95,7 +95,7 @@ template <typename T> class ILevel {
 
     virtual void CollisionUpdate(r_type::net::AServer<T> *server,
         ComponentManager &componentManager, EntityManager &entityManager,
-        std::chrono::system_clock::time_point newClock) = 0;
+        EntityFactory &entityFactory, std::chrono::system_clock::time_point newClock) = 0;
 };
 
 } // namespace r_type

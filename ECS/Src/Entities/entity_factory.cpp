@@ -283,18 +283,18 @@ Entity EntityFactory::createForceWeapon(
     Entity playerMissile = entityManager.createEntity();
 
     WeaponComponent weaponComponent(1.0f, 0.0f, 0.0f);
-    PositionComponent startPosition(0, 0);
-    VelocityComponent velocity{1.0f, 0.0f};
-    AnimationComponent animationComponent({300, 19}, {24, 16});
-    SpriteDataComponent spriteData{SpritePath::Weapon, {1.0f, 1.0f}, AScenes::SpriteType::WEAPON};
+    PositionComponent startPosition(30, 50);
+    VelocityComponent velocity{0.0f, 0.0f};
+    AnimationComponent animationComponent({300, 35}, {24, 16});
+    SpriteDataComponent spriteData{SpritePath::Weapon, {2.0f, 2.0f}, AScenes::SpriteType::WEAPON};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
 
-    auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
-    if (entityPos) {
-        startPosition.x = entityPos.value()->x + 1;
-        startPosition.y = entityPos.value()->y;
-    }
+    // auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
+    // if (entityPos) {
+    //     startPosition.x = entityPos.value()->x + 1;
+    //     startPosition.y = entityPos.value()->y;
+    // }
 
     componentManager.addComponent<WeaponComponent>(playerMissile.getId(), weaponComponent);
     componentManager.addComponent<PositionComponent>(playerMissile.getId(), startPosition);
