@@ -50,7 +50,7 @@ template <typename T> class Level : virtual public ILevel<T> {
             MoveUpdate(server, componentManager, entityManager, newClock);
             CollisionUpdate(server, componentManager, entityManager, entityFactory, newClock);
             AnimationUpdate(server, componentManager, entityManager, newClock);
-            FireUpdate(server, componentManager, entityManager, newClock);
+            FireUpdate(server, componentManager, entityManager, entityFactory, newClock);
             server->SetClock(server->GetClock() + std::chrono::milliseconds(500));
         }
     }
@@ -370,7 +370,8 @@ template <typename T> class Level : virtual public ILevel<T> {
      * @param newClock The current time point used for timing events.
      */
     void FireUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager,
-        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
+        EntityManager &entityManager, EntityFactory &entityFactory,
+        std::chrono::system_clock::time_point newClock) override
     {
         // auto fire system
         _autoFireSystem->handleAutoFire(componentManager, entityManager);
@@ -381,11 +382,22 @@ template <typename T> class Level : virtual public ILevel<T> {
                 auto &shootComponent = pair.second;
                 if (auto shootInfo = std::any_cast<ShootComponent>(&shootComponent)) {
                     if (shootInfo->canShoot) {
-                        r_type::net::Message<TypeMessage> enemyMissileMsg;
-                        enemyMissileMsg.header.id = TypeMessage::CreateEntityMessage;
-                        enemyMissileMsg << server->InitiateEnemyMissile(entityId);
-                        server->MessageAllClients(enemyMissileMsg);
-                        shootInfo->canShoot = false;
+                        auto weapon = componentManager.getComponent<WeaponComponent>(entityId);
+                        if (weapon) {
+                            Entity missile = entityFactory.createPlayerMissile(
+                                entityManager, componentManager, entityId);
+                            r_type::net::Message<TypeMessage> weaponMissileMsg;
+                            weaponMissileMsg.header.id = TypeMessage::CreateEntityMessage;
+                            weaponMissileMsg << server->InitiatePlayerMissile(missile.getId());
+                            server->MessageAllClients(weaponMissileMsg);
+                            shootInfo->canShoot = false;
+                        } else {
+                            r_type::net::Message<TypeMessage> enemyMissileMsg;
+                            enemyMissileMsg.header.id = TypeMessage::CreateEntityMessage;
+                            enemyMissileMsg << server->InitiateEnemyMissile(entityId);
+                            server->MessageAllClients(enemyMissileMsg);
+                            shootInfo->canShoot = false;
+                        }
                     }
                 }
             }

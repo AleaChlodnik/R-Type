@@ -797,13 +797,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param clientId The client ID of the player firing the missile.
      * @return EntityInformation The information of the newly created missile entity.
      */
-    EntityInformation InitiatePlayerMissile(int clientId)
+    EntityInformation InitiatePlayerMissile(int entityId)
     {
         EntityInformation entityInfo;
-        uint32_t playerId = GetClientPlayerId(clientId);
-        Entity missile =
-            _entityFactory.createPlayerMissile(_entityManager, _componentManager, playerId);
-        entityInfo.uniqueID = missile.getId();
+        entityInfo.uniqueID = entityId;
         auto missilePos = _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
         auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         auto animation = _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
