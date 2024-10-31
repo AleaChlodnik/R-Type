@@ -136,11 +136,11 @@ template <typename T> class Level : virtual public ILevel<T> {
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
     {
         std::vector<int> entitiesToRemove;
-        auto beforeCollisioneEntities = entityManager.getAllEntities();
-        for (size_t i = 0; i < beforeCollisioneEntities.size(); ++i) {
-            int entityId1 = beforeCollisioneEntities[i].getId();
-            for (size_t j = i + 1; j < beforeCollisioneEntities.size(); ++j) {
-                int entityId2 = beforeCollisioneEntities[j].getId();
+        auto beforeCollisionEntities = entityManager.getAllEntities();
+        for (size_t i = 0; i < beforeCollisionEntities.size(); ++i) {
+            int entityId1 = beforeCollisionEntities[i].getId();
+            for (size_t j = i + 1; j < beforeCollisionEntities.size(); ++j) {
+                int entityId2 = beforeCollisionEntities[j].getId();
                 if (_collisionSystem.get()->checkCollision(
                         componentManager, entityId1, entityId2)) {
                     auto shooterEnemy1 = componentManager.getComponent<ShootComponent>(entityId1);
