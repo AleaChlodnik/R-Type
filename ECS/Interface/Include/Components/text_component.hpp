@@ -12,8 +12,9 @@
 struct TextComponent {
     sf::Text text;
 
-    TextComponent(sf::Font &font, const std::string &string, float posX, float posY)
+    TextComponent(sf::Font &font, const std::string &string, float posX, float posY, int size = 30)
     {
+        text.setCharacterSize(size);
         text.setFont(font);
         text.setString(string);
         text.setPosition(posX, posY);
