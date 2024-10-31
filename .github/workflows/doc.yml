@@ -51,6 +51,12 @@ jobs:
           packages: doxygen texlive-full texlive-latex-base texlive texlive-latex-extra texlive-fonts-recommended texlive-lang-all
           version: 1.0
 
+      - name: Initialize TeX Live Formats
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y texlive-full
+          sudo fmtutil-sys --all
+
       - name: Configure CMake and Build Documentation
         run: |
           cmake -S . -B build -DBUILD_DOC=ON
