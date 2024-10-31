@@ -48,11 +48,6 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         float posY = windowSize.y * (entity.vPos.y / 100.0f);
         float scaleX = (entity.ratio.x * windowSize.x) / entity.animationComponent.dimension.x;
         float scaleY = (entity.ratio.y * windowSize.y) / entity.animationComponent.dimension.y;
-        std::cout << "entityId: " << entity.uniqueID << std::endl;
-        std::cout << "spritePath: " << SpriteFactory(entity.spriteData.spritePath) << std::endl;
-        std::cout << "entityRatio: " << entity.ratio.x << ", " << entity.ratio.y << std::endl;
-        std::cout << "screen scale: " << scaleX << ", " << scaleY << std::endl;
-        std::cout << "spriteData: " << entity.spriteData << std::endl;
         sf::Texture &texture =
             textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
         sf::Vector2f scale(scaleX, scaleY);

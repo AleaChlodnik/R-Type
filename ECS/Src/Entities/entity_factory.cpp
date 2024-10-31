@@ -201,6 +201,13 @@ Entity EntityFactory::createBasicMonster(
     componentManager.addComponent<AnimationComponent>(monster.getId(), animationComponent);
     componentManager.addComponent<MovementComponent>(monster.getId(), movement);
 
+    while (CheckEntityPosition(monster.getId(), componentManager, entityManager) != -1) {
+        auto monsterPos = componentManager.getComponent<PositionComponent>(monster.getId());
+        if (monsterPos) {
+            monsterPos.value()->y = static_cast<float>(rand() % 100);
+        }
+    }
+
     return monster;
 }
 
@@ -321,8 +328,8 @@ Entity EntityFactory::createPowerUpBlueLaserCrystal(
     componentManager.addComponent<SpriteDataComponent>(
         powerUpBlueLaserCrystal.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(powerUpBlueLaserCrystal.getId(), hitbox);
-    // componentManager.addComponent<AnimationComponent>(powerUpBlueLaserCrystal.getId(),
-    // animationComponent);
+    componentManager.addComponent<AnimationComponent>(powerUpBlueLaserCrystal.getId(),
+    animationComponent);
 
     return powerUpBlueLaserCrystal;
 }

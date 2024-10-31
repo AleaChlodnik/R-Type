@@ -51,6 +51,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
           _asioSocket(_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
           _port(port)
     {
+        srand(time(NULL));
         _componentManager = ComponentManager();
         _entityManager = EntityManager();
         _entityFactory = EntityFactory();
@@ -59,6 +60,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
         _background = InitiateBackground();
         _entityFactory.createShooterEnemy(_entityManager, _componentManager);
+        _entityFactory.createShooterEnemy(_entityManager, _componentManager);
+        _entityFactory.createBasicMonster(_entityManager, _componentManager);
         _entityFactory.createBasicMonster(_entityManager, _componentManager);
         _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
     }
@@ -306,16 +309,16 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         vf2d newPos = {pos.value()->x, pos.value()->y};
         switch (direction) {
         case PlayerMovement::UP: {
-            newPos.y -= 1;
+            newPos.y -= 2;
         } break;
         case PlayerMovement::DOWN: {
-            newPos.y += 1;
+            newPos.y += 2;
         } break;
         case PlayerMovement::LEFT: {
-            newPos.x -= 1;
+            newPos.x -= 2;
         } break;
         case PlayerMovement::RIGHT: {
-            newPos.x += 1;
+            newPos.x += 2;
         } break;
         }
 
