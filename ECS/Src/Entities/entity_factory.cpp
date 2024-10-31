@@ -313,12 +313,16 @@ Entity EntityFactory::createPowerUpBlueLaserCrystal(
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
 
-    componentManager.addComponent<PowerUpComponent>(powerUpBlueLaserCrystal.getId(), powerUpComponent);
-    componentManager.addComponent<PositionComponent>(powerUpBlueLaserCrystal.getId(), startPosition);
+    componentManager.addComponent<PowerUpComponent>(
+        powerUpBlueLaserCrystal.getId(), powerUpComponent);
+    componentManager.addComponent<PositionComponent>(
+        powerUpBlueLaserCrystal.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(powerUpBlueLaserCrystal.getId(), velocity);
-    componentManager.addComponent<SpriteDataComponent>(powerUpBlueLaserCrystal.getId(), spriteData);
+    componentManager.addComponent<SpriteDataComponent>(
+        powerUpBlueLaserCrystal.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(powerUpBlueLaserCrystal.getId(), hitbox);
-    // componentManager.addComponent<AnimationComponent>(powerUpBlueLaserCrystal.getId(), animationComponent);
+    // componentManager.addComponent<AnimationComponent>(powerUpBlueLaserCrystal.getId(),
+    // animationComponent);
 
     return powerUpBlueLaserCrystal;
 }

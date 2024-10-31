@@ -46,7 +46,7 @@ std::string SpriteFactory(SpritePath sprite)
     case SpritePath::Weapon: {
         return "Client/Assets/Sprites/Weapon/weapon_sheet.gif";
     } break;
-        case SpritePath::BlueLaserCrystal : {
+    case SpritePath::BlueLaserCrystal: {
         return "Client/Assets/Sprites/PowerUps/blue_laser_crystal.png";
     } break;
     default: {
