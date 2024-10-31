@@ -60,9 +60,11 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
 
             sf::Font &font = fontManager.getFont(FontFactory(entity.textData.fontPath));
             float spriteHeight = spriteEntity.value()->sprite.getGlobalBounds().height;
-            std::cout << "entity.textData.categorySize: " << entity.textData.categorySize << std::endl; /////////////////
+            std::cout << "entity.textData.categorySize: " << entity.textData.categorySize
+                      << std::endl; /////////////////
             for (size_t i = 0; i < entity.textData.categorySize; i++) {
-                // std::cout << "i: " << i << std::endl; ////////////////////////////////////////////////////////////////
+                // std::cout << "i: " << i << std::endl;
+                // ////////////////////////////////////////////////////////////////
                 std::string displayText = GameTextFactory(entity.textData.categoryTexts[i]);
                 float posX = 0.0f;
                 float posY = (windowHeight - spriteHeight / 2.0f);

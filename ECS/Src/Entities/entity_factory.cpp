@@ -142,7 +142,10 @@ Entity EntityFactory::createInfoBar(
     Entity scoreCategory = entityManager.createEntity();
 
     SpriteDataComponent spriteData{SpritePath::Bar, {10.0f, 10.0f}, AScenes::SpriteType::UI};
-    TextDataComponent textData{FontPath::MAIN, {static_cast<uint32_t>(livesCategory.getId()), static_cast<uint32_t>(scoreCategory.getId())}, {GameText::Lives, GameText::Score}, static_cast<uint32_t>(2)};
+    TextDataComponent textData{FontPath::MAIN,
+        {static_cast<uint32_t>(livesCategory.getId()),
+            static_cast<uint32_t>(scoreCategory.getId())},
+        {GameText::Lives, GameText::Score}, static_cast<uint32_t>(2)};
 
     componentManager.addComponent<SpriteDataComponent>(bar.getId(), spriteData);
     componentManager.addComponent<TextDataComponent>(bar.getId(), textData);
