@@ -47,7 +47,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     AServer(uint16_t port)
         : r_type::net::IServer<T>(),
-          _asioSocket(_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
+          _asioSocket(_asioContext, asio::ip::udp::endpoint(asio::ip::udp::v4(), port)),
+          _port(port)
     {
         _componentManager = ComponentManager();
         _entityManager = EntityManager();
@@ -61,6 +62,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         _background = InitiateBackground();
         _entityFactory.createShooterEnemy(_entityManager, _componentManager);
         _entityFactory.createBasicMonster(_entityManager, _componentManager);
+        _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
     }
 
     /**
@@ -87,7 +89,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             std::cerr << "[SERVER] Exception: " << e.what() << std::endl;
             return false;
         }
-        std::cout << "[SERVER] Started!" << std::endl;
+        std::cout << "[SERVER] Started on port " << _port << std::endl;
         return true;
     }
 
@@ -972,10 +974,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     EntityInformation _background;
 
-    /**
-     * @brief
-     *
-     */
+    int _port;
 };
 } // namespace net
 } // namespace r_type

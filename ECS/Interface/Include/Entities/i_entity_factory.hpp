@@ -101,6 +101,12 @@ class IEntityFactory {
     virtual Entity createPlayerMissile(
         EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId) = 0;
 
+    virtual Entity createForceWeapon(
+        EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId) = 0;
+
+    virtual Entity createPowerUpBlueLaserCrystal(
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+
     /**
      * @brief Creates an enemy missile entity.
      *

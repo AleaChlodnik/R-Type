@@ -87,6 +87,11 @@ class EntityFactory : public IEntityFactory {
     Entity createPlayerMissile(EntityManager &entityManager, ComponentManager &componentManager,
         uint32_t entityId) override;
 
+    Entity createForceWeapon(EntityManager &entityManager, ComponentManager &componentManager,
+        uint32_t entityId) override;
+
+    Entity createPowerUpBlueLaserCrystal(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
     /**
      * @brief Creates a button entity.
      *

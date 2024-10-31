@@ -270,6 +270,59 @@ Entity EntityFactory::createPlayerMissile(
     return playerMissile;
 }
 
+Entity EntityFactory::createForceWeapon(
+    EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId)
+{
+    Entity playerMissile = entityManager.createEntity();
+
+    WeaponComponent weaponComponent(1.0f, 0.0f, 0.0f);
+    PositionComponent startPosition(0, 0);
+    VelocityComponent velocity{1.0f, 0.0f};
+    AnimationComponent animationComponent({300, 19}, {24, 16});
+    SpriteDataComponent spriteData{SpritePath::Weapon, {1.0f, 1.0f}, AScenes::SpriteType::WEAPON};
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
+
+    auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
+    if (entityPos) {
+        startPosition.x = entityPos.value()->x + 1;
+        startPosition.y = entityPos.value()->y;
+    }
+
+    componentManager.addComponent<WeaponComponent>(playerMissile.getId(), weaponComponent);
+    componentManager.addComponent<PositionComponent>(playerMissile.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(playerMissile.getId(), velocity);
+    componentManager.addComponent<SpriteDataComponent>(playerMissile.getId(), spriteData);
+    componentManager.addComponent<HitboxComponent>(playerMissile.getId(), hitbox);
+    componentManager.addComponent<AnimationComponent>(playerMissile.getId(), animationComponent);
+
+    return playerMissile;
+}
+
+Entity EntityFactory::createPowerUpBlueLaserCrystal(
+    EntityManager &entityManager, ComponentManager &componentManager)
+{
+    Entity powerUpBlueLaserCrystal = entityManager.createEntity();
+
+    PowerUpComponent powerUpComponent;
+    PositionComponent startPosition(50, 50);
+    VelocityComponent velocity{0.0f, 0.0f};
+    AnimationComponent animationComponent({0, 0}, {40, 36});
+    SpriteDataComponent spriteData{
+        SpritePath::BlueLaserCrystal, {1.0f, 1.0f}, AScenes::SpriteType::POWER_UP};
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
+
+    componentManager.addComponent<PowerUpComponent>(powerUpBlueLaserCrystal.getId(), powerUpComponent);
+    componentManager.addComponent<PositionComponent>(powerUpBlueLaserCrystal.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(powerUpBlueLaserCrystal.getId(), velocity);
+    componentManager.addComponent<SpriteDataComponent>(powerUpBlueLaserCrystal.getId(), spriteData);
+    componentManager.addComponent<HitboxComponent>(powerUpBlueLaserCrystal.getId(), hitbox);
+    // componentManager.addComponent<AnimationComponent>(powerUpBlueLaserCrystal.getId(), animationComponent);
+
+    return powerUpBlueLaserCrystal;
+}
+
 Entity EntityFactory::createEnemyMissile(
     EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId)
 {

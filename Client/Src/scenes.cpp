@@ -780,8 +780,6 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         vf2d newPos;
         uint32_t id;
         msg >> newPos >> id;
-        std::cout << "Moving Entity: " << id << " to " << newPos.x << ", " << newPos.y
-                  << std::endl;
         _networkClient.moveEntity(id, newPos, componentManager, windowSize, textureManager);
     } break;
     case TypeMessage::MoveEntityResponse: {
