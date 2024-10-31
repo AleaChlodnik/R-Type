@@ -15,10 +15,10 @@
 #include <Systems/systems.hpp>
 #include <cmath>
 #include <entity_struct.hpp>
+#include <error_handling.hpp>
 #include <level.hpp>
 #include <macros.hpp>
 #include <unordered_map>
-#include <error_handling.hpp>
 
 namespace r_type {
 namespace net {
