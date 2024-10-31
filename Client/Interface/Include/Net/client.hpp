@@ -105,21 +105,10 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         }
         float posX = windowSize.x * (entity.vPos.x / 100.0f);
         float posY = windowSize.y * (entity.vPos.y / 100.0f);
-        float scaleX, scaleY;
-        // std::cout << "posX: " << posX << " posY: " << posY << std::endl;
-        // std::cout << "entityId: " << entity.uniqueID << std::endl;
-        // std::cout << "spritePath: " << SpriteFactory(entity.spriteData.spritePath) << std::endl;
-        // std::cout << "spriteData: " << entity.spriteData << std::endl;
+        float scaleX = (entity.ratio.x * windowSize.x) / entity.animationComponent.dimension.x;
+        float scaleY = (entity.ratio.y * windowSize.y) / entity.animationComponent.dimension.y;
         sf::Texture &texture =
             textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
-        scaleX = (entity.ratio.x * windowSize.x) / entity.animationComponent.dimension.x;
-        scaleY = (entity.ratio.y * windowSize.y) / entity.animationComponent.dimension.y;
-        // std::cout << "scaleX: " << scaleX << " scaleY: " << scaleY
-        //           << " windowSize.x: " << windowSize.x << " windowSize.y: " << windowSize.y
-        //           << " entity.animationComponent.dimension.x: "
-        //           << entity.animationComponent.dimension.x
-        //           << " entity.animationComponent.dimension.y: "
-        //           << entity.animationComponent.dimension.y << std::endl;
         sf::Vector2f scale(scaleX, scaleY);
         sf::IntRect rect(entity.animationComponent.offset.x, entity.animationComponent.offset.y,
             entity.animationComponent.dimension.x, entity.animationComponent.dimension.y);
@@ -132,16 +121,16 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         componentManager.removeEntityFromComponent<SpriteComponent>(entityId);
     }
 
-    void moveEntity(EntityInformation entity, ComponentManager &componentManager,
-        sf::Vector2u windowSize, TextureManager &textureManager)
+    void moveEntity(
+        uint32_t id, vf2d newPos, ComponentManager &componentManager, sf::Vector2u windowSize)
     {
-        auto spriteEntity = componentManager.getComponent<SpriteComponent>(entity.uniqueID);
+        auto spriteEntity = componentManager.getComponent<SpriteComponent>(id);
         if (spriteEntity) {
-            float posX = windowSize.x * (entity.vPos.x / 100.0f);
-            float posY = windowSize.y * (entity.vPos.y / 100.0f);
+            float posX = windowSize.x * (newPos.x / 100.0f);
+            float posY = windowSize.y * (newPos.y / 100.0f);
             spriteEntity.value()->sprite.setPosition(posX, posY);
         } else {
-            addEntity(entity, componentManager, textureManager, windowSize);
+            std::cerr << "Entity not found, id: " << id << std::endl;
         }
     }
 
@@ -153,14 +142,6 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
             if (entitySpriteIt != sprites.end()) {
                 auto &spriteComponent = entitySpriteIt->second;
                 if (auto entitySprite = std::any_cast<SpriteComponent>(&spriteComponent)) {
-                    auto pos = componentManager.getComponent<PositionComponent>(entityId);
-                    std::cout << "Animating entity " << entityId << " with new rect: "
-                              << "offset(" << rect.offset.x << ", " << rect.offset.y << "), "
-                              << "dimension(" << rect.dimension.x << ", " << rect.dimension.y
-                              << ")" << std::endl;
-                    if (pos)
-                        std::cout << "position: " << pos.value()->x << ", " << pos.value()->y
-                                  << std::endl;
                     sf::IntRect newRect(
                         rect.offset.x, rect.offset.y, rect.dimension.x, rect.dimension.y);
                     entitySprite->sprite.setTextureRect(newRect);

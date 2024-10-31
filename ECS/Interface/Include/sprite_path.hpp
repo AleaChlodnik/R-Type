@@ -23,6 +23,8 @@ enum class SpritePath : uint32_t
     Enemy5,
     Enemy6,
     Missile,
+    Weapon,
+    BlueLaserCrystal,
     Background1,
     Background2,
     Background3,

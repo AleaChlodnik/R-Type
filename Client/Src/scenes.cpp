@@ -606,8 +606,7 @@ void Scenes::render()
 
 void Scenes::gameLoop()
 {
-    r_type::net::Client c;
-    c.Connect(_ip, _port);
+    _networkClient.Connect(_ip, _port);
 
     EntityManager entityManager;
     ComponentManager componentManager;
@@ -627,23 +626,12 @@ void Scenes::gameLoop()
     const int FIRE_COOLDOWN_MS = 500;
     std::chrono::steady_clock::time_point lastFireTime = std::chrono::steady_clock::now();
 
-    auto pixelToPercent = [&](float v1, float v2) { return (v1 / v2) * 100; };
-
-    auto movePlayer = [&](const vf2d &delta, sf::Vector2u windowSize) {
+    auto movePlayer = [this](PlayerMovement playerMovement) {
         r_type::net::Message<TypeMessage> msg;
         vf2d requestedPosition;
         msg.header.id = TypeMessage::MoveEntityMessage;
-        if (auto spritesOpt = componentManager.getComponentMap<SpriteComponent>()) {
-            auto &sprites = **spritesOpt;
-            auto spriteComponent = sprites[c.getPlayerId()];
-            auto playerSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            requestedPosition.x =
-                pixelToPercent(playerSprite->sprite.getPosition().x, windowSize.x) + delta.x;
-            requestedPosition.y =
-                pixelToPercent(playerSprite->sprite.getPosition().y, windowSize.y) + delta.y;
-            msg << requestedPosition;
-            c.Send(msg);
-        }
+        msg << playerMovement;
+        _networkClient.Send(msg);
     };
 
     auto fireMissile = [&]() {
@@ -655,21 +643,10 @@ void Scenes::gameLoop()
             r_type::net::Message<TypeMessage> msg;
             msg.header.id = TypeMessage::CreateEntityMessage;
             msg << CreatableClientObject::PLAYERMISSILE;
-            c.Send(msg);
+            _networkClient.Send(msg);
             lastFireTime = currentTime;
             audioSystem->playSoundEffect(SoundFactory(ActionType::Shot));
         }
-    };
-
-    auto death = [&]() {
-        audioSystem->stopBackgroundMusic();
-        audioSystem->playSoundEffect(SoundFactory(ActionType::GameOver));
-        r_type::net::Message<TypeMessage> msg;
-        msg.header.id = TypeMessage::DestroyEntityMessage;
-        msg << c.getPlayerId();
-        c.Send(msg);
-        std::cout << "Closing window" << std::endl;
-        _window.close();
     };
 
     sf::Vector2u windowSize = _window.getSize();
@@ -679,154 +656,181 @@ void Scenes::gameLoop()
     while (_window.isOpen()) {
         // float deltaTime = clock.restart().asSeconds();
         while (_window.pollEvent(event)) {
+
             if (event.type == sf::Event::Closed) {
-                death();
+                StopGameLoop(audioSystem);
             }
             if (sf::Keyboard::isKeyPressed(keyBinds[Actions::FIRE])) {
                 fireMissile();
             }
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::P) {
-                    c.PingServer();
-                }
-                if (event.key.code == sf::Keyboard::V) {
-                    c.MessageAll();
-                }
-                if (event.key.code == keyBinds[Actions::FIRE]) {
+                    _networkClient.PingServer();
+                } else if (event.key.code == sf::Keyboard::V) {
+                    _networkClient.MessageAll();
+                } else if (event.key.code == keyBinds[Actions::FIRE]) {
                     fireMissile();
-                }
-                if (event.key.code == keyBinds[Actions::QUIT]) {
-                    death();
-                }
-                if (event.key.code == keyBinds[Actions::UP]) {
-                    movePlayer(vf2d{0, -1}, windowSize);
-                }
-                if (event.key.code == keyBinds[Actions::DOWN]) {
-                    movePlayer(vf2d{0, 1}, windowSize);
-                }
-                if (event.key.code == keyBinds[Actions::LEFT]) {
-                    movePlayer(vf2d{-1, 0}, windowSize);
-                }
-                if (event.key.code == keyBinds[Actions::RIGHT]) {
-                    movePlayer(vf2d{1, 0}, windowSize);
-                }
-                if (event.key.code == keyBinds[Actions::PAUSE]) {
+                } else if (event.key.code == keyBinds[Actions::QUIT]) {
+                    StopGameLoop(audioSystem);
+                } else if (event.key.code == keyBinds[Actions::UP]) {
+                    movePlayer(PlayerMovement::UP);
+                } else if (event.key.code == keyBinds[Actions::DOWN]) {
+                    movePlayer(PlayerMovement::DOWN);
+                } else if (event.key.code == keyBinds[Actions::LEFT]) {
+                    movePlayer(PlayerMovement::LEFT);
+                } else if (event.key.code == keyBinds[Actions::RIGHT]) {
+                    movePlayer(PlayerMovement::RIGHT);
+                } else if (event.key.code == keyBinds[Actions::PAUSE]) {
                     this->setScene(Scenes::Scene::IN_GAME_MENU);
                 }
             }
         }
-        if (c.IsConnected()) {
-            // std::cout << "Connected to Server" << std::endl;/////////////////////////
-            if (!c.Incoming().empty()) {
-                auto msg = c.Incoming().pop_front().msg;
-                switch (msg.header.id) {
-                case TypeMessage::ServerAccept: {
-                    std::cout << "Server Accepted Connection" << std::endl;
-                    r_type::net::Message<TypeMessage> response;
-                    response.header.id = TypeMessage::SendPlayer;
-                    c.Send(response);
-                } break;
-                case TypeMessage::ServerPing: {
-                    std::chrono::system_clock::time_point timeNow =
-                        std::chrono::system_clock::now();
-                    std::chrono::system_clock::time_point timeThen;
-                    msg >> timeThen;
-                    std::cout << "Ping: "
-                              << std::chrono::duration<double>(timeNow - timeThen).count()
-                              << std::endl;
-                } break;
-                case TypeMessage::ServerMessage: {
-                    uint32_t clientID;
-                    msg >> clientID;
-                    std::cout << "Hello from [" << clientID << "]" << std::endl;
-                } break;
-                case TypeMessage::SendPlayerInformation: {
-                    EntityInformation entity;
-                    r_type::net::Message<TypeMessage> response;
-                    response.header.id = TypeMessage::RecievePlayerInformation;
-                    c.Send(response);
-                    msg >> entity;
-                    c.setPlayerId(entity.uniqueID);
-                    c.addEntity(entity, componentManager, textureManager, windowSize);
-                } break;
-                case TypeMessage::ServerDeny: {
-                    std::cout << "Server Denied Connection" << std::endl;
-                } break;
-                case TypeMessage::MessageAll: {
-                } break;
-                case TypeMessage::ClientConnect: {
-                } break;
-                case TypeMessage::CreateInfoBar: {
-                    UIEntityInformation entity;
-                    r_type::net::Message<TypeMessage> response;
-                    response.header.id = TypeMessage::CreateInfoBar;
-                    c.Send(response);
-                    msg >> entity;
-                    c.initInfoBar(
-                        entity, componentManager, textureManager, fontManager, windowSize);
-                } break;
-                case TypeMessage::UpdateInfoBar: {
-                    UIEntityInformation entity;
-                    r_type::net::Message<TypeMessage> response;
-                    response.header.id = TypeMessage::UpdateInfoBar;
-                    c.Send(response);
-                    msg >> entity;
-                    c.updateInfoBar(entity, componentManager, textureManager);
-                } break;
-                case TypeMessage::CreateEntityMessage: {
-                    EntityInformation entity;
-                    r_type::net::Message<TypeMessage> response;
-                    response.header.id = TypeMessage::CreateEntityResponse;
-                    c.Send(response);
-                    msg >> entity;
-                    c.addEntity(entity, componentManager, textureManager, windowSize);
-                } break;
-                case TypeMessage::DestroyEntityMessage: {
-                    r_type::net::Message<TypeMessage> response;
-                    uint32_t id;
-                    msg >> id;
-                    audioSystem->playSoundEffect(SoundFactory(ActionType::Explosion));
-                    if (id == c.getPlayerId())
-                        death();
-                    c.removeEntity(id, componentManager);
-                    response.header.id = TypeMessage::DestroyEntityResponse;
-                    c.Send(response);
-                } break;
-                case TypeMessage::UpdateEntity: {
-                } break;
-                case TypeMessage::UpdateEntityResponse: {
-                } break;
-                case TypeMessage::MoveEntityMessage: {
-                    r_type::net::Message<TypeMessage> response;
-                    response.header.id = TypeMessage::MoveEntityResponse;
-                    EntityInformation entity;
-                    msg >> entity;
-                    c.moveEntity(entity, componentManager, windowSize, textureManager);
-                } break;
-                case TypeMessage::MoveEntityResponse: {
-                } break;
-                case TypeMessage::DestroyEntityResponse: {
-                } break;
-                case TypeMessage::FinishInitialization: {
-                } break;
-                case TypeMessage::AnimateEntityMessage: {
-                    r_type::net::Message<TypeMessage> response;
-                    uint32_t id;
-                    AnimationComponent rect({0, 0}, {0, 0});
-                    msg >> rect.offset >> rect.dimension >> id;
-                    c.animateEntity(id, rect, componentManager);
-                } break;
-                }
+
+        if (_networkClient.IsConnected()) {
+            // std::cout << "Connected to Server" << std::endl;
+            while (!_networkClient.Incoming().empty()) {
+                auto msg = _networkClient.Incoming().pop_front().msg;
+                HandleMessage(msg, componentManager, textureManager, fontManager, windowSize, audioSystem);
             }
         } else {
             std::cout << "Server Down" << std::endl;
             _window.close();
-            break;
         }
+        // updateSystem->updateSpritePositions(componentManager, entityManager);
 
-        updateSystem->updateSpritePositions(componentManager, entityManager);
+        std::thread displayUpdate(
+            [this, updateSystem, renderSystem, &componentManager, &entityManager]() {
+                updateSystem->updateSpritePositions(componentManager, entityManager);
+            });
+
+        displayUpdate.join();
         renderSystem->render(componentManager);
     }
+}
+
+void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
+    ComponentManager &componentManager, TextureManager &textureManager, FontManager &fontManager,
+    const sf::Vector2u &windowSize, std::shared_ptr<AudioSystem> &audioSystem)
+{
+    switch (msg.header.id) {
+    case TypeMessage::ServerAccept: {
+        std::cout << "Server Accepted Connection" << std::endl;
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::SendPlayer;
+        _networkClient.Send(response);
+    } break;
+    case TypeMessage::ServerPing: {
+        std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
+        std::chrono::system_clock::time_point timeThen;
+        msg >> timeThen;
+        std::cout << "Ping: " << std::chrono::duration<double>(timeNow - timeThen).count()
+                  << std::endl;
+    } break;
+    case TypeMessage::ServerMessage: {
+        uint32_t clientID;
+        msg >> clientID;
+        std::cout << "Hello from [" << clientID << "]" << std::endl;
+    } break;
+    case TypeMessage::SendPlayerInformation: {
+        EntityInformation entity;
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::ReceivePlayerInformation;
+        _networkClient.Send(response);
+        msg >> entity;
+        _networkClient.setPlayerId(entity.uniqueID);
+        _networkClient.addEntity(entity, componentManager, textureManager, windowSize);
+    } break;
+    case TypeMessage::ServerDeny: {
+        std::cout << "Server Denied Connection" << std::endl;
+    } break;
+    case TypeMessage::MessageAll: {
+    } break;
+    case TypeMessage::ClientConnect: {
+    } break;
+    case TypeMessage::CreateInfoBar: {
+        UIEntityInformation entity;
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::CreateInfoBar;
+        _networkClient.Send(response);
+        msg >> entity;
+        _networkClient.initInfoBar(
+            entity, componentManager, textureManager, fontManager, windowSize);
+    } break;
+    case TypeMessage::UpdateInfoBar: {
+        UIEntityInformation entity;
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::UpdateInfoBar;
+        _networkClient.Send(response);
+        msg >> entity;
+        _networkClient.updateInfoBar(entity, componentManager, textureManager);
+    } break;
+    case TypeMessage::CreateEntityMessage: {
+        EntityInformation entity;
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::CreateEntityResponse;
+        _networkClient.Send(response);
+        msg >> entity;
+        _networkClient.addEntity(entity, componentManager, textureManager, windowSize);
+    } break;
+    case TypeMessage::DestroyEntityMessage: {
+        r_type::net::Message<TypeMessage> response;
+        uint32_t id;
+        msg >> id;
+        audioSystem->playSoundEffect(SoundFactory(ActionType::Explosion));
+        if (id == _networkClient.getPlayerId()) {
+            StopGameLoop(audioSystem);
+        }
+        _networkClient.removeEntity(id, componentManager);
+        response.header.id = TypeMessage::DestroyEntityResponse;
+        _networkClient.Send(response);
+    } break;
+    case TypeMessage::UpdateEntity: {
+    } break;
+    case TypeMessage::UpdateEntityResponse: {
+    } break;
+    case TypeMessage::MoveEntityMessage: {
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::MoveEntityResponse;
+        EntityInformation entity;
+        vf2d newPos;
+        uint32_t id;
+        msg >> newPos >> id;
+        _networkClient.moveEntity(id, newPos, componentManager, windowSize);
+    } break;
+    case TypeMessage::MoveEntityResponse: {
+    } break;
+    case TypeMessage::DestroyEntityResponse: {
+    } break;
+    case TypeMessage::FinishInitialization: {
+    } break;
+    case TypeMessage::AnimateEntityMessage: {
+        r_type::net::Message<TypeMessage> response;
+        uint32_t id;
+        AnimationComponent rect({0, 0}, {0, 0});
+        msg >> rect.offset >> rect.dimension >> id;
+        _networkClient.animateEntity(id, rect, componentManager);
+    } break;
+    case TypeMessage::GameDiffuculty: {
+    } break;
+    case TypeMessage::CreateEntityResponse: {
+    } break;
+    case TypeMessage::SendPlayer: {
+    } break;
+    case TypeMessage::ReceivePlayerInformation: {
+    } break;
+    }
+}
+
+void Scenes::StopGameLoop(std::shared_ptr<AudioSystem> &audioSystem)
+{
+    audioSystem->stopBackgroundMusic();
+    audioSystem->playSoundEffect(SoundFactory(ActionType::GameOver));
+    r_type::net::Message<TypeMessage> msg;
+    msg.header.id = TypeMessage::DestroyEntityMessage;
+    msg << _networkClient.getPlayerId();
+    _networkClient.Send(msg);
+    std::cout << "Closing window" << std::endl;
+    _window.close();
 }
 
 void Scenes::run()
