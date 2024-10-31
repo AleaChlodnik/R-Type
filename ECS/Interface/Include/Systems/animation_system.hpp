@@ -51,6 +51,16 @@ enum class AnimationBasicMonster : uint32_t
     BASIC_MONSTER_7
 };
 
+enum class AnimationWeapon1 : uint32_t
+{
+    WEAPON_1_DEFAULT,
+    WEAPON_1_1,
+    WEAPON_1_2,
+    WEAPON_1_3,
+    WEAPON_1_4,
+    WEAPON_1_5
+};
+
 /**
  * @brief get if two animations are different.
  *
@@ -75,7 +85,7 @@ vf2d animationShipFactory(AnimationShip animation);
 class AnimationSystem : public ISystem {
   public:
     AnimationSystem(ComponentManager &componentManager, EntityManager &entityManager)
-        : _componentManager(componentManager), _entityManager(entityManager){};
+        : _componentManager(componentManager), _entityManager(entityManager) {};
 
     /**
      * @brief Animates entities.
@@ -90,6 +100,13 @@ class AnimationSystem : public ISystem {
      */
     void AnimationEntities(
         ComponentManager &componentManager, EntityManager &entityManager, float deltaTime);
+
+    void animatePlayer(std::optional<VelocityComponent *> &velocity,
+        std::optional<AnimationComponent *> &animation);
+
+    void animateBasicMonster(std::optional<AnimationComponent *> &animation);
+
+    void animateWeapon(std::optional<AnimationComponent *> &animation);
 
   private:
     /**

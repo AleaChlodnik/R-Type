@@ -309,11 +309,11 @@ Entity EntityFactory::createForceWeapon(
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
 
-    // auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
-    // if (entityPos) {
-    //     startPosition.x = entityPos.value()->x + 1;
-    //     startPosition.y = entityPos.value()->y;
-    // }
+    auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
+    if (entityPos) {
+        startPosition.x = entityPos.value()->x + 1;
+        startPosition.y = entityPos.value()->y;
+    }
 
     componentManager.addComponent<WeaponComponent>(playerMissile.getId(), weaponComponent);
     componentManager.addComponent<PositionComponent>(playerMissile.getId(), startPosition);
