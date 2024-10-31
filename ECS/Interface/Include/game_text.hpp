@@ -10,7 +10,8 @@
 #include <cstdint>
 #include <string>
 
-enum class GameText : uint32_t {
+enum class GameText : uint32_t
+{
     Lives,
     Score,
     NONE,

@@ -74,7 +74,8 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
                     displayText += std::to_string(entity.score);
                 }
                 TextComponent textComponent(font, displayText, posX, posY);
-                componentManager.addComponent<TextComponent>(entity.textData.categoryIds[i], textComponent);
+                componentManager.addComponent<TextComponent>(
+                    entity.textData.categoryIds[i], textComponent);
             }
         }
     }
@@ -83,7 +84,8 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         TextureManager &textureManager)
     {
         for (size_t i = 0; i < entity.textData.categorySize; i++) {
-            if (auto textComponent = componentManager.getComponent<TextComponent>(entity.textData.categoryIds[i])) {
+            if (auto textComponent =
+                    componentManager.getComponent<TextComponent>(entity.textData.categoryIds[i])) {
                 std::string displayText = GameTextFactory(entity.textData.categoryTexts[i]);
                 if (entity.textData.categoryTexts[i] == GameText::Lives) {
                     displayText += std::to_string(entity.lives);
