@@ -12,6 +12,7 @@
 
 struct TextDataComponent {
     FontPath fontPath;
+    uint32_t charSize = 0;
     uint32_t categoryIds[5] = {0};
     GameText categoryTexts[5];
     uint32_t categorySize = 0;

@@ -60,11 +60,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         _level.SetSystem(_componentManager, _entityManager);
 
         _background = InitiateBackground();
-        _entityFactory.createShooterEnemy(_entityManager, _componentManager);
-        _entityFactory.createShooterEnemy(_entityManager, _componentManager);
-        _entityFactory.createBasicMonster(_entityManager, _componentManager);
-        _entityFactory.createBasicMonster(_entityManager, _componentManager);
-        _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
+        // _entityFactory.createShooterEnemy(_entityManager, _componentManager);
+        // _entityFactory.createShooterEnemy(_entityManager, _componentManager);
+        // _entityFactory.createBasicMonster(_entityManager, _componentManager);
+        // _entityFactory.createBasicMonster(_entityManager, _componentManager);
+        // _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
     }
 
     /**
@@ -554,8 +554,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
 
         std::thread t_level([this, newClock, &bUpdateEntities]() {
-            _level.Update(this, _componentManager, _entityManager, _entityFactory, newClock,
-                &bUpdateEntities);
+            _level.Update(this, _componentManager, _entityManager, newClock, &bUpdateEntities);
         });
 
         size_t nMessageCount = 0;

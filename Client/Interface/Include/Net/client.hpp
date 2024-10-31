@@ -41,45 +41,57 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         Send(msg);
     }
 
-    void initInfoBar(UIEntityInformation entity, ComponentManager &componentManager,
+    sf::Vector2u initInfoBar(UIEntityInformation entity, ComponentManager &componentManager,
         TextureManager &textureManager, FontManager &fontManager, sf::Vector2u windowSize)
     {
         float windowWidth = static_cast<float>(windowSize.x);
         float windowHeight = static_cast<float>(windowSize.y);
+
         sf::Texture &texture =
             textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
-        sf::Vector2f scale(1.0f, 1.0f);
+        sf::Vector2f scale(entity.spriteData.scale.x, entity.spriteData.scale.y);
         SpriteComponent spriteComponent(texture, 0, 0, scale, entity.spriteData.type);
         componentManager.addComponent<SpriteComponent>(entity.uniqueID, spriteComponent);
-        if (auto spriteEntity = componentManager.getComponent<SpriteComponent>(entity.uniqueID)) {
-            float spriteWidth = spriteEntity.value()->sprite.getLocalBounds().width;
-            float horizontalScale = windowWidth / spriteWidth;
-            spriteEntity.value()->sprite.setScale(horizontalScale, 1.0f);
-            spriteEntity.value()->sprite.setPosition(
-                0, windowHeight - spriteEntity.value()->sprite.getGlobalBounds().height);
 
+        if (auto spriteEntity = componentManager.getComponent<SpriteComponent>(entity.uniqueID)) {
+            spriteEntity.value()->sprite.setPosition(windowWidth * 0.5f, windowHeight * 0.95f);
             sf::Font &font = fontManager.getFont(FontFactory(entity.textData.fontPath));
-            float spriteHeight = spriteEntity.value()->sprite.getGlobalBounds().height;
-            std::cout << "entity.textData.categorySize: " << entity.textData.categorySize
-                      << std::endl; /////////////////
+
+            sf::FloatRect spriteBounds = spriteEntity.value()->sprite.getLocalBounds();
+            float barWidth = spriteBounds.width * scale.x;
+            float barHeight = spriteBounds.height * scale.y;
+            float barPosX = spriteEntity.value()->sprite.getPosition().x;
+            float barPosY = spriteEntity.value()->sprite.getPosition().y;
+
             for (size_t i = 0; i < entity.textData.categorySize; i++) {
-                // std::cout << "i: " << i << std::endl;
-                // ////////////////////////////////////////////////////////////////
                 std::string displayText = GameTextFactory(entity.textData.categoryTexts[i]);
-                float posX = 0.0f;
-                float posY = (windowHeight - spriteHeight / 2.0f);
-                if (entity.textData.categoryTexts[i] == GameText::Lives) {
-                    posX = 10.0f;
-                    displayText += std::to_string(entity.lives);
-                } else if (entity.textData.categoryTexts[i] == GameText::Score) {
-                    posX = windowWidth - 150.0f;
-                    displayText += std::to_string(entity.score);
-                }
-                TextComponent textComponent(font, displayText, posX, posY);
+                TextComponent textComponent(font, displayText, 0, 0, entity.textData.charSize);
                 componentManager.addComponent<TextComponent>(
                     entity.textData.categoryIds[i], textComponent);
+
+                if (auto textComponent = componentManager.getComponent<TextComponent>(
+                        entity.textData.categoryIds[i])) {
+                    sf::FloatRect textBounds = textComponent.value()->text.getLocalBounds();
+
+                    float posX = barPosX;
+                    if (entity.textData.categoryTexts[i] == GameText::Lives) {
+                        posX -= (barWidth / 4);
+                        displayText += std::to_string(entity.lives);
+                    } else if (entity.textData.categoryTexts[i] == GameText::Score) {
+                        posX += (barWidth / 4);
+                        displayText += std::to_string(entity.score);
+                    }
+                    float posY =
+                        barPosY - (barHeight / 2) + (barHeight / 2) - (textBounds.height / 2);
+
+                    textComponent.value()->text.setPosition(posX, posY);
+                    textComponent.value()->text.setString(displayText);
+                }
             }
+            sf::Vector2u newWindowSize = {windowWidth, windowHeight - (barHeight * 0.68)};
+            return newWindowSize;
         }
+        return windowSize;
     }
 
     void updateInfoBar(UIEntityInformation entity, ComponentManager &componentManager,

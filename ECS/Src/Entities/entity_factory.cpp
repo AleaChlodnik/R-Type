@@ -141,8 +141,8 @@ Entity EntityFactory::createInfoBar(
     Entity livesCategory = entityManager.createEntity();
     Entity scoreCategory = entityManager.createEntity();
 
-    SpriteDataComponent spriteData{SpritePath::Bar, {10.0f, 10.0f}, AScenes::SpriteType::UI};
-    TextDataComponent textData{FontPath::MAIN,
+    SpriteDataComponent spriteData{SpritePath::Bar, {5.0f, 1.8f}, AScenes::SpriteType::UI};
+    TextDataComponent textData{FontPath::MAIN, static_cast<uint32_t>(50),
         {static_cast<uint32_t>(livesCategory.getId()),
             static_cast<uint32_t>(scoreCategory.getId())},
         {GameText::Lives, GameText::Score}, static_cast<uint32_t>(2)};
@@ -199,7 +199,7 @@ Entity EntityFactory::createPlayer(
 }
 
 Entity EntityFactory::createBasicMonster(
-    EntityManager &entityManager, ComponentManager &componentManager)
+    EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY)
 {
     Entity monster = entityManager.createEntity();
 
@@ -209,7 +209,7 @@ Entity EntityFactory::createBasicMonster(
     MovementComponent movement{MovementType::WIGGLE, 0};
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy1, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
-    PositionComponent startPosition(80, 60);
+    PositionComponent startPosition(posX, posY);
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
     HealthComponent health{0, 0};
@@ -235,7 +235,7 @@ Entity EntityFactory::createBasicMonster(
 }
 
 Entity EntityFactory::createShooterEnemy(
-    EntityManager &entityManager, ComponentManager &componentManager)
+    EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY)
 {
     Entity enemy = entityManager.createEntity();
 
@@ -244,7 +244,7 @@ Entity EntityFactory::createShooterEnemy(
     MovementComponent movement{MovementType::DIAGONAL, 0};
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy2, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
-    PositionComponent startPosition(60, 60);
+    PositionComponent startPosition(posX, posY);
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
     HealthComponent health{0, 0};
