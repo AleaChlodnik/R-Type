@@ -44,7 +44,6 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
     void initInfoBar(UIEntityInformation entity, ComponentManager &componentManager,
         TextureManager &textureManager, FontManager &fontManager, sf::Vector2u windowSize)
     {
-        std::cout << "passes through client initInfoBar function" << std::endl; /////////////////////////////////////////////////////////
         float windowWidth = static_cast<float>(windowSize.x);
         float windowHeight = static_cast<float>(windowSize.y);
         sf::Texture &texture =
@@ -61,8 +60,9 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
 
             sf::Font &font = fontManager.getFont(FontFactory(entity.textData.fontPath));
             float spriteHeight = spriteEntity.value()->sprite.getGlobalBounds().height;
+            std::cout << "entity.textData.categorySize: " << entity.textData.categorySize << std::endl; /////////////////
             for (size_t i = 0; i < entity.textData.categorySize; i++) {
-                std::cout << "i: " << i << std::endl; ////////////////////////////////////////////////////////////////
+                // std::cout << "i: " << i << std::endl; ////////////////////////////////////////////////////////////////
                 std::string displayText = GameTextFactory(entity.textData.categoryTexts[i]);
                 float posX = 0.0f;
                 float posY = (windowHeight - spriteHeight / 2.0f);

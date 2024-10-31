@@ -44,7 +44,7 @@ std::string SpriteFactory(SpritePath sprite)
         return "Client/Assets/Sprites/Background/background5.png";
     } break;
     case SpritePath::Bar: {
-        return "Client/Assets/Sprites/Menus/table.png";
+        return "Client/Assets/Sprites/Menus/Table.png";
     } break;
     default: {
         return "";

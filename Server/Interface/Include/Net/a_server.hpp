@@ -664,7 +664,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         if (auto textDataComponent =
                 _componentManager.getComponent<TextDataComponent>(infoBarId)) {
             for (uint32_t categoryId : textDataComponent.value()->categoryIds) {
-                _entityManager.removeEntity(categoryId);
+                if (auto entity = _entityManager.getEntity(categoryId)) {
+                    _entityManager.removeEntity(categoryId);
+                }
             }
             RemoveEntity(infoBarId);
         }
@@ -707,20 +709,19 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
     UIEntityInformation InitInfoBar(int clientId)
     {
-        std::cout << "passes through server Init info bar function" << std::endl; ////////////////////////////////
         UIEntityInformation entityInfo;
         Entity infoBar = _entityFactory.createInfoBar(_entityManager, _componentManager);
         entityInfo.uniqueID = infoBar.getId();
-        auto spriteData = _componentManager.getComponent<SpriteDataComponent>(infoBar.getId());
-        auto textData = _componentManager.getComponent<TextDataComponent>(infoBar.getId());
+        auto spriteData = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        auto textData = _componentManager.getComponent<TextDataComponent>(entityInfo.uniqueID);
         auto health = _componentManager.getComponent<HealthComponent>(GetClientPlayerId(clientId));
         if (spriteData && textData && health) {
             entityInfo.spriteData = *(spriteData.value());
             entityInfo.textData = *(textData.value());
+            entityInfo.textData.categorySize = textData.value()->categorySize;
             entityInfo.lives = health.value()->health;
         }
         _clientInfoBarID.insert_or_assign(clientId, entityInfo.uniqueID);
-        std::cout << "!!!!!!!!!!!!!!!!!! info bar id: " << entityInfo.uniqueID << std::endl; ////////////////////////////////
         return entityInfo;
     }
 
