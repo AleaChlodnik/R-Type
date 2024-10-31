@@ -53,7 +53,8 @@ class Scenes : virtual public AScenes {
     void gameLoop();
 
     void HandleMessage(r_type::net::Message<TypeMessage> &msg, ComponentManager &componentManager,
-        TextureManager &textureManager, FontManager &fontManager, std::shared_ptr<AudioSystem> &audioSystem);
+        TextureManager &textureManager, FontManager &fontManager,
+        std::shared_ptr<AudioSystem> &audioSystem);
 
     void StopGameLoop(std::shared_ptr<AudioSystem> &audioSystem);
 

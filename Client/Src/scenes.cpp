@@ -752,7 +752,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         response.header.id = TypeMessage::CreateInfoBar;
         _networkClient.Send(response);
         msg >> entity;
-        sf::Vector2u  windowSize = _networkClient.initInfoBar(
+        sf::Vector2u windowSize = _networkClient.initInfoBar(
             entity, componentManager, textureManager, fontManager, ogWindowSize);
         _networkClient.setWindowSize(windowSize);
     } break;

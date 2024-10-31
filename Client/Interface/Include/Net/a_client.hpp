@@ -10,11 +10,11 @@
 #include <Components/component_manager.hpp>
 #include <Components/components.hpp>
 #include <Net/i_client.hpp>
+#include <SFML/Graphics.hpp>
 #include <entity_struct.hpp>
 #include <font_manager.hpp>
 #include <texture_manager.hpp>
 #include <unordered_map>
-#include <SFML/Graphics.hpp>
 
 namespace r_type {
 namespace net {
