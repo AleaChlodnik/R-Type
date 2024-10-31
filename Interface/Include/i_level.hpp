@@ -91,7 +91,8 @@ template <typename T> class ILevel {
      * @param newClock The current time point for updating firing actions.
      */
     virtual void FireUpdate(r_type::net::AServer<T> *server, ComponentManager &componentManager,
-        EntityManager &entityManager, EntityFactory &entityFactory, std::chrono::system_clock::time_point newClock) = 0;
+        EntityManager &entityManager, EntityFactory &entityFactory,
+        std::chrono::system_clock::time_point newClock) = 0;
 
     virtual void CollisionUpdate(r_type::net::AServer<T> *server,
         ComponentManager &componentManager, EntityManager &entityManager,
