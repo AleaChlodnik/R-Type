@@ -41,9 +41,70 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         Send(msg);
     }
 
+    void initInfoBar(UIEntityInformation entity, ComponentManager &componentManager,
+        TextureManager &textureManager, FontManager &fontManager, sf::Vector2u windowSize)
+    {
+        float windowWidth = static_cast<float>(windowSize.x);
+        float windowHeight = static_cast<float>(windowSize.y);
+        sf::Texture &texture =
+            textureManager.getTexture(SpriteFactory(entity.spriteData.spritePath));
+        sf::Vector2f scale(1.0f, 1.0f);
+        SpriteComponent spriteComponent(texture, 0, 0, scale, entity.spriteData.type);
+        componentManager.addComponent<SpriteComponent>(entity.uniqueID, spriteComponent);
+        if (auto spriteEntity = componentManager.getComponent<SpriteComponent>(entity.uniqueID)) {
+            float spriteWidth = spriteEntity.value()->sprite.getLocalBounds().width;
+            float horizontalScale = windowWidth / spriteWidth;
+            spriteEntity.value()->sprite.setScale(horizontalScale, 1.0f);
+            spriteEntity.value()->sprite.setPosition(
+                0, windowHeight - spriteEntity.value()->sprite.getGlobalBounds().height);
+
+            sf::Font &font = fontManager.getFont(FontFactory(entity.textData.fontPath));
+            float spriteHeight = spriteEntity.value()->sprite.getGlobalBounds().height;
+            std::cout << "entity.textData.categorySize: " << entity.textData.categorySize
+                      << std::endl; /////////////////
+            for (size_t i = 0; i < entity.textData.categorySize; i++) {
+                // std::cout << "i: " << i << std::endl;
+                // ////////////////////////////////////////////////////////////////
+                std::string displayText = GameTextFactory(entity.textData.categoryTexts[i]);
+                float posX = 0.0f;
+                float posY = (windowHeight - spriteHeight / 2.0f);
+                if (entity.textData.categoryTexts[i] == GameText::Lives) {
+                    posX = 10.0f;
+                    displayText += std::to_string(entity.lives);
+                } else if (entity.textData.categoryTexts[i] == GameText::Score) {
+                    posX = windowWidth - 150.0f;
+                    displayText += std::to_string(entity.score);
+                }
+                TextComponent textComponent(font, displayText, posX, posY);
+                componentManager.addComponent<TextComponent>(
+                    entity.textData.categoryIds[i], textComponent);
+            }
+        }
+    }
+
+    void updateInfoBar(UIEntityInformation entity, ComponentManager &componentManager,
+        TextureManager &textureManager)
+    {
+        for (size_t i = 0; i < entity.textData.categorySize; i++) {
+            if (auto textComponent =
+                    componentManager.getComponent<TextComponent>(entity.textData.categoryIds[i])) {
+                std::string displayText = GameTextFactory(entity.textData.categoryTexts[i]);
+                if (entity.textData.categoryTexts[i] == GameText::Lives) {
+                    displayText += std::to_string(entity.lives);
+                } else if (entity.textData.categoryTexts[i] == GameText::Score) {
+                    displayText += std::to_string(entity.score);
+                }
+                textComponent.value()->text.setString(displayText);
+            }
+        }
+    }
+
     void addEntity(EntityInformation entity, ComponentManager &componentManager,
         TextureManager &textureManager, sf::Vector2u windowSize)
     {
+        if (entity.spriteData.type == AScenes::SpriteType::UI) {
+            return;
+        }
         float posX = windowSize.x * (entity.vPos.x / 100.0f);
         float posY = windowSize.y * (entity.vPos.y / 100.0f);
         float scaleX = (entity.ratio.x * windowSize.x) / entity.animationComponent.dimension.x;

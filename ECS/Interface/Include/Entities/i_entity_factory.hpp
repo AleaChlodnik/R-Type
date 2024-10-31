@@ -47,6 +47,19 @@ class IEntityFactory {
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
     /**
+     * @brief Creates a bar entity.
+     *
+     * This function creates a bar with text for displaying player information like health and
+     * score.
+     *
+     * @param entityManager The entity manager to use for creating the entity.
+     * @param componentManager The component manager to use for adding components to the entity.
+     * @return The created bar entity.
+     */
+    virtual Entity createInfoBar(
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+
+    /**
      * @brief Creates a player entity.
      *
      * This function creates a player entity using the provided entity manager and component

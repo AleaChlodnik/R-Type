@@ -141,6 +141,7 @@ class AScenes : virtual public IScenes {
         FILTER,
         WEAPON,
         POWER_UP,
+        UI,
         OTHER
     };
 

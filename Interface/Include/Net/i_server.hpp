@@ -103,6 +103,11 @@ template <typename T> class IServer {
     virtual uint32_t GetClientPlayerId(uint32_t id) = 0;
 
     /**
+     * @brief Initiate player info bar
+     */
+    virtual UIEntityInformation InitInfoBar(int clientId) = 0;
+
+    /**
      * @brief Removes a player from the game based on the client ID.
      *
      * @param id The client ID of the player to be removed.

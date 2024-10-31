@@ -49,6 +49,9 @@ std::string SpriteFactory(SpritePath sprite)
     case SpritePath::BlueLaserCrystal: {
         return "Client/Assets/Sprites/PowerUps/blue_laser_crystal.png";
     } break;
+    case SpritePath::Bar: {
+        return "Client/Assets/Sprites/Menus/Table.png";
+    } break;
     default: {
         return "";
     } break;

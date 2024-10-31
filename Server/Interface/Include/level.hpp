@@ -190,6 +190,12 @@ template <typename T> class Level : virtual public ILevel<T> {
                                     entitiesToRemove.push_back(entityId1);
                                 }
                             }
+                            r_type::net::Message<TypeMessage> updLivesMsg;
+                            updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
+                            updLivesMsg << server->UpdateInfoBar(entityId1);
+                            server->MessageClient(server->getClientById(server->_deqConnections,
+                                                      server->GetPlayerClientId(entityId1)),
+                                updLivesMsg);
                         }
                         if (powerUp2) {
                             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
@@ -230,6 +236,12 @@ template <typename T> class Level : virtual public ILevel<T> {
                                     entitiesToRemove.push_back(entityId2);
                                 }
                             }
+                            r_type::net::Message<TypeMessage> updLivesMsg;
+                            updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
+                            updLivesMsg << server->UpdateInfoBar(entityId1);
+                            server->MessageClient(server->getClientById(server->_deqConnections,
+                                                      server->GetPlayerClientId(entityId2)),
+                                updLivesMsg);
                         }
                         if (powerUp1) {
                             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
