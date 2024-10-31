@@ -51,6 +51,7 @@ template <typename T> class Level : virtual public ILevel<T> {
             CollisionUpdate(server, componentManager, entityManager, newClock);
             AnimationUpdate(server, componentManager, entityManager, newClock);
             FireUpdate(server, componentManager, entityManager, newClock);
+            LevelOne(server, componentManager, entityManager, newClock);
             server->SetClock(server->GetClock() + std::chrono::milliseconds(500));
         }
     }
@@ -281,7 +282,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                     previousAnimations.insert({entityId, *animation});
                 }
             }
-            _animationSystem->AnimationEntities(componentManager, entityManager, 0.5);
+            _animationSystem->AnimationEntities(componentManager, entityManager, 0.2);
             // Compare new Animations
             if (auto animationsAfter = componentManager.getComponentMap<AnimationComponent>()) {
                 for (const auto &pair : **animationsAfter) {
@@ -341,10 +342,85 @@ template <typename T> class Level : virtual public ILevel<T> {
         }
     }
 
+    void LevelOne(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
+    {
+        if (std::chrono::duration_cast<std::chrono::seconds>(
+                server->GetClock() - _basicMonsterSpawnTime)
+                .count() > 3) {
+            SpawnEntity(server, entityManager, componentManager, server->GetEntityFactory(), 5,
+                EntityFactory::EnemyType::BasicMonster);
+            _basicMonsterSpawnTime = server->GetClock();
+        }
+        if (std::chrono::duration_cast<std::chrono::seconds>(
+                server->GetClock() - _shooterEnemySpawnTime)
+                .count() > 2) {
+            SpawnEntity(server, entityManager, componentManager, server->GetEntityFactory(), 2,
+                EntityFactory::EnemyType::ShooterEnemy);
+            _shooterEnemySpawnTime = server->GetClock();
+        }
+    }
+
+    void SpawnEntity(r_type::net::AServer<T> *server, EntityManager &entityManager,
+        ComponentManager &componentManager, EntityFactory entityFactory, int nbrOfEnemy,
+        EntityFactory::EnemyType enemyType)
+    {
+        switch (enemyType) {
+        case EntityFactory::EnemyType::BasicMonster: {
+            int posX, posY;
+            int i = 0;
+            posY = static_cast<int>((rand() % 70) + 10);
+            posX = 100;
+            while (i < nbrOfEnemy) {
+                Entity Monster =
+                    entityFactory.createBasicMonster(entityManager, componentManager, posX, posY);
+                posY += (static_cast<int>(rand() % 10) - static_cast<int>(rand() % 10));
+                if (posY > 90)
+                    posY = static_cast<int>((rand() % 70) + 10);
+                posX += 5;
+                r_type::net::Message<TypeMessage> msg;
+                msg.header.id = TypeMessage::CreateEntityMessage;
+                msg << server->FormatEntityInformation(Monster.getId());
+                server->MessageAllClients(msg);
+                i++;
+            }
+        } break;
+        case EntityFactory::EnemyType::ShooterEnemy: {
+            int posX, posY;
+            int i = 0;
+            posX = 99;
+            posY = static_cast<int>((rand() % 70) + 10);
+            while (i < nbrOfEnemy) {
+                Entity ShooterEnemy =
+                    entityFactory.createShooterEnemy(entityManager, componentManager, posX, posY);
+                posX += 5;
+                posY += (static_cast<int>(rand() % 20) - static_cast<int>(rand() % 10));
+
+                if (posY > 90)
+                    posY = static_cast<int>((rand() % 70) + 10);
+                r_type::net::Message<TypeMessage> msg;
+                msg.header.id = TypeMessage::CreateEntityMessage;
+                msg << server->FormatEntityInformation(ShooterEnemy.getId());
+                server->MessageAllClients(msg);
+                i++;
+            }
+        } break;
+        default:
+            break;
+        }
+    }
+
   protected:
     std::shared_ptr<MoveSystem> _moveSystem;
     std::shared_ptr<CollisionSystem> _collisionSystem;
     std::shared_ptr<AnimationSystem> _animationSystem;
     std::shared_ptr<AutoFireSystem> _autoFireSystem;
+
+    r_type::TypeLevel _levelType;
+    std::chrono::system_clock::time_point _basicMonsterSpawnTime =
+        std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point _shooterEnemySpawnTime =
+        std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point _spawnTimeMonsterThree;
 };
 } // namespace r_type

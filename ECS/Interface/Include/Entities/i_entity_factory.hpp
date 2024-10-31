@@ -70,7 +70,7 @@ class IEntityFactory {
      * @return The created shooter enemy entity.
      */
     virtual Entity createShooterEnemy(
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+        EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY) = 0;
 
     /**
      * @brief Creates a basic monster entity.
@@ -83,7 +83,7 @@ class IEntityFactory {
      * @return The created basic monster entity.
      */
     virtual Entity createBasicMonster(
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+        EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY) = 0;
 
     /**
      * @brief Creates a player missile entity.
@@ -138,4 +138,11 @@ class IEntityFactory {
         FontManager &fontManager, std::string text,
         std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
         float y = 0) = 0;
+
+    enum EnemyType
+    {
+        BasicMonster,
+        ShooterEnemy,
+        Boss,
+    };
 };

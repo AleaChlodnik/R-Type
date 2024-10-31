@@ -179,7 +179,7 @@ void AnimationSystem::AnimationEntities(
             // animate system for background
             auto background = componentManager.getComponent<BackgroundComponent>(entity.getId());
             if (background) {
-                animation.value()->offset.x += 5;
+                animation.value()->offset.x += 1;
             }
         }
     }
