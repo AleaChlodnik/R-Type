@@ -244,7 +244,7 @@ Entity EntityFactory::createShooterEnemy(
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
     HealthComponent health{0, 0};
-    ShootComponent shoot{std::chrono::milliseconds(5000)};
+    ShootComponent shoot{std::chrono::milliseconds(2000)};
 
     componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
     componentManager.addComponent<VelocityComponent>(enemy.getId(), velocity);
@@ -302,18 +302,13 @@ Entity EntityFactory::createForceWeapon(
     Entity playerMissile = entityManager.createEntity();
 
     WeaponComponent weaponComponent(1.0f, 0.0f, 0.0f);
-    PositionComponent startPosition(30, 50);
-    VelocityComponent velocity{0.0f, 0.0f};
+    PositionComponent startPosition(10, 50);
+    VelocityComponent velocity{1.0f, 0.0f};
     AnimationComponent animationComponent({300, 35}, {24, 16});
+    ShootComponent shoot{std::chrono::milliseconds(500)};
     SpriteDataComponent spriteData{SpritePath::Weapon, {2.0f, 2.0f}, AScenes::SpriteType::WEAPON};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-
-    auto entityPos = componentManager.getComponent<PositionComponent>(entityId);
-    if (entityPos) {
-        startPosition.x = entityPos.value()->x + 1;
-        startPosition.y = entityPos.value()->y;
-    }
 
     componentManager.addComponent<WeaponComponent>(playerMissile.getId(), weaponComponent);
     componentManager.addComponent<PositionComponent>(playerMissile.getId(), startPosition);
@@ -321,6 +316,7 @@ Entity EntityFactory::createForceWeapon(
     componentManager.addComponent<SpriteDataComponent>(playerMissile.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(playerMissile.getId(), hitbox);
     componentManager.addComponent<AnimationComponent>(playerMissile.getId(), animationComponent);
+    componentManager.addComponent<ShootComponent>(playerMissile.getId(), shoot);
 
     return playerMissile;
 }
