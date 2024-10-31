@@ -244,7 +244,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     UIEntityInformation UpdateInfoBar(int playerId)
     {
         UIEntityInformation entity;
-        std::cout << "playerId: " << playerId << std::endl; /////////////////
         int clientId = GetPlayerClientId(playerId);
         int infoBarId = GetClientInfoBarId(clientId);
         auto playerHealth = _componentManager.getComponent<HealthComponent>(playerId);

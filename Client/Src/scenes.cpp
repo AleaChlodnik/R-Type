@@ -654,7 +654,6 @@ void Scenes::gameLoop()
     audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
 
     while (_window.isOpen()) {
-        // float deltaTime = clock.restart().asSeconds();
         while (_window.pollEvent(event)) {
 
             if (event.type == sf::Event::Closed) {

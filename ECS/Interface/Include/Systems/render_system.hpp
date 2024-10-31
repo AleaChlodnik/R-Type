@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Systems/i_system.hpp"
+#include <error_handling.hpp>
 
 class RenderSystem : public ISystem {
   public:
@@ -15,7 +16,7 @@ class RenderSystem : public ISystem {
         : _window(window), _componentManager(componentManager)
     {
         if (!_font.loadFromFile("Client/Assets/Fonts/GODOFWAR.TTF")) {
-            std::cout << "Error loading font" << std::endl; // Do proper error handling
+            throw failedToLoadFont();
         }
     }
 
