@@ -126,7 +126,8 @@ template <typename T> class ILevel {
      *
      * @param server Pointer to the server instance managing the game.
      * @param entityManager Reference to the EntityManager responsible for handling entities.
-     * @param componentManager Reference to the ComponentManager responsible for handling components.
+     * @param componentManager Reference to the ComponentManager responsible for handling
+     * components.
      * @param nbrOfEnemy The number of enemy entities to spawn.
      * @param enemyType The type of enemy to spawn, specified by the EnemyType enum.
      */
