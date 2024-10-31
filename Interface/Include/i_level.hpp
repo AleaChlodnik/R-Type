@@ -110,14 +110,37 @@ template <typename T> class ILevel {
         ComponentManager &componentManager, EntityManager &entityManager,
         std::chrono::system_clock::time_point newClock) = 0;
 
+    /**
+     * @brief Pure virtual function to handle the logic for Level One.
+     *
+     * @param server Pointer to the server instance managing the game.
+     * @param componentManager Reference to the ComponentManager handling game components.
+     * @param entityManager Reference to the EntityManager handling game entities.
+     * @param newClock The current time point used for time-based operations.
+     */
     virtual void LevelOne(r_type::net::AServer<T> *server, ComponentManager &componentManager,
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
-};
-enum class TypeLevel
-{
-    LevelOne,
-    LevelTwo,
-    LevelThree,
-    LevelFour,
+
+    /**
+     * @brief Spawns a specified number of enemy entities in the game.
+     *
+     * @param server Pointer to the server instance managing the game.
+     * @param entityManager Reference to the EntityManager responsible for handling entities.
+     * @param componentManager Reference to the ComponentManager responsible for handling components.
+     * @param nbrOfEnemy The number of enemy entities to spawn.
+     * @param enemyType The type of enemy to spawn, specified by the EnemyType enum.
+     */
+    virtual void SpawnEntity(r_type::net::AServer<T> *server, EntityManager &entityManager,
+        ComponentManager &componentManager, int nbrOfEnemy,
+        EntityFactory::EnemyType enemyType) = 0;
+
+    /**
+     * @brief Sets the game difficulty based on the provided game parameters.
+     *
+     * This function sets the game difficulty based on the provided game parameters.
+     *
+     * @param gameParameters The game parameters to set the difficulty.
+     */
+    virtual void SetGameParameters(GameParameters gameParameters) = 0;
 };
 } // namespace r_type
