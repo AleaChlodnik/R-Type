@@ -8,11 +8,11 @@
 #pragma once
 
 #include "Components/component_manager.hpp"
-#include "Components/components.hpp"
 #include "Entities/entity_manager.hpp"
+#include <SFML/Graphics.hpp>
 
 class ISystem {
   public:
     ISystem() = default;
-    // virtual ~ISystem() = default;
+    virtual ~ISystem() = default;
 };

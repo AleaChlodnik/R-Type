@@ -11,6 +11,7 @@
 #include <Components/components.hpp>
 #include <Net/i_client.hpp>
 #include <entity_struct.hpp>
+#include <font_manager.hpp>
 #include <texture_manager.hpp>
 #include <unordered_map>
 
@@ -18,7 +19,7 @@ namespace r_type {
 namespace net {
 template <typename T> class AClient : virtual public IClient<T> {
   public:
-    AClient() {}
+    AClient() { m_connection = nullptr; }
 
     virtual ~AClient() { Disconnect(); }
 
@@ -34,7 +35,7 @@ template <typename T> class AClient : virtual public IClient<T> {
     {
         try {
             asio::ip::udp::endpoint remote_endpoint =
-                asio::ip::udp::endpoint(asio::ip::address::from_string(host), port);
+                asio::ip::udp::endpoint(asio::ip::make_address(host), port);
             // std::cout << "Remote endpoint: " << remote_endpoint << std::endl;
 
             asio::ip::udp::socket socket(
@@ -110,11 +111,6 @@ template <typename T> class AClient : virtual public IClient<T> {
 
     void setPlayerId(int id) { playerId = id; }
     uint32_t getPlayerId() { return playerId; }
-
-    void addEntity(EntityInformation entity, ComponentManager &componentManager,
-        TextureManager &textureManager);
-    void removeEntity(int entityId, ComponentManager &componentManager);
-    void updateEntity(EntityInformation entity, ComponentManager &componentManager);
 
   protected:
     asio::io_context m_context;

@@ -44,3 +44,15 @@ class entityNotFound : public std::exception {
 class failedToLoadTexture : public std::exception {
     const char *what() const noexcept override { return "Failed to load texture"; }
 };
+
+class failedToLoadSound : public std::exception {
+    const char *what() const noexcept override { return "Failed to load sound"; }
+};
+
+class failedToLoadFont : public std::exception {
+    const char *what() const noexcept override { return "Failed to load font"; }
+};
+
+class playerIdNotFound : public std::exception {
+    const char *what() const noexcept override { return "Player ID not found"; }
+};

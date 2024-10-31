@@ -7,18 +7,17 @@
 
 #pragma once
 
+#include "../macro.hpp"
 #include "common.hpp"
 #include "i_server.hpp"
 #include "message.hpp"
 #include "thread_safe_queue.hpp"
 #include "type_message.hpp"
 
-#define UNUSED __attribute__((unused))
-
 // std::ostream &operator<<(std::ostream &os, const asio::ip::udp::socket &socket)
 // {
-//     os << socket.local_endpoint().address().to_string() << ":" << socket.local_endpoint().port();
-//     return os;
+//     os << socket.local_endpoint().address().to_string() << ":" <<
+//     socket.local_endpoint().port(); return os;
 // }
 
 // std::ostream &operator<<(std::ostream &os, const asio::ip::udp::endpoint &endpoint)
@@ -82,7 +81,11 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
      * @brief Destroy the Connection object
      *
      */
-    virtual ~Connection() {}
+    virtual ~Connection()
+    {
+        if (m_socket.is_open())
+            m_socket.close();
+    }
 
     // friend std::ostream &operator<<(std::ostream &os, const Connection<T> &connection)
     // {
@@ -180,6 +183,13 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
             }
         });
     }
+
+  public:
+    r_type::net::Message<TypeMessage> _lastMsg;
+    std::vector<Entity> _initEntities;
+
+    ServerStatus GetStatus() { return _status; }
+    void SetStatus(ServerStatus status) { _status = status; }
 
   private:
     /**
@@ -362,6 +372,7 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
     uint64_t m_nHandshakeOut = 0;
     uint64_t m_nHandshakeIn = 0;
     uint64_t m_nHandshakeCheck = 0;
+    ServerStatus _status;
 };
 } // namespace net
 } // namespace r_type

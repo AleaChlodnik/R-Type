@@ -8,20 +8,19 @@
 #pragma once
 
 #include "../error_handling.hpp"
-#include "position_component.hpp"
 #include "../sprite_path.hpp"
+#include "animation_component.hpp"
+#include "position_component.hpp"
 #include <SFML/Graphics.hpp>
-#include <string>
+#include <a_scenes.hpp>
 #include <cstdint>
-
-template <typename T> struct Vector {
-    T x;
-    T y;
-};
+#include <macros.hpp>
+#include <string>
 
 struct SpriteDataComponent {
     SpritePath spritePath;
-    Vector<uint32_t> offSet;
-    Vector<uint32_t> dimension;
-    Vector<float> scale;
+    vf2d scale;
+    AScenes::SpriteType type;
 };
+
+std::ostream &operator<<(std::ostream &os, const SpriteDataComponent &spriteData);

@@ -11,5 +11,9 @@ struct WeaponComponent {
     float damage;
     float fire_rate;
     float bullet_speed;
-    float bullet_lifetime;
+
+    WeaponComponent(float _damage, float _fire_rate, float _bullet_speed)
+        : damage(_damage), fire_rate(_fire_rate), bullet_speed(_bullet_speed)
+    {
+    }
 };

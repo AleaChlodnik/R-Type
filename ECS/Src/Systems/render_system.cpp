@@ -11,60 +11,66 @@ void RenderSystem::render(ComponentManager &componentManager)
 {
     _window.clear();
 
-    // Always display background first - menus
-    int backgroundId = 0;
-    auto backgroundOpt = componentManager.getComponentMap<BackgroundComponent>();
-    if (backgroundOpt) {
-        auto &backgroundMap = **backgroundOpt;
-        if (!backgroundMap.empty()) {
-            auto entityId = backgroundMap.begin()->first;
-            backgroundId = entityId;
-        }
-        auto bgSprite = componentManager.getComponent<SpriteComponent>(backgroundId);
-        _window.draw(bgSprite.value()->sprite);
-    }
-
-    const auto spritesOpt = componentManager.getComponentMap<SpriteComponent>();
-    if (spritesOpt) {
-        auto &sprites = **spritesOpt;
-        // Always display background first - game
-        auto bgSpriteIt = sprites.find(1);
-        if (bgSpriteIt != sprites.end()) {
-            const auto &spriteComponent = bgSpriteIt->second;
-            auto bgSprite = std::any_cast<SpriteComponent>(&spriteComponent);
-            if (bgSprite) {
-                _window.draw(bgSprite->sprite);
-            }
-        }
-
-        for (const auto &pair : sprites) { // Derefrences the optional and then the pointer
-            int entityId = pair.first;
-            if (entityId == backgroundId || entityId == 1) {
-                continue;
-            }
+    // Draw all sprites
+    const auto sprites = componentManager.getComponentMap<SpriteComponent>();
+    if (sprites) {
+        // Draw background first
+        for (const auto &pair : **sprites) {
             const auto &spriteComponent = pair.second;
             auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
             if (sprite) {
+                if (sprite->type == AScenes::SpriteType::BACKGROUND) {
+                    _window.draw(sprite->sprite);
+                    break;
+                }
+            }
+        }
+        // Draw all other sprites
+        for (const auto &pair : **sprites) {
+            const auto &spriteComponent = pair.second;
+            auto sprite = std::any_cast<SpriteComponent>(&spriteComponent);
+            if (sprite) {
+                if (sprite->type == AScenes::SpriteType::BACKGROUND) {
+                    continue;
+                }
+
+                sf::RectangleShape square(sf::Vector2f(sprite->hitboxX, sprite->hitboxY));
+                square.setPosition(sprite->sprite.getPosition());
+                square.setOrigin(sf::Vector2f(sprite->hitboxX / 2, sprite->hitboxY / 2));
+                square.setOutlineColor(sf::Color::Red);
+                square.setOutlineThickness(2.f);
+                square.setFillColor(sf::Color::Transparent);
+                _window.draw(square);
+
                 _window.draw(sprite->sprite);
             }
         }
     }
-    const auto text = componentManager.getComponentMap<TextComponent>();
-    if (text) {
-        sf::Font font;
-        font.loadFromFile("Client/Assets/Fonts/GODOFWAR.TTF");
-        for (const auto &pair : **text) {
-            const auto &textComponent = pair.second;
-            const int id = pair.first;
-            auto text = std::any_cast<TextComponent>(&textComponent);
-            if (text) {
-                sf::Text textToDraw(text->_text, font);
-                auto position = componentManager.getComponent<PositionComponent>(id);
-                textToDraw.setOrigin(textToDraw.getLocalBounds().width / 2.0f, textToDraw.getLocalBounds().height / 2.0f);
-                textToDraw.setPosition(position.value()->x, position.value()->y);
-                _window.draw(textToDraw);
+
+    // Draw all texts
+    const auto textComponents = componentManager.getComponentMap<TextComponent>();
+    if (textComponents) {
+        for (auto &pair : **textComponents) {
+            auto &textComponentData = pair.second;
+            if (auto *textComponent = std::any_cast<TextComponent>(&textComponentData)) {
+                textComponent->text.setOrigin(textComponent->text.getLocalBounds().width / 2.0f,
+                    textComponent->text.getLocalBounds().height / 2.0f);
+                _window.draw(textComponent->text);
             }
         }
     }
+
+    // Draw all rectanglesShapes
+    const auto rectangles = componentManager.getComponentMap<RectangleShapeComponent>();
+    if (rectangles) {
+        for (const auto &pair : **rectangles) {
+            const auto &rectangleComponent = pair.second;
+            auto rectangle = std::any_cast<RectangleShapeComponent>(&rectangleComponent);
+            if (rectangle) {
+                _window.draw(rectangle->rectangleShape);
+            }
+        }
+    }
+
     _window.display();
 }

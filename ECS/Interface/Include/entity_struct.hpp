@@ -8,18 +8,9 @@
 #pragma once
 
 #include "Components/sprite_data_component.hpp"
+#include "Components/text_data_component.hpp"
 #include <cstdint>
-
-/**
- * @struct vf2d
- * @brief Represents a 2D vector with x and y coordinates.
- * @var vf2d::x The x coordinate of the vector.
- * @var vf2d::y The y coordinate of the vector.
- */
-struct vf2d {
-    float x = 0;
-    float y = 0;
-};
+#include <macros.hpp>
 
 /**
  * @struct EntityInformation
@@ -30,6 +21,16 @@ struct vf2d {
  */
 struct EntityInformation {
     uint32_t uniqueID = 0;
+    vf2d ratio = {0, 0};
     SpriteDataComponent spriteData;
-    vf2d vPos;
+    vf2d vPos = {0, 0};
+    AnimationComponent animationComponent = {{0, 0}, {0, 0}};
+};
+
+struct UIEntityInformation {
+    uint32_t uniqueID = 0;
+    uint32_t lives = 0;
+    uint32_t score = 0;
+    SpriteDataComponent spriteData;
+    TextDataComponent textData;
 };

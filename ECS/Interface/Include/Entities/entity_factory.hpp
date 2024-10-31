@@ -7,8 +7,9 @@
 
 #pragma once
 
+#include "a_scenes.hpp"
 #include "i_entity_factory.hpp"
-#include "scenes.hpp"
+#include "i_scenes.hpp"
 #include <functional>
 
 /**
@@ -32,16 +33,17 @@ class EntityFactory : public IEntityFactory {
         EntityManager &entityManager, ComponentManager &componentManager) override;
 
     /**
-     * @brief Creates a player entity.
+     * @brief Creates a bar entity.
      *
-     * This function creates a player entity using the provided entity manager and component
-     * manager.
+     * This function creates a bar with text for displaying player information like health and
+     * score.
      *
      * @param entityManager The entity manager to use for creating the entity.
      * @param componentManager The component manager to use for adding components to the entity.
-     * @return The created player entity.
+     * @return The created bar entity.
      */
-    Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createInfoBar(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
 
     /**
      * @brief Creates a player entity.
@@ -53,26 +55,27 @@ class EntityFactory : public IEntityFactory {
      * @param componentManager The component manager to use for adding components to the entity.
      * @return The created player entity.
      */
-    Entity createAlly(EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createPlayer(EntityManager &entityManager, ComponentManager &componentManager,
+        int nbrOfPlayers) override;
 
     /**
-     * @brief Creates a basic enemy entity.
+     * @brief Creates a shooter enemy entity.
      *
-     * This function creates a basic enemy entity using the provided entity manager and component
+     * This function creates a shooter enemy entity using the provided entity manager and component
      * manager.
      *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to add components to the entity.
      * @return The created basic enemy entity.
      */
-    Entity createBasicEnemy(
+    Entity createShooterEnemy(
         EntityManager &entityManager, ComponentManager &componentManager) override;
 
     /**
      * @brief Creates a basic monster entity.
      *
-     * This function creates a basic monster entity using the provided entity manager and component
-     * manager.
+     * This function creates a basic monster entity using the provided entity manager and
+     * component manager.
      *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to add components to the entity.
@@ -89,15 +92,19 @@ class EntityFactory : public IEntityFactory {
      * the entity manager. It also initializes the necessary components for the player missile
      * entity using the component manager.
      *
-     * @param playerId The ID of the player.
      * @param entityManager The entity manager to add the player missile entity to.
      * @param componentManager The component manager to initialize the components for the player
-     * missile entity.
+     * @param entityId The id of the entity that shoot the missile
      * @return The created player missile entity.
      */
-    Entity createPlayerMissile(
-        EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createPlayerMissile(EntityManager &entityManager, ComponentManager &componentManager,
+        uint32_t entityId) override;
 
+    Entity createForceWeapon(EntityManager &entityManager, ComponentManager &componentManager,
+        uint32_t entityId) override;
+
+    Entity createPowerUpBlueLaserCrystal(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
     /**
      * @brief Creates a button entity.
      *
@@ -113,8 +120,8 @@ class EntityFactory : public IEntityFactory {
      *
      */
     Entity createButton(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &textureManager, std::string text,
-        std::function<Scenes *(Scenes *)> *onClick, float x = 0, float y = 0);
+        TextureManager &textureManager, FontManager &fontManager, std::string text,
+        std::function<IScenes *(AScenes *)> *onClick, float x = 0, float y = 0) override;
     /**
      * @brief Creates a small button entity.
      *
@@ -130,8 +137,9 @@ class EntityFactory : public IEntityFactory {
      *
      */
     Entity createSmallButton(EntityManager &entityManager, ComponentManager &componentManager,
-        TextureManager &textureManager, std::string text,
-        std::function<Scenes *(Scenes *, Scenes::Actions)> *onClick, float x = 0, float y = 0);
+        TextureManager &textureManager, FontManager &fontManager, std::string text,
+        std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
+        float y = 0) override;
     /**
      * @brief Creates an ally missile entity.
      *
@@ -144,8 +152,6 @@ class EntityFactory : public IEntityFactory {
      * @return The created ally missile entity.
      *
      */
-    Entity createAllyMissile(
-        EntityManager &entityManager, ComponentManager &componentManager) override;
 
     /**
      * @brief Creates an enemy missile entity.
@@ -156,8 +162,19 @@ class EntityFactory : public IEntityFactory {
      *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to add components to the entity.
+     * @param entityId The id of the entity that shoot the missile
      * @return The created enemy missile entity.
      */
-    Entity createEnemyMissile(
-        EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createEnemyMissile(EntityManager &entityManager, ComponentManager &componentManager,
+        uint32_t entityId) override;
+    /**
+     * @brief Create a Filter object
+     *
+     * @param entityManager
+     * @param componentManager
+     * @param mode
+     * @return Entity
+     */
+    Entity createFilter(EntityManager &entityManager, ComponentManager &componentManager,
+        AScenes::DaltonismMode mode);
 };

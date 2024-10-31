@@ -11,8 +11,59 @@
 #include <cstdint>
 
 /**
- * @file net_r_type_message.hpp
- * @brief Defines the TypeMessage enumeration for R-Type network messages.
+ * @enum TypeMessage
+ * @brief Enumeration for different types of network messages in R-Type.
+ *
+ * This enumeration defines various message types used for communication
+ * between the server and clients in the R-Type game.
+ *
+ * @var TypeMessage::ServerAccept
+ * Server accept message.
+ *
+ * @var TypeMessage::ServerDeny
+ * Server deny message.
+ *
+ * @var TypeMessage::ServerPing
+ * Server ping message.
+ *
+ * @var TypeMessage::MessageAll
+ * Server pong message.
+ *
+ * @var TypeMessage::ServerMessage
+ * Server message.
+ *
+ * @var TypeMessage::UpdateEntity
+ * Server message.
+ *
+ * @var TypeMessage::UpdateEntityResponse
+ * Client message.
+ *
+ * @var TypeMessage::ClientConnect
+ * Client connect message.
+ *
+ * @var TypeMessage::CreateEntityMessage
+ * Client disconnect message.
+ *
+ * @var TypeMessage::CreateEntityResponse
+ * Client message.
+ *
+ * @var TypeMessage::MoveEntityMessage
+ * Client message.
+ *
+ * @var TypeMessage::MoveEntityResponse
+ * Client message.
+ *
+ * @var TypeMessage::DestroyEntityMessage
+ * Client message.
+ *
+ * @var TypeMessage::DestroyEntityResponse
+ * Client message.
+ *
+ * @var TypeMessage::AnimateEntityMessage
+ * Client message.
+ *
+ * @var TypeMessage::AnimateEntityResponse
+ * Client message.
  */
 enum class TypeMessage : uint32_t
 {
@@ -41,6 +92,16 @@ enum class TypeMessage : uint32_t
      *
      */
     ServerMessage,
+    /**
+     * @brief Server message.
+     *
+     */
+    SendPlayerInformation,
+    /**
+     * @brief Server message
+     *
+     */
+    GameDiffuculty,
     /**
      * @brief Server message.
      *
@@ -86,6 +147,42 @@ enum class TypeMessage : uint32_t
      *
      */
     DestroyEntityResponse,
+    /**
+     * @brief Client message.
+     *
+     */
     FinishInitialization,
+    /**
+     * @brief Client message.
+     *
+     */
+    AnimateEntityMessage,
+    /**
+     * @brief Client message.
+     *
+     */
+    SendPlayer,
+    /**
+     * @brief Client message.
+     *
+     */
+    ReceivePlayerInformation,
+    /**
+     * @brief Client message.
+     *
+     */
+    CreateInfoBar,
+    /**
+     * @brief Client message.
+     *
+     */
+    UpdateInfoBar,
+};
 
+enum class PlayerMovement : uint32_t
+{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
 };

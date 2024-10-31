@@ -66,7 +66,8 @@ class ComponentManager {
      * @brief Retrieves the component map for the specified component type.
      *
      * @tparam ComponentType The type of the component.
-     * @return std::optional<std::unordered_map<int, std::any>*> The component map if found, otherwise std::nullopt.
+     * @return std::optional<std::unordered_map<int, std::any>*> The component map if found,
+     * otherwise std::nullopt.
      */
     template <typename ComponentType>
     std::optional<std::unordered_map<int, std::any> *> getComponentMap()
@@ -78,13 +79,19 @@ class ComponentManager {
         return std::nullopt;
     }
 
-    template <typename ComponentType>
-    void removeEntityFromComponent(int entityId)
+    template <typename ComponentType> void removeEntityFromComponent(int entityId)
     {
         auto it = components.find(typeid(ComponentType));
         if (it != components.end()) {
             auto &entityComponents = it->second;
             entityComponents.erase(entityId);
+        }
+    }
+
+    void removeEntityFromAllComponents(int entityId)
+    {
+        for (auto &component : components) {
+            component.second.erase(entityId);
         }
     }
 
@@ -94,7 +101,10 @@ class ComponentManager {
     /**
      * @brief A component manager that stores components in an unordered map.
      *
-     * This component manager uses an unordered map to store components. The keys of the outer map are of type std::type_index, which represents the type of the component. The values of the outer map are inner unordered maps, where the keys are of type int and represent the entity ID, and the values are of type std::any, which allows storing components of any type.
+     * This component manager uses an unordered map to store components. The keys of the outer map
+     * are of type std::type_index, which represents the type of the component. The values of the
+     * outer map are inner unordered maps, where the keys are of type int and represent the entity
+     * ID, and the values are of type std::any, which allows storing components of any type.
      */
     std::unordered_map<std::type_index, std::unordered_map<int, std::any>> components;
 };

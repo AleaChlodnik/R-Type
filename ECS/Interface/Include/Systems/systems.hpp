@@ -7,6 +7,10 @@
 
 #pragma once
 
-#include "render_system.hpp"
-// #include "shoot_system.hpp"
-#include "update_system.hpp"
+#include <Systems/animation_system.hpp>
+#include <Systems/audio_system.hpp>
+#include <Systems/auto_fire_system.hpp>
+#include <Systems/collision_system.hpp>
+#include <Systems/move_system.hpp>
+#include <Systems/render_system.hpp>
+#include <Systems/update_system.hpp>

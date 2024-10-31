@@ -18,15 +18,13 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (LINUX)
-  set(CMAKE_BUILD_TYPE Debug)  # Set build type to Debug
-endif()
+set(CMAKE_BUILD_TYPE Debug) # set build type to Debug
 
-# # Enable AddressSanitizer
-# set(CMAKE_CXX_FLAGS
-#     "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
-# set(CMAKE_EXE_LINKER_FLAGS
-#     "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+# if (UNIX)
+#     # Linux-specific settings (by adding a sanitizer)
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+#     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+# endif()
 
 # # Add debug flags
 if (LINUX)

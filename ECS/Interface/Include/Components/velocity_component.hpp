@@ -8,5 +8,6 @@
 #pragma once
 
 struct VelocityComponent {
-    float speed;
+    float x;
+    float y;
 };
