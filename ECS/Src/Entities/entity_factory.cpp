@@ -141,7 +141,7 @@ Entity EntityFactory::createInfoBar(
     Entity livesCategory = entityManager.createEntity();
     Entity scoreCategory = entityManager.createEntity();
 
-    SpriteDataComponent spriteData{SpritePath::Bar, {4.0f, 2.0f}, AScenes::SpriteType::UI};
+    SpriteDataComponent spriteData{SpritePath::Bar, {5.0f, 1.8f}, AScenes::SpriteType::UI};
     TextDataComponent textData{FontPath::MAIN, static_cast<uint32_t>(50),
         {static_cast<uint32_t>(livesCategory.getId()),
             static_cast<uint32_t>(scoreCategory.getId())},

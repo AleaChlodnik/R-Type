@@ -14,6 +14,7 @@
 #include <font_manager.hpp>
 #include <texture_manager.hpp>
 #include <unordered_map>
+#include <SFML/Graphics.hpp>
 
 namespace r_type {
 namespace net {
@@ -112,6 +113,9 @@ template <typename T> class AClient : virtual public IClient<T> {
     void setPlayerId(int id) { playerId = id; }
     uint32_t getPlayerId() { return playerId; }
 
+    void setWindowSize(sf::Vector2u size) { windowSize = size; }
+    sf::Vector2u getWindowSize() { return windowSize; }
+
   protected:
     asio::io_context m_context;
     std::thread thrContext;
@@ -120,6 +124,7 @@ template <typename T> class AClient : virtual public IClient<T> {
   private:
     ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
     uint32_t playerId = 0;
+    sf::Vector2u windowSize;
 };
 } // namespace net
 } // namespace r_type

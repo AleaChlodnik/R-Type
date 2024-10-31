@@ -41,7 +41,7 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         Send(msg);
     }
 
-    void initInfoBar(UIEntityInformation entity, ComponentManager &componentManager,
+    sf::Vector2u initInfoBar(UIEntityInformation entity, ComponentManager &componentManager,
         TextureManager &textureManager, FontManager &fontManager, sf::Vector2u windowSize)
     {
         float windowWidth = static_cast<float>(windowSize.x);
@@ -88,7 +88,10 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
                     textComponent.value()->text.setString(displayText);
                 }
             }
+            sf::Vector2u newWindowSize = {windowWidth, windowHeight - (barHeight * 0.68)};
+            return newWindowSize;
         }
+        return windowSize;
     }
 
     void updateInfoBar(UIEntityInformation entity, ComponentManager &componentManager,

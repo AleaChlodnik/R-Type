@@ -649,8 +649,6 @@ void Scenes::gameLoop()
         }
     };
 
-    sf::Vector2u windowSize = _window.getSize();
-
     audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
 
     while (_window.isOpen()) {
@@ -689,14 +687,12 @@ void Scenes::gameLoop()
             // std::cout << "Connected to Server" << std::endl;
             while (!_networkClient.Incoming().empty()) {
                 auto msg = _networkClient.Incoming().pop_front().msg;
-                HandleMessage(
-                    msg, componentManager, textureManager, fontManager, windowSize, audioSystem);
+                HandleMessage(msg, componentManager, textureManager, fontManager, audioSystem);
             }
         } else {
             std::cout << "Server Down" << std::endl;
             _window.close();
         }
-        // updateSystem->updateSpritePositions(componentManager, entityManager);
 
         std::thread displayUpdate(
             [this, updateSystem, renderSystem, &componentManager, &entityManager]() {
@@ -710,8 +706,11 @@ void Scenes::gameLoop()
 
 void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     ComponentManager &componentManager, TextureManager &textureManager, FontManager &fontManager,
-    const sf::Vector2u &windowSize, std::shared_ptr<AudioSystem> &audioSystem)
+    std::shared_ptr<AudioSystem> &audioSystem)
 {
+    sf::Vector2u ogWindowSize = _window.getSize();
+    sf::Vector2u windowSize = _networkClient.getWindowSize();
+
     switch (msg.header.id) {
     case TypeMessage::ServerAccept: {
         std::cout << "Server Accepted Connection" << std::endl;
@@ -738,7 +737,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         _networkClient.Send(response);
         msg >> entity;
         _networkClient.setPlayerId(entity.uniqueID);
-        _networkClient.addEntity(entity, componentManager, textureManager, windowSize);
+        _networkClient.addEntity(entity, componentManager, textureManager, ogWindowSize);
     } break;
     case TypeMessage::ServerDeny: {
         std::cout << "Server Denied Connection" << std::endl;
@@ -753,8 +752,9 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         response.header.id = TypeMessage::CreateInfoBar;
         _networkClient.Send(response);
         msg >> entity;
-        _networkClient.initInfoBar(
-            entity, componentManager, textureManager, fontManager, windowSize);
+        sf::Vector2u  windowSize = _networkClient.initInfoBar(
+            entity, componentManager, textureManager, fontManager, ogWindowSize);
+        _networkClient.setWindowSize(windowSize);
     } break;
     case TypeMessage::UpdateInfoBar: {
         UIEntityInformation entity;
