@@ -159,6 +159,7 @@ Entity EntityFactory::createPlayer(
     Entity player = entityManager.createEntity();
 
     PlayerComponent playerComponent;
+    FrontComponent frontComponent(-1);
     PositionComponent startPosition(10, static_cast<float>(rand() % 80));
     VelocityComponent velocity{0.0f, 0.0f};
     AnimationComponent animationComponent({99.6, 0}, {33.2, 17.2});
@@ -192,6 +193,7 @@ Entity EntityFactory::createPlayer(
     componentManager.addComponent<SpriteDataComponent>(player.getId(), spriteData);
     componentManager.addComponent<VelocityComponent>(player.getId(), velocity);
     componentManager.addComponent<AnimationComponent>(player.getId(), animationComponent);
+    componentManager.addComponent<FrontComponent>(player.getId(), frontComponent);
 
     return player;
 }

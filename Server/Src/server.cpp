@@ -99,12 +99,24 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
                 client->Send(ResponseMsg);
 
                 uint32_t playerId = GetClientPlayerId(client->GetID());
-                Entity missile = _entityFactory.createPlayerMissile(
-                    _entityManager, _componentManager, playerId);
-                r_type::net::Message<TypeMessage> MissileMsg;
-                MissileMsg.header.id = TypeMessage::CreateEntityMessage;
-                MissileMsg << InitiatePlayerMissile(missile.getId());
-                MessageAllClients(MissileMsg);
+                auto frontComponent = _componentManager.getComponent<FrontComponent>(playerId);
+                if (frontComponent) {
+                    if (frontComponent.value()->targetId == -1) {
+                        Entity missile = _entityFactory.createPlayerMissile(
+                            _entityManager, _componentManager, playerId);
+                        r_type::net::Message<TypeMessage> MissileMsg;
+                        MissileMsg.header.id = TypeMessage::CreateEntityMessage;
+                        MissileMsg << InitiatePlayerMissile(missile.getId());
+                        MessageAllClients(MissileMsg);
+                    } else {
+                        Entity missile = _entityFactory.createForceWeapon(_entityManager,
+                            _componentManager, frontComponent.value()->targetId);
+                        r_type::net::Message<TypeMessage> MissileMsg;
+                        MissileMsg.header.id = TypeMessage::CreateEntityMessage;
+                        MissileMsg << InitiatePlayerMissile(missile.getId());
+                        MessageAllClients(MissileMsg);
+                    }
+                }
             } break;
             default: {
             } break;

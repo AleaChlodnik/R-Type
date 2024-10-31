@@ -637,6 +637,22 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 }
                 pos.value()->x = newPos.x;
                 pos.value()->y = newPos.y;
+
+                auto frontComponent = _componentManager.getComponent<FrontComponent>(entityId);
+                if (frontComponent.value()->targetId != -1) {
+                    std::cout << "frontComponent.targetId: " << frontComponent.value()->targetId
+                              << std::endl;
+                    auto posFront = _componentManager.getComponent<PositionComponent>(
+                        frontComponent.value()->targetId);
+                    posFront.value()->x = newPos.x + 2;
+                    posFront.value()->y = newPos.y;
+                    vf2d newPosFront = {posFront.value()->x, posFront.value()->y};
+                    uint32_t entityIdFront = frontComponent.value()->targetId;
+                    r_type::net::Message<TypeMessage> moveMsg;
+                    moveMsg.header.id = TypeMessage::MoveEntityMessage;
+                    moveMsg << entityIdFront << newPosFront;
+                    MessageAllClients(moveMsg);
+                }
             }
 
             // Update entity information and send to all clients

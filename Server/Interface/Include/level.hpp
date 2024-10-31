@@ -156,6 +156,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                     auto playerHealth1 = componentManager.getComponent<HealthComponent>(entityId1);
                     auto powerUp1 = componentManager.getComponent<PowerUpComponent>(entityId1);
                     auto enemy1 = componentManager.getComponent<EnemyComponent>(entityId1);
+                    auto weapon1 = componentManager.getComponent<WeaponComponent>(entityId1);
 
                     // component of entity 2
                     auto enemyMissile2 =
@@ -166,6 +167,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                         componentManager.getComponent<PlayerMissileComponent>(entityId2);
                     auto powerUp2 = componentManager.getComponent<PowerUpComponent>(entityId2);
                     auto enemy2 = componentManager.getComponent<EnemyComponent>(entityId2);
+                    auto weapon2 = componentManager.getComponent<WeaponComponent>(entityId2);
 
                     // Handle collision
                     if (player1) {
@@ -199,6 +201,17 @@ template <typename T> class Level : virtual public ILevel<T> {
                             Entity weapon = entityFactory.createForceWeapon(
                                 entityManager, componentManager, entityId1);
                             entitiesToAdd.push_back(weapon.getId());
+                        }
+                        if (weapon2) {
+                            auto frontComponent =
+                                componentManager.getComponent<FrontComponent>(entityId1);
+                            if (frontComponent) {
+                                frontComponent.value()->targetId = entityId2;
+                                auto vel = componentManager.getComponent<VelocityComponent>(
+                                    frontComponent.value()->targetId);
+                                vel.value()->x = 0;
+                                vel.value()->y = 0;
+                            }
                         }
                     } else if (playerMissile1) {
                         if (enemy2 || enemyMissile2) {
@@ -242,6 +255,17 @@ template <typename T> class Level : virtual public ILevel<T> {
                             Entity weapon = entityFactory.createForceWeapon(
                                 entityManager, componentManager, entityId2);
                             entitiesToAdd.push_back(weapon.getId());
+                        }
+                        if (weapon1) {
+                            auto frontComponent =
+                                componentManager.getComponent<FrontComponent>(entityId2);
+                            if (frontComponent) {
+                                frontComponent.value()->targetId = entityId1;
+                                auto vel = componentManager.getComponent<VelocityComponent>(
+                                    frontComponent.value()->targetId);
+                                vel.value()->x = 0;
+                                vel.value()->y = 0;
+                            }
                         }
                     } else if (playerMissile2) {
                         if (enemy1 || enemyMissile1) {
