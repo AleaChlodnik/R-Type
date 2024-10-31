@@ -55,8 +55,8 @@ class EntityFactory : public IEntityFactory {
      * @param componentManager The component manager used to add components to the entity.
      * @return The created basic enemy entity.
      */
-    Entity createShooterEnemy(
-        EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY) override;
+    Entity createShooterEnemy(EntityManager &entityManager, ComponentManager &componentManager,
+        int posX, int posY) override;
 
     /**
      * @brief Creates a basic monster entity.
