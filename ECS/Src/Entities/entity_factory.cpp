@@ -452,7 +452,6 @@ Entity EntityFactory::createWall(
     componentManager.addComponent<HitboxComponent>(wall.getId(), hitbox);
     componentManager.addComponent<AnimationComponent>(wall.getId(), animationComponent);
 
-
     while (CheckEntityPosition(wall.getId(), componentManager, entityManager) != -1) {
         auto wallPos = componentManager.getComponent<PositionComponent>(wall.getId());
         if (wallPos) {
