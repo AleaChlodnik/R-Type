@@ -134,6 +134,157 @@ template <typename T> class Level : virtual public ILevel<T> {
         }
     }
 
+    static bool collisionAction(r_type::net::AServer<T> *server,
+        ComponentManager &componentManager, EntityManager &entityManager,
+        std::vector<int> &entitiesToRemove, std::vector<int> &entitiesToAdd, uint32_t entityId1,
+        uint32_t entityId2)
+    {
+        // component of entity 1
+        auto player1 = componentManager.getComponent<PlayerComponent>(entityId1);
+        auto playerMissile1 = componentManager.getComponent<PlayerMissileComponent>(entityId1);
+        auto enemyMissile1 = componentManager.getComponent<EnemyMissileComponent>(entityId1);
+        auto playerHealth1 = componentManager.getComponent<HealthComponent>(entityId1);
+        auto powerUp1 = componentManager.getComponent<PowerUpComponent>(entityId1);
+        auto enemy1 = componentManager.getComponent<EnemyComponent>(entityId1);
+        auto forceWeapon1 = componentManager.getComponent<ForceWeaponComponent>(entityId1);
+        auto forceMissile1 = componentManager.getComponent<ForceMissileComponent>(entityId1);
+
+        // component of entity 2
+        auto enemyMissile2 = componentManager.getComponent<EnemyMissileComponent>(entityId2);
+        auto player2 = componentManager.getComponent<PlayerComponent>(entityId2);
+        auto playerHealth2 = componentManager.getComponent<HealthComponent>(entityId2);
+        auto playerMissile2 = componentManager.getComponent<PlayerMissileComponent>(entityId2);
+        auto powerUp2 = componentManager.getComponent<PowerUpComponent>(entityId2);
+        auto enemy2 = componentManager.getComponent<EnemyComponent>(entityId2);
+        auto forceWeapon2 = componentManager.getComponent<ForceWeaponComponent>(entityId2);
+        auto forceMissile2 = componentManager.getComponent<ForceMissileComponent>(entityId2);
+
+        // Handle collision
+        if (player1) {
+            if (playerHealth1) {
+                if (enemy2 || enemyMissile2) {
+                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
+                        entitiesToRemove.end()) {
+                        entitiesToRemove.push_back(entityId2);
+                        playerHealth1.value()->health -= 1;
+                    }
+                }
+                if (playerHealth1.value()->health <= 0) {
+                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
+                        entitiesToRemove.end()) {
+                        entitiesToRemove.push_back(entityId1);
+                    }
+                }
+                r_type::net::Message<TypeMessage> updLivesMsg;
+                updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
+                updLivesMsg << server->UpdateInfoBar(entityId1);
+                server->MessageClient(server->getClientById(server->_deqConnections,
+                                          server->GetPlayerClientId(entityId1)),
+                    updLivesMsg);
+                if (playerHealth1.value()->health <= 0) {
+                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
+                        entitiesToRemove.end()) {
+                        entitiesToRemove.push_back(entityId1);
+                    }
+                }
+            }
+            // when player collides with power up
+            if (powerUp2) {
+                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
+                    entitiesToRemove.end()) {
+                    entitiesToRemove.push_back(entityId2);
+                }
+                auto linkForceComponent =
+                    componentManager.getComponent<LinkForceComponent>(entityId1);
+                if (linkForceComponent.value()->targetId != -1) {
+                    auto forceWeapon = componentManager.getComponent<ForceWeaponComponent>(
+                        linkForceComponent.value()->targetId);
+                    if (forceWeapon) {
+                        if (forceWeapon.value()->level < 3) {
+                            forceWeapon.value()->level += 1;
+                        }
+                    }
+                } else {
+                    Entity weapon = server->GetEntityFactory().createForceWeapon(
+                        entityManager, componentManager, entityId1);
+                    entitiesToAdd.push_back(weapon.getId());
+                    auto linkForceComponent =
+                        componentManager.getComponent<LinkForceComponent>(entityId1);
+                    linkForceComponent.value()->targetId = weapon.getId();
+                }
+            }
+            if (forceWeapon2) {
+                auto frontComponent = componentManager.getComponent<FrontComponent>(entityId1);
+                if (frontComponent) {
+                    frontComponent.value()->targetId = entityId2;
+                    auto forceWeapon = componentManager.getComponent<ForceWeaponComponent>(
+                        frontComponent.value()->targetId);
+                    forceWeapon.value()->attached = true;
+                }
+            }
+            return true;
+        } else if (playerMissile1) {
+            if (enemy2 || enemyMissile2) {
+                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
+                    entitiesToRemove.end()) {
+                    entitiesToRemove.push_back(entityId1);
+                }
+                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
+                    entitiesToRemove.end()) {
+                    entitiesToRemove.push_back(entityId2);
+                }
+                int playerId = playerMissile1.value()->playerId;
+                if (auto playerScore = componentManager.getComponent<ScoreComponent>(playerId)) {
+                    playerScore.value()->score += 100;
+                }
+                r_type::net::Message<TypeMessage> updScoreMsg;
+                updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
+                updScoreMsg << server->UpdateInfoBar(playerId);
+                server->MessageClient(server->getClientById(server->_deqConnections,
+                                          server->GetPlayerClientId(playerId)),
+                    updScoreMsg);
+            }
+            return true;
+        } else if (forceMissile1) {
+            if (enemy2 || enemyMissile2) {
+                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
+                    entitiesToRemove.end()) {
+                    entitiesToRemove.push_back(entityId1);
+                }
+                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
+                    entitiesToRemove.end()) {
+                    entitiesToRemove.push_back(entityId2);
+                }
+                auto weapon = componentManager.getComponent<ForceWeaponComponent>(
+                    forceMissile1.value()->forceId);
+                if (weapon) {
+                    int playerId = weapon.value()->playerId;
+                    if (auto playerScore =
+                            componentManager.getComponent<ScoreComponent>(playerId)) {
+                        playerScore.value()->score += 100;
+                    }
+                    r_type::net::Message<TypeMessage> updScoreMsg;
+                    updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
+                    updScoreMsg << server->UpdateInfoBar(playerId);
+                    server->MessageClient(server->getClientById(server->_deqConnections,
+                                              server->GetPlayerClientId(playerId)),
+                        updScoreMsg);
+                }
+            }
+            return true;
+        } else if (forceWeapon1) {
+            if (enemyMissile2) {
+                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
+                    entitiesToRemove.end()) {
+                    entitiesToRemove.push_back(entityId2);
+                }
+                std::cout << "force weapon collided with enemy missile" << std::endl;
+            }
+            return true;
+        }
+        return false;
+    }
+
     /**
      * @brief Updates the collision status of entities in the game.
      *
@@ -160,262 +311,10 @@ template <typename T> class Level : virtual public ILevel<T> {
                 // Check for collision
                 if (_collisionSystem.get()->checkCollision(
                         componentManager, entityId1, entityId2)) {
-                    // component of entity 1
-                    auto player1 = componentManager.getComponent<PlayerComponent>(entityId1);
-                    auto playerMissile1 =
-                        componentManager.getComponent<PlayerMissileComponent>(entityId1);
-                    auto enemyMissile1 =
-                        componentManager.getComponent<EnemyMissileComponent>(entityId1);
-                    auto playerHealth1 = componentManager.getComponent<HealthComponent>(entityId1);
-                    auto powerUp1 = componentManager.getComponent<PowerUpComponent>(entityId1);
-                    auto enemy1 = componentManager.getComponent<EnemyComponent>(entityId1);
-                    auto weapon1 = componentManager.getComponent<ForceWeaponComponent>(entityId1);
-                    auto forceMissile1 =
-                        componentManager.getComponent<ForceMissileComponent>(entityId1);
-
-                    // component of entity 2
-                    auto enemyMissile2 =
-                        componentManager.getComponent<EnemyMissileComponent>(entityId2);
-                    auto player2 = componentManager.getComponent<PlayerComponent>(entityId2);
-                    auto playerHealth2 = componentManager.getComponent<HealthComponent>(entityId2);
-                    auto playerMissile2 =
-                        componentManager.getComponent<PlayerMissileComponent>(entityId2);
-                    auto powerUp2 = componentManager.getComponent<PowerUpComponent>(entityId2);
-                    auto enemy2 = componentManager.getComponent<EnemyComponent>(entityId2);
-                    auto weapon2 = componentManager.getComponent<ForceWeaponComponent>(entityId2);
-                    auto forceMissile2 =
-                        componentManager.getComponent<ForceMissileComponent>(entityId2);
-
-                    // Handle collision
-                    if (player1) {
-                        if (playerHealth1) {
-                            if (enemy2 || enemyMissile2) {
-                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                        entityId2) == entitiesToRemove.end()) {
-                                    entitiesToRemove.push_back(entityId2);
-                                }
-                                playerHealth1.value()->health -= 1;
-                            }
-                            if (playerHealth1.value()->health <= 0) {
-                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                        entityId1) == entitiesToRemove.end()) {
-                                    entitiesToRemove.push_back(entityId1);
-                                }
-                            }
-                            r_type::net::Message<TypeMessage> updLivesMsg;
-                            updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
-                            updLivesMsg << server->UpdateInfoBar(entityId1);
-                            server->MessageClient(server->getClientById(server->_deqConnections,
-                                                      server->GetPlayerClientId(entityId1)),
-                                updLivesMsg);
-                            if (playerHealth1.value()->health <= 0) {
-                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                        entityId1) == entitiesToRemove.end()) {
-                                    entitiesToRemove.push_back(entityId1);
-                                }
-                            }
-                        }
-                        // when player collides with power up
-                        if (powerUp2) {
-                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                    entityId2) == entitiesToRemove.end()) {
-                                entitiesToRemove.push_back(entityId2);
-                            }
-                            auto linkForceComponent =
-                                componentManager.getComponent<LinkForceComponent>(entityId1);
-                            if (linkForceComponent.value()->targetId != -1) {
-                                auto forceWeapon =
-                                    componentManager.getComponent<ForceWeaponComponent>(
-                                        linkForceComponent.value()->targetId);
-                                if (forceWeapon) {
-                                    if (forceWeapon.value()->level < 3) {
-                                        forceWeapon.value()->level += 1;
-                                    }
-                                }
-                            } else {
-                                Entity weapon = server->GetEntityFactory().createForceWeapon(
-                                    entityManager, componentManager, entityId1);
-                                entitiesToAdd.push_back(weapon.getId());
-                                auto linkForceComponent =
-                                    componentManager.getComponent<LinkForceComponent>(entityId1);
-                                linkForceComponent.value()->targetId = weapon.getId();
-                            }
-                        }
-                        if (weapon2) {
-                            auto frontComponent =
-                                componentManager.getComponent<FrontComponent>(entityId1);
-                            if (frontComponent) {
-                                frontComponent.value()->targetId = entityId2;
-                                auto forceWeapon =
-                                    componentManager.getComponent<ForceWeaponComponent>(
-                                        frontComponent.value()->targetId);
-                                forceWeapon.value()->attached = true;
-                            }
-                        }
-                    } else if (playerMissile1) {
-                        if (enemy2 || enemyMissile2) {
-                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                    entityId1) == entitiesToRemove.end()) {
-                                entitiesToRemove.push_back(entityId1);
-                            }
-                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                    entityId2) == entitiesToRemove.end()) {
-                                entitiesToRemove.push_back(entityId2);
-                            }
-                            int playerId = playerMissile1.value()->playerId;
-                            if (auto playerScore =
-                                    componentManager.getComponent<ScoreComponent>(playerId)) {
-                                playerScore.value()->score += 100;
-                            }
-                            r_type::net::Message<TypeMessage> updScoreMsg;
-                            updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
-                            updScoreMsg << server->UpdateInfoBar(playerId);
-                            server->MessageClient(server->getClientById(server->_deqConnections,
-                                                      server->GetPlayerClientId(playerId)),
-                                updScoreMsg);
-                        }
-                    } else if (forceMissile1) {
-                        if (enemy2 || enemyMissile2) {
-                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                    entityId1) == entitiesToRemove.end()) {
-                                entitiesToRemove.push_back(entityId1);
-                            }
-                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                    entityId2) == entitiesToRemove.end()) {
-                                entitiesToRemove.push_back(entityId2);
-                            }
-                            auto weapon = componentManager.getComponent<ForceWeaponComponent>(
-                                forceMissile1.value()->forceId);
-                            if (weapon) {
-                                int playerId = weapon.value()->playerId;
-                                if (auto playerScore =
-                                        componentManager.getComponent<ScoreComponent>(playerId)) {
-                                    playerScore.value()->score += 100;
-                                }
-                                r_type::net::Message<TypeMessage> updScoreMsg;
-                                updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
-                                updScoreMsg << server->UpdateInfoBar(playerId);
-                                server->MessageClient(
-                                    server->getClientById(server->_deqConnections,
-                                        server->GetPlayerClientId(playerId)),
-                                    updScoreMsg);
-                            }
-                        }
-                    } else if (player2) {
-                        if (playerHealth2) {
-                            if (enemy1 || enemyMissile1) {
-                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                        entityId1) == entitiesToRemove.end()) {
-                                    entitiesToRemove.push_back(entityId1);
-                                }
-                                playerHealth2.value()->health -= 1;
-                            }
-                            if (playerHealth2.value()->health <= 0) {
-                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                        entityId2) == entitiesToRemove.end()) {
-                                    entitiesToRemove.push_back(entityId2);
-                                }
-                            }
-                            r_type::net::Message<TypeMessage> updLivesMsg;
-                            updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
-                            updLivesMsg << server->UpdateInfoBar(entityId2);
-                            server->MessageClient(server->getClientById(server->_deqConnections,
-                                                      server->GetPlayerClientId(entityId2)),
-                                updLivesMsg);
-                            if (playerHealth2.value()->health <= 0) {
-                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                        entityId2) == entitiesToRemove.end()) {
-                                    entitiesToRemove.push_back(entityId2);
-                                }
-                            }
-                        }
-                        // when player collides with power up
-                        if (powerUp1) {
-                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                    entityId1) == entitiesToRemove.end()) {
-                                entitiesToRemove.push_back(entityId1);
-                            }
-                            auto linkForceComponent =
-                                componentManager.getComponent<LinkForceComponent>(entityId2);
-                            if (linkForceComponent.value()->targetId != -1) {
-                                auto forceWeapon =
-                                    componentManager.getComponent<ForceWeaponComponent>(
-                                        linkForceComponent.value()->targetId);
-                                if (forceWeapon) {
-                                    if (forceWeapon.value()->level < 3) {
-                                        forceWeapon.value()->level += 1;
-                                    }
-                                }
-                            } else {
-                                Entity weapon = server->GetEntityFactory().createForceWeapon(
-                                    entityManager, componentManager, entityId2);
-                                entitiesToAdd.push_back(weapon.getId());
-                                auto linkForceComponent =
-                                    componentManager.getComponent<LinkForceComponent>(entityId2);
-                                linkForceComponent.value()->targetId = weapon.getId();
-                            }
-                        }
-                        if (weapon1) {
-                            auto frontComponent =
-                                componentManager.getComponent<FrontComponent>(entityId2);
-                            if (frontComponent) {
-                                frontComponent.value()->targetId = entityId1;
-
-                                auto forceWeapon =
-                                    componentManager.getComponent<ForceWeaponComponent>(
-                                        frontComponent.value()->targetId);
-                                forceWeapon.value()->attached = true;
-                            }
-                        }
-                    } else if (playerMissile2) {
-                        if (enemy1 || enemyMissile1) {
-                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                    entityId1) == entitiesToRemove.end()) {
-                                entitiesToRemove.push_back(entityId1);
-                            }
-                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                    entityId2) == entitiesToRemove.end()) {
-                                entitiesToRemove.push_back(entityId2);
-                            }
-                            int playerId = playerMissile2.value()->playerId;
-                            if (auto playerScore =
-                                    componentManager.getComponent<ScoreComponent>(playerId)) {
-                                playerScore.value()->score += 100;
-                            }
-                            r_type::net::Message<TypeMessage> updScoreMsg;
-                            updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
-                            updScoreMsg << server->UpdateInfoBar(playerId);
-                            server->MessageClient(server->getClientById(server->_deqConnections,
-                                                      server->GetPlayerClientId(playerId)),
-                                updScoreMsg);
-                        }
-                    } else if (forceMissile2) {
-                        if (enemy1 || enemyMissile1) {
-                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                    entityId1) == entitiesToRemove.end()) {
-                                entitiesToRemove.push_back(entityId1);
-                            }
-                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-                                    entityId2) == entitiesToRemove.end()) {
-                                entitiesToRemove.push_back(entityId2);
-                            }
-                            auto weapon = componentManager.getComponent<ForceWeaponComponent>(
-                                forceMissile2.value()->forceId);
-                            if (weapon) {
-                                int playerId = weapon.value()->playerId;
-                                if (auto playerScore =
-                                        componentManager.getComponent<ScoreComponent>(playerId)) {
-                                    playerScore.value()->score += 100;
-                                }
-                                r_type::net::Message<TypeMessage> updScoreMsg;
-                                updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
-                                updScoreMsg << server->UpdateInfoBar(playerId);
-                                server->MessageClient(
-                                    server->getClientById(server->_deqConnections,
-                                        server->GetPlayerClientId(playerId)),
-                                    updScoreMsg);
-                            }
-                        }
+                    if (collisionAction(server, componentManager, entityManager, entitiesToRemove,
+                            entitiesToAdd, entityId1, entityId2) == false) {
+                        collisionAction(server, componentManager, entityManager, entitiesToRemove,
+                            entitiesToAdd, entityId2, entityId1);
                     }
                 }
             }
