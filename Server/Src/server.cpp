@@ -109,13 +109,12 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
                         MissileMsg << InitiatePlayerMissile(missile.getId());
                         MessageAllClients(MissileMsg);
                     } else {
-                        // TODO : fire via the weapon
-                        // Entity forceWeapon = _entityFactory.createForceWeapon(
-                        //     _entityManager, _componentManager, playerId);
-                        // r_type::net::Message<TypeMessage> MissileMsg;
-                        // MissileMsg.header.id = TypeMessage::CreateEntityMessage;
-                        // MissileMsg << InitiatePlayerMissile(forceWeapon.getId());
-                        // MessageAllClients(MissileMsg);
+                        Entity ForceMissile = _entityFactory.createForceMissile(
+                            _entityManager, _componentManager, frontComponent.value()->targetId);
+                        r_type::net::Message<TypeMessage> MissileMsg;
+                        MissileMsg.header.id = TypeMessage::CreateEntityMessage;
+                        MissileMsg << InitiatePlayerMissile(ForceMissile.getId());
+                        MessageAllClients(MissileMsg);
                     }
                 }
             } break;

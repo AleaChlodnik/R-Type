@@ -536,12 +536,14 @@ template <typename T> class Level : virtual public ILevel<T> {
                         auto weapon =
                             componentManager.getComponent<ForceWeaponComponent>(entityId);
                         if (weapon) {
-                            Entity missile = server->GetEntityFactory().createForceMissile(
-                                entityManager, componentManager, entityId);
-                            r_type::net::Message<TypeMessage> weaponMissileMsg;
-                            weaponMissileMsg.header.id = TypeMessage::CreateEntityMessage;
-                            weaponMissileMsg << server->InitiatePlayerMissile(missile.getId());
-                            server->MessageAllClients(weaponMissileMsg);
+                            if (!weapon.value()->attached) {
+                                Entity missile = server->GetEntityFactory().createForceMissile(
+                                    entityManager, componentManager, entityId);
+                                r_type::net::Message<TypeMessage> weaponMissileMsg;
+                                weaponMissileMsg.header.id = TypeMessage::CreateEntityMessage;
+                                weaponMissileMsg << server->InitiatePlayerMissile(missile.getId());
+                                server->MessageAllClients(weaponMissileMsg);
+                            }
                             shootInfo->canShoot = false;
                         } else {
                             r_type::net::Message<TypeMessage> enemyMissileMsg;
