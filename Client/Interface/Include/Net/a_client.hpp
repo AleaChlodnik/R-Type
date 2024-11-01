@@ -117,6 +117,15 @@ template <typename T> class AClient : virtual public IClient<T> {
         sf::Vector2u windowSize, TextureManager &textureManager);
     void removeEntity(int entityId, ComponentManager &componentManager);
 
+     AClient &operator=(const AClient &other)
+    {
+        if (this != &other) {
+            m_connection = nullptr; // Connections should not be copied
+            playerId = other.playerId;
+        }
+        return *this;
+    }
+
   protected:
     asio::io_context m_context;
     std::thread thrContext;

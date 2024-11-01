@@ -723,7 +723,6 @@ void Scenes::gameLoop()
         displayUpdate.join();
         renderSystem->render(componentManager);
     }
-    std::cout << "ta mere" << std::endl;
     StopGameLoop(audioSystem);
 }
 
@@ -838,6 +837,7 @@ void Scenes::StopGameLoop(std::shared_ptr<AudioSystem> &audioSystem)
     msg.header.id = TypeMessage::DestroyEntityMessage;
     msg << _networkClient.getPlayerId();
     _networkClient.Send(msg);
+    _networkClient.Disconnect();
     std::cout << "Sending client back to the main menu" << std::endl;
     _currentScene = Scenes::Scene::MAIN_MENU;
 }
