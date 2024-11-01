@@ -221,9 +221,22 @@ template <typename T> class Level : virtual public ILevel<T> {
                                     entityId2) == entitiesToRemove.end()) {
                                 entitiesToRemove.push_back(entityId2);
                             }
-                            Entity weapon = server->GetEntityFactory().createForceWeapon(
-                                entityManager, componentManager, entityId1);
-                            entitiesToAdd.push_back(weapon.getId());
+                            auto frontComponent =
+                                componentManager.getComponent<FrontComponent>(entityId1);
+                            if (frontComponent.value()->targetId != -1) {
+                                auto forceWeapon =
+                                    componentManager.getComponent<ForceWeaponComponent>(
+                                        frontComponent.value()->targetId);
+                                if (forceWeapon) {
+                                    if (forceWeapon.value()->level < 3) {
+                                        forceWeapon.value()->level += 1;
+                                    }
+                                }
+                            } else {
+                                Entity weapon = server->GetEntityFactory().createForceWeapon(
+                                    entityManager, componentManager, entityId1);
+                                entitiesToAdd.push_back(weapon.getId());
+                            }
                         }
                         if (weapon2) {
                             auto frontComponent =
@@ -319,9 +332,22 @@ template <typename T> class Level : virtual public ILevel<T> {
                                     entityId1) == entitiesToRemove.end()) {
                                 entitiesToRemove.push_back(entityId1);
                             }
-                            Entity weapon = server->GetEntityFactory().createForceWeapon(
-                                entityManager, componentManager, entityId2);
-                            entitiesToAdd.push_back(weapon.getId());
+                            auto frontComponent =
+                                componentManager.getComponent<FrontComponent>(entityId2);
+                            if (frontComponent.value()->targetId != -1) {
+                                auto forceWeapon =
+                                    componentManager.getComponent<ForceWeaponComponent>(
+                                        frontComponent.value()->targetId);
+                                if (forceWeapon) {
+                                    if (forceWeapon.value()->level < 3) {
+                                        forceWeapon.value()->level += 1;
+                                    }
+                                }
+                            } else {
+                                Entity weapon = server->GetEntityFactory().createForceWeapon(
+                                    entityManager, componentManager, entityId2);
+                                entitiesToAdd.push_back(weapon.getId());
+                            }
                         }
                         if (weapon1) {
                             auto frontComponent =

@@ -51,14 +51,24 @@ enum class AnimationBasicMonster : uint32_t
     BASIC_MONSTER_7
 };
 
-enum class AnimationWeapon1 : uint32_t
+enum class AnimationForceWeapon1 : uint32_t
 {
-    WEAPON_1_DEFAULT,
-    WEAPON_1_1,
-    WEAPON_1_2,
-    WEAPON_1_3,
-    WEAPON_1_4,
-    WEAPON_1_5
+    FORCE_WEAPON_DEFAULT,
+    FORCE_WEAPON_1,
+    FORCE_WEAPON_2,
+    FORCE_WEAPON_3,
+    FORCE_WEAPON_4,
+    FORCE_WEAPON_5
+};
+
+enum class AnimationForceWeapon2 : uint32_t
+{
+    FORCE_WEAPON_DEFAULT,
+    FORCE_WEAPON_1,
+    FORCE_WEAPON_2,
+    FORCE_WEAPON_3,
+    FORCE_WEAPON_4,
+    FORCE_WEAPON_5
 };
 
 /**
@@ -85,7 +95,7 @@ vf2d animationShipFactory(AnimationShip animation);
 class AnimationSystem : public ISystem {
   public:
     AnimationSystem(ComponentManager &componentManager, EntityManager &entityManager)
-        : _componentManager(componentManager), _entityManager(entityManager){};
+        : _componentManager(componentManager), _entityManager(entityManager) {};
 
     /**
      * @brief Animates entities.
@@ -106,7 +116,11 @@ class AnimationSystem : public ISystem {
 
     void animateBasicMonster(std::optional<AnimationComponent *> &animation);
 
-    void animateWeapon(std::optional<AnimationComponent *> &animation);
+    void animateForceWeaponLevel1(std::optional<AnimationComponent *> &animation);
+
+    void animateForceWeaponLevel2(std::optional<AnimationComponent *> &animation);
+
+    void animateForceWeaponLevel3(std::optional<AnimationComponent *> &animation);
 
   private:
     /**
