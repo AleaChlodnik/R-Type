@@ -170,28 +170,28 @@ static vf2d animationForceMissile3Factory(AnimationForceMissile3 animation)
 {
     switch (animation) {
     case AnimationForceMissile3::FORCE_MISSILE_DEFAULT: {
-        return {25 + 65.5 * 0, 479};
+        return {25 + 68.75 * 0, 470};
     } break;
     case AnimationForceMissile3::FORCE_MISSILE_1: {
-        return {25 + 65.5 * 1, 479};
+        return {25 + 68.75 * 1, 470};
     } break;
     case AnimationForceMissile3::FORCE_MISSILE_2: {
-        return {25 + 65.5 * 2, 479};
+        return {25 + 68.75 * 2, 470};
     } break;
     case AnimationForceMissile3::FORCE_MISSILE_3: {
-        return {25 + 65.5 * 3, 479};
+        return {25 + 68.75 * 3, 470};
     } break;
     case AnimationForceMissile3::FORCE_MISSILE_4: {
-        return {25 + 65.5 * 0, 479 + 35};
+        return {25 + 68.75 * 0, 470 + 34};
     } break;
     case AnimationForceMissile3::FORCE_MISSILE_5: {
-        return {25 + 65.5 * 1, 479 + 35};
+        return {25 + 68.75 * 1, 470 + 34};
     } break;
     case AnimationForceMissile3::FORCE_MISSILE_6: {
-        return {25 + 65.5 * 2, 479 + 35};
+        return {25 + 68.75 * 2, 470 + 34};
     } break;
     case AnimationForceMissile3::FORCE_MISSILE_7: {
-        return {25 + 65.5 * 3, 479 + 35};
+        return {25 + 68.75 * 3, 470 + 34};
     } break;
     }
     return {0, 0};
@@ -512,7 +512,7 @@ void AnimationSystem::animateForceMissile(std::optional<ForceWeaponComponent *> 
         animateForceMissileLevel2(animation);
         break;
     case 3:
-        animation.value()->dimension = {31.5, 33};
+        animation.value()->dimension = {68.75, 32};
         animateForceMissileLevel3(animation);
         break;
     default:
