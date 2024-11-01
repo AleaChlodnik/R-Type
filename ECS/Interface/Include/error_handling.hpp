@@ -56,3 +56,11 @@ class failedToLoadFont : public std::exception {
 class playerIdNotFound : public std::exception {
     const char *what() const noexcept override { return "Player ID not found"; }
 };
+
+class failedToCreateFile : public std::exception {
+    const char *what() const noexcept override { return "Failed to create file"; }
+};
+
+class failedToOpenFile : public std::exception {
+    const char *what() const noexcept override { return "Failed to open file"; }
+};

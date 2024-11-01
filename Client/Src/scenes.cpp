@@ -776,7 +776,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         r_type::net::Message<TypeMessage> response;
         uint32_t id;
         msg >> id;
-        audioSystem->playSoundEffect(SoundFactory(ActionType::Explosion));
+        // audioSystem->playSoundEffect(SoundFactory(ActionType::Explosion));
         if (id == _networkClient.getPlayerId()) {
             StopGameLoop(audioSystem);
         }

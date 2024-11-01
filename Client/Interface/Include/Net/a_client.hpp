@@ -110,7 +110,7 @@ template <typename T> class AClient : virtual public IClient<T> {
 
     const std::unique_ptr<Connection<T>> &getConnection() { return m_connection; }
 
-    void setPlayerId(int id) { playerId = id; }
+    void setPlayerId(uint32_t id) { playerId = id; }
     uint32_t getPlayerId() { return playerId; }
 
     void setWindowSize(sf::Vector2u size) { windowSize = size; }

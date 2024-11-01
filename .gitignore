@@ -36,6 +36,7 @@ r-type_server
 # cmake
 build
 doc_doxygen
+GameScores
 
 # makefile
 bin

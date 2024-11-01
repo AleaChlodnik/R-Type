@@ -169,12 +169,6 @@ template <typename T> class Level : virtual public ILevel<T> {
                         playerHealth1.value()->health -= 1;
                     }
                 }
-                if (playerHealth1.value()->health <= 0) {
-                    if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
-                        entitiesToRemove.end()) {
-                        entitiesToRemove.push_back(entityId1);
-                    }
-                }
                 r_type::net::Message<TypeMessage> updLivesMsg;
                 updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
                 updLivesMsg << server->UpdateInfoBar(entityId1);
@@ -333,6 +327,9 @@ template <typename T> class Level : virtual public ILevel<T> {
             msg.header.id = TypeMessage::DestroyEntityMessage;
             msg << entityId;
             server->MessageAllClients(msg);
+            if (auto playerComponent = componentManager.getComponent<PlayerComponent>(entityId)) {
+                continue;
+            }
             componentManager.removeEntityFromAllComponents(entityId);
             entityManager.removeEntity(entityId);
         }

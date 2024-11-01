@@ -16,7 +16,10 @@
 #include <cmath>
 #include <entity_struct.hpp>
 #include <error_handling.hpp>
+#include <filesystem>
+#include <fstream>
 #include <game_struct.h>
+#include <iostream>
 #include <level.hpp>
 #include <macros.hpp>
 #include <unordered_map>
@@ -405,6 +408,31 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             moveMsg.header.id = TypeMessage::MoveEntityMessage;
             moveMsg << entityId << newPos;
             MessageAllClients(moveMsg);
+        }
+    }
+
+    void SavePlayerScore(uint32_t playerId)
+    {
+        std::string directory = "GameScores";
+        std::string filePath = directory + "/scores.txt";
+        if (!std::filesystem::exists(directory)) {
+            std::filesystem::create_directory(directory);
+        }
+        if (!std::filesystem::exists(filePath)) {
+            std::ofstream outFile(filePath); // Creating the file
+            if (!outFile) {
+                throw failedToCreateFile();
+            }
+            outFile.close();
+        }
+        std::ofstream outFile(filePath, std::ios_base::app); // Open in append mode
+        if (!outFile) {
+            throw failedToOpenFile();
+        }
+        if (auto scoreComponent = _componentManager.getComponent<ScoreComponent>(playerId)) {
+            std::string playerID = "Player " + std::to_string(playerId);
+            outFile << playerID << ": " << scoreComponent.value()->score << "\n";
+            outFile.close();
         }
     }
 
