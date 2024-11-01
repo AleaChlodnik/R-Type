@@ -221,12 +221,12 @@ template <typename T> class Level : virtual public ILevel<T> {
                                     entityId2) == entitiesToRemove.end()) {
                                 entitiesToRemove.push_back(entityId2);
                             }
-                            auto frontComponent =
-                                componentManager.getComponent<FrontComponent>(entityId1);
-                            if (frontComponent.value()->targetId != -1) {
+                            auto linkForceComponent =
+                                componentManager.getComponent<LinkForceComponent>(entityId1);
+                            if (linkForceComponent.value()->targetId != -1) {
                                 auto forceWeapon =
                                     componentManager.getComponent<ForceWeaponComponent>(
-                                        frontComponent.value()->targetId);
+                                        linkForceComponent.value()->targetId);
                                 if (forceWeapon) {
                                     if (forceWeapon.value()->level < 3) {
                                         forceWeapon.value()->level += 1;
@@ -236,6 +236,9 @@ template <typename T> class Level : virtual public ILevel<T> {
                                 Entity weapon = server->GetEntityFactory().createForceWeapon(
                                     entityManager, componentManager, entityId1);
                                 entitiesToAdd.push_back(weapon.getId());
+                                auto linkForceComponent =
+                                componentManager.getComponent<LinkForceComponent>(entityId1);
+                                linkForceComponent.value()->targetId = weapon.getId();
                             }
                         }
                         if (weapon2) {
@@ -332,12 +335,12 @@ template <typename T> class Level : virtual public ILevel<T> {
                                     entityId1) == entitiesToRemove.end()) {
                                 entitiesToRemove.push_back(entityId1);
                             }
-                            auto frontComponent =
-                                componentManager.getComponent<FrontComponent>(entityId2);
-                            if (frontComponent.value()->targetId != -1) {
+                            auto linkForceComponent =
+                                componentManager.getComponent<LinkForceComponent>(entityId2);
+                            if (linkForceComponent.value()->targetId != -1) {
                                 auto forceWeapon =
                                     componentManager.getComponent<ForceWeaponComponent>(
-                                        frontComponent.value()->targetId);
+                                        linkForceComponent.value()->targetId);
                                 if (forceWeapon) {
                                     if (forceWeapon.value()->level < 3) {
                                         forceWeapon.value()->level += 1;
@@ -347,6 +350,8 @@ template <typename T> class Level : virtual public ILevel<T> {
                                 Entity weapon = server->GetEntityFactory().createForceWeapon(
                                     entityManager, componentManager, entityId2);
                                 entitiesToAdd.push_back(weapon.getId());
+                                auto linkForceComponent = componentManager.getComponent<LinkForceComponent>(entityId2);
+                                linkForceComponent.value()->targetId = weapon.getId();
                             }
                         }
                         if (weapon1) {

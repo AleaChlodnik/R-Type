@@ -21,6 +21,7 @@
 #include "health_component.hpp"
 #include "hitbox_component.hpp"
 #include "input_component.hpp"
+#include "link_force_component.hpp"
 #include "movement_component.hpp"
 #include "offset_component.hpp"
 #include "on_click_component.hpp"

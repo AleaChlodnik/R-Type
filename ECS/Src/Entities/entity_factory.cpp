@@ -160,6 +160,7 @@ Entity EntityFactory::createPlayer(
 
     PlayerComponent playerComponent;
     FrontComponent frontComponent(-1);
+    LinkForceComponent linkForceComponent(-1);
     PositionComponent startPosition(10, static_cast<float>(rand() % 80));
     VelocityComponent velocity{0.0f, 0.0f};
     ScoreComponent score{0};
@@ -196,6 +197,7 @@ Entity EntityFactory::createPlayer(
     componentManager.addComponent<HealthComponent>(player.getId(), health);
     componentManager.addComponent<InputComponent>(player.getId(), input);
     componentManager.addComponent<FrontComponent>(player.getId(), frontComponent);
+    componentManager.addComponent<LinkForceComponent>(player.getId(), linkForceComponent);
 
     return player;
 }
