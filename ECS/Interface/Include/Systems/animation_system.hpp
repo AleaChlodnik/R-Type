@@ -125,7 +125,7 @@ vf2d animationShipFactory(AnimationShip animation);
 class AnimationSystem : public ISystem {
   public:
     AnimationSystem(ComponentManager &componentManager, EntityManager &entityManager)
-        : _componentManager(componentManager), _entityManager(entityManager) {};
+        : _componentManager(componentManager), _entityManager(entityManager){};
 
     /**
      * @brief Animates entities.
