@@ -340,7 +340,7 @@ Entity EntityFactory::createForceMissile(
     ForceMissileComponent forceMissileComponent{forceId};
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{3.0f, 0.0f};
-    AnimationComponent animationComponent({249, 88}, {16, 8});
+    AnimationComponent animationComponent({284, 59}, {16, 4});
     SpriteDataComponent spriteData{
         SpritePath::ForceMissile, {1.0f, 1.0f}, AScenes::SpriteType::WEAPON};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
