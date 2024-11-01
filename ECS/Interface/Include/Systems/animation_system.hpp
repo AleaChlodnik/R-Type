@@ -79,6 +79,28 @@ enum class AnimationForceWeapon3 : uint32_t
     FORCE_WEAPON_3
 };
 
+enum class AnimationForceMissile1 : uint32_t
+{
+    FORCE_MISSILE_DEFAULT
+};
+
+enum class AnimationForceMissile2 : uint32_t
+{
+    FORCE_MISSILE_DEFAULT
+};
+
+enum class AnimationForceMissile3 : uint32_t
+{
+    FORCE_MISSILE_DEFAULT,
+    FORCE_MISSILE_1,
+    FORCE_MISSILE_2,
+    FORCE_MISSILE_3,
+    FORCE_MISSILE_4,
+    FORCE_MISSILE_5,
+    FORCE_MISSILE_6,
+    FORCE_MISSILE_7
+};
+
 /**
  * @brief get if two animations are different.
  *
@@ -103,7 +125,7 @@ vf2d animationShipFactory(AnimationShip animation);
 class AnimationSystem : public ISystem {
   public:
     AnimationSystem(ComponentManager &componentManager, EntityManager &entityManager)
-        : _componentManager(componentManager), _entityManager(entityManager){};
+        : _componentManager(componentManager), _entityManager(entityManager) {};
 
     /**
      * @brief Animates entities.
@@ -124,11 +146,11 @@ class AnimationSystem : public ISystem {
 
     void animateBasicMonster(std::optional<AnimationComponent *> &animation);
 
-    void animateForceWeaponLevel1(std::optional<AnimationComponent *> &animation);
+    void animateForceWeapon(std::optional<ForceWeaponComponent *> &forceWeapon,
+        std::optional<AnimationComponent *> &animation);
 
-    void animateForceWeaponLevel2(std::optional<AnimationComponent *> &animation);
-
-    void animateForceWeaponLevel3(std::optional<AnimationComponent *> &animation);
+    void animateForceMissile(std::optional<ForceWeaponComponent *> &forceWeapon,
+        std::optional<AnimationComponent *> &animation);
 
   private:
     /**

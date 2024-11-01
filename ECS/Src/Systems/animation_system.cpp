@@ -7,6 +7,9 @@
 
 #include <Systems/systems.hpp>
 
+// Define equality operator for vf2d
+bool operator==(const vf2d &lhs, const vf2d &rhs) { return lhs.x == rhs.x && lhs.y == rhs.y; }
+
 /**
  * @brief Generates a vector representing the animation state of a ship.
  *
@@ -143,6 +146,57 @@ static vf2d animationForceWeapon3Factory(AnimationForceWeapon3 animation)
     return {0, 0};
 }
 
+static vf2d animationForceMissile1Factory(AnimationForceMissile1 animation)
+{
+    switch (animation) {
+    case AnimationForceMissile1::FORCE_MISSILE_DEFAULT: {
+        return {284, 59};
+    } break;
+    }
+    return {0, 0};
+}
+
+static vf2d animationForceMissile2Factory(AnimationForceMissile2 animation)
+{
+    switch (animation) {
+    case AnimationForceMissile2::FORCE_MISSILE_DEFAULT: {
+        return {300, 224};
+    } break;
+    }
+    return {0, 0};
+}
+
+static vf2d animationForceMissile3Factory(AnimationForceMissile3 animation)
+{
+    switch (animation) {
+    case AnimationForceMissile3::FORCE_MISSILE_DEFAULT: {
+        return {25 + 65.5 * 0, 479};
+    } break;
+    case AnimationForceMissile3::FORCE_MISSILE_1: {
+        return {25 + 65.5 * 1, 479};
+    } break;
+    case AnimationForceMissile3::FORCE_MISSILE_2: {
+        return {25 + 65.5 * 2, 479};
+    } break;
+    case AnimationForceMissile3::FORCE_MISSILE_3: {
+        return {25 + 65.5 * 3, 479};
+    } break;
+    case AnimationForceMissile3::FORCE_MISSILE_4: {
+        return {25 + 65.5 * 0, 479 + 35};
+    } break;
+    case AnimationForceMissile3::FORCE_MISSILE_5: {
+        return {25 + 65.5 * 1, 479 + 35};
+    } break;
+    case AnimationForceMissile3::FORCE_MISSILE_6: {
+        return {25 + 65.5 * 2, 479 + 35};
+    } break;
+    case AnimationForceMissile3::FORCE_MISSILE_7: {
+        return {25 + 65.5 * 3, 479 + 35};
+    } break;
+    }
+    return {0, 0};
+}
+
 /**
  * @brief Inequality operator for AnimationComponent.
  *
@@ -192,25 +246,20 @@ void AnimationSystem::AnimationEntities(
                 animateBasicMonster(animation);
             }
 
-            // animate system for weapon
-            auto weapon = componentManager.getComponent<ForceWeaponComponent>(entity.getId());
-            if (weapon) {
-                switch (weapon.value()->level) {
-                case 1:
-                    animation.value()->dimension = {24, 16};
-                    animateForceWeaponLevel1(animation);
-                    break;
-                case 2:
-                    animation.value()->dimension = {30, 24};
-                    animateForceWeaponLevel2(animation);
-                    break;
-                case 3:
-                    animation.value()->dimension = {31.5, 33};
-                    animateForceWeaponLevel3(animation);
-                    break;
-                default:
-                    animateForceWeaponLevel1(animation);
-                    break;
+            // animate system for force weapon
+            auto forceWeapon = componentManager.getComponent<ForceWeaponComponent>(entity.getId());
+            if (forceWeapon) {
+                animateForceWeapon(forceWeapon, animation);
+            }
+            // animate system for force missile
+            auto forceMissile =
+                componentManager.getComponent<ForceMissileComponent>(entity.getId());
+            if (forceMissile) {
+                auto forceWeaponOfForceMissile =
+                    componentManager.getComponent<ForceWeaponComponent>(
+                        forceMissile.value()->forceId);
+                if (forceWeaponOfForceMissile) {
+                    animateForceMissile(forceWeaponOfForceMissile, animation);
                 }
             }
 
@@ -281,7 +330,7 @@ void AnimationSystem::animateBasicMonster(std::optional<AnimationComponent *> &a
     }
 }
 
-void AnimationSystem::animateForceWeaponLevel1(std::optional<AnimationComponent *> &animation)
+static void animateForceWeaponLevel1(std::optional<AnimationComponent *> &animation)
 {
     if (animation.value()->offset.x ==
         animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_DEFAULT).x) {
@@ -314,7 +363,7 @@ void AnimationSystem::animateForceWeaponLevel1(std::optional<AnimationComponent 
     }
 }
 
-void AnimationSystem::animateForceWeaponLevel2(std::optional<AnimationComponent *> &animation)
+static void animateForceWeaponLevel2(std::optional<AnimationComponent *> &animation)
 {
     if (animation.value()->offset.x ==
         animationForceWeapon2Factory(AnimationForceWeapon2::FORCE_WEAPON_DEFAULT).x) {
@@ -347,7 +396,7 @@ void AnimationSystem::animateForceWeaponLevel2(std::optional<AnimationComponent 
     }
 }
 
-void AnimationSystem::animateForceWeaponLevel3(std::optional<AnimationComponent *> &animation)
+static void animateForceWeaponLevel3(std::optional<AnimationComponent *> &animation)
 {
     if (animation.value()->offset.x ==
         animationForceWeapon3Factory(AnimationForceWeapon3::FORCE_WEAPON_DEFAULT).x) {
@@ -369,5 +418,105 @@ void AnimationSystem::animateForceWeaponLevel3(std::optional<AnimationComponent 
         // default animation
         animation.value()->offset =
             animationForceWeapon3Factory(AnimationForceWeapon3::FORCE_WEAPON_DEFAULT);
+    }
+}
+
+void AnimationSystem::animateForceWeapon(std::optional<ForceWeaponComponent *> &forceWeapon,
+    std::optional<AnimationComponent *> &animation)
+{
+    switch (forceWeapon.value()->level) {
+    case 1:
+        animation.value()->dimension = {24, 16};
+        animateForceWeaponLevel1(animation);
+        break;
+    case 2:
+        animation.value()->dimension = {30, 24};
+        animateForceWeaponLevel2(animation);
+        break;
+    case 3:
+        animation.value()->dimension = {31.5, 33};
+        animateForceWeaponLevel3(animation);
+        break;
+    default:
+        animateForceWeaponLevel1(animation);
+        break;
+    }
+}
+
+static void animateForceMissileLevel1(std::optional<AnimationComponent *> &animation)
+{
+    // default animation
+    animation.value()->offset =
+        animationForceMissile1Factory(AnimationForceMissile1::FORCE_MISSILE_DEFAULT);
+}
+
+static void animateForceMissileLevel2(std::optional<AnimationComponent *> &animation)
+{
+    // default animation
+    animation.value()->offset =
+        animationForceMissile2Factory(AnimationForceMissile2::FORCE_MISSILE_DEFAULT);
+}
+
+static void animateForceMissileLevel3(std::optional<AnimationComponent *> &animation)
+{
+    if (animation.value()->offset ==
+        animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_DEFAULT)) {
+        animation.value()->offset =
+            animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_1);
+    } else if (animation.value()->offset ==
+        animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_1)) {
+        animation.value()->offset =
+            animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_2);
+    } else if (animation.value()->offset ==
+        animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_2)) {
+        animation.value()->offset =
+            animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_3);
+    } else if (animation.value()->offset ==
+        animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_3)) {
+        animation.value()->offset =
+            animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_4);
+    } else if (animation.value()->offset ==
+        animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_4)) {
+        animation.value()->offset =
+            animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_5);
+    } else if (animation.value()->offset ==
+        animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_5)) {
+        animation.value()->offset =
+            animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_6);
+    } else if (animation.value()->offset ==
+        animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_6)) {
+        animation.value()->offset =
+            animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_7);
+    } else if (animation.value()->offset ==
+        animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_7)) {
+        animation.value()->offset =
+            animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_DEFAULT);
+    } else {
+        // default animation
+        animation.value()->offset =
+            animationForceMissile3Factory(AnimationForceMissile3::FORCE_MISSILE_DEFAULT);
+    }
+}
+
+void AnimationSystem::animateForceMissile(std::optional<ForceWeaponComponent *> &forceWeapon,
+    std::optional<AnimationComponent *> &animation)
+{
+    std::cout << "forceWeapon->level: " << forceWeapon.value()->level << std::endl;
+    switch (forceWeapon.value()->level) {
+    case 1:
+        animation.value()->dimension = {16, 4};
+        animateForceMissileLevel1(animation);
+        break;
+    case 2:
+        animation.value()->dimension = {13, 3};
+        animateForceMissileLevel2(animation);
+        break;
+    case 3:
+        animation.value()->dimension = {31.5, 33};
+        animateForceMissileLevel3(animation);
+        break;
+    default:
+        animateForceMissileLevel1(animation);
+        break;
     }
 }
