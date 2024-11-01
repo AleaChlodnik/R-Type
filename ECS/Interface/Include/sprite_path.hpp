@@ -34,6 +34,7 @@ enum class SpritePath : uint32_t
     Boss,
     BossBullet,
     Bar,
+    Wall,
     NONE,
 };
 

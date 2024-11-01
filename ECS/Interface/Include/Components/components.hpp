@@ -37,3 +37,4 @@
 #include "text_component.hpp"
 #include "text_data_component.hpp"
 #include "velocity_component.hpp"
+#include "wall_component.hpp"

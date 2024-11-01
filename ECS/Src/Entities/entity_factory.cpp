@@ -430,6 +430,39 @@ Entity EntityFactory::createEnemyMissile(
     return enemyMissile;
 }
 
+Entity EntityFactory::createWall(
+    EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY)
+{
+    Entity wall = entityManager.createEntity();
+
+    EnemyComponent enemyComponent;
+    WallComponent wallComponent;
+    PositionComponent startPosition(posX, posY);
+    VelocityComponent velocity{-1.0f, 0.0f};
+    AnimationComponent animationComponent({0, 0}, {32, 32});
+    SpriteDataComponent spriteData{SpritePath::Wall, {1.0f, 1.0f}, AScenes::SpriteType::ENEMY};
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
+
+    componentManager.addComponent<EnemyComponent>(wall.getId(), enemyComponent);
+    componentManager.addComponent<WallComponent>(wall.getId(), wallComponent);
+    componentManager.addComponent<PositionComponent>(wall.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(wall.getId(), velocity);
+    componentManager.addComponent<SpriteDataComponent>(wall.getId(), spriteData);
+    componentManager.addComponent<HitboxComponent>(wall.getId(), hitbox);
+    componentManager.addComponent<AnimationComponent>(wall.getId(), animationComponent);
+
+
+    while (CheckEntityPosition(wall.getId(), componentManager, entityManager) != -1) {
+        auto wallPos = componentManager.getComponent<PositionComponent>(wall.getId());
+        if (wallPos) {
+            wallPos.value()->y = static_cast<float>(rand() % 100);
+        }
+    }
+
+    return wall;
+}
+
 Entity EntityFactory::createButton(EntityManager &entityManager,
     ComponentManager &componentManager, TextureManager &textureManager, FontManager &fontManager,
     std::string text, std::function<IScenes *(AScenes *)> *onClick, float x, float y)

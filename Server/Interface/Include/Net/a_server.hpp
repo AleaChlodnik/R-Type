@@ -68,6 +68,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         gameParameters.spawnTimeBasicMonster = 3;
         gameParameters.nbrOfShooterEnemy = 1;
         gameParameters.spawnTimeShooterEnemy = 1;
+        gameParameters.nbrOfWall = 3;
+        gameParameters.spawnTimeWall = 5;
         gameParameters.levelType = TypeLevel::LevelOne;
         _level.SetGameParameters(gameParameters);
 

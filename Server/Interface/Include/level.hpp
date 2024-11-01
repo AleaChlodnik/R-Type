@@ -484,6 +484,12 @@ template <typename T> class Level : virtual public ILevel<T> {
                 EntityFactory::EnemyType::ShooterEnemy);
             _shooterEnemySpawnTime = server->GetClock();
         }
+        if (std::chrono::duration_cast<std::chrono::seconds>(server->GetClock() - _WallSpawnTime)
+                .count() > _gameParameters.spawnTimeWall) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfWall,
+                EntityFactory::EnemyType::Wall);
+            _WallSpawnTime = server->GetClock();
+        }
     }
 
     /**
@@ -506,10 +512,9 @@ template <typename T> class Level : virtual public ILevel<T> {
     {
         switch (enemyType) {
         case EntityFactory::EnemyType::BasicMonster: {
-            int posX, posY;
             int i = 0;
-            posY = static_cast<int>((rand() % 70) + 10);
-            posX = 100;
+            int posX = 100;
+            int posY = static_cast<int>((rand() % 70) + 10);
             while (i < nbrOfEnemy) {
                 Entity Monster = server->GetEntityFactory().createBasicMonster(
                     entityManager, componentManager, posX, posY);
@@ -525,10 +530,9 @@ template <typename T> class Level : virtual public ILevel<T> {
             }
         } break;
         case EntityFactory::EnemyType::ShooterEnemy: {
-            int posX, posY;
             int i = 0;
-            posX = 99;
-            posY = static_cast<int>((rand() % 70) + 10);
+            int posX = 99;
+            int posY = static_cast<int>((rand() % 70) + 10);
             while (i < nbrOfEnemy) {
                 Entity ShooterEnemy = server->GetEntityFactory().createShooterEnemy(
                     entityManager, componentManager, posX, posY);
@@ -540,6 +544,26 @@ template <typename T> class Level : virtual public ILevel<T> {
                 r_type::net::Message<TypeMessage> msg;
                 msg.header.id = TypeMessage::CreateEntityMessage;
                 msg << server->FormatEntityInformation(ShooterEnemy.getId());
+                server->MessageAllClients(msg);
+                i++;
+            }
+        } break;
+        case EntityFactory::EnemyType::Wall: {
+            int i = 0;
+            int posX = 99;
+            int posY = static_cast<int>((rand() % 70) + 10);
+
+            while (i < nbrOfEnemy) {
+                Entity wall = server->GetEntityFactory().createWall(
+                    entityManager, componentManager, posX, posY);
+                posX += 5;
+                posY += (static_cast<int>(rand() % 20) - static_cast<int>(rand() % 10));
+
+                if (posY > 90)
+                    posY = static_cast<int>((rand() % 70) + 10);
+                r_type::net::Message<TypeMessage> msg;
+                msg.header.id = TypeMessage::CreateEntityMessage;
+                msg << server->FormatEntityInformation(wall.getId());
                 server->MessageAllClients(msg);
                 i++;
             }
@@ -568,6 +592,7 @@ template <typename T> class Level : virtual public ILevel<T> {
         std::chrono::system_clock::now();
     std::chrono::system_clock::time_point _shooterEnemySpawnTime =
         std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point _WallSpawnTime = std::chrono::system_clock::now();
     std::chrono::system_clock::time_point _spawnTimeMonsterThree;
 
     GameParameters _gameParameters;

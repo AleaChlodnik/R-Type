@@ -123,6 +123,9 @@ class IEntityFactory {
     virtual Entity createPowerUpBlueLaserCrystal(
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
+    virtual Entity createWall(
+        EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY) = 0;
+
     /**
      * @brief Creates an enemy missile entity.
      *
@@ -165,6 +168,7 @@ class IEntityFactory {
     {
         BasicMonster,
         ShooterEnemy,
+        Wall,
         Boss,
     };
 };
