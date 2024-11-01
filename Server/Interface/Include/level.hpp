@@ -237,7 +237,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                                     entityManager, componentManager, entityId1);
                                 entitiesToAdd.push_back(weapon.getId());
                                 auto linkForceComponent =
-                                componentManager.getComponent<LinkForceComponent>(entityId1);
+                                    componentManager.getComponent<LinkForceComponent>(entityId1);
                                 linkForceComponent.value()->targetId = weapon.getId();
                             }
                         }
@@ -350,7 +350,8 @@ template <typename T> class Level : virtual public ILevel<T> {
                                 Entity weapon = server->GetEntityFactory().createForceWeapon(
                                     entityManager, componentManager, entityId2);
                                 entitiesToAdd.push_back(weapon.getId());
-                                auto linkForceComponent = componentManager.getComponent<LinkForceComponent>(entityId2);
+                                auto linkForceComponent =
+                                    componentManager.getComponent<LinkForceComponent>(entityId2);
                                 linkForceComponent.value()->targetId = weapon.getId();
                             }
                         }
