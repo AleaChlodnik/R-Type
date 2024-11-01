@@ -43,7 +43,10 @@ std::string SpriteFactory(SpritePath sprite)
     case SpritePath::Background3: {
         return "Client/Assets/Sprites/Background/background5.png";
     } break;
-    case SpritePath::Weapon: {
+    case SpritePath::ForceWeapon: {
+        return "Client/Assets/Sprites/Weapon/weapon_sheet.gif";
+    } break;
+    case SpritePath::ForceMissile: {
         return "Client/Assets/Sprites/Weapon/weapon_sheet.gif";
     } break;
     case SpritePath::BlueLaserCrystal: {
@@ -52,8 +55,6 @@ std::string SpriteFactory(SpritePath sprite)
     case SpritePath::Bar: {
         return "Client/Assets/Sprites/Bars/info_bar.png";
     } break;
-    default: {
-        return "";
-    } break;
     }
+    return "";
 }

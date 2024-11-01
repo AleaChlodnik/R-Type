@@ -149,7 +149,7 @@ void AnimationSystem::AnimationEntities(
             }
 
             // animate system for weapon
-            auto weapon = componentManager.getComponent<WeaponComponent>(entity.getId());
+            auto weapon = componentManager.getComponent<ForceWeaponComponent>(entity.getId());
             if (weapon) {
                 animateWeapon(animation);
             }

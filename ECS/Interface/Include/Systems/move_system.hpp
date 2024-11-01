@@ -16,6 +16,8 @@ class MoveSystem : public ISystem {
 
     void moveEntities(ComponentManager &componentManager, EntityManager &entityManager);
 
+    void moveEntity(ComponentManager &componentManager, int entityId);
+
   private:
     ComponentManager &_componentManager;
     EntityManager &_entityManager;

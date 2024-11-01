@@ -16,6 +16,7 @@
 #include "enemy_component.hpp"
 #include "enemy_missile_component.hpp"
 #include "force_missile_component.hpp"
+#include "force_weapon_component.hpp"
 #include "front_component.hpp"
 #include "health_component.hpp"
 #include "hitbox_component.hpp"
@@ -35,4 +36,3 @@
 #include "text_component.hpp"
 #include "text_data_component.hpp"
 #include "velocity_component.hpp"
-#include "weapon_component.hpp"
