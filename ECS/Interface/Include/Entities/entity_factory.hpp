@@ -109,8 +109,8 @@ class EntityFactory : public IEntityFactory {
     Entity createPowerUpBlueLaserCrystal(
         EntityManager &entityManager, ComponentManager &componentManager) override;
 
-    Entity createWall(
-        EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY) override;
+    Entity createWall(EntityManager &entityManager, ComponentManager &componentManager, int posX,
+        int posY) override;
 
     /**
      * @brief Creates a button entity.
