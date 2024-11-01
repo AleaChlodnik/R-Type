@@ -39,6 +39,7 @@ void r_type::net::Server::OnClientDisconnect(
     uint32_t entityId;
     std::cout << "[" << client->GetID() << "]: Removing client" << std::endl;
     msg >> entityId;
+    SavePlayerScore(entityId);
     RemoveEntity(entityId);
     RemovePlayer(client->GetID());
     msg << entityId;
@@ -164,8 +165,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         case TypeMessage::CreateEntityResponse: {
             std::cout << "[" << client->GetID() << "]: Entity Created" << std::endl;
             if (!client->_initEntities.empty()) {
-                std::cout << "[" << client->GetID() << "]: Sending Entity Information"
-                          << std::endl;
+                std::cout << "[" << client->GetID() << "]: Sending Entity Information" << std::endl;
                 r_type::net::Message<TypeMessage> response;
                 response.header.id = TypeMessage::CreateEntityMessage;
                 response << FormatEntityInformation(client->_initEntities.front().getId());
