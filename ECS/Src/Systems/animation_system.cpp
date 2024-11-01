@@ -124,6 +124,25 @@ static vf2d animationForceWeapon2Factory(AnimationForceWeapon2 animation)
     return {0, 0};
 }
 
+static vf2d animationForceWeapon3Factory(AnimationForceWeapon3 animation)
+{
+    switch (animation) {
+    case AnimationForceWeapon3::FORCE_WEAPON_DEFAULT: {
+        return {173 + 0, 342};
+    } break;
+    case AnimationForceWeapon3::FORCE_WEAPON_1: {
+        return {173 + 31.5, 342};
+    } break;
+    case AnimationForceWeapon3::FORCE_WEAPON_2: {
+        return {173 + 31.5 * 2, 342};
+    } break;
+    case AnimationForceWeapon3::FORCE_WEAPON_3: {
+        return {173 + 31.5 * 3, 342};
+    } break;
+    }
+    return {0, 0};
+}
+
 /**
  * @brief Inequality operator for AnimationComponent.
  *
@@ -186,6 +205,7 @@ void AnimationSystem::AnimationEntities(
                     animateForceWeaponLevel2(animation);
                     break;
                 case 3:
+                    animation.value()->dimension = {31.5, 33};
                     animateForceWeaponLevel3(animation);
                     break;
                 default:
@@ -330,28 +350,24 @@ void AnimationSystem::animateForceWeaponLevel2(std::optional<AnimationComponent 
 void AnimationSystem::animateForceWeaponLevel3(std::optional<AnimationComponent *> &animation)
 {
     if (animation.value()->offset.x ==
-        animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_DEFAULT).x) {
-        animation.value()->offset.x =
-            animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_1).x;
+        animationForceWeapon3Factory(AnimationForceWeapon3::FORCE_WEAPON_DEFAULT).x) {
+        animation.value()->offset =
+            animationForceWeapon3Factory(AnimationForceWeapon3::FORCE_WEAPON_1);
     } else if (animation.value()->offset.x ==
-        animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_1).x) {
-        animation.value()->offset.x =
-            animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_2).x;
+        animationForceWeapon3Factory(AnimationForceWeapon3::FORCE_WEAPON_1).x) {
+        animation.value()->offset =
+            animationForceWeapon3Factory(AnimationForceWeapon3::FORCE_WEAPON_2);
     } else if (animation.value()->offset.x ==
-        animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_2).x) {
-        animation.value()->offset.x =
-            animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_3).x;
+        animationForceWeapon3Factory(AnimationForceWeapon3::FORCE_WEAPON_2).x) {
+        animation.value()->offset =
+            animationForceWeapon3Factory(AnimationForceWeapon3::FORCE_WEAPON_3);
     } else if (animation.value()->offset.x ==
-        animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_3).x) {
-        animation.value()->offset.x =
-            animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_4).x;
-    } else if (animation.value()->offset.x ==
-        animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_4).x) {
-        animation.value()->offset.x =
-            animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_5).x;
-    } else if (animation.value()->offset.x ==
-        animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_5).x) {
-        animation.value()->offset.x =
-            animationForceWeapon1Factory(AnimationForceWeapon1::FORCE_WEAPON_DEFAULT).x;
+        animationForceWeapon3Factory(AnimationForceWeapon3::FORCE_WEAPON_3).x) {
+        animation.value()->offset =
+            animationForceWeapon3Factory(AnimationForceWeapon3::FORCE_WEAPON_DEFAULT);
+    } else {
+        // default animation
+        animation.value()->offset =
+            animationForceWeapon3Factory(AnimationForceWeapon3::FORCE_WEAPON_DEFAULT);
     }
 }

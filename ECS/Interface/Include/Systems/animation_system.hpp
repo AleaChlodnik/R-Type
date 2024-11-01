@@ -71,6 +71,14 @@ enum class AnimationForceWeapon2 : uint32_t
     FORCE_WEAPON_5
 };
 
+enum class AnimationForceWeapon3 : uint32_t
+{
+    FORCE_WEAPON_DEFAULT,
+    FORCE_WEAPON_1,
+    FORCE_WEAPON_2,
+    FORCE_WEAPON_3
+};
+
 /**
  * @brief get if two animations are different.
  *
