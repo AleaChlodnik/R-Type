@@ -289,7 +289,9 @@ class EntityFactory : public IEntityFactory {
     Entity createBoss(EntityManager &entityManager, ComponentManager &componentManager,
         EntityFactory &entityFactory);
 
-    Entity createTailSegment(EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createTailSegment(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
 
-    Entity createTailEnd(EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createTailEnd(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
 };
