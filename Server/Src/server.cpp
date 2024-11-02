@@ -41,6 +41,10 @@ void r_type::net::Server::OnClientDisconnect(
     msg >> entityId;
     SavePlayerScore(entityId);
     RemoveEntity(entityId);
+    auto linkForce = _componentManager.getComponent<LinkForceComponent>(entityId);
+    if (linkForce) {
+        RemoveEntity(linkForce.value()->targetId);
+    }
     RemovePlayer(client->GetID());
     msg << entityId;
     MessageAllClients(msg, client);
