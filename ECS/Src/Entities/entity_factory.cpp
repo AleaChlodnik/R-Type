@@ -61,6 +61,9 @@ std::ostream &operator<<(std::ostream &os, const SpritePath &spritePath)
     case SpritePath::BossBullet:
         os << static_cast<std::string>("BossBullet");
         break;
+    case SpritePath::Bar:
+        os << static_cast<std::string>("Bar");
+        break;
     default:
         os << static_cast<std::string>("Invalid SpritePath");
         break;
@@ -93,6 +96,28 @@ std::ostream &operator<<(std::ostream &os, const AScenes::SpriteType &spriteType
     return os;
 }
 
+std::ostream &operator<<(std::ostream &os, const GameState &gameState)
+{
+    switch (gameState) {
+    case GameState::LevelOne:
+        os << static_cast<std::string>("LevelOne");
+        break;
+    case GameState::LevelTwo:
+        os << static_cast<std::string>("LevelTwo");
+        break;
+    case GameState::LevelThree:
+        os << static_cast<std::string>("LevelThree");
+        break;
+    case GameState::LevelFour:
+        os << static_cast<std::string>("LevelFour");
+        break;
+    default:
+        os << static_cast<std::string>("Invalid GameState");
+        break;
+    }
+    return os;
+}
+
 std::ostream &operator<<(std::ostream &os, const SpriteDataComponent &spriteData)
 {
     os << "SpriteDataComponent: " << std::endl;
@@ -103,7 +128,31 @@ std::ostream &operator<<(std::ostream &os, const SpriteDataComponent &spriteData
     return os;
 }
 
-Entity EntityFactory::createBackground(
+Entity EntityFactory::backgroundFactory(
+    EntityManager &entityManager, ComponentManager &componentManager, GameState type)
+{
+    std::cout << "Creating background" << std::endl;
+    std::cout << "Type: " << type << std::endl;
+    switch (type) {
+    case GameState::LevelOne:
+        return createBackgroundLevelOne(entityManager, componentManager);
+        break;
+    case GameState::LevelTwo:
+        return createBackgroundLevelTwo(entityManager, componentManager);
+        break;
+    case GameState::LevelThree:
+        return createBackgroundLevelThree(entityManager, componentManager);
+        break;
+    case GameState::LevelFour:
+        return createBackgroundLevelFour(entityManager, componentManager);
+        break;
+    default:
+        return createBackgroundLevelOne(entityManager, componentManager);
+        break;
+    }
+}
+
+Entity EntityFactory::createBackgroundLevelOne(
     EntityManager &entityManager, ComponentManager &componentManager)
 {
     Entity background = entityManager.createEntity();
@@ -119,6 +168,75 @@ Entity EntityFactory::createBackground(
     componentManager.addComponent<SpriteDataComponent>(background.getId(), spriteData);
     componentManager.addComponent<AnimationComponent>(background.getId(), animationComponent);
 
+    return background;
+}
+
+Entity EntityFactory::createBackgroundLevelTwo(
+    EntityManager &entityManager, ComponentManager &componentManager)
+{
+    Entity background = entityManager.createEntity();
+
+    BackgroundComponent backgroundComponent;
+    PositionComponent start_position(50, 50);
+    AnimationComponent animationComponent({0, 0}, {342, 192});
+    SpriteDataComponent spriteData{
+        SpritePath::Background1, {5.625f, 5.625f}, AScenes::SpriteType::BACKGROUND};
+
+    componentManager.addComponent<BackgroundComponent>(background.getId(), backgroundComponent);
+    componentManager.addComponent<PositionComponent>(background.getId(), start_position);
+    componentManager.addComponent<SpriteDataComponent>(background.getId(), spriteData);
+    componentManager.addComponent<AnimationComponent>(background.getId(), animationComponent);
+
+    return background;
+}
+
+Entity EntityFactory::createBackgroundLevelThree(
+    EntityManager &entityManager, ComponentManager &componentManager)
+{
+    Entity background = entityManager.createEntity();
+
+    BackgroundComponent backgroundComponent;
+    PositionComponent start_position(50, 50);
+    AnimationComponent animationComponent({0, 0}, {342, 192});
+    SpriteDataComponent spriteData{
+        SpritePath::Background1, {5.625f, 5.625f}, AScenes::SpriteType::BACKGROUND};
+
+    componentManager.addComponent<BackgroundComponent>(background.getId(), backgroundComponent);
+    componentManager.addComponent<PositionComponent>(background.getId(), start_position);
+    componentManager.addComponent<SpriteDataComponent>(background.getId(), spriteData);
+    componentManager.addComponent<AnimationComponent>(background.getId(), animationComponent);
+
+    return background;
+}
+
+Entity EntityFactory::createBackgroundLevelFour(
+    EntityManager &entityManager, ComponentManager &componentManager)
+{
+    Entity background = entityManager.createEntity();
+
+    BackgroundComponent backgroundComponent;
+    PositionComponent start_position(50, 50);
+    AnimationComponent animationComponent({0, 0}, {342, 192});
+    SpriteDataComponent spriteData{
+        SpritePath::Background1, {5.625f, 5.625f}, AScenes::SpriteType::BACKGROUND};
+
+    componentManager.addComponent<BackgroundComponent>(background.getId(), backgroundComponent);
+    componentManager.addComponent<PositionComponent>(background.getId(), start_position);
+    componentManager.addComponent<SpriteDataComponent>(background.getId(), spriteData);
+    componentManager.addComponent<AnimationComponent>(background.getId(), animationComponent);
+
+    return background;
+}
+
+Entity EntityFactory::createBackgroundMenu(EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager)
+{
+    Entity background = entityManager.createEntity();
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Vector2f scale(1.0, 1.0);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
+    componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
     return background;
 }
 

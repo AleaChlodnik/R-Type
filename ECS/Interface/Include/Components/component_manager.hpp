@@ -99,6 +99,17 @@ class ComponentManager {
     }
 
     /**
+     * @brief Removes all components from the component manager.
+     */
+    void removeAllComponents()
+    {
+        if (components.empty())
+            return;
+        std::cout << "Removing all components" << std::endl;
+        components.clear();
+    }
+
+    /**
      * @brief Removes the specified entity from all components.
      *
      * This function iterates through all components and removes the entity
