@@ -67,8 +67,8 @@ class EntityFactory : public IEntityFactory {
      * @param componentManager
      * @return Entity
      */
-    Entity createBackgroundMenu(
-        EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) override;
+    Entity createBackgroundMenu(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &textureManager) override;
 
     /**
      * @brief Creates a bar entity.

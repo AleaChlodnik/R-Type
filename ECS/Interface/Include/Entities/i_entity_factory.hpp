@@ -83,8 +83,8 @@ class IEntityFactory {
      * @param componentManager
      * @return Entity
      */
-    virtual Entity createBackgroundMenu(
-        EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) = 0;
+    virtual Entity createBackgroundMenu(EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &textureManager) = 0;
 
     /**
      * @brief Creates a bar entity.
