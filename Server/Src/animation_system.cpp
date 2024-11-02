@@ -268,8 +268,8 @@ void AnimationSystem::AnimationEntities(ComponentManager &componentManager,
             if (auto background =
                     componentManager.getComponent<BackgroundComponent>(entity.getId())) {
                 if (animation.value()->offset.x < 2700) {
-                    // animation.value()->offset.x += 1;
-                    animation.value()->offset.x += 5; //////////////////////// temp
+                    animation.value()->offset.x += 1;
+                    //animation.value()->offset.x += 5; //////////////////////// temp
                 } else {
                     if (endOfLevel == false)
                         endOfLevel = true;
