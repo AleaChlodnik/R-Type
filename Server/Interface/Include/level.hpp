@@ -18,6 +18,16 @@ namespace r_type {
 namespace net {
 template <typename T> class AServer;
 }
+/**
+ * @brief The Level class template manages the game level, including updating game state,
+ * handling collisions, and managing entities.
+ *
+ * This class template provides methods to update the game state, handle collisions,
+ * manage animations, and control the firing mechanisms of entities. It also includes
+ * functionality to spawn entities and set game parameters.
+ *
+ * @tparam T The type of the server.
+ */
 template <typename T> class Level : virtual public ILevel<T> {
   public:
     Level() = default;
@@ -134,6 +144,24 @@ template <typename T> class Level : virtual public ILevel<T> {
         }
     }
 
+    /**
+     * @brief Handles the collision action between two entities in the game.
+     *
+     * This function determines the type of collision between two entities and performs the
+     * appropriate actions based on the components of the entities involved. It updates the health,
+     * score, and other relevant components, and manages the addition and removal of entities from
+     * the game.
+     *
+     * @tparam T The type of the server.
+     * @param server Pointer to the server instance.
+     * @param componentManager Reference to the ComponentManager.
+     * @param entityManager Reference to the EntityManager.
+     * @param entitiesToRemove Vector of entity IDs to be removed from the game.
+     * @param entitiesToAdd Vector of entity IDs to be added to the game.
+     * @param entityId1 The ID of the first entity involved in the collision.
+     * @param entityId2 The ID of the second entity involved in the collision.
+     * @return True if a collision was handled, false otherwise.
+     */
     static bool collisionAction(r_type::net::AServer<T> *server,
         ComponentManager &componentManager, EntityManager &entityManager,
         std::vector<int> &entitiesToRemove, std::vector<int> &entitiesToAdd, uint32_t entityId1,
@@ -583,18 +611,84 @@ template <typename T> class Level : virtual public ILevel<T> {
     void SetGameParameters(GameParameters gameParameters) { _gameParameters = gameParameters; }
 
   protected:
+    /**
+     * @brief A shared pointer to the MoveSystem instance.
+     *
+     * This member variable holds a shared pointer to an instance of the MoveSystem class,
+     * which is responsible for handling movement logic within the system. Using a shared
+     * pointer ensures that the MoveSystem instance is properly managed and its lifetime
+     * is tied to the number of references to it.
+     */
     std::shared_ptr<MoveSystem> _moveSystem;
+    /**
+     * @brief A shared pointer to the CollisionSystem.
+     *
+     * This member variable holds a shared pointer to an instance of the CollisionSystem,
+     * which is responsible for handling collision detection and response within the game.
+     * Using a shared pointer ensures that the CollisionSystem instance is properly managed
+     * and its memory is automatically deallocated when no longer in use.
+     */
     std::shared_ptr<CollisionSystem> _collisionSystem;
+    /**
+     * @brief A shared pointer to the AnimationSystem.
+     *
+     * This member variable holds a shared pointer to an instance of the AnimationSystem.
+     * The AnimationSystem is responsible for managing and updating animations within the game.
+     * Using a shared pointer ensures that the AnimationSystem instance is properly managed
+     * and its lifetime is controlled, preventing memory leaks and dangling pointers.
+     */
     std::shared_ptr<AnimationSystem> _animationSystem;
+    /**
+     * @brief A shared pointer to an instance of AutoFireSystem.
+     *
+     * This member variable holds a shared pointer to an AutoFireSystem object,
+     * which is responsible for managing the automatic firing mechanism in the game.
+     * The use of std::shared_ptr ensures that the AutoFireSystem instance is
+     * properly managed and deallocated when no longer in use.
+     */
     std::shared_ptr<AutoFireSystem> _autoFireSystem;
 
+    /**
+     * @brief Represents the time point at which a basic monster is spawned.
+     *
+     * This variable is initialized to the current system time using
+     * std::chrono::system_clock::now(). It is used to track the spawn time
+     * of a basic monster in the game.
+     */
     std::chrono::system_clock::time_point _basicMonsterSpawnTime =
         std::chrono::system_clock::now();
+    /**
+     * @brief Represents the time point when the shooter enemy is spawned.
+     *
+     * This variable is initialized to the current system time using
+     * std::chrono::system_clock::now(). It is used to track the exact
+     * moment when the shooter enemy is spawned in the game.
+     */
     std::chrono::system_clock::time_point _shooterEnemySpawnTime =
         std::chrono::system_clock::now();
+    /**
+     * @brief Stores the time point when the wall was spawned.
+     *
+     * This member variable holds the time point, using the system clock,
+     * at which the wall was spawned. It is initialized to the current time
+     * when the object is created.
+     */
     std::chrono::system_clock::time_point _WallSpawnTime = std::chrono::system_clock::now();
+    /**
+     * @brief The time point at which the third type of monster is spawned.
+     *
+     * This member variable holds the spawn time for the third type of monster
+     * using the system clock's time point. It is used to schedule or track
+     * when the third type of monster should appear in the game.
+     */
     std::chrono::system_clock::time_point _spawnTimeMonsterThree;
 
+    /**
+     * @brief Holds the parameters for the game configuration.
+     *
+     * This member variable stores an instance of the GameParameters class,
+     * which contains various settings and configurations for the game.
+     */
     GameParameters _gameParameters;
 };
 } // namespace r_type
