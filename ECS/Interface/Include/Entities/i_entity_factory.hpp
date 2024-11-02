@@ -161,9 +161,11 @@ class IEntityFactory {
         std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
         float y = 0) = 0;
 
-    virtual Entity createTailSegment(EntityManager &entityManager, ComponentManager &componentManager) = 0;
+    virtual Entity createTailSegment(
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
-    virtual Entity createTailEnd(EntityManager &entityManager, ComponentManager &componentManager) = 0;
+    virtual Entity createTailEnd(
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
     enum EnemyType
     {
