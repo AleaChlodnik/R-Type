@@ -183,12 +183,13 @@ class EntityFactory : public IEntityFactory {
 
     /**
      * @brief Creates a boss entity.
-     * 
+     *
      * This function creates a boss entity using the provided entity manager and component manager.
-     * 
+     *
      * @param entityManager The entity manager used to create the entity.
      * @param componentManager The component manager used to add components to the entity.
      * @return The created boss entity.
      */
-    Entity createBoss(EntityManager &entityManager, ComponentManager &componentManager, EntityFactory &entityFactory) override;
+    Entity createBoss(EntityManager &entityManager, ComponentManager &componentManager,
+        EntityFactory &entityFactory) override;
 };

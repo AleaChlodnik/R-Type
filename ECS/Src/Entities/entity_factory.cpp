@@ -518,7 +518,8 @@ Entity EntityFactory::createBoss(
     Entity boss = entityManager.createEntity();
 
     for (int i = 0; i < tailLength; i++) {
-        Entity tail = entityFactory.createTailSegment(entityManager, componentManager, boss.getId());
+        Entity tail =
+            entityFactory.createTailSegment(entityManager, componentManager, boss.getId());
         tailIds.push_back(tail.getId());
     }
 

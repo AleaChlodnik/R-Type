@@ -161,7 +161,8 @@ class IEntityFactory {
         std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
         float y = 0) = 0;
 
-    virtual Entity createBoss(EntityManager &entityManager, ComponentManager &componentManager, EntityFactory &entityFactory) = 0;
+    virtual Entity createBoss(EntityManager &entityManager, ComponentManager &componentManager,
+        EntityFactory &entityFactory) = 0;
 
     enum EnemyType
     {
