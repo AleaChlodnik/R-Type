@@ -67,7 +67,8 @@ template <typename T> class Level : virtual public ILevel<T> {
                 LevelOne(server, componentManager, entityManager, newClock);
             } else {
                 if (server->_bossActive == false) {
-                    SpawnEntity(server, entityManager, componentManager, 0, EntityFactory::EnemyType::Boss);
+                    SpawnEntity(server, entityManager, componentManager, 0,
+                        EntityFactory::EnemyType::Boss);
                 }
             }
             server->SetClock(server->GetClock() + std::chrono::milliseconds(500));

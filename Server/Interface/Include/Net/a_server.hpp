@@ -718,9 +718,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         server->_bossActive = true;
         // r_type::net::Message<TypeMessage> msg;
-                // msg.header.id = TypeMessage::ChangeBackgroundMusic;
-                // msg << 1;
-                // server->MessageAllClients(msg);
+        // msg.header.id = TypeMessage::ChangeBackgroundMusic;
+        // msg << 1;
+        // server->MessageAllClients(msg);
         Entity boss = _entityFactory.createBoss(_entityManager, _componentManager, _entityFactory);
         int bossId = boss.getId();
         // float segmentOffsetX = -10.0f;
