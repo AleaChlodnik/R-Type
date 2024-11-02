@@ -242,7 +242,14 @@ template <typename T> class Level : virtual public ILevel<T> {
                     frontComponent.value()->targetId = entityId2;
                     auto forceWeapon = componentManager.getComponent<ForceWeaponComponent>(
                         frontComponent.value()->targetId);
-                    forceWeapon.value()->attached = true;
+                    if (forceWeapon) {
+                        forceWeapon.value()->attached = true;
+                    }
+                    auto forceWeaponMovementComponent = componentManager.getComponent<MovementComponent>(
+                        frontComponent.value()->targetId);
+                    if (forceWeaponMovementComponent) {
+                        forceWeaponMovementComponent.value()->move = false;
+                    }
                 }
             }
             return true;

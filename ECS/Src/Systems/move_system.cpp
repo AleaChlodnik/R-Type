@@ -17,14 +17,7 @@ void MoveSystem::moveEntities(ComponentManager &componentManager, EntityManager 
     for (auto &entity : entities) {
 
         int entityId = entity.getId();
-        auto forceWeapon = componentManager.getComponent<ForceWeaponComponent>(entityId);
-        if (forceWeapon) {
-            if (forceWeapon.value()->attached == false) {
-                moveEntity(componentManager, entityId);
-            }
-        } else {
-            moveEntity(componentManager, entityId);
-        }
+        moveEntity(componentManager, entityId);
     }
 }
 
@@ -33,7 +26,7 @@ void MoveSystem::moveEntity(ComponentManager &componentManager, int entityId)
     auto position = componentManager.getComponent<PositionComponent>(entityId);
     auto velocity = componentManager.getComponent<VelocityComponent>(entityId);
     auto movement = componentManager.getComponent<MovementComponent>(entityId);
-    if (movement) {
+    if (movement && movement.value()->move == true) {
         switch (movement.value()->movementType) {
         case MovementType::WIGGLE: {
             position.value()->y += cos(movement.value()->index * 0.1 * M_PI);
@@ -48,10 +41,10 @@ void MoveSystem::moveEntity(ComponentManager &componentManager, int entityId)
         case MovementType::CIRCLE: {
             // position.value()->y += velocity.value()->y;
         } break;
-        }
-    } else {
-        if (position && velocity) {
+        case MovementType::STRAIGHT: {
             position.value()->x += velocity.value()->x;
+            position.value()->y += velocity.value()->y;
+        } break;
         }
     }
 }

@@ -198,7 +198,7 @@ Entity EntityFactory::createBasicMonster(
     EnemyComponent enemyComponent;
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{-1.0f, 0.0f};
-    MovementComponent movement{MovementType::WIGGLE, 0};
+    MovementComponent movement(MovementType::WIGGLE, 0, true);
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy1, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(posX, posY);
@@ -233,7 +233,7 @@ Entity EntityFactory::createShooterEnemy(
 
     EnemyComponent enemyComponent;
     VelocityComponent velocity{-1.0f, 0.0f};
-    MovementComponent movement{MovementType::DIAGONAL, 0};
+    MovementComponent movement(MovementType::DIAGONAL, 0, true);
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy2, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(posX, posY);
@@ -271,6 +271,7 @@ Entity EntityFactory::createPlayerMissile(
     PlayerMissileComponent playerMissileComponent{entityId};
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{3.0f, 0.0f};
+    MovementComponent movement;
     AnimationComponent animationComponent({249, 88}, {16, 8});
     SpriteDataComponent spriteData{SpritePath::Missile, {1.0f, 1.0f}, AScenes::SpriteType::PLAYER};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
@@ -289,6 +290,7 @@ Entity EntityFactory::createPlayerMissile(
     componentManager.addComponent<SpriteDataComponent>(playerMissile.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(playerMissile.getId(), hitbox);
     componentManager.addComponent<AnimationComponent>(playerMissile.getId(), animationComponent);
+    componentManager.addComponent<MovementComponent>(playerMissile.getId(), movement);
 
     return playerMissile;
 }
@@ -298,6 +300,7 @@ Entity EntityFactory::createForceWeapon(
 {
     Entity forceWeapon = entityManager.createEntity();
 
+    MovementComponent movement;
     ForceWeaponComponent weaponComponent(entityId, 1, false);
     PositionComponent startPosition(10, 50);
     VelocityComponent velocity{1.0f, 0.0f};
@@ -315,6 +318,7 @@ Entity EntityFactory::createForceWeapon(
     componentManager.addComponent<HitboxComponent>(forceWeapon.getId(), hitbox);
     componentManager.addComponent<AnimationComponent>(forceWeapon.getId(), animationComponent);
     componentManager.addComponent<ShootComponent>(forceWeapon.getId(), shootComponent);
+    componentManager.addComponent<MovementComponent>(forceWeapon.getId(), movement);
 
     return forceWeapon;
 }
@@ -324,7 +328,7 @@ Entity EntityFactory::createForceMissile(
 {
     Entity forceMissile = entityManager.createEntity();
 
-    // PlayerMissileComponent forceMissileComponent{static_cast<int>(forceId)};
+    MovementComponent movement;
     ForceMissileComponent forceMissileComponent{forceId};
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{3.0f, 0.0f};
@@ -347,6 +351,7 @@ Entity EntityFactory::createForceMissile(
     componentManager.addComponent<SpriteDataComponent>(forceMissile.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(forceMissile.getId(), hitbox);
     componentManager.addComponent<AnimationComponent>(forceMissile.getId(), animationComponent);
+    componentManager.addComponent<MovementComponent>(forceMissile.getId(), movement);
 
     return forceMissile;
 }
@@ -356,9 +361,10 @@ Entity EntityFactory::createPowerUpBlueLaserCrystal(
 {
     Entity powerUpBlueLaserCrystal = entityManager.createEntity();
 
+    MovementComponent movement;
     PowerUpComponent powerUpComponent;
     PositionComponent startPosition(50, 50);
-    VelocityComponent velocity{0.0f, 0.0f};
+    VelocityComponent velocity{-0.2f, 0.0f};
     AnimationComponent animationComponent({0, 0}, {40, 36});
     SpriteDataComponent spriteData{
         SpritePath::BlueLaserCrystal, {1.0f, 1.0f}, AScenes::SpriteType::POWER_UP};
@@ -373,6 +379,7 @@ Entity EntityFactory::createPowerUpBlueLaserCrystal(
     componentManager.addComponent<SpriteDataComponent>(
         powerUpBlueLaserCrystal.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(powerUpBlueLaserCrystal.getId(), hitbox);
+    componentManager.addComponent<MovementComponent>(powerUpBlueLaserCrystal.getId(), movement);
     componentManager.addComponent<AnimationComponent>(
         powerUpBlueLaserCrystal.getId(), animationComponent);
 
@@ -396,6 +403,7 @@ Entity EntityFactory::createEnemyMissile(
     EnemyMissileComponent enemyMissileComponent;
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{-3.0f, 0.0f};
+    MovementComponent movement;
     AnimationComponent animationComponent({266, 88}, {16, 8});
     SpriteDataComponent spriteData{SpritePath::Missile, {1.0f, 1.0f}, AScenes::SpriteType::ENEMY};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
@@ -414,6 +422,7 @@ Entity EntityFactory::createEnemyMissile(
     componentManager.addComponent<SpriteDataComponent>(enemyMissile.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(enemyMissile.getId(), hitbox);
     componentManager.addComponent<AnimationComponent>(enemyMissile.getId(), animationComponent);
+    componentManager.addComponent<MovementComponent>(enemyMissile.getId(), movement);
 
     return enemyMissile;
 }
@@ -425,6 +434,7 @@ Entity EntityFactory::createWall(
 
     EnemyComponent enemyComponent;
     WallComponent wallComponent;
+    MovementComponent movement;
     PositionComponent startPosition(posX, posY);
     VelocityComponent velocity{-1.0f, 0.0f};
     AnimationComponent animationComponent({0, 0}, {32, 32});
@@ -438,6 +448,7 @@ Entity EntityFactory::createWall(
     componentManager.addComponent<VelocityComponent>(wall.getId(), velocity);
     componentManager.addComponent<SpriteDataComponent>(wall.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(wall.getId(), hitbox);
+    componentManager.addComponent<MovementComponent>(wall.getId(), movement);
     componentManager.addComponent<AnimationComponent>(wall.getId(), animationComponent);
 
     while (CheckEntityPosition(wall.getId(), componentManager, entityManager) != -1) {
