@@ -58,10 +58,7 @@ struct MovementComponent {
     uint32_t index;
     bool move;
 
-    MovementComponent()
-        : movementType(MovementType::STRAIGHT), index(0), move(true)
-    {
-    }
+    MovementComponent() : movementType(MovementType::STRAIGHT), index(0), move(true) {}
     MovementComponent(MovementType movementType, uint32_t index, bool move)
         : movementType(movementType), index(index), move(move)
     {
