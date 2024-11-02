@@ -178,6 +178,17 @@ template <typename T> class ILevel {
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
     /**
+     * @brief Change the background object
+     *
+     * @param server
+     * @param entityManager
+     * @param componentManager
+     * @return EntityInformation
+     */
+    virtual void ChangeBackground(r_type::net::AServer<T> *server,
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+
+    /**
      * @brief Initializes a background entity.
      *
      * The function creates and returns information about the background entity.
@@ -186,5 +197,19 @@ template <typename T> class ILevel {
      */
     virtual EntityInformation InitiateBackground(r_type::net::AServer<T> *server,
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
+
+    /**
+     * @brief Changes the level of the game based on the provided game state.
+     *
+     * @param state
+     */
+    virtual void ChangeLevel(GameState state) = 0;
+
+    /**
+     * @brief Get the level object
+     *
+     * @return GameState
+     */
+    virtual GameState GetLevel() = 0;
 };
 } // namespace r_type
