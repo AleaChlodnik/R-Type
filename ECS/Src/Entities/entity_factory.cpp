@@ -569,12 +569,12 @@ Entity EntityFactory::createWall(
     componentManager.addComponent<MovementComponent>(wall.getId(), movement);
     componentManager.addComponent<AnimationComponent>(wall.getId(), animationComponent);
 
-    while (CheckEntityPosition(wall.getId(), componentManager, entityManager) != -1) {
-        auto wallPos = componentManager.getComponent<PositionComponent>(wall.getId());
-        if (wallPos) {
-            wallPos.value()->y = static_cast<float>(rand() % 100);
-        }
-    }
+    // while (CheckEntityPosition(wall.getId(), componentManager, entityManager) != -1) {
+    //     auto wallPos = componentManager.getComponent<PositionComponent>(wall.getId());
+    //     if (wallPos) {
+    //         wallPos.value()->y = static_cast<float>(rand() % 100);
+    //     }
+    // }
 
     return wall;
 }
