@@ -117,11 +117,12 @@ class IEntityFactory {
     /**
      * @brief Creates a Force Weapon entity.
      *
-     * This function is responsible for creating a Force Weapon entity and adding it to the provided
-     * EntityManager and ComponentManager. The entity is identified by the given entityId.
+     * This function is responsible for creating a Force Weapon entity and adding it to the
+     * provided EntityManager and ComponentManager. The entity is identified by the given entityId.
      *
      * @param entityManager Reference to the EntityManager that will manage the entity.
-     * @param componentManager Reference to the ComponentManager that will manage the components of the entity.
+     * @param componentManager Reference to the ComponentManager that will manage the components of
+     * the entity.
      * @param entityId The unique identifier for the entity to be created.
      * @return Entity The created Force Weapon entity.
      */
@@ -136,7 +137,8 @@ class IEntityFactory {
      * entityId.
      *
      * @param entityManager Reference to the EntityManager that will manage the entity.
-     * @param componentManager Reference to the ComponentManager that will manage the components of the entity.
+     * @param componentManager Reference to the ComponentManager that will manage the components of
+     * the entity.
      * @param entityId The unique identifier for the entity to be created.
      * @return Entity The created Force Missile entity.
      */
@@ -152,7 +154,8 @@ class IEntityFactory {
      * and ComponentManager.
      *
      * @param entityManager Reference to the EntityManager that will manage the entity.
-     * @param componentManager Reference to the ComponentManager that will manage the components of the entity.
+     * @param componentManager Reference to the ComponentManager that will manage the components of
+     * the entity.
      * @return Entity The created Power-Up Blue Laser Crystal entity.
      */
     virtual Entity createPowerUpBlueLaserCrystal(
@@ -162,7 +165,8 @@ class IEntityFactory {
      * @brief Creates a wall entity with the specified position.
      *
      * @param entityManager Reference to the EntityManager that will manage the new entity.
-     * @param componentManager Reference to the ComponentManager that will manage the components of the new entity.
+     * @param componentManager Reference to the ComponentManager that will manage the components of
+     * the new entity.
      * @param posX The x-coordinate of the wall's position.
      * @param posY The y-coordinate of the wall's position.
      * @return Entity The created wall entity.
@@ -184,10 +188,30 @@ class IEntityFactory {
         EntityManager &entityManager, ComponentManager &componentManager, uint32_t entityId) = 0;
 
     /**
+     * @brief Creates a button entity.
+     *
+     * This function creates a button entity using the provided entity manager, component manager,
+     * texture manager, text, and onClick function. The button entity represents a clickable button
+     * in the game.
+     *
+     * @param entityManager The entity manager used to create the button entity.
+     * @param componentManager The component manager used to manage the components of the button
+     * entity.
+     * @param textureManager The texture manager used to load the textures for the button entity.
+     * @param text The text displayed on the button.
+     * @param onClick The function to be called when the button is clicked.
+     * @return The created button entity.
+     */
+    virtual Entity createButton(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &textureManager, FontManager &fontManager, std::string text,
+        std::function<IScenes *(AScenes *)> *onClick, float x, float y) = 0;
+
+    /**
      * @brief Creates a button entity with the specified properties.
      *
      * @param entityManager Reference to the EntityManager responsible for managing entities.
-     * @param componentManager Reference to the ComponentManager responsible for managing components.
+     * @param componentManager Reference to the ComponentManager responsible for managing
+     * components.
      * @param textureManager Reference to the TextureManager responsible for managing textures.
      * @param fontManager Reference to the FontManager responsible for managing fonts.
      * @param text The text to be displayed on the button.

@@ -98,9 +98,6 @@ enum class SpritePath : uint32_t
     Enemy1,
     Enemy2,
     Enemy3,
-    Enemy4,
-    Enemy5,
-    Enemy6,
     Missile,
     ForceWeapon,
     ForceMissile,
@@ -108,13 +105,12 @@ enum class SpritePath : uint32_t
     Background1,
     Background2,
     Background3,
-    Explosion,
-    PowerUp,
+    // Explosion,
+    // PowerUp,
     Boss,
     BossBullet,
     Bar,
     Wall,
-    NONE,
 };
 
 /**

@@ -37,15 +37,6 @@ std::ostream &operator<<(std::ostream &os, const SpritePath &spritePath)
     case SpritePath::Enemy3:
         os << static_cast<std::string>("Enemy3");
         break;
-    case SpritePath::Enemy4:
-        os << static_cast<std::string>("Enemy4");
-        break;
-    case SpritePath::Enemy5:
-        os << static_cast<std::string>("Enemy5");
-        break;
-    case SpritePath::Enemy6:
-        os << static_cast<std::string>("Enemy6");
-        break;
     case SpritePath::Missile:
         os << static_cast<std::string>("Missile");
         break;
@@ -58,20 +49,17 @@ std::ostream &operator<<(std::ostream &os, const SpritePath &spritePath)
     case SpritePath::Background3:
         os << static_cast<std::string>("Background3");
         break;
-    case SpritePath::Explosion:
-        os << static_cast<std::string>("Explosion");
-        break;
-    case SpritePath::PowerUp:
-        os << static_cast<std::string>("PowerUp");
-        break;
+    // case SpritePath::Explosion:
+    //     os << static_cast<std::string>("Explosion");
+    //     break;
+    // case SpritePath::PowerUp:
+    //     os << static_cast<std::string>("PowerUp");
+    //     break;
     case SpritePath::Boss:
         os << static_cast<std::string>("Boss");
         break;
     case SpritePath::BossBullet:
         os << static_cast<std::string>("BossBullet");
-        break;
-    case SpritePath::NONE:
-        os << static_cast<std::string>("NONE");
         break;
     default:
         os << static_cast<std::string>("Invalid SpritePath");
