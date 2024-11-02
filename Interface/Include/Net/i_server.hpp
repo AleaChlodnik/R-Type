@@ -159,13 +159,6 @@ template <typename T> class IServer {
     virtual EntityInformation InitiateWeaponForce(int entityId) = 0;
 
     /**
-     * @brief Initializes a background entity.
-     *
-     * @return EntityInformation The information of the background entity.
-     */
-    virtual EntityInformation InitiateBackground() = 0;
-
-    /**
      * @brief Callback function that is called when a client has been successfully validated.
      *
      * @param client A shared pointer to the validated client connection.

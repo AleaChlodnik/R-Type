@@ -201,33 +201,157 @@ class AScenes : virtual public IScenes {
      */
     void setGameMode(GameMode const mode);
 
+    /**
+     * @brief Sets the display option for Daltonism mode.
+     *
+     * This function enables or disables the display option for Daltonism mode based on the
+     * provided boolean value.
+     *
+     * @param displayDaltonismChoice A boolean value indicating whether to display the Daltonism
+     * mode option (true) or not (false).
+     */
     void setDisplayDaltonismChoice(bool const displayDaltonismChoice);
 
+    /**
+     * @brief Retrieves the current display setting for Daltonism (color blindness) mode.
+     *
+     * @return true if Daltonism mode is enabled, false otherwise.
+     */
     bool getDisplayDaltonismChoice() const;
 
+    /**
+     * @brief Sets the display state for the game mode choice.
+     *
+     * This function allows you to control whether the game mode choice
+     * should be displayed or not.
+     *
+     * @param displayGameModeChoice A boolean value indicating whether
+     * the game mode choice should be displayed (true) or hidden (false).
+     */
     void setDisplayGameModeChoice(bool const displayGameModeChoice);
 
+    /**
+     * @brief Retrieves the current display game mode choice.
+     *
+     * This function returns a boolean value indicating whether the game mode
+     * choice is currently set to be displayed.
+     *
+     * @return true if the game mode choice is set to be displayed, false otherwise.
+     */
     bool getDisplayGameModeChoice() const;
 
+    /**
+     * @brief Sets the display status for key binds choice.
+     *
+     * This function allows you to enable or disable the display of key binds choice.
+     *
+     * @param displayKeyBindsChoice A boolean value indicating whether to display the key binds
+     * choice (true) or not (false).
+     */
     void setDisplayKeyBindsChoice(bool const displayKeyBindsChoice);
 
+    /**
+     * @brief Retrieves the current choice for displaying key bindings.
+     *
+     * @return true if key bindings should be displayed, false otherwise.
+     */
     bool getDisplayKeyBindsChoice() const;
 
+    /**
+     * @brief A collection of shared pointers to Entity objects representing buttons.
+     *
+     * This vector holds shared pointers to Entity instances, which are used to represent
+     * buttons within the scene. The use of shared pointers ensures that the Entity objects
+     * are properly managed and their memory is automatically deallocated when they are no
+     * longer in use.
+     */
     std::vector<std::shared_ptr<Entity>> buttons;
+    /**
+     * @brief A shared pointer to an Entity object.
+     *
+     * This smart pointer manages the lifetime of an Entity instance,
+     * ensuring that the Entity is properly deleted when no longer in use.
+     * It allows multiple parts of the program to share ownership of the Entity.
+     */
     std::shared_ptr<Entity> filter;
+    /**
+     * @brief Sets the IP address.
+     *
+     * This function sets the IP address to the specified value.
+     *
+     * @param ip The IP address to set as a string.
+     */
     void setIp(std::string ip);
+    /**
+     * @brief Sets the port number for the connection.
+     *
+     * This function assigns the specified port number to be used for network communication.
+     *
+     * @param port The port number to be set.
+     */
     void setPort(int port);
 
+    /**
+     * @brief Retrieves the IP address.
+     *
+     * This function returns the IP address as a string.
+     *
+     * @return std::string The IP address.
+     */
     std::string getIp() const;
+    /**
+     * @brief Retrieves the port number.
+     *
+     * @return int The port number.
+     */
     int getPort() const;
 
   protected:
+    /**
+     * @brief Represents the current game mode.
+     *
+     * This variable holds the current game mode of the game.
+     * It is initialized to GameMode::MEDIUM by default.
+     */
     GameMode _currentGameMode = GameMode::MEDIUM;
+    /**
+     * @brief Enum representing different modes of Daltonism (color blindness).
+     *
+     * This enum is used to specify the current Daltonism mode, which can be used
+     * to adjust the display settings for users with different types of color blindness.
+     *
+     * Possible values:
+     * - NORMAL: No color blindness.
+     * - PROTANOPIA: Red color blindness.
+     * - DEUTERANOPIA: Green color blindness.
+     * - TRITANOPIA: Blue color blindness.
+     */
     DaltonismMode _currentDaltonismMode = DaltonismMode::NORMAL;
+    /**
+     * @brief Represents the current scene in the application.
+     *
+     * This variable holds the current scene being displayed or interacted with
+     * in the application. It is initialized to the MAIN_MENU scene by default.
+     */
     Scene _currentScene = Scene::MAIN_MENU;
+    /**
+     * @brief Represents the previous scene in the application.
+     *
+     * This variable holds the previous scene that was active before the current one.
+     * It is initialized to the MAIN_MENU scene by default.
+     */
     Scene _previousScene = Scene::MAIN_MENU;
+    /**
+     * @brief Flag to indicate whether the Daltonism choice should be displayed.
+     */
     bool _displayDaltonismChoice = false;
+    /**
+     * @brief Flag indicating whether the game mode choice should be displayed.
+     */
     bool _displayGameModeChoice = false;
+    /**
+     * @brief Flag indicating whether the key bindings choice should be displayed.
+     */
     bool _displayKeyBindsChoice = false;
 
     /**

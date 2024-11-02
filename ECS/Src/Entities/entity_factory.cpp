@@ -37,15 +37,6 @@ std::ostream &operator<<(std::ostream &os, const SpritePath &spritePath)
     case SpritePath::Enemy3:
         os << static_cast<std::string>("Enemy3");
         break;
-    case SpritePath::Enemy4:
-        os << static_cast<std::string>("Enemy4");
-        break;
-    case SpritePath::Enemy5:
-        os << static_cast<std::string>("Enemy5");
-        break;
-    case SpritePath::Enemy6:
-        os << static_cast<std::string>("Enemy6");
-        break;
     case SpritePath::Missile:
         os << static_cast<std::string>("Missile");
         break;
@@ -58,20 +49,20 @@ std::ostream &operator<<(std::ostream &os, const SpritePath &spritePath)
     case SpritePath::Background3:
         os << static_cast<std::string>("Background3");
         break;
-    case SpritePath::Explosion:
-        os << static_cast<std::string>("Explosion");
-        break;
-    case SpritePath::PowerUp:
-        os << static_cast<std::string>("PowerUp");
-        break;
+    // case SpritePath::Explosion:
+    //     os << static_cast<std::string>("Explosion");
+    //     break;
+    // case SpritePath::PowerUp:
+    //     os << static_cast<std::string>("PowerUp");
+    //     break;
     case SpritePath::Boss:
         os << static_cast<std::string>("Boss");
         break;
     case SpritePath::BossBullet:
         os << static_cast<std::string>("BossBullet");
         break;
-    case SpritePath::NONE:
-        os << static_cast<std::string>("NONE");
+    case SpritePath::Bar:
+        os << static_cast<std::string>("Bar");
         break;
     default:
         os << static_cast<std::string>("Invalid SpritePath");
@@ -105,6 +96,28 @@ std::ostream &operator<<(std::ostream &os, const AScenes::SpriteType &spriteType
     return os;
 }
 
+std::ostream &operator<<(std::ostream &os, const GameState &gameState)
+{
+    switch (gameState) {
+    case GameState::LevelOne:
+        os << static_cast<std::string>("LevelOne");
+        break;
+    case GameState::LevelTwo:
+        os << static_cast<std::string>("LevelTwo");
+        break;
+    case GameState::LevelThree:
+        os << static_cast<std::string>("LevelThree");
+        break;
+    case GameState::LevelFour:
+        os << static_cast<std::string>("LevelFour");
+        break;
+    default:
+        os << static_cast<std::string>("Invalid GameState");
+        break;
+    }
+    return os;
+}
+
 std::ostream &operator<<(std::ostream &os, const SpriteDataComponent &spriteData)
 {
     os << "SpriteDataComponent: " << std::endl;
@@ -115,7 +128,31 @@ std::ostream &operator<<(std::ostream &os, const SpriteDataComponent &spriteData
     return os;
 }
 
-Entity EntityFactory::createBackground(
+Entity EntityFactory::backgroundFactory(
+    EntityManager &entityManager, ComponentManager &componentManager, GameState type)
+{
+    std::cout << "Creating background" << std::endl;
+    std::cout << "Type: " << type << std::endl;
+    switch (type) {
+    case GameState::LevelOne:
+        return createBackgroundLevelOne(entityManager, componentManager);
+        break;
+    case GameState::LevelTwo:
+        return createBackgroundLevelTwo(entityManager, componentManager);
+        break;
+    case GameState::LevelThree:
+        return createBackgroundLevelThree(entityManager, componentManager);
+        break;
+    case GameState::LevelFour:
+        return createBackgroundLevelFour(entityManager, componentManager);
+        break;
+    default:
+        return createBackgroundLevelOne(entityManager, componentManager);
+        break;
+    }
+}
+
+Entity EntityFactory::createBackgroundLevelOne(
     EntityManager &entityManager, ComponentManager &componentManager)
 {
     Entity background = entityManager.createEntity();
@@ -131,6 +168,75 @@ Entity EntityFactory::createBackground(
     componentManager.addComponent<SpriteDataComponent>(background.getId(), spriteData);
     componentManager.addComponent<AnimationComponent>(background.getId(), animationComponent);
 
+    return background;
+}
+
+Entity EntityFactory::createBackgroundLevelTwo(
+    EntityManager &entityManager, ComponentManager &componentManager)
+{
+    Entity background = entityManager.createEntity();
+
+    BackgroundComponent backgroundComponent;
+    PositionComponent start_position(50, 50);
+    AnimationComponent animationComponent({0, 0}, {342, 192});
+    SpriteDataComponent spriteData{
+        SpritePath::Background1, {5.625f, 5.625f}, AScenes::SpriteType::BACKGROUND};
+
+    componentManager.addComponent<BackgroundComponent>(background.getId(), backgroundComponent);
+    componentManager.addComponent<PositionComponent>(background.getId(), start_position);
+    componentManager.addComponent<SpriteDataComponent>(background.getId(), spriteData);
+    componentManager.addComponent<AnimationComponent>(background.getId(), animationComponent);
+
+    return background;
+}
+
+Entity EntityFactory::createBackgroundLevelThree(
+    EntityManager &entityManager, ComponentManager &componentManager)
+{
+    Entity background = entityManager.createEntity();
+
+    BackgroundComponent backgroundComponent;
+    PositionComponent start_position(50, 50);
+    AnimationComponent animationComponent({0, 0}, {342, 192});
+    SpriteDataComponent spriteData{
+        SpritePath::Background1, {5.625f, 5.625f}, AScenes::SpriteType::BACKGROUND};
+
+    componentManager.addComponent<BackgroundComponent>(background.getId(), backgroundComponent);
+    componentManager.addComponent<PositionComponent>(background.getId(), start_position);
+    componentManager.addComponent<SpriteDataComponent>(background.getId(), spriteData);
+    componentManager.addComponent<AnimationComponent>(background.getId(), animationComponent);
+
+    return background;
+}
+
+Entity EntityFactory::createBackgroundLevelFour(
+    EntityManager &entityManager, ComponentManager &componentManager)
+{
+    Entity background = entityManager.createEntity();
+
+    BackgroundComponent backgroundComponent;
+    PositionComponent start_position(50, 50);
+    AnimationComponent animationComponent({0, 0}, {342, 192});
+    SpriteDataComponent spriteData{
+        SpritePath::Background1, {5.625f, 5.625f}, AScenes::SpriteType::BACKGROUND};
+
+    componentManager.addComponent<BackgroundComponent>(background.getId(), backgroundComponent);
+    componentManager.addComponent<PositionComponent>(background.getId(), start_position);
+    componentManager.addComponent<SpriteDataComponent>(background.getId(), spriteData);
+    componentManager.addComponent<AnimationComponent>(background.getId(), animationComponent);
+
+    return background;
+}
+
+Entity EntityFactory::createBackgroundMenu(EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager)
+{
+    Entity background = entityManager.createEntity();
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
+    sf::Vector2f scale(1.0, 1.0);
+    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
+    componentManager.addComponent<SpriteComponent>(background.getId(), spriteComponent);
     return background;
 }
 
@@ -310,7 +416,7 @@ Entity EntityFactory::createForceWeapon(
     PositionComponent startPosition(10, 50);
     VelocityComponent velocity{1.0f, 0.0f};
     AnimationComponent animationComponent({300, 35}, {24, 16});
-    ShootComponent shoot(std::chrono::milliseconds(500));
+    ShootComponent shootComponent(std::chrono::milliseconds(500));
     SpriteDataComponent spriteData{
         SpritePath::ForceWeapon, {2.0f, 2.0f}, AScenes::SpriteType::WEAPON};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
@@ -322,7 +428,7 @@ Entity EntityFactory::createForceWeapon(
     componentManager.addComponent<SpriteDataComponent>(forceWeapon.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(forceWeapon.getId(), hitbox);
     componentManager.addComponent<AnimationComponent>(forceWeapon.getId(), animationComponent);
-    componentManager.addComponent<ShootComponent>(forceWeapon.getId(), shoot);
+    componentManager.addComponent<ShootComponent>(forceWeapon.getId(), shootComponent);
 
     return forceWeapon;
 }
@@ -336,7 +442,7 @@ Entity EntityFactory::createForceMissile(
     ForceMissileComponent forceMissileComponent{forceId};
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{3.0f, 0.0f};
-    AnimationComponent animationComponent({249, 88}, {16, 8});
+    AnimationComponent animationComponent({284, 59}, {16, 4});
     SpriteDataComponent spriteData{
         SpritePath::ForceMissile, {1.0f, 1.0f}, AScenes::SpriteType::WEAPON};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
@@ -424,6 +530,38 @@ Entity EntityFactory::createEnemyMissile(
     componentManager.addComponent<AnimationComponent>(enemyMissile.getId(), animationComponent);
 
     return enemyMissile;
+}
+
+Entity EntityFactory::createWall(
+    EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY)
+{
+    Entity wall = entityManager.createEntity();
+
+    EnemyComponent enemyComponent;
+    WallComponent wallComponent;
+    PositionComponent startPosition(posX, posY);
+    VelocityComponent velocity{-1.0f, 0.0f};
+    AnimationComponent animationComponent({0, 0}, {32, 32});
+    SpriteDataComponent spriteData{SpritePath::Wall, {1.0f, 1.0f}, AScenes::SpriteType::ENEMY};
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
+
+    componentManager.addComponent<EnemyComponent>(wall.getId(), enemyComponent);
+    componentManager.addComponent<WallComponent>(wall.getId(), wallComponent);
+    componentManager.addComponent<PositionComponent>(wall.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(wall.getId(), velocity);
+    componentManager.addComponent<SpriteDataComponent>(wall.getId(), spriteData);
+    componentManager.addComponent<HitboxComponent>(wall.getId(), hitbox);
+    componentManager.addComponent<AnimationComponent>(wall.getId(), animationComponent);
+
+    while (CheckEntityPosition(wall.getId(), componentManager, entityManager) != -1) {
+        auto wallPos = componentManager.getComponent<PositionComponent>(wall.getId());
+        if (wallPos) {
+            wallPos.value()->y = static_cast<float>(rand() % 100);
+        }
+    }
+
+    return wall;
 }
 
 Entity EntityFactory::createButton(EntityManager &entityManager,

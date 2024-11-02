@@ -10,6 +10,11 @@
 #include <Entities/entity.hpp>
 #include <memory>
 
+/**
+ * @brief A component that represents the front of an entity.
+ *
+ * This component is used to identify the target entity that this component is associated with.
+ */
 struct FrontComponent {
     int targetId;
 

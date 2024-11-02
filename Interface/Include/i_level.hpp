@@ -143,5 +143,26 @@ template <typename T> class ILevel {
      * @param gameParameters The game parameters to set the difficulty.
      */
     virtual void SetGameParameters(GameParameters gameParameters) = 0;
+
+    /**
+     * @brief Get the Entity Back Ground object
+     *
+     * @param server
+     * @param entityManager
+     * @param componentManager
+     * @return EntityInformation
+     */
+    virtual EntityInformation GetEntityBackGround(r_type::net::AServer<T> *server,
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+
+    /**
+     * @brief Initializes a background entity.
+     *
+     * The function creates and returns information about the background entity.
+     *
+     * @return EntityInformation The information of the background entity.
+     */
+    virtual EntityInformation InitiateBackground(r_type::net::AServer<T> *server,
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
 };
 } // namespace r_type

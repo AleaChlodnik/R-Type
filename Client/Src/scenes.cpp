@@ -142,13 +142,8 @@ void Scenes::mainMenu()
     buttons = {};
 
     // Create background
-    std::shared_ptr<Entity> background =
-        std::make_shared<Entity>(entityFactory.createBackground(entityManager, componentManager));
-    sf::Texture &texture =
-        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
-    sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
-    componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
+    std::shared_ptr<Entity> background = std::make_shared<Entity>(
+        entityFactory.createBackgroundMenu(entityManager, componentManager, textureManager));
 
     // Create filter
     this->filter = std::make_shared<Entity>(
@@ -245,13 +240,8 @@ void Scenes::inGameMenu()
     buttons = {};
 
     // Create background
-    std::shared_ptr<Entity> background =
-        std::make_shared<Entity>(entityFactory.createBackground(entityManager, componentManager));
-    sf::Texture &texture =
-        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
-    sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
-    componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
+    std::shared_ptr<Entity> background = std::make_shared<Entity>(
+        entityFactory.createBackgroundMenu(entityManager, componentManager, textureManager));
 
     // Create filter
     this->filter = std::make_shared<Entity>(
@@ -447,13 +437,8 @@ void Scenes::settingsMenu()
     buttons = {};
 
     // Create background
-    std::shared_ptr<Entity> background =
-        std::make_shared<Entity>(entityFactory.createBackground(entityManager, componentManager));
-    sf::Texture &texture =
-        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
-    sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
-    componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
+    std::shared_ptr<Entity> background = std::make_shared<Entity>(
+        entityFactory.createBackgroundMenu(entityManager, componentManager, textureManager));
 
     // Create filter
     this->filter = std::make_shared<Entity>(
@@ -535,13 +520,8 @@ void Scenes::difficultyChoices()
     buttons = {};
 
     // Create background
-    std::shared_ptr<Entity> background =
-        std::make_shared<Entity>(entityFactory.createBackground(entityManager, componentManager));
-    sf::Texture &texture =
-        textureManager.getTexture("Client/Assets/Sprites/Background/background.jpg");
-    sf::Vector2f scale(1.0, 1.0);
-    SpriteComponent spriteComponent(texture, 0, 0, scale, AScenes::SpriteType::BACKGROUND);
-    componentManager.addComponent<SpriteComponent>(background.get()->getId(), spriteComponent);
+    std::shared_ptr<Entity> background = std::make_shared<Entity>(
+        entityFactory.createBackgroundMenu(entityManager, componentManager, textureManager));
 
     // Create filter
     this->filter = std::make_shared<Entity>(
@@ -713,10 +693,24 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
 
     switch (msg.header.id) {
     case TypeMessage::ServerAccept: {
+        int nbPlayers;
         std::cout << "Server Accepted Connection" << std::endl;
+        msg >> nbPlayers;
         r_type::net::Message<TypeMessage> response;
-        response.header.id = TypeMessage::SendPlayer;
-        _networkClient.Send(response);
+        if (nbPlayers == 0) {
+            GameParameters gameParameters;
+            gameParameters.levelType = GameState::LevelOne;
+            gameParameters.nbrOfBasicMonster = 5;
+            gameParameters.spawnTimeBasicMonster = 2;
+            gameParameters.nbrOfShooterEnemy = 1;
+            gameParameters.spawnTimeShooterEnemy = 2;
+            response.header.id = TypeMessage::GameParametersInformation;
+            response << gameParameters;
+            _networkClient.Send(response);
+        } else {
+            response.header.id = TypeMessage::GameEntityInformation;
+            _networkClient.Send(response);
+        }
     } break;
     case TypeMessage::ServerPing: {
         std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
@@ -730,13 +724,22 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         msg >> clientID;
         std::cout << "Hello from [" << clientID << "]" << std::endl;
     } break;
-    case TypeMessage::SendPlayerInformation: {
+    case TypeMessage::PlayerInformation: {
         EntityInformation entity;
         r_type::net::Message<TypeMessage> response;
-        response.header.id = TypeMessage::ReceivePlayerInformation;
+        response.header.id = TypeMessage::PlayerInformationResponse;
         _networkClient.Send(response);
         msg >> entity;
         _networkClient.setPlayerId(entity.uniqueID);
+        _networkClient.addEntity(entity, componentManager, textureManager, ogWindowSize);
+    } break;
+    case TypeMessage::BackgroundInformation: {
+        std::cout << "BackgroundInformation" << std::endl;
+        EntityInformation entity;
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::BackgroundInformationResponse;
+        msg >> entity;
+        _networkClient.Send(response);
         _networkClient.addEntity(entity, componentManager, textureManager, ogWindowSize);
     } break;
     case TypeMessage::ServerDeny: {
@@ -746,15 +749,21 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     } break;
     case TypeMessage::ClientConnect: {
     } break;
-    case TypeMessage::CreateInfoBar: {
+    case TypeMessage::GameBarInformation: {
         UIEntityInformation entity;
         r_type::net::Message<TypeMessage> response;
-        response.header.id = TypeMessage::CreateInfoBar;
-        _networkClient.Send(response);
+        response.header.id = TypeMessage::GameBarInformationResponse;
         msg >> entity;
+        std::cout << "GameBarInformation" << std::endl;
+        std::cout << "Entity ID: " << entity.uniqueID << std::endl;
+        std::cout << "Info: " << entity.lives << ", " << entity.score << std::endl;
+        std::cout << "SpriteData: " << entity.spriteData.spritePath << ", "
+                  << entity.spriteData.scale.x << ", " << entity.spriteData.scale.y << ", "
+                  << std::endl;
         sf::Vector2u windowSize = _networkClient.initInfoBar(
             entity, componentManager, textureManager, fontManager, ogWindowSize);
         _networkClient.setWindowSize(windowSize);
+        _networkClient.Send(response);
     } break;
     case TypeMessage::UpdateInfoBar: {
         UIEntityInformation entity;
@@ -810,13 +819,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         msg >> rect.offset >> rect.dimension >> id;
         _networkClient.animateEntity(id, rect, componentManager);
     } break;
-    case TypeMessage::GameDiffuculty: {
-    } break;
     case TypeMessage::CreateEntityResponse: {
-    } break;
-    case TypeMessage::SendPlayer: {
-    } break;
-    case TypeMessage::ReceivePlayerInformation: {
     } break;
     }
 }
