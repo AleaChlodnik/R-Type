@@ -70,7 +70,7 @@ graph TD
         J[SpriteComponent]
         K[HealthComponent]
         L[ScoreComponent]
-        M[WeaponComponent]
+        M[ForceWeaponComponent]
         N[TextComponent]
     end
 
@@ -180,7 +180,7 @@ graph TD
             Component --> SpriteComponent
             Component --> HealthComponent
             Component --> HitboxComponent
-            Component --> WeaponComponent
+            Component --> ForceWeaponComponent
         end
 
         subgraph Systems
@@ -361,7 +361,7 @@ classDiagram
         +int max_health
     }
 
-    class WeaponComponent {
+    class ForceWeaponComponent {
         +float bullet_speed
         +int damage
     }
@@ -395,7 +395,7 @@ classDiagram
     Component <|-- PositionComponent
     Component <|-- VelocityComponent
     Component <|-- HealthComponent
-    Component <|-- WeaponComponent
+    Component <|-- ForceWeaponComponent
 
     EntityManager --> Entity : manages
     ComponentManager --> Component : manages

@@ -16,7 +16,10 @@
 #include <cmath>
 #include <entity_struct.hpp>
 #include <error_handling.hpp>
+#include <filesystem>
+#include <fstream>
 #include <game_struct.h>
+#include <iostream>
 #include <level.hpp>
 #include <macros.hpp>
 #include <unordered_map>
@@ -65,6 +68,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         // _entityFactory.createBasicMonster(_entityManager, _componentManager);
         // _entityFactory.createBasicMonster(_entityManager, _componentManager);
         // _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
+        // _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
+        // _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
+        // _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
     }
 
     /**
@@ -76,10 +82,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     ~AServer() { Stop(); }
 
     /**
-     * @brief Start the server
+     * @brief Starts the server and begins waiting for client messages.
      *
-     * @return true
-     * @return false
+     * This function attempts to start the server by waiting for client messages
+     * and running the ASIO context in a separate thread. If an exception occurs
+     * during this process, it will be caught, an error message will be printed
+     * to the standard error stream, and the function will return false.
+     *
+     * @return true if the server started successfully, false otherwise.
      */
     bool Start()
     {
@@ -241,6 +251,16 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 _deqConnections.end());
     }
 
+    /**
+     * @brief Updates the information bar for a given player.
+     *
+     * This function retrieves the health and score components of the specified player,
+     * as well as the sprite and text data components of the player's information bar.
+     * It then updates the UIEntityInformation structure with these values.
+     *
+     * @param playerId The ID of the player whose information bar is to be updated.
+     * @return UIEntityInformation The updated information for the player's information bar.
+     */
     UIEntityInformation UpdateInfoBar(int playerId)
     {
         UIEntityInformation entity;
@@ -402,6 +422,44 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     }
 
     /**
+     * @brief Saves the score of a player to a file.
+     *
+     * This function saves the score of a player identified by the given playerId
+     * to a file named "scores.txt" located in the "GameScores" directory. If the
+     * directory or file does not exist, they will be created. The score is appended
+     * to the file in the format "Player <playerId>: <score>".
+     *
+     * @param playerId The unique identifier of the player whose score is to be saved.
+     *
+     * @throws failedToCreateFile If the file cannot be created.
+     * @throws failedToOpenFile If the file cannot be opened in append mode.
+     */
+    void SavePlayerScore(uint32_t playerId)
+    {
+        std::string directory = "GameScores";
+        std::string filePath = directory + "/scores.txt";
+        if (!std::filesystem::exists(directory)) {
+            std::filesystem::create_directory(directory);
+        }
+        if (!std::filesystem::exists(filePath)) {
+            std::ofstream outFile(filePath); // Creating the file
+            if (!outFile) {
+                throw failedToCreateFile();
+            }
+            outFile.close();
+        }
+        std::ofstream outFile(filePath, std::ios_base::app); // Open in append mode
+        if (!outFile) {
+            throw failedToOpenFile();
+        }
+        if (auto scoreComponent = _componentManager.getComponent<ScoreComponent>(playerId)) {
+            std::string playerID = "Player " + std::to_string(playerId);
+            outFile << playerID << ": " << scoreComponent.value()->score << "\n";
+            outFile.close();
+        }
+    }
+
+    /**
      * @brief Retrieves the entity ID associated with a client ID.
      *
      * @param id The client ID.
@@ -409,6 +467,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     uint32_t GetClientPlayerId(uint32_t id) { return _clientPlayerID[id]; }
 
+    /**
+     * @brief Retrieves the client ID associated with a given player ID.
+     *
+     * This function searches through the _clientPlayerID map to find the client ID
+     * that corresponds to the provided player ID. If the player ID is found, the
+     * associated client ID is returned. If the player ID is not found, a
+     * playerIdNotFound exception is thrown.
+     *
+     * @param id The player ID for which the client ID is to be retrieved.
+     * @return uint32_t The client ID associated with the given player ID.
+     * @throws playerIdNotFound If the player ID is not found in the map.
+     */
     uint32_t GetPlayerClientId(uint32_t id)
     {
         for (const auto &pair : _clientPlayerID) {
@@ -419,19 +489,33 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         throw playerIdNotFound();
     }
 
+    /**
+     * @brief Retrieves the client info bar ID associated with a given client ID.
+     *
+     * @param id The client ID for which to retrieve the info bar ID.
+     * @return uint32_t The info bar ID associated with the specified client ID.
+     */
     uint32_t GetClientInfoBarId(uint32_t id) { return _clientInfoBarID[id]; }
 
     /**
-     * @brief Removes a player from the game based on the client ID.
+     * @brief Removes a player from the server.
      *
-     * @param id The client ID of the player to be removed.
+     * This function removes a player identified by the given ID from the server's
+     * internal player list.
+     *
+     * @param id The unique identifier of the player to be removed.
      */
     void RemovePlayer(uint32_t id) { _clientPlayerID.erase(id); }
 
     /**
-     * @brief Removes entities associated with a player.
+     * @brief Removes an entity from the server.
      *
-     * @param id The ID of the player whose entities are to be removed.
+     * This function removes an entity identified by the given ID from the server.
+     * It first checks if the entity exists using the entity manager. If the entity
+     * is found, it removes the entity from all components using the component manager
+     * and then removes the entity itself from the entity manager.
+     *
+     * @param id The unique identifier of the entity to be removed.
      */
     void RemoveEntity(uint32_t id)
     {
@@ -441,6 +525,17 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
     }
 
+    /**
+     * @brief Removes an information bar and its associated entities.
+     *
+     * This function removes an information bar identified by the given `infoBarId`.
+     * It first checks if the information bar has a `TextDataComponent` and removes
+     * all entities associated with the categories listed in the `TextDataComponent`.
+     * Finally, it removes the information bar entity itself and erases its ID from
+     * the client information bar ID map.
+     *
+     * @param infoBarId The ID of the information bar to be removed.
+     */
     void RemoveInfoBar(uint32_t infoBarId)
     {
         if (auto textDataComponent =

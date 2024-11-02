@@ -7,6 +7,9 @@
 
 #pragma once
 
+/**
+ * @brief A component that represents the position of an entity in 2D space.
+ */
 struct PositionComponent {
     float x;
     float y;

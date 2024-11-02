@@ -37,5 +37,8 @@ struct GameParameters {
     int nbrOfShooterEnemy;
     int spawnTimeShooterEnemy;
 
+    int nbrOfWall;
+    int spawnTimeWall;
+
     GameState levelType;
 };

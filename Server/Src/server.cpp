@@ -8,6 +8,18 @@
 #include <Net/server.hpp>
 #include <creatable_client_object.hpp>
 
+/**
+ * @brief Handles the event when a client attempts to connect to the server.
+ *
+ * This function checks if the maximum number of players (4) has been reached.
+ * If so, it sends a denial message to the client and returns false.
+ * Otherwise, it sends an acceptance message to the client, increments the
+ * number of players, sets the client's status to INITIALISATION, assigns the
+ * last message sent to the client, and initializes the client's entities.
+ *
+ * @param client A shared pointer to the client connection attempting to connect.
+ * @return true if the client is accepted, false if the client is denied.
+ */
 bool r_type::net::Server::OnClientConnect(
     std::shared_ptr<r_type::net::Connection<TypeMessage>> client)
 {
@@ -29,9 +41,14 @@ bool r_type::net::Server::OnClientConnect(
 }
 
 /**
- * @brief Called when a client appears to have disconnected
+ * @brief Handles the disconnection of a client from the server.
  *
- * @param client
+ * This function is called when a client disconnects from the server. It performs
+ * several tasks including removing the client, saving the player's score, removing
+ * associated entities, and notifying all other clients about the disconnection.
+ *
+ * @param client A shared pointer to the connection object representing the client.
+ * @param msg A reference to the message object containing information about the disconnection.
  */
 void r_type::net::Server::OnClientDisconnect(
     std::shared_ptr<r_type::net::Connection<TypeMessage>> client,
@@ -40,7 +57,12 @@ void r_type::net::Server::OnClientDisconnect(
     uint32_t entityId;
     std::cout << "[" << client->GetID() << "]: Removing client" << std::endl;
     msg >> entityId;
+    SavePlayerScore(entityId);
     RemoveEntity(entityId);
+    auto linkForce = _componentManager.getComponent<LinkForceComponent>(entityId);
+    if (linkForce) {
+        RemoveEntity(linkForce.value()->targetId);
+    }
     RemovePlayer(client->GetID());
     msg << entityId;
     MessageAllClients(msg, client);
@@ -50,10 +72,15 @@ void r_type::net::Server::OnClientDisconnect(
 }
 
 /**
- * @brief Called when a message is received from a client
+ * @brief Handles the reception of a message from a client.
  *
- * @param client
- * @param msg
+ * This function is called when a message is received from a client. It processes
+ * the message based on the client's status and the message's ID. The function
+ * performs different actions based on the message ID, such as sending a response
+ * message, updating player positions, creating entities, or destroying entities.
+ *
+ * @param client A shared pointer to the connection object representing the client.
+ * @param msg A reference to the message object containing information sent by the client.
  */
 void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<TypeMessage>> client,
     r_type::net::Message<TypeMessage> &msg)
@@ -110,13 +137,12 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
                         MissileMsg << InitiatePlayerMissile(missile.getId());
                         MessageAllClients(MissileMsg);
                     } else {
-                        // TODO : fire via the weapon
-                        // Entity forceWeapon = _entityFactory.createForceWeapon(
-                        //     _entityManager, _componentManager, playerId);
-                        // r_type::net::Message<TypeMessage> MissileMsg;
-                        // MissileMsg.header.id = TypeMessage::CreateEntityMessage;
-                        // MissileMsg << InitiatePlayerMissile(forceWeapon.getId());
-                        // MessageAllClients(MissileMsg);
+                        Entity ForceMissile = _entityFactory.createForceMissile(
+                            _entityManager, _componentManager, frontComponent.value()->targetId);
+                        r_type::net::Message<TypeMessage> MissileMsg;
+                        MissileMsg.header.id = TypeMessage::CreateEntityMessage;
+                        MissileMsg << InitiatePlayerMissile(ForceMissile.getId());
+                        MessageAllClients(MissileMsg);
                     }
                 }
             } break;
