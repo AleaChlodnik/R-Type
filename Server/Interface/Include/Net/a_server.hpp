@@ -769,9 +769,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 bossEntityInfo.vPos.y = bossPos.value()->y;
                 bossEntityInfo.spriteData = *(bossSpriteData.value());
                 bossEntityInfo.ratio.x =
-                    (bossAnimation.value()->dimension.x * bossSpriteData.value()->scale.x) / SCREEN_WIDTH;
+                    (bossAnimation.value()->dimension.x * bossSpriteData.value()->scale.x) /
+                    SCREEN_WIDTH;
                 bossEntityInfo.ratio.y =
-                    (bossAnimation.value()->dimension.y * bossSpriteData.value()->scale.y) / SCREEN_HEIGHT;
+                    (bossAnimation.value()->dimension.y * bossSpriteData.value()->scale.y) /
+                    SCREEN_HEIGHT;
                 bossEntityInfo.animationComponent.dimension = bossAnimation.value()->dimension;
                 bossEntityInfo.animationComponent.offset = bossAnimation.value()->offset;
             }
