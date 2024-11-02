@@ -672,9 +672,10 @@ Entity EntityFactory::createBoss(
     tailIds.push_back(tailEnd.getId());
 
     BossComponent bossComponent{tailIds};
-    PositionComponent position(99, 50);
-    AnimationComponent animationComponent({24, 0}, {161.25, 208});
-    SpriteDataComponent spriteData{SpritePath::Boss, {10.0f, 10.0f}, AScenes::SpriteType::ENEMY};
+    PositionComponent position(50, 50);
+    // AnimationComponent animationComponent({24, 0}, {161.25, 208});
+    AnimationComponent animationComponent({0, 0}, {500, 500});
+    SpriteDataComponent spriteData{SpritePath::Boss, {20.0f, 20.0f}, AScenes::SpriteType::ENEMY};
     HealthComponent health{10};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
