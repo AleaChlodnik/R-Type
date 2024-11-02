@@ -185,8 +185,8 @@ template <typename T> class ILevel {
      * @param componentManager
      * @return EntityInformation
      */
-    virtual void ChangeBackground(r_type::net::AServer<T> *server,
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+    virtual void ChangeBackground(r_type::net::AServer<T> *server, EntityManager &entityManager,
+        ComponentManager &componentManager) = 0;
 
     /**
      * @brief Initializes a background entity.
