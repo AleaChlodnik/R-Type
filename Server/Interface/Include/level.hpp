@@ -9,8 +9,8 @@
 
 #include <Components/component_manager.hpp>
 #include <Components/components.hpp>
-#include <cmath>
 #include <animation_system.hpp>
+#include <cmath>
 #include <game_struct.h>
 
 #include <i_level.hpp>
