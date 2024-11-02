@@ -226,7 +226,7 @@ bool operator!=(AnimationComponent animation, AnimationComponent other)
  * @param deltaTime The time elapsed since the last update, used for time-based animations.
  */
 void AnimationSystem::AnimationEntities(
-    ComponentManager &componentManager, EntityManager &entityManager, float deltaTime)
+    ComponentManager &componentManager, EntityManager &entityManager, float deltaTime, bool *endOfLevel)
 {
     for (auto entity : entityManager.getAllEntities()) {
 
@@ -268,7 +268,7 @@ void AnimationSystem::AnimationEntities(
                 if (animation.value()->offset.x < 2646) {
                     animation.value()->offset.x += 1;
                 } else {
-                    
+                    *endOfLevel = true;
                 }
             }
         }

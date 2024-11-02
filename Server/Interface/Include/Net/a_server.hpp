@@ -714,6 +714,26 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         return entityInfo;
     }
 
+    void InitBoss(r_type::net::AServer<T> *server)
+    {
+        Entity boss = _entityFactory.createBoss(_entityManager, _componentManager);
+        int bossId = boss.getId();
+        float segmentOffsetX = -10.0f;
+        float segmentOffsetY = 0.0f;
+        auto bossComp = _componentManager.getComponent<BossComponent>(bossId);
+        auto bossPos = _componentManager.getComponent<PositionComponent>(bossId);
+        if (bossComp && bossPos) {
+            for (size_t i = 0; i < bossComp.value()->tailSegmentIds.size(); i++) {
+                int tailSegId = bossComp->tailSegmentIds[i];
+                if (auto tailSegPos = _componentManager.getComponent<PositionComponent>(
+                        bossComp.value()->tailSegId)) {
+                    tailSegPos.value()->x = bossPos.x + i * segmentOffsetX;
+                    tailSegPos.value()->y = bossPos.y + i * segmentOffsetY;
+                }
+            }
+        }
+    }
+
     std::shared_ptr<Connection<T>> getClientById(
         const std::deque<std::shared_ptr<Connection<T>>> &connections, uint32_t clientId)
     {

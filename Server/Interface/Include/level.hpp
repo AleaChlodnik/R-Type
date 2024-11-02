@@ -408,7 +408,8 @@ template <typename T> class Level : virtual public ILevel<T> {
                     previousAnimations.insert({entityId, *animation});
                 }
             }
-            _animationSystem->AnimationEntities(componentManager, entityManager, 0.2);
+            _animationSystem->AnimationEntities(
+                componentManager, entityManager, 0.2, &(server->_endOfLevel));
             // Compare new Animations
             if (auto animationsAfter = componentManager.getComponentMap<AnimationComponent>()) {
                 for (const auto &pair : **animationsAfter) {
@@ -498,25 +499,31 @@ template <typename T> class Level : virtual public ILevel<T> {
     void LevelOne(r_type::net::AServer<T> *server, ComponentManager &componentManager,
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
     {
-        if (std::chrono::duration_cast<std::chrono::seconds>(
-                server->GetClock() - _basicMonsterSpawnTime)
-                .count() > _gameParameters.spawnTimeBasicMonster) {
-            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfBasicMonster,
-                EntityFactory::EnemyType::BasicMonster);
-            _basicMonsterSpawnTime = server->GetClock();
-        }
-        if (std::chrono::duration_cast<std::chrono::seconds>(
-                server->GetClock() - _shooterEnemySpawnTime)
-                .count() > _gameParameters.spawnTimeShooterEnemy) {
-            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfShooterEnemy,
-                EntityFactory::EnemyType::ShooterEnemy);
-            _shooterEnemySpawnTime = server->GetClock();
-        }
-        if (std::chrono::duration_cast<std::chrono::seconds>(server->GetClock() - _WallSpawnTime)
-                .count() > _gameParameters.spawnTimeWall) {
-            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfWall,
-                EntityFactory::EnemyType::Wall);
-            _WallSpawnTime = server->GetClock();
+        if (server->_endOfLevel == false) {
+            if (std::chrono::duration_cast<std::chrono::seconds>(
+                    server->GetClock() - _basicMonsterSpawnTime)
+                    .count() > _gameParameters.spawnTimeBasicMonster) {
+                SpawnEntity(server, entityManager, componentManager,
+                    _gameParameters.nbrOfBasicMonster, EntityFactory::EnemyType::BasicMonster);
+                _basicMonsterSpawnTime = server->GetClock();
+            }
+            if (std::chrono::duration_cast<std::chrono::seconds>(
+                    server->GetClock() - _shooterEnemySpawnTime)
+                    .count() > _gameParameters.spawnTimeShooterEnemy) {
+                SpawnEntity(server, entityManager, componentManager,
+                    _gameParameters.nbrOfShooterEnemy, EntityFactory::EnemyType::ShooterEnemy);
+                _shooterEnemySpawnTime = server->GetClock();
+            }
+            if (std::chrono::duration_cast<std::chrono::seconds>(
+                    server->GetClock() - _WallSpawnTime)
+                    .count() > _gameParameters.spawnTimeWall) {
+                SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfWall,
+                    EntityFactory::EnemyType::Wall);
+                _WallSpawnTime = server->GetClock();
+            }
+        } else {
+            SpawnEntity(
+                server, entityManager, componentManager, 0, EntityFactory::EnemyType::Boss);
         }
     }
 
@@ -595,6 +602,9 @@ template <typename T> class Level : virtual public ILevel<T> {
                 server->MessageAllClients(msg);
                 i++;
             }
+        } break;
+        case EntityFactory::EnemyType::Boss: {
+            server->InitBoss(server);
         } break;
         default:
             break;
