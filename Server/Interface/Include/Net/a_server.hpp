@@ -731,6 +731,28 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     tailSegPos.value()->y = bossPos.y + i * segmentOffsetY;
                 }
             }
+            for (size_t i = bossComp->tailSegmentIds.size() - 1; i > 0; --i) {
+                int currentSegmentId = bossComp->tailSegmentIds[i];
+                int precedingSegmentId = bossComp->tailSegmentIds[i - 1];
+
+                if (auto currentPos =
+                        _componentManager.getComponent<PositionComponent>(currentSegmentId)) {
+                    if (auto precedingPos = _componentManager.getComponent<PositionComponent>(
+                            precedingSegmentId)) {
+                        currentPos->x = precedingPos->x;
+                        currentPos->y = precedingPos->y;
+                    }
+                }
+            }
+
+            // Set the first tail segment to follow the boss directly
+            if (auto firstSegmentPos = _componentManager.getComponent<PositionComponent>(
+                    bossComp->tailSegmentIds[0])) {
+                if (auto bossPos = _componentManager.getComponent<PositionComponent>(bossId)) {
+                    firstSegmentPos->x = bossPos->x;
+                    firstSegmentPos->y = bossPos->y;
+                }
+            }
         }
     }
 
