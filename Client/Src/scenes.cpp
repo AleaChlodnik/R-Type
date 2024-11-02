@@ -291,7 +291,7 @@ void Scenes::inGameMenu()
 
 void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
-    TextureManager &textureManager, FontManager fontManager, EntityFactory &entityFactory)
+    TextureManager &textureManager, FontManager &fontManager, EntityFactory &entityFactory)
 {
     std::function<IScenes *(AScenes *)> onNormalButtonClicked = [&](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::NORMAL);
@@ -358,7 +358,7 @@ sf::Keyboard::Key waitForKey(sf::RenderWindow *_window)
 
 void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
-    TextureManager &textureManager, FontManager fontManager, EntityFactory &entityFactory,
+    TextureManager &textureManager, FontManager &fontManager, EntityFactory &entityFactory,
     std::map<Scenes::Actions, sf::Keyboard::Key> &keyBinds)
 {
     std::function<IScenes *(AScenes *, AScenes::Actions)> bindKey = [](AScenes *currentScene,
