@@ -600,10 +600,7 @@ void Scenes::gameLoop()
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(_window, componentManager);
 
-    sf::Event event;
-    sf::Clock clock;
-
-    const int FIRE_COOLDOWN_MS = 500;
+    const int FIRE_COOLDOWN_MS = 300;
     std::chrono::steady_clock::time_point lastFireTime = std::chrono::steady_clock::now();
 
     auto movePlayer = [this](PlayerMovement playerMovement) {
@@ -631,6 +628,7 @@ void Scenes::gameLoop()
 
     audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
 
+    sf::Event event;
     while (_window.isOpen()) {
         while (_window.pollEvent(event)) {
 
