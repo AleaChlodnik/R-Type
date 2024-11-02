@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../entity_struct.hpp"
 #include "Systems/i_system.hpp"
+#include <entity_struct.hpp>
 
 /**
  * @brief Represents the animation component.
