@@ -108,7 +108,7 @@ class ComponentManager {
         std::cout << "Removing all components" << std::endl;
         components.clear();
     }
-    
+
     /**
      * @brief Removes the specified entity from all components.
      *
