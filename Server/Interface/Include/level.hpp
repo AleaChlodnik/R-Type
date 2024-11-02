@@ -618,6 +618,67 @@ template <typename T> class Level : virtual public ILevel<T> {
     }
 
     /**
+     * @brief Get the Entity Back Ground object
+     *
+     * @param server
+     * @param entityManager
+     * @param componentManager
+     * @return EntityInformation
+     */
+    EntityInformation GetEntityBackGround(r_type::net::AServer<T> *server,
+        EntityManager &entityManager, ComponentManager &componentManager) override
+    {
+        EntityInformation entityInfo;
+        auto background = componentManager.getComponentMap<BackgroundComponent>();
+        if (background) {
+            for (auto &pair : **background) {
+                int entityId = pair.first;
+                auto &backgroundComponent = pair.second;
+                if (auto backgroundInfo =
+                        std::any_cast<BackgroundComponent>(&backgroundComponent)) {
+                    return server->FormatEntityInformation(entityId);
+                }
+            }
+        } else {
+            return InitiateBackground(server, entityManager, componentManager);
+        }
+        return entityInfo;
+    }
+
+    /**
+     * @brief Initializes a background entity.
+     *
+     * The function creates and returns information about the background entity.
+     *
+     * @return EntityInformation The information of the background entity.
+     */
+    EntityInformation InitiateBackground(r_type::net::AServer<T> *server,
+        EntityManager &entityManager, ComponentManager &componentManager) override
+    {
+        EntityInformation entityInfo;
+        Entity background = server->GetEntityFactory().backgroundFactory(
+            entityManager, componentManager, _gameParameters.levelType);
+        entityInfo.uniqueID = background.getId();
+        auto sprite = componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
+        auto backgroundPos = componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
+        auto animation = componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
+        if (sprite) {
+            entityInfo.spriteData = *(sprite.value());
+            entityInfo.vPos.x = backgroundPos.value()->x;
+            entityInfo.vPos.y = backgroundPos.value()->y;
+            if (animation) {
+                entityInfo.ratio.x =
+                    (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;
+                entityInfo.ratio.y =
+                    (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
+                entityInfo.animationComponent.dimension = animation.value()->dimension;
+                entityInfo.animationComponent.offset = animation.value()->offset;
+            }
+        }
+        return entityInfo;
+    }
+
+    /**
      * @brief Sets the game difficulty based on the provided game parameters.
      *
      * This function sets the game difficulty based on the provided game parameters.

@@ -43,8 +43,48 @@ class IEntityFactory {
      * @param componentManager The component manager to use for adding components to the entity.
      * @return The created background entity.
      */
-    virtual Entity createBackground(
+    virtual Entity createBackgroundLevelOne(
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
+
+    /**
+     * @brief Create a Background Level Two object
+     *
+     * @param entityManager
+     * @param componentManager
+     * @return Entity
+     */
+    virtual Entity createBackgroundLevelTwo(
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+
+    /**
+     * @brief Create a Background Level Three object
+     *
+     * @param entityManager
+     * @param componentManager
+     * @return Entity
+     */
+    virtual Entity createBackgroundLevelThree(
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+
+    /**
+     * @brief Create a Background Level Four object
+     *
+     * @param entityManager
+     * @param componentManager
+     * @return Entity
+     */
+    virtual Entity createBackgroundLevelFour(
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+
+    /**
+     * @brief Create a Background Menu object
+     *
+     * @param entityManager
+     * @param componentManager
+     * @return Entity
+     */
+    virtual Entity createBackgroundMenu(
+        EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) = 0;
 
     /**
      * @brief Creates a bar entity.

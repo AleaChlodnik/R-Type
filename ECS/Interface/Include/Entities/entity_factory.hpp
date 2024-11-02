@@ -11,6 +11,7 @@
 #include "i_entity_factory.hpp"
 #include "i_scenes.hpp"
 #include <functional>
+#include <game_struct.h>
 
 /**
  * @class EntityFactory
@@ -20,17 +21,54 @@
 class EntityFactory : public IEntityFactory {
   public:
     /**
-     * @brief Creates a background entity.
+     * @brief Create a Background Level One object
      *
-     * This function creates a background entity using the provided entity manager and component
-     * manager.
-     *
-     * @param entityManager The entity manager to use for creating the entity.
-     * @param componentManager The component manager to use for adding components to the entity.
-     * @return The created background entity.
+     * @param entityManager
+     * @param componentManager
+     * @return Entity
      */
-    Entity createBackground(
+    Entity createBackgroundLevelOne(
         EntityManager &entityManager, ComponentManager &componentManager) override;
+
+    /**
+     * @brief Create a Background Level Two object
+     *
+     * @param entityManager
+     * @param componentManager
+     * @return Entity
+     */
+    Entity createBackgroundLevelTwo(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
+
+    /**
+     * @brief Create a Background Level Three object
+     *
+     * @param entityManager
+     * @param componentManager
+     * @return Entity
+     */
+    Entity createBackgroundLevelThree(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
+
+    /**
+     * @brief Create a Background Level Four object
+     *
+     * @param entityManager
+     * @param componentManager
+     * @return Entity
+     */
+    Entity createBackgroundLevelFour(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
+
+    /**
+     * @brief Create a Background Menu object
+     *
+     * @param entityManager
+     * @param componentManager
+     * @return Entity
+     */
+    Entity createBackgroundMenu(
+        EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) override;
 
     /**
      * @brief Creates a bar entity.
@@ -180,4 +218,7 @@ class EntityFactory : public IEntityFactory {
      */
     Entity createFilter(EntityManager &entityManager, ComponentManager &componentManager,
         AScenes::DaltonismMode mode);
+
+    Entity backgroundFactory(
+        EntityManager &entityManager, ComponentManager &componentManager, GameState type);
 };

@@ -60,20 +60,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         _level = r_type::Level<T>();
         _level.SetSystem(_componentManager, _entityManager);
 
-        GameParameters gameParameters;
-        gameParameters.nbrOfBasicMonster = 5;
-        gameParameters.spawnTimeBasicMonster = 3;
-        gameParameters.nbrOfShooterEnemy = 1;
-        gameParameters.spawnTimeShooterEnemy = 1;
-        gameParameters.levelType = TypeLevel::LevelOne;
-        _level.SetGameParameters(gameParameters);
-
-        _background = InitiateBackground();
         // _entityFactory.createShooterEnemy(_entityManager, _componentManager);
         // _entityFactory.createShooterEnemy(_entityManager, _componentManager);
         // _entityFactory.createBasicMonster(_entityManager, _componentManager);
         // _entityFactory.createBasicMonster(_entityManager, _componentManager);
-        _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
+        // _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
     }
 
     /**
@@ -286,8 +277,11 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     void Update(size_t nMaxMessages = -1, bool bWait = false)
     {
-        if (_nbrOfPlayers == 0)
+        if (_nbrOfPlayers == 0) {
+            _entityManager.removeAllEntities();
+            _componentManager.removeAllComponents();
             return;
+        }
         if (_nbrOfPlayers > 0 && !_playerConnected) {
             _playerConnected = true;
             _clock = std::chrono::system_clock::now();
@@ -499,6 +493,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         UIEntityInformation entityInfo;
         Entity infoBar = _entityFactory.createInfoBar(_entityManager, _componentManager);
         entityInfo.uniqueID = infoBar.getId();
+        std::cout << "GameBarInformation" << std::endl;
+        std::cout << "Entity ID: " << entityInfo.uniqueID << std::endl;
+        std::cout << "Info: " << entityInfo.lives << ", " << entityInfo.score << std::endl;
+        std::cout << "SpriteData: " << entityInfo.spriteData.spritePath << ", "
+                  << entityInfo.spriteData.scale.x << ", " << entityInfo.spriteData.scale.y << ", "
+                  << std::endl;
         auto spriteData = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         auto textData = _componentManager.getComponent<TextDataComponent>(entityInfo.uniqueID);
         auto health = _componentManager.getComponent<HealthComponent>(GetClientPlayerId(clientId));
@@ -615,38 +615,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.vPos.x = position.value()->x;
             entityInfo.vPos.y = position.value()->y;
             entityInfo.spriteData = *(sprite.value());
-            if (animation) {
-                entityInfo.ratio.x =
-                    (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;
-                entityInfo.ratio.y =
-                    (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
-                entityInfo.animationComponent.dimension = animation.value()->dimension;
-                entityInfo.animationComponent.offset = animation.value()->offset;
-            }
-        }
-        return entityInfo;
-    }
-
-    /**
-     * @brief Initializes a background entity.
-     *
-     * The function creates and returns information about the background entity.
-     *
-     * @return EntityInformation The information of the background entity.
-     */
-    EntityInformation InitiateBackground()
-    {
-        EntityInformation entityInfo;
-        Entity background = _entityFactory.createBackground(_entityManager, _componentManager);
-        entityInfo.uniqueID = background.getId();
-        auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
-        auto backgroundPos =
-            _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
-        auto animation = _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
-        if (sprite) {
-            entityInfo.spriteData = *(sprite.value());
-            entityInfo.vPos.x = backgroundPos.value()->x;
-            entityInfo.vPos.y = backgroundPos.value()->y;
             if (animation) {
                 entityInfo.ratio.x =
                     (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;

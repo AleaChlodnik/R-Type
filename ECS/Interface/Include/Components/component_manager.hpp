@@ -88,6 +88,17 @@ class ComponentManager {
         }
     }
 
+    /**
+     * @brief Removes all components from the component manager.
+     */
+    void removeAllComponents()
+    {
+        if (components.empty())
+            return;
+        for (auto &component : components)
+            component.second.clear();
+    }
+
     void removeEntityFromAllComponents(int entityId)
     {
         for (auto &component : components) {

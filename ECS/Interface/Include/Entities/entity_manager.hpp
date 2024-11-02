@@ -54,6 +54,19 @@ class EntityManager {
     }
 
     /**
+     * @brief Remove all entities from the entity manager.
+     *
+     * This function removes all entities from the entity manager.
+     */
+    void removeAllEntities()
+    {
+        if (entities.empty())
+            return;
+        entities.clear();
+        entityNb = 0;
+    }
+
+    /**
      * @brief Get an entity by its ID.
      *
      * @param entityId The ID of the entity to retrieve.
