@@ -55,16 +55,6 @@ class EntityFactory : public IEntityFactory {
         EntityManager &entityManager, ComponentManager &componentManager) override;
 
     /**
-     * @brief Create a Background Level Four object
-     *
-     * @param entityManager
-     * @param componentManager
-     * @return Entity
-     */
-    Entity createBackgroundLevelFour(
-        EntityManager &entityManager, ComponentManager &componentManager) override;
-
-    /**
      * @brief Create a Background Menu object
      *
      * @param entityManager

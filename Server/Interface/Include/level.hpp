@@ -63,7 +63,19 @@ template <typename T> class Level : virtual public ILevel<T> {
             CollisionUpdate(server, componentManager, entityManager, newClock);
             AnimationUpdate(server, componentManager, entityManager, newClock);
             FireUpdate(server, componentManager, entityManager, newClock);
-            LevelOne(server, componentManager, entityManager, newClock);
+            switch (_gameParameters.levelType) {
+                case GameState::LevelOne:
+                    LevelOne(server, componentManager, entityManager, newClock);
+                    break;
+                case GameState::LevelTwo:
+                    LevelTwo(server, componentManager, entityManager, newClock);
+                    break;
+                case GameState::LevelThree:
+                    LevelThree(server, componentManager, entityManager, newClock);
+                    break;
+                default:
+                    break;
+            }
             server->SetClock(server->GetClock() + std::chrono::milliseconds(500));
         }
     }
@@ -505,6 +517,82 @@ template <typename T> class Level : virtual public ILevel<T> {
      * @param newClock The current time point used for timing calculations.
      */
     void LevelOne(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
+    {
+        if (std::chrono::duration_cast<std::chrono::seconds>(
+                server->GetClock() - _basicMonsterSpawnTime)
+                .count() > _gameParameters.spawnTimeBasicMonster) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfBasicMonster,
+                EntityFactory::EnemyType::BasicMonster);
+            _basicMonsterSpawnTime = server->GetClock();
+        }
+        if (std::chrono::duration_cast<std::chrono::seconds>(
+                server->GetClock() - _shooterEnemySpawnTime)
+                .count() > _gameParameters.spawnTimeShooterEnemy) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfShooterEnemy,
+                EntityFactory::EnemyType::ShooterEnemy);
+            _shooterEnemySpawnTime = server->GetClock();
+        }
+        if (std::chrono::duration_cast<std::chrono::seconds>(server->GetClock() - _WallSpawnTime)
+                .count() > _gameParameters.spawnTimeWall) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfWall,
+                EntityFactory::EnemyType::Wall);
+            _WallSpawnTime = server->GetClock();
+        }
+    }
+
+      /**
+     * @brief Handles the spawning of entities for Level Two.
+     *
+     * This function is responsible for spawning basic monsters and shooter enemies
+     * at specific intervals defined by the game parameters. It checks the elapsed
+     * time since the last spawn of each entity type and spawns new entities if the
+     * required time has passed.
+     *
+     * @param server Pointer to the server instance.
+     * @param componentManager Reference to the ComponentManager instance.
+     * @param entityManager Reference to the EntityManager instance.
+     * @param newClock The current time point used for timing calculations.
+     */
+    void LevelTwo(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
+    {
+        if (std::chrono::duration_cast<std::chrono::seconds>(
+                server->GetClock() - _basicMonsterSpawnTime)
+                .count() > _gameParameters.spawnTimeBasicMonster) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfBasicMonster,
+                EntityFactory::EnemyType::BasicMonster);
+            _basicMonsterSpawnTime = server->GetClock();
+        }
+        if (std::chrono::duration_cast<std::chrono::seconds>(
+                server->GetClock() - _shooterEnemySpawnTime)
+                .count() > _gameParameters.spawnTimeShooterEnemy) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfShooterEnemy,
+                EntityFactory::EnemyType::ShooterEnemy);
+            _shooterEnemySpawnTime = server->GetClock();
+        }
+        if (std::chrono::duration_cast<std::chrono::seconds>(server->GetClock() - _WallSpawnTime)
+                .count() > _gameParameters.spawnTimeWall) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfWall,
+                EntityFactory::EnemyType::Wall);
+            _WallSpawnTime = server->GetClock();
+        }
+    }
+
+          /**
+     * @brief Handles the spawning of entities for Level Three.
+     *
+     * This function is responsible for spawning basic monsters and shooter enemies
+     * at specific intervals defined by the game parameters. It checks the elapsed
+     * time since the last spawn of each entity type and spawns new entities if the
+     * required time has passed.
+     *
+     * @param server Pointer to the server instance.
+     * @param componentManager Reference to the ComponentManager instance.
+     * @param entityManager Reference to the EntityManager instance.
+     * @param newClock The current time point used for timing calculations.
+     */
+    void LevelThree(r_type::net::AServer<T> *server, ComponentManager &componentManager,
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
     {
         if (std::chrono::duration_cast<std::chrono::seconds>(
