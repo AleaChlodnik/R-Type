@@ -91,7 +91,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     ~AServer() { Stop(); }
 
-
     /**
      * @brief Starts the server and begins waiting for client messages.
      *
@@ -504,7 +503,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     uint32_t GetClientInfoBarId(uint32_t id) { return _clientInfoBarID[id]; }
 
-
     /**
      * @brief Removes a player from the server.
      *
@@ -514,7 +512,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      * @param id The unique identifier of the player to be removed.
      */
     void RemovePlayer(uint32_t id) { _clientPlayerID.erase(id); }
-
 
     /**
      * @brief Removes an entity from the server.

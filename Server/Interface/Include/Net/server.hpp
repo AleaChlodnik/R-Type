@@ -47,7 +47,6 @@ class Server : virtual public r_type::net::AServer<TypeMessage> {
     ~Server() {}
 
   protected:
-
     /**
      * @brief Handles the event when a client attempts to connect to the server.
      *
@@ -64,7 +63,6 @@ class Server : virtual public r_type::net::AServer<TypeMessage> {
      */
     void OnClientDisconnect(std::shared_ptr<r_type::net::Connection<TypeMessage>> client,
         r_type::net::Message<TypeMessage> &msg);
-
 
     /**
      * @brief Handles incoming messages from a client.
