@@ -184,7 +184,7 @@ Entity EntityFactory::createPlayer(
     }
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    HealthComponent health{3, 3};
+    HealthComponent health{3};
     InputComponent input{InputType::NONE};
 
     componentManager.addComponent<PlayerComponent>(player.getId(), playerComponent);
@@ -216,14 +216,12 @@ Entity EntityFactory::createBasicMonster(
     PositionComponent startPosition(posX, posY);
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    HealthComponent health{0, 0};
 
     componentManager.addComponent<EnemyComponent>(monster.getId(), enemyComponent);
     componentManager.addComponent<BasicMonsterComponent>(monster.getId(), monsterComponent);
     componentManager.addComponent<PositionComponent>(monster.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(monster.getId(), velocity);
     componentManager.addComponent<HitboxComponent>(monster.getId(), hitbox);
-    componentManager.addComponent<HealthComponent>(monster.getId(), health);
     componentManager.addComponent<SpriteDataComponent>(monster.getId(), spriteData);
     componentManager.addComponent<AnimationComponent>(monster.getId(), animationComponent);
     componentManager.addComponent<MovementComponent>(monster.getId(), movement);
@@ -510,4 +508,26 @@ Entity EntityFactory::createFilter(
         filter.getId(), rectangleShapeComponent);
 
     return filter;
+}
+
+Entity EntityFactory::createBoss(
+    EntityManager &entityManager, ComponentManager &componentManager, EntityFactory entityFactory)
+{
+    int tailLength = 5;
+    std::vector<int> tailIds;
+    Entity boss = entityManager.createEntity();
+
+    for (int i = 0; i < tailLength; i++) {
+        Entity tail = entityFactory.createTailSegment(entityManager, componentManager, boss.getId());
+        tailIds.push_back(tail.getId());
+    }
+
+    BossComponent bossComponent{tailIds};
+    SpriteDataComponent spriteData{SpritePath::Boss, {10.0f, 10.0f}, AScenes::SpriteType::ENEMY};
+    HealthComponent health{10};
+
+    componentManager.addComponent<BossComponent>(boss.getId(), bossComponent);
+    componentManager.addComponent<SpriteDataComponent>(boss.getId(), spriteData);
+
+    return boss;
 }

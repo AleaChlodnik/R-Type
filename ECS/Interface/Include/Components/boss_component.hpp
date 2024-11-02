@@ -7,4 +7,8 @@
 
 #pragma once
 
-struct BossComponent {};
+#include <vector>
+
+struct BossComponent {
+    std::vector<int> tailSegmentIds;
+};

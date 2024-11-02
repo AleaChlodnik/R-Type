@@ -13,6 +13,7 @@
 #include "background_component.hpp"
 #include "basic_monster_component.hpp"
 #include "bind_component.hpp"
+#include "boss_component.hpp"
 #include "enemy_component.hpp"
 #include "enemy_missile_component.hpp"
 #include "force_missile_component.hpp"
