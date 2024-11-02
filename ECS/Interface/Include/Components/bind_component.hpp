@@ -23,9 +23,11 @@
  * A boolean flag indicating whether the component is currently hovered.
  *
  * @var BindComponent::bind
- * A std::function that takes two AScenes pointers and an AScenes::Actions, and returns a pointer to an IScenes.
+ * A std::function that takes two AScenes pointers and an AScenes::Actions, and returns a pointer
+ * to an IScenes.
  *
- * @fn BindComponent::BindComponent(std::function<IScenes *(AScenes *, AScenes::Actions)> bindFunction)
+ * @fn BindComponent::BindComponent(std::function<IScenes *(AScenes *, AScenes::Actions)>
+ * bindFunction)
  * @brief Constructs a BindComponent with the given bind function.
  *
  * @param bindFunction The function to bind for handling scene transitions.

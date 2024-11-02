@@ -31,7 +31,8 @@
  * @var int SpriteComponent::hitboxY
  * The height of the sprite's hitbox.
  *
- * @fn SpriteComponent::SpriteComponent(sf::Texture &texture, const float posX, float posY, const sf::Vector2f &scale, AScenes::SpriteType typeNb, sf::IntRect rect = sf::IntRect(0, 0, 0, 0))
+ * @fn SpriteComponent::SpriteComponent(sf::Texture &texture, const float posX, float posY, const
+ * sf::Vector2f &scale, AScenes::SpriteType typeNb, sf::IntRect rect = sf::IntRect(0, 0, 0, 0))
  * @brief Constructs a SpriteComponent with the given parameters.
  *
  * @param texture The texture to be used for the sprite.

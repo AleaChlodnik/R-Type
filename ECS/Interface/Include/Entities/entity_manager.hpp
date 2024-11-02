@@ -24,7 +24,6 @@
  */
 class EntityManager {
   public:
-
     /**
      * @brief Creates a new entity and adds it to the entity manager.
      *

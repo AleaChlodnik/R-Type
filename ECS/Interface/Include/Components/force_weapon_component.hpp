@@ -25,7 +25,8 @@
  * @var ForceWeaponComponent::attached
  * A flag indicating whether the force weapon is attached to the player.
  *
- * @fn ForceWeaponComponent::ForceWeaponComponent(uint32_t _playerId, uint32_t _level, uint32_t _attached)
+ * @fn ForceWeaponComponent::ForceWeaponComponent(uint32_t _playerId, uint32_t _level, uint32_t
+ * _attached)
  * @brief Constructs a new ForceWeaponComponent.
  *
  * @param _playerId The ID of the player who owns the force weapon.

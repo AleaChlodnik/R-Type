@@ -35,7 +35,8 @@ class CollisionSystem : public ISystem {
      * This function determines whether there is a collision between the components
      * of two specified entities within the component manager.
      *
-     * @param componentManager Reference to the ComponentManager that holds the components of all entities.
+     * @param componentManager Reference to the ComponentManager that holds the components of all
+     * entities.
      * @param entityId1 The ID of the first entity to check for collision.
      * @param entityId2 The ID of the second entity to check for collision.
      * @return true if a collision is detected between the two entities, false otherwise.
@@ -48,7 +49,8 @@ class CollisionSystem : public ISystem {
      * This function determines whether the specified entity is outside the
      * visible screen area based on its components managed by the ComponentManager.
      *
-     * @param componentManager Reference to the ComponentManager that manages the entity's components.
+     * @param componentManager Reference to the ComponentManager that manages the entity's
+     * components.
      * @param entityId The ID of the entity to check.
      * @return true if the entity is off the screen, false otherwise.
      */
@@ -58,7 +60,8 @@ class CollisionSystem : public ISystem {
     /**
      * @brief Reference to the ComponentManager instance.
      *
-     * This member is used to manage and access various components within the ECS (Entity Component System).
+     * This member is used to manage and access various components within the ECS (Entity Component
+     * System).
      */
     ComponentManager &_componentManager;
     /**

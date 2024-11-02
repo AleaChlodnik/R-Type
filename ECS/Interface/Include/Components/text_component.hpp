@@ -18,7 +18,8 @@
  * @var sf::Text TextComponent::text
  * The SFML text object that this component encapsulates.
  *
- * @fn TextComponent::TextComponent(sf::Font &font, const std::string &string, float posX, float posY, int size = 30)
+ * @fn TextComponent::TextComponent(sf::Font &font, const std::string &string, float posX, float
+ * posY, int size = 30)
  * @brief Constructs a TextComponent with the specified parameters.
  *
  * @param font The font to be used for the text.

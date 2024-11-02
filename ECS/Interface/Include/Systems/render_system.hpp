@@ -39,7 +39,8 @@ class RenderSystem : public ISystem {
      * and performs rendering operations on them. It is typically called once per frame
      * to update the visual representation of the components.
      *
-     * @param componentManager A reference to the ComponentManager that holds the components to be rendered.
+     * @param componentManager A reference to the ComponentManager that holds the components to be
+     * rendered.
      */
     void render(ComponentManager &componentManager);
 
@@ -59,9 +60,10 @@ class RenderSystem : public ISystem {
     /**
      * @brief A font object used for drawing text in SFML.
      *
-     * This member variable holds an instance of sf::Font, which is used to load and manage font resources
-     * for rendering text in the application. The sf::Font class provides functionality to load fonts from
-     * files, memory, or streams, and to retrieve font metrics and glyphs for text rendering.
+     * This member variable holds an instance of sf::Font, which is used to load and manage font
+     * resources for rendering text in the application. The sf::Font class provides functionality
+     * to load fonts from files, memory, or streams, and to retrieve font metrics and glyphs for
+     * text rendering.
      */
     sf::Font _font;
 };

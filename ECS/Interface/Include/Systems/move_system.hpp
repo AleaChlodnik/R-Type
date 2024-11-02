@@ -26,7 +26,7 @@ class MoveSystem : public ISystem {
      * @param entityManager Reference to the EntityManager.
      */
     MoveSystem(ComponentManager &componentManager, EntityManager &entityManager)
-        : _componentManager(componentManager), _entityManager(entityManager) {};
+        : _componentManager(componentManager), _entityManager(entityManager){};
     /**
      * @brief Moves all entities managed by the system.
      *

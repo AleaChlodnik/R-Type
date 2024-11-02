@@ -13,7 +13,8 @@
  * @struct AnimationComponent
  * @brief A component that holds animation properties such as offset and dimension.
  *
- * This component is used to define the properties of an animation, including its offset and dimension.
+ * This component is used to define the properties of an animation, including its offset and
+ * dimension.
  *
  * @var AnimationComponent::offset
  * The offset of the animation.
