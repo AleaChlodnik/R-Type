@@ -204,9 +204,11 @@ class AScenes : virtual public IScenes {
     /**
      * @brief Sets the display option for Daltonism mode.
      *
-     * This function enables or disables the display option for Daltonism mode based on the provided boolean value.
+     * This function enables or disables the display option for Daltonism mode based on the
+     * provided boolean value.
      *
-     * @param displayDaltonismChoice A boolean value indicating whether to display the Daltonism mode option (true) or not (false).
+     * @param displayDaltonismChoice A boolean value indicating whether to display the Daltonism
+     * mode option (true) or not (false).
      */
     void setDisplayDaltonismChoice(bool const displayDaltonismChoice);
 
@@ -243,7 +245,8 @@ class AScenes : virtual public IScenes {
      *
      * This function allows you to enable or disable the display of key binds choice.
      *
-     * @param displayKeyBindsChoice A boolean value indicating whether to display the key binds choice (true) or not (false).
+     * @param displayKeyBindsChoice A boolean value indicating whether to display the key binds
+     * choice (true) or not (false).
      */
     void setDisplayKeyBindsChoice(bool const displayKeyBindsChoice);
 
