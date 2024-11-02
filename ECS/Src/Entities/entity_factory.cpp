@@ -291,7 +291,7 @@ Entity EntityFactory::createBasicMonster(
     EnemyComponent enemyComponent;
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{-1.0f, 0.0f};
-    MovementComponent movement(MovementType::WIGGLE, 0, true);
+    MovementComponent movement(MovementType::WIGGLE, rand() % 10, true);
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy1, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(posX, posY);
@@ -326,7 +326,7 @@ Entity EntityFactory::createShooterEnemy(
 
     EnemyComponent enemyComponent;
     VelocityComponent velocity{-1.0f, 0.0f};
-    MovementComponent movement(MovementType::DIAGONAL, 0, true);
+    MovementComponent movement(MovementType::DIAGONAL, rand() % 10, true);
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy2, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(posX, posY);
@@ -561,7 +561,7 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
     Entity button = entityManager.createEntity();
 
     sf::Texture &texture = textureManager.getTexture("Client/Assets/Sprites/Menus/Table.png");
-    sf::Font &font = fontManager.getFont("Client/Assets/Fonts/GODOFWAR.TTF");
+    sf::Font &font = fontManager.getFont(FontFactory(FontPath::MAIN));
     sf::Vector2f dimension(1.0f, 1.0f);
 
     PositionComponent pos(x, y);
@@ -586,7 +586,7 @@ Entity EntityFactory::createSmallButton(EntityManager &entityManager,
 
     sf::Texture &texture =
         textureManager.getTexture("Client/Assets/Sprites/Menus/small_button.png");
-    sf::Font &font = fontManager.getFont("Client/Assets/Fonts/GODOFWAR.TTF");
+    sf::Font &font = fontManager.getFont(FontFactory(FontPath::MAIN));
     sf::Vector2f scale(1.0f, 1.0f);
 
     PositionComponent pos(x, y);

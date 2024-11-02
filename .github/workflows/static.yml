@@ -33,11 +33,23 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      # generate site
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: doxygen
+          version: 1.0
+      - name: Configure CMake and Build Documentation
+        run: |
+          cmake -S . -B build -DBUILD_DOC=ON
+          cmake --build build --target doc_doxygen
+      # copy markdown files to the root of the documentation
+      - name: Configure CMake and Build Documentation
+        run: mv Docs doc_doxygen/html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
-          path: '.'
+          path: "doc_doxygen/html"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
