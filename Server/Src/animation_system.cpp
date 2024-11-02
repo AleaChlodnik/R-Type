@@ -6,6 +6,7 @@
 */
 
 #include <Systems/systems.hpp>
+#include <animation_system.hpp>
 
 // Define equality operator for vf2d
 bool operator==(const vf2d &lhs, const vf2d &rhs) { return lhs.x == rhs.x && lhs.y == rhs.y; }

@@ -1,0 +1,32 @@
+name: Release
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Generate Changelog
+        run: |
+            echo "# Good things have arrived" > "${{ github.workspace }}-CHANGELOG.txt"
+            echo "New Ubuntu binary" >> "${{ github.workspace }}-CHANGELOG.txt"
+            echo "${{ github.sha }}" >> "${{ github.workspace }}-CHANGELOG.txt"
+      - name: generate generator
+        run: cmake -S . -B build # do apt install
+      - name: compile project
+        run: cmake --build build -j "$(nproc)"
+      - name: Release
+        uses: softprops/action-gh-release@v2.0.9
+        with:
+          body_path: ${{ github.workspace }}-CHANGELOG.txt
+          files: |
+            ./r-type_client
+            ./r-type_server

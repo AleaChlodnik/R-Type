@@ -96,17 +96,23 @@ enum class TypeMessage : uint32_t
      * @brief Server message.
      *
      */
-    SendPlayerInformation,
-    /**
-     * @brief Server message
-     *
-     */
-    GameDiffuculty,
+    PlayerInformation,
     /**
      * @brief Server message.
      *
      */
     UpdateEntity,
+    /**
+     * @brief Server me
+     *
+     */
+    GameBarInformation,
+    /**
+     * @brief Server message.
+     *
+     */
+    BackgroundInformation,
+
     /**
      * @brief Client message.
      *
@@ -157,26 +163,38 @@ enum class TypeMessage : uint32_t
      *
      */
     AnimateEntityMessage,
+
+
     /**
      * @brief Client message.
      *
      */
-    SendPlayer,
-    /**
-     * @brief Client message.
-     *
-     */
-    ReceivePlayerInformation,
-    /**
-     * @brief Client message.
-     *
-     */
-    CreateInfoBar,
+    PlayerInformationResponse,
     /**
      * @brief Client message.
      *
      */
     UpdateInfoBar,
+    /**
+     * @brief Client message
+     *
+     */
+    GameBarInformationResponse,
+    /**
+     * @brief Client message
+     *
+     */
+    GameParametersInformation,
+    /**
+     * @brief Client message
+     *
+     */
+    GameEntityInformation,
+    /**
+     * @brief Client message
+     *
+     */
+    BackgroundInformationResponse
 };
 
 enum class PlayerMovement : uint32_t

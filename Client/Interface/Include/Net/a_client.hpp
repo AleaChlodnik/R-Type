@@ -10,6 +10,7 @@
 #include <Components/component_manager.hpp>
 #include <Components/components.hpp>
 #include <Net/i_client.hpp>
+#include <SFML/Graphics.hpp>
 #include <entity_struct.hpp>
 #include <font_manager.hpp>
 #include <texture_manager.hpp>
@@ -109,8 +110,11 @@ template <typename T> class AClient : virtual public IClient<T> {
 
     const std::unique_ptr<Connection<T>> &getConnection() { return m_connection; }
 
-    void setPlayerId(int id) { playerId = id; }
+    void setPlayerId(uint32_t id) { playerId = id; }
     uint32_t getPlayerId() { return playerId; }
+
+    void setWindowSize(sf::Vector2u size) { windowSize = size; }
+    sf::Vector2u getWindowSize() { return windowSize; }
 
   protected:
     asio::io_context m_context;
@@ -120,6 +124,7 @@ template <typename T> class AClient : virtual public IClient<T> {
   private:
     ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
     uint32_t playerId = 0;
+    sf::Vector2u windowSize;
 };
 } // namespace net
 } // namespace r_type

@@ -16,6 +16,10 @@
 #include <cmath>
 #include <entity_struct.hpp>
 #include <error_handling.hpp>
+#include <filesystem>
+#include <fstream>
+#include <game_struct.h>
+#include <iostream>
 #include <level.hpp>
 #include <macros.hpp>
 #include <unordered_map>
@@ -58,13 +62,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         _entityFactory = EntityFactory();
         _level = r_type::Level<T>();
         _level.SetSystem(_componentManager, _entityManager);
-
-        _background = InitiateBackground();
-        _entityFactory.createShooterEnemy(_entityManager, _componentManager);
-        _entityFactory.createShooterEnemy(_entityManager, _componentManager);
-        _entityFactory.createBasicMonster(_entityManager, _componentManager);
-        _entityFactory.createBasicMonster(_entityManager, _componentManager);
-        _entityFactory.createPowerUpBlueLaserCrystal(_entityManager, _componentManager);
     }
 
     /**
@@ -76,10 +73,14 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     ~AServer() { Stop(); }
 
     /**
-     * @brief Start the server
+     * @brief Starts the server and begins waiting for client messages.
      *
-     * @return true
-     * @return false
+     * This function attempts to start the server by waiting for client messages
+     * and running the ASIO context in a separate thread. If an exception occurs
+     * during this process, it will be caught, an error message will be printed
+     * to the standard error stream, and the function will return false.
+     *
+     * @return true if the server started successfully, false otherwise.
      */
     bool Start()
     {
@@ -241,12 +242,23 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 _deqConnections.end());
     }
 
+    /**
+     * @brief Updates the information bar for a given player.
+     *
+     * This function retrieves the health and score components of the specified player,
+     * as well as the sprite and text data components of the player's information bar.
+     * It then updates the UIEntityInformation structure with these values.
+     *
+     * @param playerId The ID of the player whose information bar is to be updated.
+     * @return UIEntityInformation The updated information for the player's information bar.
+     */
     UIEntityInformation UpdateInfoBar(int playerId)
     {
         UIEntityInformation entity;
         int clientId = GetPlayerClientId(playerId);
         int infoBarId = GetClientInfoBarId(clientId);
         auto playerHealth = _componentManager.getComponent<HealthComponent>(playerId);
+        auto playerScore = _componentManager.getComponent<ScoreComponent>(playerId);
         auto barSpriteData = _componentManager.getComponent<SpriteDataComponent>(infoBarId);
         auto barTextData = _componentManager.getComponent<TextDataComponent>(infoBarId);
         if (playerHealth && barSpriteData && barTextData) {
@@ -254,276 +266,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entity.spriteData = *(barSpriteData.value());
             entity.textData = *(barTextData.value());
             entity.lives = playerHealth.value()->health;
+            entity.score = playerScore.value()->score;
         }
         return entity;
     }
-
-    /**
-     * @brief Updates the game level based on the provided clock time.
-     *
-     * This function performs several tasks to update the game level:
-     * 1. Checks if the time difference between the new clock and the stored clock exceeds 100
-     * milliseconds.
-     * 2. If so, it updates entity positions, handles collisions, updates animations, and processes
-     * auto-firing.
-     * 3. Sends appropriate messages to clients about entity updates, creations, and destructions.
-     *
-     * @param newClock The new clock time point to compare with the stored clock.
-     * @param bUpdateEntities A boolean reference that will be set to true if entities are updated.
-     */
-    // void UpdateLevel(std::chrono::system_clock::time_point newClock, bool &bUpdateEntities)
-    // {
-    //     while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - _clock).count()
-    //     >
-    //         100) {
-    //         bUpdateEntities = true;
-    //         // make position copy
-    //         if (auto positionsBefore = _componentManager.getComponentMap<PositionComponent>()) {
-    //             std::unordered_map<int, PositionComponent> previousPositions;
-    //             // Save previous positions
-    //             for (auto &pair : **positionsBefore) {
-    //                 int entityId = pair.first;
-    //                 auto positionComponent = pair.second;
-    //                 auto position = std::any_cast<PositionComponent>(&positionComponent);
-    //                 if (position) {
-    //                     previousPositions.insert({entityId, *position});
-    //                 }
-    //             }
-    //             // Move entities
-    //             _moveSystem->moveEntities(_componentManager, _entityManager);
-    //             // Compare new positions
-    //             if (auto positionsAfter =
-    //             _componentManager.getComponentMap<PositionComponent>()) {
-    //                 for (auto &pair : **positionsAfter) {
-    //                     int entityId = pair.first;
-    //                     auto &newPositionComponent = pair.second;
-    //                     if (auto newPosition =
-    //                             std::any_cast<PositionComponent>(&newPositionComponent)) {
-    //                         auto it = previousPositions.find(entityId);
-    //                         if (it != previousPositions.end()) {
-    //                             auto &oldPosition = it->second;
-    //                             if (oldPosition.x != newPosition->x ||
-    //                                 oldPosition.y != newPosition->y) {
-    //                                 if (auto spriteData =
-    //                                         _componentManager.getComponent<SpriteDataComponent>(
-    //                                             entityId)) {
-    //                                     r_type::net::Message<TypeMessage> msg;
-    //                                     msg.header.id = TypeMessage::MoveEntityMessage;
-    //                                     msg << FormatEntityInformation(
-    //                                         _entityManager.getEntity(entityId).value()->getId());
-    //                                     MessageAllClients(msg);
-    //                                 }
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-
-    //         // Collision system
-    //         std::vector<int> entitiesToRemove;
-    //         auto beforeCollisioneEntities = _entityManager.getAllEntities();
-    //         for (size_t i = 0; i < beforeCollisioneEntities.size(); ++i) {
-    //             int entityId1 = beforeCollisioneEntities[i].getId();
-    //             for (size_t j = i + 1; j < beforeCollisioneEntities.size(); ++j) {
-    //                 int entityId2 = beforeCollisioneEntities[j].getId();
-    //                 if (_collisionSystem->checkCollision(
-    //                         _componentManager, entityId1, entityId2)) {
-    //                     auto shooterEnemy1 =
-    //                         _componentManager.getComponent<ShootComponent>(entityId1);
-    //                     auto enemyMissile1 =
-    //                         _componentManager.getComponent<EnemyMissileComponent>(entityId1);
-    //                     auto basicMonster1 =
-    //                         _componentManager.getComponent<BasicMonsterComponent>(entityId1);
-    //                     auto shooterEnemy2 =
-    //                         _componentManager.getComponent<ShootComponent>(entityId2);
-    //                     auto enemyMissile2 =
-    //                         _componentManager.getComponent<EnemyMissileComponent>(entityId2);
-    //                     auto basicMonster2 =
-    //                         _componentManager.getComponent<BasicMonsterComponent>(entityId2);
-    //                     if (auto player1 =
-    //                             _componentManager.getComponent<PlayerComponent>(entityId1)) {
-    //                         if (auto playerHealth =
-    //                                 _componentManager.getComponent<HealthComponent>(entityId1))
-    //                                 {
-    //                             if (shooterEnemy2 || enemyMissile2) {
-    //                                 if (std::find(entitiesToRemove.begin(),
-    //                                 entitiesToRemove.end(),
-    //                                         entityId2) == entitiesToRemove.end()) {
-    //                                     entitiesToRemove.push_back(entityId2);
-    //                                 }
-    //                                 playerHealth.value()->health -= 1;
-    //                             }
-    //                             if (basicMonster2) {
-    //                                 playerHealth.value()->health -= 1;
-    //                             }
-    //                             if (playerHealth.value()->health <= 0) {
-    //                                 if (std::find(entitiesToRemove.begin(),
-    //                                 entitiesToRemove.end(),
-    //                                         entityId1) == entitiesToRemove.end()) {
-    //                                     entitiesToRemove.push_back(entityId1);
-    //                                 }
-    //                             }
-    //                             r_type::net::Message<TypeMessage> updLivesMsg;
-    //                             updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
-    //                             updLivesMsg << UpdateInfoBar(entityId1);
-    //                             std::shared_ptr<Connection<T>> client =
-    //                                 getClientById(_deqConnections,
-    //                                 GetPlayerClientId(entityId1));
-    //                             if (client) {
-    //                                 MessageClient(client, updLivesMsg);
-    //                             }
-    //                         }
-    //                     } else if (auto playerMissile1 =
-    //                                    _componentManager.getComponent<PlayerMissileComponent>(
-    //                                        entityId1)) {
-    //                         if (shooterEnemy2 || enemyMissile2 || basicMonster2) {
-    //                             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-    //                                     entityId1) == entitiesToRemove.end()) {
-    //                                 entitiesToRemove.push_back(entityId1);
-    //                             }
-    //                             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-    //                                     entityId2) == entitiesToRemove.end()) {
-    //                                 entitiesToRemove.push_back(entityId2);
-    //                             }
-    //                         }
-    //                     } else if (auto player2 =
-    //                     _componentManager.getComponent<PlayerComponent>(
-    //                                    entityId2)) {
-    //                         if (auto playerHealth =
-    //                                 _componentManager.getComponent<HealthComponent>(entityId2))
-    //                                 {
-    //                             if (shooterEnemy1 || enemyMissile1) {
-    //                                 if (std::find(entitiesToRemove.begin(),
-    //                                 entitiesToRemove.end(),
-    //                                         entityId1) == entitiesToRemove.end()) {
-    //                                     entitiesToRemove.push_back(entityId1);
-    //                                 }
-    //                                 playerHealth.value()->health -= 1;
-    //                             }
-    //                             if (basicMonster1) {
-    //                                 playerHealth.value()->health -= 1;
-    //                             }
-    //                             if (playerHealth.value()->health <= 0) {
-    //                                 if (std::find(entitiesToRemove.begin(),
-    //                                 entitiesToRemove.end(),
-    //                                         entityId2) == entitiesToRemove.end()) {
-    //                                     entitiesToRemove.push_back(entityId2);
-    //                                 }
-    //                             }
-    //                             r_type::net::Message<TypeMessage> updLivesMsg;
-    //                             updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
-    //                             updLivesMsg << UpdateInfoBar(entityId1);
-    //                             std::shared_ptr<Connection<T>> client =
-    //                                 getClientById(_deqConnections,
-    //                                 GetPlayerClientId(entityId2));
-    //                             if (client) {
-    //                                 MessageClient(client, updLivesMsg);
-    //                             }
-    //                         }
-    //                     } else if (auto playerMissile2 =
-    //                                    _componentManager.getComponent<PlayerMissileComponent>(
-    //                                        entityId2)) {
-    //                         if (shooterEnemy1 || enemyMissile1 || basicMonster1) {
-    //                             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-    //                                     entityId1) == entitiesToRemove.end()) {
-    //                                 entitiesToRemove.push_back(entityId1);
-    //                             }
-    //                             if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
-    //                                     entityId2) == entitiesToRemove.end()) {
-    //                                 entitiesToRemove.push_back(entityId2);
-    //                             }
-    //                         }
-    //                     } else {
-    //                         continue;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         for (int entityId : entitiesToRemove) {
-    //             r_type::net::Message<TypeMessage> msg;
-    //             msg.header.id = TypeMessage::DestroyEntityMessage;
-    //             msg << entityId;
-    //             MessageAllClients(msg);
-    //             _componentManager.removeEntityFromAllComponents(entityId);
-    //             _entityManager.removeEntity(entityId);
-    //         }
-    //         // Remove entities when they go off-screen
-    //         auto afterCollisionEntities = _entityManager.getAllEntities();
-    //         for (const auto &entity : afterCollisionEntities) {
-    //             int entityId = entity.getId();
-    //             if (_collisionSystem->checkOffScreen(_componentManager, entityId)) {
-    //                 r_type::net::Message<TypeMessage> msg;
-    //                 msg.header.id = TypeMessage::DestroyEntityMessage;
-    //                 msg << entityId;
-    //                 MessageAllClients(msg);
-    //                 _componentManager.removeEntityFromAllComponents(entityId);
-    //                 _entityManager.removeEntity(entityId);
-    //             }
-    //         }
-
-    //         // Animation system
-    //         if (auto animationsBefore = _componentManager.getComponentMap<AnimationComponent>())
-    //         {
-
-    //             std::unordered_map<int, AnimationComponent> previousAnimations;
-
-    //             // Save previous animations
-    //             for (const auto &pair : **animationsBefore) {
-    //                 int entityId = pair.first;
-    //                 const auto animationComponent = pair.second;
-    //                 auto animation = std::any_cast<AnimationComponent>(&animationComponent);
-    //                 if (animation) {
-    //                     previousAnimations.insert({entityId, *animation});
-    //                 }
-    //             }
-    //             _animationSystem->AnimationEntities(_componentManager, _entityManager, 0.5);
-    //             // Compare new Animations
-    //             if (auto animationsAfter =
-    //                     _componentManager.getComponentMap<AnimationComponent>()) {
-    //                 for (const auto &pair : **animationsAfter) {
-    //                     int entityId = pair.first;
-    //                     const auto &newAnimationComponent = pair.second;
-    //                     auto newAnimation =
-    //                         std::any_cast<AnimationComponent>(&newAnimationComponent);
-    //                     if (newAnimation) {
-    //                         auto it = previousAnimations.find(entityId);
-    //                         if (it != previousAnimations.end()) {
-    //                             const auto &oldAnimation = it->second;
-    //                             if (oldAnimation != *newAnimation) {
-    //                                 r_type::net::Message<TypeMessage> msg;
-    //                                 msg.header.id = TypeMessage::AnimateEntityMessage;
-    //                                 msg << entityId << newAnimation->dimension
-    //                                     << newAnimation->offset;
-    //                                 MessageAllClients(msg);
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-
-    //         // auto fire system
-    //         _autoFireSystem->handleAutoFire(_componentManager, _entityManager);
-    //         auto shootComponentMap = _componentManager.getComponentMap<ShootComponent>();
-    //         if (shootComponentMap) {
-    //             for (auto &pair : **shootComponentMap) {
-    //                 int entityId = pair.first;
-    //                 auto &shootComponent = pair.second;
-    //                 if (auto shootInfo = std::any_cast<ShootComponent>(&shootComponent)) {
-    //                     if (shootInfo->canShoot) {
-    //                         r_type::net::Message<TypeMessage> enemyMissileMsg;
-    //                         enemyMissileMsg.header.id = TypeMessage::CreateEntityMessage;
-    //                         enemyMissileMsg << InitiateEnemyMissile(entityId);
-    //                         MessageAllClients(enemyMissileMsg);
-    //                         shootInfo->canShoot = false;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         _clock += std::chrono::milliseconds(100);
-    //     }
-    // }
 
     /**
      * @brief Updates the server state, processes incoming messages, and updates the game level.
@@ -542,8 +288,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     void Update(size_t nMaxMessages = -1, bool bWait = false)
     {
-        if (_nbrOfPlayers == 0)
+        if (_nbrOfPlayers == 0) {
+            _entityManager.removeAllEntities();
+            _componentManager.removeAllComponents();
+            _playerConnected = false;
             return;
+        }
         if (_nbrOfPlayers > 0 && !_playerConnected) {
             _playerConnected = true;
             _clock = std::chrono::system_clock::now();
@@ -554,8 +304,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         std::chrono::system_clock::time_point newClock = std::chrono::system_clock::now();
 
         std::thread t_level([this, newClock, &bUpdateEntities]() {
-            _level.Update(this, _componentManager, _entityManager, _entityFactory, newClock,
-                &bUpdateEntities);
+            _level.Update(this, _componentManager, _entityManager, newClock, &bUpdateEntities);
         });
 
         size_t nMessageCount = 0;
@@ -637,6 +386,22 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                 }
                 pos.value()->x = newPos.x;
                 pos.value()->y = newPos.y;
+
+                auto frontComponent = _componentManager.getComponent<FrontComponent>(entityId);
+                if (frontComponent.value()->targetId != -1) {
+                    std::cout << "frontComponent.targetId: " << frontComponent.value()->targetId
+                              << std::endl;
+                    auto posFront = _componentManager.getComponent<PositionComponent>(
+                        frontComponent.value()->targetId);
+                    posFront.value()->x = newPos.x + 2;
+                    posFront.value()->y = newPos.y;
+                    vf2d newPosFront = {posFront.value()->x, posFront.value()->y};
+                    uint32_t entityIdFront = frontComponent.value()->targetId;
+                    r_type::net::Message<TypeMessage> moveMsg;
+                    moveMsg.header.id = TypeMessage::MoveEntityMessage;
+                    moveMsg << entityIdFront << newPosFront;
+                    MessageAllClients(moveMsg);
+                }
             }
 
             // Update entity information and send to all clients
@@ -648,6 +413,44 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     }
 
     /**
+     * @brief Saves the score of a player to a file.
+     *
+     * This function saves the score of a player identified by the given playerId
+     * to a file named "scores.txt" located in the "GameScores" directory. If the
+     * directory or file does not exist, they will be created. The score is appended
+     * to the file in the format "Player <playerId>: <score>".
+     *
+     * @param playerId The unique identifier of the player whose score is to be saved.
+     *
+     * @throws failedToCreateFile If the file cannot be created.
+     * @throws failedToOpenFile If the file cannot be opened in append mode.
+     */
+    void SavePlayerScore(uint32_t playerId)
+    {
+        std::string directory = "GameScores";
+        std::string filePath = directory + "/scores.txt";
+        if (!std::filesystem::exists(directory)) {
+            std::filesystem::create_directory(directory);
+        }
+        if (!std::filesystem::exists(filePath)) {
+            std::ofstream outFile(filePath); // Creating the file
+            if (!outFile) {
+                throw failedToCreateFile();
+            }
+            outFile.close();
+        }
+        std::ofstream outFile(filePath, std::ios_base::app); // Open in append mode
+        if (!outFile) {
+            throw failedToOpenFile();
+        }
+        if (auto scoreComponent = _componentManager.getComponent<ScoreComponent>(playerId)) {
+            std::string playerID = "Player " + std::to_string(playerId);
+            outFile << playerID << ": " << scoreComponent.value()->score << "\n";
+            outFile.close();
+        }
+    }
+
+    /**
      * @brief Retrieves the entity ID associated with a client ID.
      *
      * @param id The client ID.
@@ -655,6 +458,18 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     uint32_t GetClientPlayerId(uint32_t id) { return _clientPlayerID[id]; }
 
+    /**
+     * @brief Retrieves the client ID associated with a given player ID.
+     *
+     * This function searches through the _clientPlayerID map to find the client ID
+     * that corresponds to the provided player ID. If the player ID is found, the
+     * associated client ID is returned. If the player ID is not found, a
+     * playerIdNotFound exception is thrown.
+     *
+     * @param id The player ID for which the client ID is to be retrieved.
+     * @return uint32_t The client ID associated with the given player ID.
+     * @throws playerIdNotFound If the player ID is not found in the map.
+     */
     uint32_t GetPlayerClientId(uint32_t id)
     {
         for (const auto &pair : _clientPlayerID) {
@@ -665,19 +480,33 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         throw playerIdNotFound();
     }
 
+    /**
+     * @brief Retrieves the client info bar ID associated with a given client ID.
+     *
+     * @param id The client ID for which to retrieve the info bar ID.
+     * @return uint32_t The info bar ID associated with the specified client ID.
+     */
     uint32_t GetClientInfoBarId(uint32_t id) { return _clientInfoBarID[id]; }
 
     /**
-     * @brief Removes a player from the game based on the client ID.
+     * @brief Removes a player from the server.
      *
-     * @param id The client ID of the player to be removed.
+     * This function removes a player identified by the given ID from the server's
+     * internal player list.
+     *
+     * @param id The unique identifier of the player to be removed.
      */
     void RemovePlayer(uint32_t id) { _clientPlayerID.erase(id); }
 
     /**
-     * @brief Removes entities associated with a player.
+     * @brief Removes an entity from the server.
      *
-     * @param id The ID of the player whose entities are to be removed.
+     * This function removes an entity identified by the given ID from the server.
+     * It first checks if the entity exists using the entity manager. If the entity
+     * is found, it removes the entity from all components using the component manager
+     * and then removes the entity itself from the entity manager.
+     *
+     * @param id The unique identifier of the entity to be removed.
      */
     void RemoveEntity(uint32_t id)
     {
@@ -687,6 +516,17 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         }
     }
 
+    /**
+     * @brief Removes an information bar and its associated entities.
+     *
+     * This function removes an information bar identified by the given `infoBarId`.
+     * It first checks if the information bar has a `TextDataComponent` and removes
+     * all entities associated with the categories listed in the `TextDataComponent`.
+     * Finally, it removes the information bar entity itself and erases its ID from
+     * the client information bar ID map.
+     *
+     * @param infoBarId The ID of the information bar to be removed.
+     */
     void RemoveInfoBar(uint32_t infoBarId)
     {
         if (auto textDataComponent =
@@ -740,6 +580,12 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         UIEntityInformation entityInfo;
         Entity infoBar = _entityFactory.createInfoBar(_entityManager, _componentManager);
         entityInfo.uniqueID = infoBar.getId();
+        std::cout << "GameBarInformation" << std::endl;
+        std::cout << "Entity ID: " << entityInfo.uniqueID << std::endl;
+        std::cout << "Info: " << entityInfo.lives << ", " << entityInfo.score << std::endl;
+        std::cout << "SpriteData: " << entityInfo.spriteData.spritePath << ", "
+                  << entityInfo.spriteData.scale.x << ", " << entityInfo.spriteData.scale.y << ", "
+                  << std::endl;
         auto spriteData = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         auto textData = _componentManager.getComponent<TextDataComponent>(entityInfo.uniqueID);
         auto health = _componentManager.getComponent<HealthComponent>(GetClientPlayerId(clientId));
@@ -856,38 +702,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.vPos.x = position.value()->x;
             entityInfo.vPos.y = position.value()->y;
             entityInfo.spriteData = *(sprite.value());
-            if (animation) {
-                entityInfo.ratio.x =
-                    (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;
-                entityInfo.ratio.y =
-                    (animation.value()->dimension.y * sprite.value()->scale.y) / SCREEN_HEIGHT;
-                entityInfo.animationComponent.dimension = animation.value()->dimension;
-                entityInfo.animationComponent.offset = animation.value()->offset;
-            }
-        }
-        return entityInfo;
-    }
-
-    /**
-     * @brief Initializes a background entity.
-     *
-     * The function creates and returns information about the background entity.
-     *
-     * @return EntityInformation The information of the background entity.
-     */
-    EntityInformation InitiateBackground()
-    {
-        EntityInformation entityInfo;
-        Entity background = _entityFactory.createBackground(_entityManager, _componentManager);
-        entityInfo.uniqueID = background.getId();
-        auto sprite = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
-        auto backgroundPos =
-            _componentManager.getComponent<PositionComponent>(entityInfo.uniqueID);
-        auto animation = _componentManager.getComponent<AnimationComponent>(entityInfo.uniqueID);
-        if (sprite) {
-            entityInfo.spriteData = *(sprite.value());
-            entityInfo.vPos.x = backgroundPos.value()->x;
-            entityInfo.vPos.y = backgroundPos.value()->y;
             if (animation) {
                 entityInfo.ratio.x =
                     (animation.value()->dimension.x * sprite.value()->scale.x) / SCREEN_WIDTH;

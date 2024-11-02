@@ -20,7 +20,8 @@ bool CollisionSystem::checkOffScreen(ComponentManager &componentManager, int ent
         float top = ((pos.value()->y / 100) * SCREEN_HEIGHT) - (hitbox.value()->h / 2);
         float bottom = ((pos.value()->y / 100) * SCREEN_HEIGHT) + (hitbox.value()->h / 2);
 
-        return (right < 0 || left > SCREEN_WIDTH || bottom < 0 || top > SCREEN_HEIGHT);
+        return (right < 0 || left > (SCREEN_WIDTH * 1.50) || bottom < 0 ||
+            top > (SCREEN_HEIGHT * 1.50));
     }
     return false;
 }

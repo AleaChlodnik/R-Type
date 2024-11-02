@@ -11,10 +11,10 @@ std::string GameTextFactory(GameText text)
 {
     switch (text) {
     case GameText::Lives:
-        return "Lives:";
+        return "Lives: ";
         break;
     case GameText::Score:
-        return "Score:";
+        return "Score: ";
         break;
     default:
         return "";
