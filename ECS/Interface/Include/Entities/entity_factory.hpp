@@ -191,5 +191,9 @@ class EntityFactory : public IEntityFactory {
      * @return The created boss entity.
      */
     Entity createBoss(EntityManager &entityManager, ComponentManager &componentManager,
-        EntityFactory &entityFactory) override;
+        EntityFactory &entityFactory);
+
+    Entity createTailSegment(EntityManager &entityManager, ComponentManager &componentManager) override;
+
+    Entity createTailEnd(EntityManager &entityManager, ComponentManager &componentManager) override;
 };

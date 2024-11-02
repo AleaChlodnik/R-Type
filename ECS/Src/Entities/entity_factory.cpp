@@ -249,7 +249,6 @@ Entity EntityFactory::createShooterEnemy(
     PositionComponent startPosition(posX, posY);
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    HealthComponent health{0, 0};
     ShootComponent shoot{std::chrono::milliseconds(2000)};
 
     componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
@@ -258,7 +257,6 @@ Entity EntityFactory::createShooterEnemy(
     componentManager.addComponent<SpriteDataComponent>(enemy.getId(), spriteData);
     componentManager.addComponent<PositionComponent>(enemy.getId(), startPosition);
     componentManager.addComponent<HitboxComponent>(enemy.getId(), hitbox);
-    componentManager.addComponent<HealthComponent>(enemy.getId(), health);
     componentManager.addComponent<ShootComponent>(enemy.getId(), shoot);
     componentManager.addComponent<MovementComponent>(enemy.getId(), movement);
 
@@ -511,24 +509,80 @@ Entity EntityFactory::createFilter(
 }
 
 Entity EntityFactory::createBoss(
-    EntityManager &entityManager, ComponentManager &componentManager, EntityFactory entityFactory)
+    EntityManager &entityManager, ComponentManager &componentManager, EntityFactory &entityFactory)
 {
     int tailLength = 5;
     std::vector<int> tailIds;
     Entity boss = entityManager.createEntity();
 
-    for (int i = 0; i < tailLength; i++) {
-        Entity tail =
-            entityFactory.createTailSegment(entityManager, componentManager, boss.getId());
-        tailIds.push_back(tail.getId());
+    for (int i = 0; i < (tailLength - 1); i++) {
+        Entity tailSegment = entityFactory.createTailSegment(entityManager, componentManager);
+        tailIds.push_back(tailSegment.getId());
     }
+    Entity tailEnd = entityFactory.createTailEnd(entityManager, componentManager);
+    tailIds.push_back(tailEnd.getId());
 
     BossComponent bossComponent{tailIds};
+    PositionComponent startPosition(0, 0);
+    AnimationComponent animationComponent({24, 0}, {161.25, 208});
     SpriteDataComponent spriteData{SpritePath::Boss, {10.0f, 10.0f}, AScenes::SpriteType::ENEMY};
     HealthComponent health{10};
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
 
     componentManager.addComponent<BossComponent>(boss.getId(), bossComponent);
     componentManager.addComponent<SpriteDataComponent>(boss.getId(), spriteData);
+    componentManager.addComponent<AnimationComponent>(boss.getId(), animationComponent);
+    componentManager.addComponent<HealthComponent>(boss.getId(), health);
+    componentManager.addComponent<HitboxComponent>(boss.getId(), hitbox);
 
     return boss;
+}
+
+Entity EntityFactory::createTailSegment(
+    EntityManager &entityManager, ComponentManager &componentManager)
+{
+    Entity tailSegment = entityManager.createEntity();
+
+    TailComponent tailComponent{};
+    PositionComponent startPosition(0, 0);
+    VelocityComponent velocity{0.0f, 0.0f};
+    AnimationComponent animationComponent({544, 2000}, {16, 15});
+    SpriteDataComponent spriteData{SpritePath::Boss, {1.0f, 1.0f}, AScenes::SpriteType::ENEMY};
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
+
+    componentManager.addComponent<TailComponent>(tailSegment.getId(), tailComponent);
+    componentManager.addComponent<PositionComponent>(tailSegment.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(tailSegment.getId(), velocity);
+    componentManager.addComponent<SpriteDataComponent>(tailSegment.getId(), spriteData);
+    componentManager.addComponent<HitboxComponent>(tailSegment.getId(), hitbox);
+    componentManager.addComponent<AnimationComponent>(tailSegment.getId(), animationComponent);
+
+    return tailSegment;
+}
+
+Entity EntityFactory::createTailEnd(
+    EntityManager &entityManager, ComponentManager &componentManager)
+{
+    Entity tailEnd = entityManager.createEntity();
+
+    TailComponent tailComponent{};
+    PositionComponent startPosition(0, 0);
+    VelocityComponent velocity{0.0f, 0.0f};
+    AnimationComponent animationComponent({508, 2045}, {16, 16});
+    SpriteDataComponent spriteData{SpritePath::Boss, {1.0f, 1.0f}, AScenes::SpriteType::ENEMY};
+    HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
+        static_cast<int>(animationComponent.dimension.y)};
+    ShootComponent shoot{std::chrono::milliseconds(2000)};
+
+    componentManager.addComponent<TailComponent>(tailEnd.getId(), tailComponent);
+    componentManager.addComponent<PositionComponent>(tailEnd.getId(), startPosition);
+    componentManager.addComponent<VelocityComponent>(tailEnd.getId(), velocity);
+    componentManager.addComponent<SpriteDataComponent>(tailEnd.getId(), spriteData);
+    componentManager.addComponent<HitboxComponent>(tailEnd.getId(), hitbox);
+    componentManager.addComponent<AnimationComponent>(tailEnd.getId(), animationComponent);
+    componentManager.addComponent<ShootComponent>(tailEnd.getId(), shoot);
+
+    return tailEnd;
 }

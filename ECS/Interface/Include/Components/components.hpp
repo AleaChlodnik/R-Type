@@ -35,6 +35,7 @@
 #include "shoot_component.hpp"
 #include "sprite_component.hpp"
 #include "sprite_data_component.hpp"
+#include "tail_component.hpp"
 #include "text_component.hpp"
 #include "text_data_component.hpp"
 #include "velocity_component.hpp"

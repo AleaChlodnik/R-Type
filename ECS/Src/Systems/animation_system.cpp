@@ -215,9 +215,10 @@ void AnimationSystem::AnimationEntities(
             }
 
             // animate system for background
-            auto background = componentManager.getComponent<BackgroundComponent>(entity.getId());
-            if (background) {
+            if (auto background = componentManager.getComponent<BackgroundComponent>(entity.getId())) {
+                // if (animation.value()->offset.x)
                 animation.value()->offset.x += 1;
+                std::cout << "Background animation offset x is here: " << animation.value()->offset.x << std::endl; ////////////////////////////
             }
         }
     }

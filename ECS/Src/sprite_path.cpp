@@ -55,6 +55,11 @@ std::string SpriteFactory(SpritePath sprite)
     case SpritePath::Bar: {
         return "Client/Assets/Sprites/Bars/info_bar.png";
     } break;
+    case SpritePath::Boss: {
+        return "Client/Assets/Sprites/Boss/boss_sheet.gif";
+    } break;
+    default: {
+        return "";
+    } break;
     }
-    return "";
 }
