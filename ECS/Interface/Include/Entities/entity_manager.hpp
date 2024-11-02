@@ -16,16 +16,22 @@
 
 /**
  * @class EntityManager
+ * @brief Manages the creation, removal, and retrieval of entities.
  *
- * @brief Class responsible for managing entities in the ECS system.
- *
+ * The EntityManager class is responsible for managing entities within the system. It provides
+ * functionality to create new entities, remove existing ones, and retrieve entities by their ID.
+ * It also allows access to all entities currently managed by the entity manager.
  */
 class EntityManager {
   public:
+
     /**
-     * @brief Create a Entity object
+     * @brief Creates a new entity and adds it to the entity manager.
      *
-     * @return Entity
+     * This function increments the entity counter, assigns a new unique ID to the entity,
+     * and adds it to the list of managed entities.
+     *
+     * @return Entity The newly created entity.
      */
     Entity createEntity()
     {
@@ -87,5 +93,12 @@ class EntityManager {
      *
      */
     int entityNb = 0;
+    /**
+     * @brief A container that holds a collection of Entity objects.
+     *
+     * This vector is used to manage and store all the entities within the
+     * Entity Component System (ECS). Each Entity represents a unique object
+     * within the ECS framework.
+     */
     std::vector<Entity> entities;
 };

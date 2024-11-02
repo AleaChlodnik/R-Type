@@ -27,6 +27,29 @@ struct EntityInformation {
     AnimationComponent animationComponent = {{0, 0}, {0, 0}};
 };
 
+/**
+ * @struct UIEntityInformation
+ * @brief Represents the information of a UI entity in the game.
+ *
+ * This structure holds various attributes related to a UI entity,
+ * including its unique identifier, lives, score, and associated
+ * sprite and text data components.
+ *
+ * @var uint32_t UIEntityInformation::uniqueID
+ * Unique identifier for the UI entity.
+ *
+ * @var uint32_t UIEntityInformation::lives
+ * Number of lives the UI entity has.
+ *
+ * @var uint32_t UIEntityInformation::score
+ * Score associated with the UI entity.
+ *
+ * @var SpriteDataComponent UIEntityInformation::spriteData
+ * Data related to the sprite of the UI entity.
+ *
+ * @var TextDataComponent UIEntityInformation::textData
+ * Data related to the text of the UI entity.
+ */
 struct UIEntityInformation {
     uint32_t uniqueID = 0;
     uint32_t lives = 0;

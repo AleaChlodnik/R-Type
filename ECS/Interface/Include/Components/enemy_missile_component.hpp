@@ -7,4 +7,10 @@
 
 #pragma once
 
+/**
+ * @file enemy_missile_component.hpp
+ * @brief Defines the EnemyMissileComponent structure.
+ *
+ * This component is used to represent an enemy missile in the game.
+ */
 struct EnemyMissileComponent {};

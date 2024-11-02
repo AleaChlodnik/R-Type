@@ -79,6 +79,16 @@ class ComponentManager {
         return std::nullopt;
     }
 
+    /**
+     * @brief Removes an entity from the specified component type.
+     *
+     * This function searches for the component type in the components map using
+     * the typeid of the ComponentType. If the component type is found, it removes
+     * the entity with the given entityId from the component's entity list.
+     *
+     * @tparam ComponentType The type of the component from which the entity should be removed.
+     * @param entityId The ID of the entity to be removed from the component.
+     */
     template <typename ComponentType> void removeEntityFromComponent(int entityId)
     {
         auto it = components.find(typeid(ComponentType));
@@ -88,6 +98,14 @@ class ComponentManager {
         }
     }
 
+    /**
+     * @brief Removes the specified entity from all components.
+     *
+     * This function iterates through all components and removes the entity
+     * with the given ID from each component's collection.
+     *
+     * @param entityId The ID of the entity to be removed from all components.
+     */
     void removeEntityFromAllComponents(int entityId)
     {
         for (auto &component : components) {

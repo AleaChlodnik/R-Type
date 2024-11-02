@@ -42,6 +42,14 @@ class TextureManager {
         return textures[filePath];
     }
 
+    /**
+     * @brief Releases the texture associated with the given file path.
+     *
+     * This function removes the texture from the internal texture storage,
+     * effectively releasing any resources associated with it.
+     *
+     * @param filePath The file path of the texture to be released.
+     */
     void releaseTexture(const std::string &filePath) { textures.erase(filePath); }
 
   private:

@@ -7,4 +7,11 @@
 
 #pragma once
 
+/**
+ * @file wall_component.hpp
+ * @brief Defines the WallComponent structure.
+ *
+ * The WallComponent is a marker component used to identify entities
+ * that represent walls in the ECS (Entity Component System).
+ */
 struct WallComponent {};
