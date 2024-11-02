@@ -771,7 +771,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         response.header.id = TypeMessage::UpdateInfoBar;
         _networkClient.Send(response);
         msg >> entity;
-        _networkClient.updateInfoBar(entity, componentManager, textureManager);
+        _networkClient.updateInfoBar(entity, componentManager);
     } break;
     case TypeMessage::CreateEntityMessage: {
         EntityInformation entity;

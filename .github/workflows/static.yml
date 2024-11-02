@@ -42,6 +42,9 @@ jobs:
         run: |
           cmake -S . -B build -DBUILD_DOC=ON
           cmake --build build --target doc_doxygen
+      # copy markdown files to the root of the documentation
+      - name: Configure CMake and Build Documentation
+        run: mv Docs doc_doxygen/html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -226,8 +226,8 @@ bool operator!=(AnimationComponent animation, AnimationComponent other)
  * @param entityManager Reference to the EntityManager that handles entities.
  * @param deltaTime The time elapsed since the last update, used for time-based animations.
  */
-void AnimationSystem::AnimationEntities(
-    ComponentManager &componentManager, EntityManager &entityManager, float deltaTime)
+void AnimationSystem::AnimationEntities(ComponentManager &componentManager,
+    EntityManager &entityManager, float deltaTime, bool &endOfLevel)
 {
     for (auto entity : entityManager.getAllEntities()) {
 
@@ -265,9 +265,15 @@ void AnimationSystem::AnimationEntities(
             }
 
             // animate system for background
-            auto background = componentManager.getComponent<BackgroundComponent>(entity.getId());
-            if (background) {
-                animation.value()->offset.x += 1;
+            if (auto background =
+                    componentManager.getComponent<BackgroundComponent>(entity.getId())) {
+                if (animation.value()->offset.x < 2650) {
+                    // animation.value()->offset.x += 1;
+                    animation.value()->offset.x += 5; //////////////////////// temp
+                } else {
+                    if (endOfLevel == false)
+                        endOfLevel = true;
+                }
             }
         }
     }

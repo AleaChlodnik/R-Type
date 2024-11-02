@@ -724,7 +724,7 @@ Entity EntityFactory::createTailEnd(
     SpriteDataComponent spriteData{SpritePath::Boss, {1.0f, 1.0f}, AScenes::SpriteType::ENEMY};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    ShootComponent shoot{std::chrono::milliseconds(2000)};
+    ShootComponent shoot{std::chrono::milliseconds(10000)};
 
     componentManager.addComponent<TailComponent>(tailEnd.getId(), tailComponent);
     componentManager.addComponent<PositionComponent>(tailEnd.getId(), startPosition);

@@ -165,7 +165,7 @@ class AnimationSystem : public ISystem {
      * @param deltaTime The time elapsed since the last update, used to update animations.
      */
     void AnimationEntities(ComponentManager &componentManager, EntityManager &entityManager,
-        float deltaTime, bool *endOfLevel);
+        float deltaTime, bool &endOfLevel);
 
     /**
      * @brief Animates the player based on their velocity.
