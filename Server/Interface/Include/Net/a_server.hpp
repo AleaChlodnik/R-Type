@@ -307,6 +307,27 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             _level.Update(this, _componentManager, _entityManager, newClock, &bUpdateEntities);
         });
 
+        if (_endOfLevel) {
+            switch (_level.GetLevel()) {
+            case GameState::LevelOne: {
+                _level.ChangeLevel(GameState::LevelTwo);
+                _level.ChangeBackground(this, _entityManager, _componentManager);
+            } break;
+            case GameState::LevelTwo: {
+                _level.ChangeLevel(GameState::LevelThree);
+                _level.ChangeBackground(this, _entityManager, _componentManager);
+            } break;
+            case GameState::LevelThree: {
+                _level.ChangeLevel(GameState::LevelOne);
+                _level.ChangeBackground(this, _entityManager, _componentManager);
+            } break;
+
+            default:
+                break;
+            }
+            _endOfLevel = false;
+        }
+
         size_t nMessageCount = 0;
         while (nMessageCount < nMaxMessages && !_qMessagesIn.empty()) {
             auto msg = _qMessagesIn.pop_front();

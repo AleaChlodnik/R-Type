@@ -78,10 +78,10 @@ template <typename T> class Level : virtual public ILevel<T> {
                     break;
                 }
             } else {
-                if (server->_bossActive == false) {
-                    SpawnEntity(server, entityManager, componentManager, 0,
-                        EntityFactory::EnemyType::Boss);
-                }
+                // if (server->_bossActive == false) {
+                //     SpawnEntity(server, entityManager, componentManager, 0,
+                //         EntityFactory::EnemyType::Boss);
+                // }
             }
             server->SetClock(server->GetClock() + std::chrono::milliseconds(500));
         }
@@ -738,6 +738,44 @@ template <typename T> class Level : virtual public ILevel<T> {
     }
 
     /**
+     * @brief Changes the background in the game by removing the current background entity and
+     * creating a new one.
+     *
+     * This function sends messages to all clients to destroy the current background entity and
+     * create a new one.
+     *
+     * @tparam T The type of the server.
+     * @param server Pointer to the server instance.
+     * @param entityManager Reference to the EntityManager instance.
+     * @param componentManager Reference to the ComponentManager instance.
+     */
+    void ChangeBackground(r_type::net::AServer<T> *server, EntityManager &entityManager,
+        ComponentManager &componentManager) override
+    {
+        r_type::net::Message<TypeMessage> msg;
+        msg.header.id = TypeMessage::DestroyEntityMessage;
+        auto background = componentManager.getComponentMap<BackgroundComponent>();
+        if (background) {
+            for (auto &pair : **background) {
+                int entityId = pair.first;
+                auto &backgroundComponent = pair.second;
+                if (auto backgroundInfo =
+                        std::any_cast<BackgroundComponent>(&backgroundComponent)) {
+                    msg << background;
+                    server->MessageAllClients(msg);
+                    componentManager.removeEntityFromAllComponents(entityId);
+                    entityManager.removeEntity(entityId);
+                    msg.header.id = TypeMessage::CreateEntityMessage;
+                    msg << InitiateBackground(server, entityManager, componentManager);
+                    server->MessageAllClients(msg);
+                }
+            }
+        }
+    }
+
+    GameState GetLevel() override { return _gameParameters.levelType; }
+
+    /**
      * @brief Initializes a background entity.
      *
      * The function creates and returns information about the background entity.
@@ -778,6 +816,15 @@ template <typename T> class Level : virtual public ILevel<T> {
      * @param gameParameters The game parameters to set the difficulty.
      */
     void SetGameParameters(GameParameters gameParameters) { _gameParameters = gameParameters; }
+
+    /**
+     * @brief Changes the level of the game based on the provided game state.
+     *
+     * This function changes the level of the game based on the provided game state.
+     *
+     * @param state The game state to change the level to.
+     */
+    void ChangeLevel(GameState state) override { _gameParameters.levelType = state; }
 
   protected:
     /**
