@@ -64,17 +64,17 @@ template <typename T> class Level : virtual public ILevel<T> {
             AnimationUpdate(server, componentManager, entityManager, newClock);
             FireUpdate(server, componentManager, entityManager, newClock);
             switch (_gameParameters.levelType) {
-                case GameState::LevelOne:
-                    LevelOne(server, componentManager, entityManager, newClock);
-                    break;
-                case GameState::LevelTwo:
-                    LevelTwo(server, componentManager, entityManager, newClock);
-                    break;
-                case GameState::LevelThree:
-                    LevelThree(server, componentManager, entityManager, newClock);
-                    break;
-                default:
-                    break;
+            case GameState::LevelOne:
+                LevelOne(server, componentManager, entityManager, newClock);
+                break;
+            case GameState::LevelTwo:
+                LevelTwo(server, componentManager, entityManager, newClock);
+                break;
+            case GameState::LevelThree:
+                LevelThree(server, componentManager, entityManager, newClock);
+                break;
+            default:
+                break;
             }
             server->SetClock(server->GetClock() + std::chrono::milliseconds(500));
         }
@@ -541,7 +541,7 @@ template <typename T> class Level : virtual public ILevel<T> {
         }
     }
 
-      /**
+    /**
      * @brief Handles the spawning of entities for Level Two.
      *
      * This function is responsible for spawning basic monsters and shooter enemies
@@ -579,7 +579,7 @@ template <typename T> class Level : virtual public ILevel<T> {
         }
     }
 
-          /**
+    /**
      * @brief Handles the spawning of entities for Level Three.
      *
      * This function is responsible for spawning basic monsters and shooter enemies
