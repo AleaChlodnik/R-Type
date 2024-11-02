@@ -252,7 +252,7 @@ Entity EntityFactory::createShooterEnemy(
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
     HealthComponent health{0, 0};
-    ShootComponent shoot{std::chrono::milliseconds(2000)};
+    ShootComponent shootComponent(std::chrono::milliseconds(2000));
 
     componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
     componentManager.addComponent<VelocityComponent>(enemy.getId(), velocity);
@@ -261,7 +261,7 @@ Entity EntityFactory::createShooterEnemy(
     componentManager.addComponent<PositionComponent>(enemy.getId(), startPosition);
     componentManager.addComponent<HitboxComponent>(enemy.getId(), hitbox);
     componentManager.addComponent<HealthComponent>(enemy.getId(), health);
-    componentManager.addComponent<ShootComponent>(enemy.getId(), shoot);
+    componentManager.addComponent<ShootComponent>(enemy.getId(), shootComponent);
     componentManager.addComponent<MovementComponent>(enemy.getId(), movement);
 
     while (CheckEntityPosition(enemy.getId(), componentManager, entityManager) != -1) {
@@ -314,7 +314,7 @@ Entity EntityFactory::createForceWeapon(
     PositionComponent startPosition(10, 50);
     VelocityComponent velocity{1.0f, 0.0f};
     AnimationComponent animationComponent({300, 35}, {24, 16});
-    ShootComponent shoot(std::chrono::milliseconds(500));
+    ShootComponent shootComponent(std::chrono::milliseconds(500));
     SpriteDataComponent spriteData{
         SpritePath::ForceWeapon, {2.0f, 2.0f}, AScenes::SpriteType::WEAPON};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
@@ -326,7 +326,7 @@ Entity EntityFactory::createForceWeapon(
     componentManager.addComponent<SpriteDataComponent>(forceWeapon.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(forceWeapon.getId(), hitbox);
     componentManager.addComponent<AnimationComponent>(forceWeapon.getId(), animationComponent);
-    componentManager.addComponent<ShootComponent>(forceWeapon.getId(), shoot);
+    componentManager.addComponent<ShootComponent>(forceWeapon.getId(), shootComponent);
 
     return forceWeapon;
 }
