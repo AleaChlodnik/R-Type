@@ -146,10 +146,12 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             std::cout << "[" << client->GetID() << "]: Game Entity Information Received"
                       << std::endl;
             r_type::net::Message<TypeMessage> response;
-            response.header.id = TypeMessage::GameBarInformation;
-            response << InitInfoBar(client->GetID());
+            response.header.id = TypeMessage::PlayerInformation;
+            response << InitiatePlayer(client->GetID());
             MessageClient(client, response);
             client->_lastMsg = response;
+            response.header.id = TypeMessage::CreateEntityMessage;
+            MessageAllClients(response, client);
         } break;
         case TypeMessage::GameParametersInformation: {
             std::cout << "[" << client->GetID() << "]: Game Parameters Information Received"
@@ -158,39 +160,24 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             msg >> gameParameters;
             _level.SetGameParameters(gameParameters);
             r_type::net::Message<TypeMessage> response;
-            response.header.id = TypeMessage::GameBarInformation;
-            UIEntityInformation entity = InitInfoBar(client->GetID());
-            response << entity;
+            response.header.id = TypeMessage::PlayerInformation;
+            response << InitiatePlayer(client->GetID());
             MessageClient(client, response);
             client->_lastMsg = response;
+            response.header.id = TypeMessage::CreateEntityMessage;
+            MessageAllClients(response, client);
         } break;
         case TypeMessage::GameBarInformationResponse: {
             std::cout << "[" << client->GetID() << "]: Game Bar Information Received" << std::endl;
             r_type::net::Message<TypeMessage> response;
             response.header.id = TypeMessage::BackgroundInformation;
-            EntityInformation entity =
-                _level.GetEntityBackGround(this, _entityManager, _componentManager);
-            // std::cout << "Entity ID: " << entity.uniqueID << std::endl;
-            // std::cout << "Entity Sprite: " << entity.spriteData.spritePath << std::endl;
-            // std::cout << "Entity Position: " << entity.vPos.x << " " << entity.vPos.y <<
-            // std::endl; std::cout << "Entity Ratio: " << entity.ratio.x << " " << entity.ratio.y
-            // << std::endl;
+            response << _level.GetEntityBackGround(this, _entityManager, _componentManager);
             MessageClient(client, response);
             client->_lastMsg = response;
         } break;
         case TypeMessage::BackgroundInformationResponse: {
             std::cout << "[" << client->GetID() << "]: Background Information Received"
                       << std::endl;
-            r_type::net::Message<TypeMessage> response;
-            response.header.id = TypeMessage::PlayerInformation;
-            response << InitiatePlayer(client->GetID());
-            MessageClient(client, response);
-            client->_lastMsg = response;
-            response.header.id = TypeMessage::CreateEntityMessage;
-            MessageAllClients(client->_lastMsg, client);
-        } break;
-        case TypeMessage::PlayerInformationResponse: {
-            std::cout << "[" << client->GetID() << "]: Player Information Received" << std::endl;
             if (!client->_initEntities.empty()) {
                 std::cout << "[" << client->GetID() << "]: Sending Entity Information"
                           << std::endl;
@@ -204,6 +191,15 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
                 std::cout << "[" << client->GetID() << "]: Finished Initialization" << std::endl;
                 client->SetStatus(ServerStatus::RUNNING);
             }
+        } break;
+        case TypeMessage::PlayerInformationResponse: {
+            std::cout << "[" << client->GetID() << "]: Player Information Received" << std::endl;
+            r_type::net::Message<TypeMessage> response;
+            response.header.id = TypeMessage::GameBarInformation;
+            UIEntityInformation entity = InitInfoBar(client->GetID());
+            response << entity;
+            MessageClient(client, response);
+            client->_lastMsg = response;
         } break;
         case TypeMessage::CreateEntityResponse: {
             std::cout << "[" << client->GetID() << "]: Entity Created" << std::endl;

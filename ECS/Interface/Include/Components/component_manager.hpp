@@ -95,8 +95,8 @@ class ComponentManager {
     {
         if (components.empty())
             return;
-        for (auto &component : components)
-            component.second.clear();
+        std::cout << "Removing all components" << std::endl;
+        components.clear();
     }
 
     void removeEntityFromAllComponents(int entityId)

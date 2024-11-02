@@ -62,6 +62,7 @@ class EntityManager {
     {
         if (entities.empty())
             return;
+        std::cout << "Removing all entities" << std::endl;
         entities.clear();
         entityNb = 0;
     }

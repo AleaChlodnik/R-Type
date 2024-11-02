@@ -280,6 +280,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         if (_nbrOfPlayers == 0) {
             _entityManager.removeAllEntities();
             _componentManager.removeAllComponents();
+            _playerConnected = false;
             return;
         }
         if (_nbrOfPlayers > 0 && !_playerConnected) {
