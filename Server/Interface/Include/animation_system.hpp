@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "../entity_struct.hpp"
+#include <entity_struct.hpp>
 #include "Systems/i_system.hpp"
 
 /**
