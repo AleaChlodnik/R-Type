@@ -27,9 +27,6 @@ class RenderSystem : public ISystem {
     RenderSystem(sf::RenderWindow &window, ComponentManager &componentManager)
         : _window(window), _componentManager(componentManager)
     {
-        if (!_font.loadFromFile("Client/Assets/Fonts/GODOFWAR.TTF")) {
-            throw failedToLoadFont();
-        }
     }
 
     /**

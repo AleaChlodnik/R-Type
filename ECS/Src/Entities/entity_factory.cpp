@@ -672,18 +672,17 @@ Entity EntityFactory::createBoss(
     tailIds.push_back(tailEnd.getId());
 
     BossComponent bossComponent{tailIds};
-    PositionComponent position(50, 50);
-    // AnimationComponent animationComponent({24, 0}, {161.25, 208});
-    AnimationComponent animationComponent({0, 0}, {500, 500});
-    SpriteDataComponent spriteData{SpritePath::Boss, {20.0f, 20.0f}, AScenes::SpriteType::ENEMY};
+    PositionComponent position(90, 60);
+    AnimationComponent animationComponent({24, 0}, {161.25, 208});
+    SpriteDataComponent spriteData{SpritePath::Boss, {6.0f, 6.0f}, AScenes::SpriteType::ENEMY};
     HealthComponent health{10};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
 
     componentManager.addComponent<BossComponent>(boss.getId(), bossComponent);
     componentManager.addComponent<PositionComponent>(boss.getId(), position);
-    componentManager.addComponent<SpriteDataComponent>(boss.getId(), spriteData);
     componentManager.addComponent<AnimationComponent>(boss.getId(), animationComponent);
+    componentManager.addComponent<SpriteDataComponent>(boss.getId(), spriteData);
     componentManager.addComponent<HealthComponent>(boss.getId(), health);
     componentManager.addComponent<HitboxComponent>(boss.getId(), hitbox);
 
