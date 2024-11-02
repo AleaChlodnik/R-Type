@@ -264,11 +264,11 @@ void AnimationSystem::AnimationEntities(
             }
 
             // animate system for background
-            if (auto background = componentManager.getComponent<BackgroundComponent>(entity.getId())) {
+            if (auto background =
+                    componentManager.getComponent<BackgroundComponent>(entity.getId())) {
                 if (animation.value()->offset.x < 2646) {
                     animation.value()->offset.x += 1;
                 } else {
-                    
                 }
             }
         }
