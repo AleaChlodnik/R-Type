@@ -108,9 +108,6 @@ std::ostream &operator<<(std::ostream &os, const GameState &gameState)
     case GameState::LevelThree:
         os << static_cast<std::string>("LevelThree");
         break;
-    case GameState::LevelFour:
-        os << static_cast<std::string>("LevelFour");
-        break;
     default:
         os << static_cast<std::string>("Invalid GameState");
         break;
@@ -142,9 +139,6 @@ Entity EntityFactory::backgroundFactory(
         break;
     case GameState::LevelThree:
         return createBackgroundLevelThree(entityManager, componentManager);
-        break;
-    case GameState::LevelFour:
-        return createBackgroundLevelFour(entityManager, componentManager);
         break;
     default:
         return createBackgroundLevelOne(entityManager, componentManager);
@@ -180,7 +174,7 @@ Entity EntityFactory::createBackgroundLevelTwo(
     PositionComponent start_position(50, 50);
     AnimationComponent animationComponent({0, 0}, {342, 192});
     SpriteDataComponent spriteData{
-        SpritePath::Background1, {5.625f, 5.625f}, AScenes::SpriteType::BACKGROUND};
+        SpritePath::Background2, {5.625f, 5.625f}, AScenes::SpriteType::BACKGROUND};
 
     componentManager.addComponent<BackgroundComponent>(background.getId(), backgroundComponent);
     componentManager.addComponent<PositionComponent>(background.getId(), start_position);
@@ -199,26 +193,7 @@ Entity EntityFactory::createBackgroundLevelThree(
     PositionComponent start_position(50, 50);
     AnimationComponent animationComponent({0, 0}, {342, 192});
     SpriteDataComponent spriteData{
-        SpritePath::Background1, {5.625f, 5.625f}, AScenes::SpriteType::BACKGROUND};
-
-    componentManager.addComponent<BackgroundComponent>(background.getId(), backgroundComponent);
-    componentManager.addComponent<PositionComponent>(background.getId(), start_position);
-    componentManager.addComponent<SpriteDataComponent>(background.getId(), spriteData);
-    componentManager.addComponent<AnimationComponent>(background.getId(), animationComponent);
-
-    return background;
-}
-
-Entity EntityFactory::createBackgroundLevelFour(
-    EntityManager &entityManager, ComponentManager &componentManager)
-{
-    Entity background = entityManager.createEntity();
-
-    BackgroundComponent backgroundComponent;
-    PositionComponent start_position(50, 50);
-    AnimationComponent animationComponent({0, 0}, {342, 192});
-    SpriteDataComponent spriteData{
-        SpritePath::Background1, {5.625f, 5.625f}, AScenes::SpriteType::BACKGROUND};
+        SpritePath::Background3, {5.625f, 5.625f}, AScenes::SpriteType::BACKGROUND};
 
     componentManager.addComponent<BackgroundComponent>(background.getId(), backgroundComponent);
     componentManager.addComponent<PositionComponent>(background.getId(), start_position);
@@ -316,7 +291,7 @@ Entity EntityFactory::createBasicMonster(
     EnemyComponent enemyComponent;
     BasicMonsterComponent monsterComponent;
     VelocityComponent velocity{-1.0f, 0.0f};
-    MovementComponent movement(MovementType::WIGGLE, 0, true);
+    MovementComponent movement(MovementType::WIGGLE, rand() % 10, true);
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy1, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(posX, posY);
@@ -349,7 +324,7 @@ Entity EntityFactory::createShooterEnemy(
 
     EnemyComponent enemyComponent;
     VelocityComponent velocity{-1.0f, 0.0f};
-    MovementComponent movement(MovementType::DIAGONAL, 0, true);
+    MovementComponent movement(MovementType::DIAGONAL, rand() % 10, true);
     AnimationComponent animationComponent({0, 0}, {37, 36});
     SpriteDataComponent spriteData{SpritePath::Enemy2, {2.0f, 2.0f}, AScenes::SpriteType::ENEMY};
     PositionComponent startPosition(posX, posY);

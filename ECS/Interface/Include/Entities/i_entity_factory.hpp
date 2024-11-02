@@ -67,16 +67,6 @@ class IEntityFactory {
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
     /**
-     * @brief Create a Background Level Four object
-     *
-     * @param entityManager
-     * @param componentManager
-     * @return Entity
-     */
-    virtual Entity createBackgroundLevelFour(
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
-
-    /**
      * @brief Create a Background Menu object
      *
      * @param entityManager

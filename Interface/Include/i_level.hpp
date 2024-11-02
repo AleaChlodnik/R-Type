@@ -122,6 +122,28 @@ template <typename T> class ILevel {
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
 
     /**
+     * @brief Pure virtual function to handle the logic for Level Two.
+     *
+     * @param server Pointer to the server instance managing the game.
+     * @param componentManager Reference to the ComponentManager handling game components.
+     * @param entityManager Reference to the EntityManager handling game entities.
+     * @param newClock The current time point used for time-based operations.
+     */
+    virtual void LevelTwo(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
+
+    /**
+     * @brief Pure virtual function to handle the logic for Level Three.
+     *
+     * @param server Pointer to the server instance managing the game.
+     * @param componentManager Reference to the ComponentManager handling game components.
+     * @param entityManager Reference to the EntityManager handling game entities.
+     * @param newClock The current time point used for time-based operations.
+     */
+    virtual void LevelThree(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
+
+    /**
      * @brief Spawns a specified number of enemy entities in the game.
      *
      * @param server Pointer to the server instance managing the game.
