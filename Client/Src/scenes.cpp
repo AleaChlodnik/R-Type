@@ -549,7 +549,7 @@ void Scenes::TransitionLevel()
 
     std::shared_ptr<Entity> readyButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, fontManager, "I'm ready !", &ReadyButton, 960, 400));
+            textureManager, fontManager, "Next Level !", &ReadyButton, 960, 400));
 
     buttons.push_back(readyButton);
     bool updated = false;
@@ -562,7 +562,7 @@ void Scenes::TransitionLevel()
 
             std::shared_ptr<Entity> waitButton = std::make_shared<Entity>(
                 entityFactory.createButton(entityManager, componentManager, textureManager,
-                    fontManager, "Waiting player", &WaitButton, 960, 400));
+                    fontManager, "Waiting for player", &WaitButton, 960, 400));
             buttons.push_back(waitButton);
             updated = true;
         }
@@ -1191,11 +1191,16 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     case TypeMessage::GameEntityInformation: {
     } break;
     case TypeMessage::GameTransitionMode: {
+        audioSystem->playSoundEffect(SoundFactory(ActionType::Background));
         _currentScene = Scenes::Scene::TRANSITION_LEVEL;
         r_type::net::Message<TypeMessage> response;
         response.header.id = TypeMessage::GameTransitionModeResponse;
         _networkClient.Send(response);
         TransitionLevel();
+    } break;
+    case TypeMessage::EndOfGame: {
+        _networkClient.displayEndOfGame(
+            componentManager, textureManager, fontManager, ogWindowSize);
     } break;
     }
 }

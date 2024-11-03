@@ -229,7 +229,9 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
                           << std::endl;
                 r_type::net::Message<TypeMessage> response;
                 response.header.id = TypeMessage::CreateEntityMessage;
-                response << FormatEntityInformation(client->_initEntities.front().getId());
+                EntityInformation entity =
+                    FormatEntityInformation(client->_initEntities.front().getId());
+                response << entity;
                 client->_lastMsg = response;
                 client->Send(response);
                 client->_initEntities.erase(client->_initEntities.begin());

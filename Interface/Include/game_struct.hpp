@@ -21,6 +21,7 @@ enum class GameState
     LevelOne,
     LevelTwo,
     LevelThree,
+    Win,
 };
 
 /**

@@ -108,6 +108,9 @@ std::ostream &operator<<(std::ostream &os, const GameState &gameState)
     case GameState::LevelThree:
         os << static_cast<std::string>("LevelThree");
         break;
+    case GameState::Win:
+        os << static_cast<std::string>("Win");
+        break;
     default:
         os << static_cast<std::string>("Invalid GameState");
         break;
@@ -653,7 +656,7 @@ Entity EntityFactory::createFilter(
 Entity EntityFactory::createBoss(
     EntityManager &entityManager, ComponentManager &componentManager, EntityFactory &entityFactory)
 {
-    int tailLength = 18;
+    int tailLength = 16;
     std::vector<int> tailIds;
     Entity boss = entityManager.createEntity();
 
@@ -729,7 +732,7 @@ Entity EntityFactory::createTailEnd(
     SpriteDataComponent spriteData{SpritePath::Boss, {5.0f, 5.0f}, AScenes::SpriteType::ENEMY};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    ShootComponent shoot{std::chrono::milliseconds(2000)};
+    ShootComponent shoot{std::chrono::milliseconds(1000)};
     MovementComponent movement{MovementType::SWEEPING, 0, true};
 
     componentManager.addComponent<TailComponent>(tailEnd.getId(), tailComponent);

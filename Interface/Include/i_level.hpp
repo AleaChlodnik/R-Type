@@ -143,6 +143,9 @@ template <typename T> class ILevel {
     virtual void LevelThree(r_type::net::AServer<T> *server, ComponentManager &componentManager,
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
 
+    virtual void EndOfGame(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager) = 0;
+
     /**
      * @brief Spawns a specified number of enemy entities in the game.
      *

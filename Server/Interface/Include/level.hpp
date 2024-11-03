@@ -76,6 +76,9 @@ template <typename T> class Level : virtual public ILevel<T> {
                 case GameState::LevelThree:
                     LevelThree(server, componentManager, entityManager, newClock);
                     break;
+                case GameState::Win:
+                    EndOfGame(server, componentManager, entityManager);
+                    break;
                 default:
                     break;
                 }
@@ -341,6 +344,16 @@ template <typename T> class Level : virtual public ILevel<T> {
                         }
                     }
                 }
+                int playerId = playerMissile1.value()->playerId;
+                if (auto playerScore = componentManager.getComponent<ScoreComponent>(playerId)) {
+                    playerScore.value()->score += 200;
+                }
+                r_type::net::Message<TypeMessage> updScoreMsg;
+                updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
+                updScoreMsg << server->UpdateInfoBar(playerId);
+                server->MessageClient(server->getClientById(server->_deqConnections,
+                                          server->GetPlayerClientId(playerId)),
+                    updScoreMsg);
             }
             if (tail2) {
                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
@@ -371,42 +384,67 @@ template <typename T> class Level : virtual public ILevel<T> {
                     }
                     entitiesToRemove.push_back(entityId2);
                 }
-                auto weapon = componentManager.getComponent<ForceWeaponComponent>(
-                    forceMissile1.value()->forceId);
-                if (weapon) {
-                    int playerId = weapon.value()->playerId;
-                    if (auto playerScore =
-                            componentManager.getComponent<ScoreComponent>(playerId)) {
-                        playerScore.value()->score += 100;
-                    }
-                    r_type::net::Message<TypeMessage> updScoreMsg;
-                    updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
-                    updScoreMsg << server->UpdateInfoBar(playerId);
-                    server->MessageClient(server->getClientById(server->_deqConnections,
-                                              server->GetPlayerClientId(playerId)),
-                        updScoreMsg);
-                }
             }
-            if (boss2) {
-                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
-                    entitiesToRemove.end()) {
-                    entitiesToRemove.push_back(entityId1);
-                }
-                if (auto bossHealth = componentManager.getComponent<HealthComponent>(entityId2)) {
-                    bossHealth.value()->lives -= 2;
-                    if (bossHealth.value()->lives <= 0) {
+            auto weapon = componentManager.getComponent<ForceWeaponComponent>(
+                forceMissile1.value()->forceId);
+            if (weapon) {
+                int playerId = weapon.value()->playerId;
+                if (auto playerScore = componentManager.getComponent<ScoreComponent>(playerId)) {
+                    if (enemy2 || enemyMissile2) {
+                        if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                entityId1) == entitiesToRemove.end()) {
+                            entitiesToRemove.push_back(entityId1);
+                        }
                         if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                 entityId2) == entitiesToRemove.end()) {
+                            auto posEnemy =
+                                componentManager.getComponent<PositionComponent>(entityId2);
+                            if (rand() % 10 == 0) {
+                                auto posEnemy =
+                                    componentManager.getComponent<PositionComponent>(entityId2);
+                                if (posEnemy) {
+                                    Entity weapon =
+                                        server->GetEntityFactory().createPowerUpBlueLaserCrystal(
+                                            entityManager, componentManager, posEnemy.value()->x,
+                                            posEnemy.value()->y);
+                                    entitiesToAdd.push_back(weapon.getId());
+                                }
+                            }
                             entitiesToRemove.push_back(entityId2);
+                        }
+                        playerScore.value()->score += 100;
+                    }
+                    if (boss2) {
+                        if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                entityId1) == entitiesToRemove.end()) {
+                            entitiesToRemove.push_back(entityId1);
+                        }
+                        if (auto bossHealth =
+                                componentManager.getComponent<HealthComponent>(entityId2)) {
+                            bossHealth.value()->lives -= 2;
+                            if (bossHealth.value()->lives <= 0) {
+                                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                        entityId2) == entitiesToRemove.end()) {
+                                    entitiesToRemove.push_back(entityId2);
+                                }
+                            }
+                        }
+                        playerScore.value()->score += 200;
+                    }
+
+                    if (tail2) {
+                        if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                entityId1) == entitiesToRemove.end()) {
+                            entitiesToRemove.push_back(entityId1);
                         }
                     }
                 }
-            }
-            if (tail2) {
-                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
-                    entitiesToRemove.end()) {
-                    entitiesToRemove.push_back(entityId1);
-                }
+                r_type::net::Message<TypeMessage> updScoreMsg;
+                updScoreMsg.header.id = TypeMessage::UpdateInfoBar;
+                updScoreMsg << server->UpdateInfoBar(playerId);
+                server->MessageClient(server->getClientById(server->_deqConnections,
+                                          server->GetPlayerClientId(playerId)),
+                    updScoreMsg);
             }
             return true;
         } else if (forceWeapon1) {
@@ -715,6 +753,23 @@ template <typename T> class Level : virtual public ILevel<T> {
                 EntityFactory::EnemyType::Wall);
             _WallSpawnTime = server->GetClock();
         }
+    }
+
+    void EndOfGame(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager) override
+    {
+        auto entities = entityManager.getAllEntities();
+        for (const auto &entity : entities) {
+            int entityId = entity.getId();
+            if (auto playerComponent = componentManager.getComponent<PlayerComponent>(entityId)) {
+                server->SavePlayerScore(entityId);
+            }
+        }
+        r_type::net::Message<TypeMessage> msg;
+        msg.header.id = TypeMessage::EndOfGame;
+        server->MessageAllClients(msg);
+        server->_endOfLevel = true;
+        server->_bossActive = true;
     }
 
     /**
