@@ -1095,6 +1095,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     int _port;
 
     r_type::Level<T> _level;
+
 };
 } // namespace net
 } // namespace r_type

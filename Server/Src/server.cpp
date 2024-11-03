@@ -154,10 +154,14 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         switch (msg.header.id) {
         case TypeMessage::DestroyEntityResponse: {
             std::cout << "[" << client->GetID() << "]: Entity Destroyed" << std::endl;
-            if (_endOfLevel && _boosKill)
+            if (client->GetLastStatus() == ServerStatus::INITIALISATION)
                 client->SetStatus(ServerStatus::INITIALISATION);
-            else
+            else if (client->GetLastStatus() == ServerStatus::TRANSITION)
+                client->SetStatus(ServerStatus::TRANSITION);
+            else {
                 client->SetStatus(ServerStatus::RUNNING);
+                std::cout << "[" << client->GetID() << "]: Sending Last Message" << std::endl;
+            }
         }
         default: {
             if (client->_lastMsg.size() > 0)
