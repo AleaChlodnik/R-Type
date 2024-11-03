@@ -191,7 +191,7 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         }
         int id = 4;
         for (const auto &score : scores) {
-            yPos += 50.0f;
+            yPos += 80;
             TextComponent textComponent(font, score, xPos, yPos, 50);
             componentManager.addComponent<TextComponent>(id, textComponent);
             id++;
