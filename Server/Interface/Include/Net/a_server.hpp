@@ -228,8 +228,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             if (client && client->IsConnected()) {
                 if (client != pIgnoreClient) {
                     client->Send(msg);
-                    if (msg.header.id == TypeMessage::DestroyEntityMessage
-                        || msg.header.id == TypeMessage::UpdateBackground) {
+                    if (msg.header.id == TypeMessage::DestroyEntityMessage ||
+                        msg.header.id == TypeMessage::UpdateBackground) {
                         client->_lastMsg = msg;
                         client->SetStatus(ServerStatus::WAITING);
                     } else if (msg.header.id == TypeMessage::GameTransition) {
