@@ -298,6 +298,28 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             _playerConnected = true;
             _clock = std::chrono::system_clock::now();
         }
+
+        if (_endOfLevel) {
+            switch (_level.GetLevel()) {
+            case GameState::LevelOne: {
+                _level.ChangeLevel(GameState::LevelTwo);
+                client.SetStatus(ServerStatus::TRANSITION);
+            } break;
+            case GameState::LevelTwo: {
+                _level.ChangeLevel(GameState::LevelThree);
+                client.SetStatus(ServerStatus::TRANSITION);
+            } break;
+            case GameState::LevelThree: {
+                _level.ChangeLevel(GameState::LevelOne);
+                client.SetStatus(ServerStatus::TRANSITION);
+            } break;
+
+            default:
+                break;
+            }
+            _clock = std::chrono::system_clock::now();
+        }
+
         _level.SetSystem(_componentManager, _entityManager);
 
         bool bUpdateEntities = false;
@@ -306,27 +328,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         std::thread t_level([this, newClock, &bUpdateEntities]() {
             _level.Update(this, _componentManager, _entityManager, newClock, &bUpdateEntities);
         });
-
-        if (_endOfLevel) {
-            switch (_level.GetLevel()) {
-            case GameState::LevelOne: {
-                _level.ChangeLevel(GameState::LevelTwo);
-                _level.ChangeBackground(this, _entityManager, _componentManager);
-            } break;
-            case GameState::LevelTwo: {
-                _level.ChangeLevel(GameState::LevelThree);
-                _level.ChangeBackground(this, _entityManager, _componentManager);
-            } break;
-            case GameState::LevelThree: {
-                _level.ChangeLevel(GameState::LevelOne);
-                _level.ChangeBackground(this, _entityManager, _componentManager);
-            } break;
-
-            default:
-                break;
-            }
-            _endOfLevel = false;
-        }
 
         size_t nMessageCount = 0;
         while (nMessageCount < nMaxMessages && !_qMessagesIn.empty()) {

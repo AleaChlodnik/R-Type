@@ -29,5 +29,6 @@
 enum ServerStatus {
     WAITING,
     RUNNING,
+    TRANSITION,
     INITIALISATION,
 };

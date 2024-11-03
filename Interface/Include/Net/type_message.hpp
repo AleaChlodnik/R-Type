@@ -103,7 +103,7 @@ enum class TypeMessage : uint32_t
      */
     UpdateEntity,
     /**
-     * @brief Server me
+     * @brief Server message.
      *
      */
     GameBarInformation,
@@ -112,6 +112,11 @@ enum class TypeMessage : uint32_t
      *
      */
     BackgroundInformation,
+    /**
+     * @brief Server message.
+     *
+     */
+    PlayerReady,
 
     /**
      * @brief Client message.
