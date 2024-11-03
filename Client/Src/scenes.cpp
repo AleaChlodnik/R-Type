@@ -572,7 +572,8 @@ void Scenes::TransitionLevel()
         updateSystem->updateSpritePositions(componentManager, entityManager);
         renderSystem->render(componentManager);
 
-        while (!_networkClient.Incoming().empty() && _currentScene == Scenes::Scene::TRANSITION_LEVEL) {
+        while (!_networkClient.Incoming().empty() &&
+            _currentScene == Scenes::Scene::TRANSITION_LEVEL) {
             auto msg = _networkClient.Incoming().pop_front().msg;
             HandleTransitionLevelMessage(msg, componentManager, textureManager);
         }
