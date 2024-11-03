@@ -57,6 +57,30 @@ class IScenes {
     virtual bool shouldQuit() = 0;
 
     /**
+     * @brief Make the transition between levels
+     *
+     */
+    virtual void TransitionLevel() = 0;
+
+        /**
+     * @brief Sets the player ready status.
+     *
+     * This function sets the player ready status to the specified value.
+     *
+     * @param ready A boolean value indicating whether the player is ready.
+     */
+    virtual void SetPlayerReady(bool ready) = 0;
+
+    /**
+     * @brief Retrieves the player ready status.
+     *
+     * This function returns the player ready status.
+     *
+     * @return bool true if the player is ready, false otherwise.
+     */
+    virtual bool GetPlayerReady() = 0;
+
+    /**
      * @brief Gets the render window.
      * @return Pointer to the sf::RenderWindow.
      */

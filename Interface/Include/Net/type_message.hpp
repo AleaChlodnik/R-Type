@@ -116,7 +116,12 @@ enum class TypeMessage : uint32_t
      * @brief Server message.
      *
      */
-    PlayerReady,
+    IsPlayerReady,
+    /**
+     * @brief Server message.
+     *
+     */
+    GameTransition,
 
     /**
      * @brief Client message.
@@ -199,7 +204,17 @@ enum class TypeMessage : uint32_t
      * @brief Client message
      *
      */
-    BackgroundInformationResponse
+    BackgroundInformationResponse,
+    /**
+     * @brief Client message
+     *
+     */
+    PlayerReady,
+    /**
+     * @brief Client message
+     *
+     */
+    GameTransitionResponse
 };
 
 enum class PlayerMovement : uint32_t

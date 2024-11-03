@@ -37,6 +37,8 @@ bool r_type::net::Server::OnClientConnect(
     client->SetStatus(ServerStatus::INITIALISATION);
     client->_lastMsg = msg;
     client->_initEntities = _entityManager.getAllEntities();
+    if (_nbrOfPlayers == 0)
+        _watingPlayersReady = true;
     return true;
 }
 
@@ -90,15 +92,11 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         switch (msg.header.id) {
         case TypeMessage::ServerPing: {
             std::cout << "[" << client->GetID() << "]: Server Ping" << std::endl;
-
-            // Simply bounce message back to client
             client->Send(msg);
         } break;
 
         case TypeMessage::MessageAll: {
             std::cout << "[" << client->GetID() << "]: Message All" << std::endl;
-
-            // Construct a new message and send it to all clients
             r_type::net::Message<TypeMessage> msg;
             msg.header.id = TypeMessage::ServerMessage;
             msg << client->GetID();
@@ -154,19 +152,19 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
     } break;
     case ServerStatus::WAITING: {
         switch (msg.header.id) {
-        case TypeMessage::CreateEntityResponse: {
-            std::cout << "[" << client->GetID() << "]: Entity Created" << std::endl;
-        } break;
         case TypeMessage::DestroyEntityResponse: {
             std::cout << "[" << client->GetID() << "]: Entity Destroyed" << std::endl;
-            client->SetStatus(ServerStatus::RUNNING);
+            if (_endOfLevel && _boosKill)
+                client->SetStatus(ServerStatus::INITIALISATION);
+            else
+                client->SetStatus(ServerStatus::RUNNING);
         }
         default: {
             if (client->_lastMsg.size() > 0)
                 client->Send(client->_lastMsg);
         } break;
         }
-    }
+    } break;
     case ServerStatus::INITIALISATION: {
         switch (msg.header.id) {
         case TypeMessage::GameEntityInformation: {
@@ -191,34 +189,19 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             response.header.id = TypeMessage::PlayerInformation;
             response << InitiatePlayer(client->GetID());
             MessageClient(client, response);
-            client->_lastMsg = response;
+            std::cout << "[" << client->GetID() << "]: Sending Player Information" << std::endl;
             response.header.id = TypeMessage::CreateEntityMessage;
             MessageAllClients(response, client);
+            response.header.id = TypeMessage::PlayerInformation;
+            client->_lastMsg = response;
         } break;
         case TypeMessage::GameBarInformationResponse: {
             std::cout << "[" << client->GetID() << "]: Game Bar Information Received" << std::endl;
             r_type::net::Message<TypeMessage> response;
-            response.header.id = TypeMessage::BackgroundInformation;
+            response.header.id = TypeMessage::CreateEntityMessage;
             response << _level.GetEntityBackGround(this, _entityManager, _componentManager);
             MessageClient(client, response);
             client->_lastMsg = response;
-        } break;
-        case TypeMessage::BackgroundInformationResponse: {
-            std::cout << "[" << client->GetID() << "]: Background Information Received"
-                      << std::endl;
-            if (!client->_initEntities.empty()) {
-                std::cout << "[" << client->GetID() << "]: Sending Entity Information"
-                          << std::endl;
-                r_type::net::Message<TypeMessage> response;
-                response.header.id = TypeMessage::CreateEntityMessage;
-                response << FormatEntityInformation(client->_initEntities.front().getId());
-                client->_lastMsg = response;
-                client->Send(response);
-                client->_initEntities.erase(client->_initEntities.begin());
-            } else {
-                std::cout << "[" << client->GetID() << "]: Finished Initialization" << std::endl;
-                client->SetStatus(ServerStatus::RUNNING);
-            }
         } break;
         case TypeMessage::PlayerInformationResponse: {
             std::cout << "[" << client->GetID() << "]: Player Information Received" << std::endl;
@@ -230,6 +213,9 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             client->_lastMsg = response;
         } break;
         case TypeMessage::CreateEntityResponse: {
+            if (client->_lastMsg.size() > 0 &&
+                client->_lastMsg.header.id != TypeMessage::CreateEntityMessage)
+                return;
             std::cout << "[" << client->GetID() << "]: Entity Created" << std::endl;
             if (!client->_initEntities.empty()) {
                 std::cout << "[" << client->GetID() << "]: Sending Entity Information"
@@ -247,10 +233,35 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         } break;
         default: {
             if (client->_lastMsg.size() > 0 &&
-                client->_lastMsg.header.id != TypeMessage::ServerAccept)
+                client->_lastMsg.header.id != TypeMessage::ServerAccept) {
                 client->Send(client->_lastMsg);
+                std::cout << "[" << client->GetID() << "]: Sending Last Message" << std::endl;
+            }
         } break;
         }
-    }
+    } break;
+    case ServerStatus::TRANSITION: {
+        switch (msg.header.id) {
+        case TypeMessage::GameTransitionResponse: {
+            std::cout << "[" << client->GetID() << "]: Game Transition Response Received"
+                      << std::endl;
+            r_type::net::Message<TypeMessage> response;
+            response.header.id = TypeMessage::IsPlayerReady;
+            MessageClient(client, response);
+            client->_lastMsg = response;
+        } break;
+        case TypeMessage::PlayerReady: {
+            std::cout << "[" << client->GetID() << "]: Player Ready Response Received"
+                      << std::endl;
+            _level.ChangeBackground(this, _entityManager, _componentManager);
+            _playerReady++;
+        }
+        }
+        break;
+    default: {
+        if (client->_lastMsg.size() > 0)
+            client->Send(client->_lastMsg);
+    } break;
+    } break;
     }
 }

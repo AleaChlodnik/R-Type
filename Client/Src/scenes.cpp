@@ -501,6 +501,58 @@ void Scenes::settingsMenu()
     }
 }
 
+void Scenes::TransitionLevel()
+{
+    EntityManager entityManager;
+    ComponentManager componentManager;
+    TextureManager textureManager;
+    FontManager fontManager;
+    EntityFactory entityFactory;
+    sf::Event event;
+    auto audioManager = std::make_shared<AudioManager>();
+
+    std::shared_ptr<AudioSystem> audioSystem = std::make_shared<AudioSystem>(audioManager);
+    std::shared_ptr<UpdateSystem> updateSystem =
+        std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
+    std::shared_ptr<RenderSystem> renderSystem =
+        std::make_shared<RenderSystem>(_window, componentManager);
+
+    buttons = {};
+
+    // Create background
+    std::shared_ptr<Entity> background = std::make_shared<Entity>(
+        entityFactory.createBackgroundMenu(entityManager, componentManager, textureManager));
+
+    // Create filter
+    this->filter = std::make_shared<Entity>(
+        entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
+
+    // Create the buttons
+    std::function<IScenes *(AScenes *)> ReadyButton = [](AScenes *currentScene) {
+        currentScene->SetPlayerReady(true);
+        return currentScene;
+    };
+
+    std::shared_ptr<Entity> readyButton =
+        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
+            textureManager, fontManager, "Key Binds", &ReadyButton, 960, 400));
+
+    buttons.push_back(readyButton);
+
+    while (_window.isOpen() && this->_currentScene == Scenes::Scene::TRANSITION_LEVEL) {
+
+        handleEvents(event, componentManager, &_window, buttons, this);
+
+        updateSystem->updateSpritePositions(componentManager, entityManager);
+        renderSystem->render(componentManager);
+
+        while (!_networkClient.Incoming().empty()) {
+            auto msg = _networkClient.Incoming().pop_front().msg;
+            HandleMessage(msg, componentManager, textureManager, fontManager, audioSystem);
+        }
+    }
+}
+
 void Scenes::difficultyChoices()
 {
     EntityManager entityManager;
@@ -765,21 +817,13 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         std::cout << "Hello from [" << clientID << "]" << std::endl;
     } break;
     case TypeMessage::PlayerInformation: {
+        std::cout <<  "PlayerInformation" << std::endl;
         EntityInformation entity;
         r_type::net::Message<TypeMessage> response;
         response.header.id = TypeMessage::PlayerInformationResponse;
         _networkClient.Send(response);
         msg >> entity;
         _networkClient.setPlayerId(entity.uniqueID);
-        _networkClient.addEntity(entity, componentManager, textureManager, ogWindowSize);
-    } break;
-    case TypeMessage::BackgroundInformation: {
-        std::cout << "BackgroundInformation" << std::endl;
-        EntityInformation entity;
-        r_type::net::Message<TypeMessage> response;
-        response.header.id = TypeMessage::BackgroundInformationResponse;
-        msg >> entity;
-        _networkClient.Send(response);
         _networkClient.addEntity(entity, componentManager, textureManager, ogWindowSize);
     } break;
     case TypeMessage::ServerDeny: {
@@ -791,15 +835,10 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     } break;
     case TypeMessage::GameBarInformation: {
         UIEntityInformation entity;
+        std::cout << "GameBarInformation" << std::endl;
         r_type::net::Message<TypeMessage> response;
         response.header.id = TypeMessage::GameBarInformationResponse;
         msg >> entity;
-        std::cout << "GameBarInformation" << std::endl;
-        std::cout << "Entity ID: " << entity.uniqueID << std::endl;
-        std::cout << "Info: " << entity.lives << ", " << entity.score << std::endl;
-        std::cout << "SpriteData: " << entity.spriteData.spritePath << ", "
-                  << entity.spriteData.scale.x << ", " << entity.spriteData.scale.y << ", "
-                  << std::endl;
         sf::Vector2u windowSize = _networkClient.initInfoBar(
             entity, componentManager, textureManager, fontManager, ogWindowSize);
         _networkClient.setWindowSize(windowSize);
@@ -814,6 +853,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         _networkClient.updateInfoBar(entity, componentManager);
     } break;
     case TypeMessage::CreateEntityMessage: {
+        std::cout << "CreateEntityMessage" << std::endl;
         EntityInformation entity;
         r_type::net::Message<TypeMessage> response;
         response.header.id = TypeMessage::CreateEntityResponse;
@@ -851,6 +891,10 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     case TypeMessage::DestroyEntityResponse: {
     } break;
     case TypeMessage::FinishInitialization: {
+        if (_currentScene == Scenes::Scene::TRANSITION_LEVEL) {
+            _currentScene = Scenes::Scene::GAME_LOOP;
+            SetPlayerReady(false);
+        }
     } break;
     case TypeMessage::AnimateEntityMessage: {
         r_type::net::Message<TypeMessage> response;
@@ -869,7 +913,21 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     } break;
     case TypeMessage::GameEntityInformation: {
     } break;
-    case TypeMessage::BackgroundInformationResponse: {
+    case TypeMessage::GameTransition: {
+        _currentScene = Scenes::Scene::TRANSITION_LEVEL;
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::GameTransitionResponse;
+        _networkClient.Send(response);
+        TransitionLevel();
+    } break;
+    case TypeMessage::GameTransitionResponse: {
+    } break;
+    case TypeMessage::IsPlayerReady: {
+        if (GetPlayerReady()) {
+            r_type::net::Message<TypeMessage> response;
+            response.header.id = TypeMessage::PlayerReady;
+            _networkClient.Send(response);
+        }
     } break;
     }
 }

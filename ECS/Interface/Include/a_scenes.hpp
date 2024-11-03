@@ -51,6 +51,7 @@ class AScenes : virtual public IScenes {
         SETTINGS_MENU,
         IN_GAME_MENU,
         CHOOSE_DIFFICULTY,
+        TRANSITION_LEVEL,
         EXIT
     };
 
@@ -315,6 +316,24 @@ class AScenes : virtual public IScenes {
      */
     int getPort() const;
 
+    /**
+     * @brief Sets the player ready status.
+     *
+     * This function sets the player ready status to the specified value.
+     *
+     * @param ready A boolean value indicating whether the player is ready.
+     */
+    void SetPlayerReady(bool ready) { _playerReady = ready; }
+
+    /**
+     * @brief Retrieves the player ready status.
+     *
+     * This function returns the player ready status.
+     *
+     * @return bool true if the player is ready, false otherwise.
+     */
+    bool GetPlayerReady() { return _playerReady; }
+
   protected:
     /**
      * @brief Represents the current game mode.
@@ -323,6 +342,8 @@ class AScenes : virtual public IScenes {
      * It is initialized to GameMode::MEDIUM by default.
      */
     GameParameters _currentGameMode;
+
+    bool _playerReady = false;
     /**
      * @brief Enum representing different modes of Daltonism (color blindness).
      *

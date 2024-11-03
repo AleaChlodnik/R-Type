@@ -55,6 +55,8 @@ template <typename T> class Level : virtual public ILevel<T> {
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock,
         bool *bUpdateEntities) override
     {
+        if (server->_watingPlayersReady)
+            return;
         while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - server->GetClock())
                    .count() > 100) {
             *bUpdateEntities = true;

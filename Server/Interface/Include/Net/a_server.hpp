@@ -191,6 +191,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     {
         if (client && client->IsConnected()) {
             client->Send(msg);
+            if (msg.header.id == TypeMessage::DestroyEntityMessage) {
+                client->_lastMsg = msg;
+                client->SetStatus(ServerStatus::WAITING);
+            }
         } else {
             OnClientDisconnect(client);
 
@@ -299,27 +303,55 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             _clock = std::chrono::system_clock::now();
         }
 
-        if (_endOfLevel) {
-            switch (_level.GetLevel()) {
-            case GameState::LevelOne: {
-                _level.ChangeLevel(GameState::LevelTwo);
-                client.SetStatus(ServerStatus::TRANSITION);
-            } break;
-            case GameState::LevelTwo: {
-                _level.ChangeLevel(GameState::LevelThree);
-                client.SetStatus(ServerStatus::TRANSITION);
-            } break;
-            case GameState::LevelThree: {
-                _level.ChangeLevel(GameState::LevelOne);
-                client.SetStatus(ServerStatus::TRANSITION);
-            } break;
-
-            default:
-                break;
+        auto setToAllClients = [this](ServerStatus type) {
+            for (auto &client : _deqConnections) {
+                if (client && client->IsConnected()) {
+                    client->SetStatus(type);
+                }
             }
-            _clock = std::chrono::system_clock::now();
-        }
+        };
 
+        if (_endOfLevel && _boosKill) {
+            if (!_watingPlayersReady) {
+                switch (_level.GetLevel()) {
+                case GameState::LevelOne: {
+                    _level.ChangeLevel(GameState::LevelTwo);
+                    setToAllClients(ServerStatus::TRANSITION);
+                    r_type::net::Message<T> msg;
+                    msg.header.id = TypeMessage::GameTransition;
+                    MessageAllClients(msg);
+                } break;
+                case GameState::LevelTwo: {
+                    _level.ChangeLevel(GameState::LevelThree);
+                    setToAllClients(ServerStatus::TRANSITION);
+                    r_type::net::Message<T> msg;
+                    msg.header.id = TypeMessage::GameTransition;
+                    MessageAllClients(msg);
+                } break;
+                case GameState::LevelThree: {
+                    _level.ChangeLevel(GameState::LevelOne);
+                    setToAllClients(ServerStatus::TRANSITION);
+                    r_type::net::Message<T> msg;
+                    msg.header.id = TypeMessage::GameTransition;
+                    MessageAllClients(msg);
+                } break;
+
+                default:
+                    break;
+                }
+                _watingPlayersReady = true;
+            }
+            if (_playerReady == _nbrOfPlayers) {
+                _endOfLevel = false;
+                _boosKill = false;
+                _clock = std::chrono::system_clock::now();
+                r_type::net::Message<T> msg;
+                msg.header.id = TypeMessage::FinishInitialization;
+                MessageAllClients(msg);
+                setToAllClients(ServerStatus::RUNNING);
+                _watingPlayersReady = false;
+            }
+        }
         _level.SetSystem(_componentManager, _entityManager);
 
         bool bUpdateEntities = false;
@@ -366,6 +398,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         vf2d newPos = {pos.value()->x, pos.value()->y};
         switch (direction) {
         case PlayerMovement::UP: {
+            // _endOfLevel = true;
+            // _boosKill = true;
             newPos.y -= 2;
         } break;
         case PlayerMovement::DOWN: {
@@ -602,12 +636,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         UIEntityInformation entityInfo;
         Entity infoBar = _entityFactory.createInfoBar(_entityManager, _componentManager);
         entityInfo.uniqueID = infoBar.getId();
-        std::cout << "GameBarInformation" << std::endl;
-        std::cout << "Entity ID: " << entityInfo.uniqueID << std::endl;
-        std::cout << "Info: " << entityInfo.lives << ", " << entityInfo.score << std::endl;
-        std::cout << "SpriteData: " << entityInfo.spriteData.spritePath << ", "
-                  << entityInfo.spriteData.scale.x << ", " << entityInfo.spriteData.scale.y << ", "
-                  << std::endl;
         auto spriteData = _componentManager.getComponent<SpriteDataComponent>(entityInfo.uniqueID);
         auto textData = _componentManager.getComponent<TextDataComponent>(entityInfo.uniqueID);
         auto health = _componentManager.getComponent<HealthComponent>(GetClientPlayerId(clientId));
@@ -1022,6 +1050,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
     bool _endOfLevel = false;
     bool _bossActive = false;
+    bool _boosKill = false;
+    int _playerReady = 0;
+    bool _watingPlayersReady = false;
 
     /**
      * @brief A container that maps client IDs to player IDs.
