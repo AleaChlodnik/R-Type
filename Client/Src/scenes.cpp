@@ -509,6 +509,36 @@ void Scenes::difficultyChoices()
     FontManager fontManager;
     EntityFactory entityFactory;
 
+    GameParameters EASY = {
+        3,
+        2,
+        1,
+        3,
+        1,
+        4,
+        GameState::LevelOne,
+    };
+
+    GameParameters MEDIUM = {
+        5,
+        2,
+        2,
+        2,
+        4,
+        3,
+        GameState::LevelOne,
+    };
+
+    GameParameters HARD = {
+        6,
+        1,
+        3,
+        1,
+        4,
+        2,
+        GameState::LevelOne,
+    };
+
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
@@ -527,24 +557,27 @@ void Scenes::difficultyChoices()
     this->filter = std::make_shared<Entity>(
         entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
 
-    std::function<IScenes *(AScenes *)> easyButtonClicked = [](AScenes *currentScene) {
-        currentScene->setGameMode(Scenes::GameMode::EASY);
+    std::function<IScenes *(AScenes *)> easyButtonClicked = [EASY](AScenes *currentScene) {
+        currentScene->setGameMode(EASY);
+        currentScene->setScene(Scenes::Scene::GAME_LOOP);
         return currentScene;
     };
     std::shared_ptr<Entity> easyButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, fontManager, "Easy", &easyButtonClicked, 1460, 250));
 
-    std::function<IScenes *(AScenes *)> mediumButtonClicked = [](AScenes *currentScene) {
-        currentScene->setGameMode(Scenes::GameMode::MEDIUM);
+    std::function<IScenes *(AScenes *)> mediumButtonClicked = [MEDIUM](AScenes *currentScene) {
+        currentScene->setGameMode(MEDIUM);
+        currentScene->setScene(Scenes::Scene::GAME_LOOP);
         return currentScene;
     };
     std::shared_ptr<Entity> mediumButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, fontManager, "Medium", &mediumButtonClicked, 1460, 400));
 
-    std::function<IScenes *(AScenes *)> hardButtonClicked = [](AScenes *currentScene) {
-        currentScene->setGameMode(Scenes::GameMode::HARD);
+    std::function<IScenes *(AScenes *)> hardButtonClicked = [HARD](AScenes *currentScene) {
+        currentScene->setGameMode(HARD);
+        currentScene->setScene(Scenes::Scene::GAME_LOOP);
         return currentScene;
     };
     std::shared_ptr<Entity> hardButton =
@@ -554,6 +587,17 @@ void Scenes::difficultyChoices()
     buttons.push_back(easyButton);
     buttons.push_back(mediumButton);
     buttons.push_back(hardButton);
+
+    sf::Clock clock;
+    sf::Event event;
+
+    while (_window.isOpen() && this->_currentScene == Scenes::Scene::CHOOSE_DIFFICULTY) {
+
+        handleEvents(event, componentManager, &_window, buttons, this);
+
+        updateSystem->updateSpritePositions(componentManager, entityManager);
+        renderSystem->render(componentManager);
+    }
 }
 
 /**
@@ -696,15 +740,13 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         msg >> nbPlayers;
         r_type::net::Message<TypeMessage> response;
         if (nbPlayers == 0) {
-            GameParameters gameParameters;
-            gameParameters.levelType = GameState::LevelOne;
-            gameParameters.nbrOfBasicMonster = 5;
-            gameParameters.spawnTimeBasicMonster = 2;
-            gameParameters.nbrOfShooterEnemy = 1;
-            gameParameters.spawnTimeShooterEnemy = 2;
+            _currentScene = Scenes::Scene::CHOOSE_DIFFICULTY;
+            difficultyChoices();
+            GameParameters gameParameters = getGameMode();
             response.header.id = TypeMessage::GameParametersInformation;
             response << gameParameters;
             _networkClient.Send(response);
+            std::cout << "GameParameters sent" << std::endl;
         } else {
             response.header.id = TypeMessage::GameEntityInformation;
             _networkClient.Send(response);

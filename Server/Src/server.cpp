@@ -162,7 +162,8 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             client->SetStatus(ServerStatus::RUNNING);
         }
         default: {
-            client->Send(client->_lastMsg);
+            if (client->_lastMsg.size() > 0)
+                client->Send(client->_lastMsg);
         } break;
         }
     }
@@ -184,6 +185,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
                       << std::endl;
             GameParameters gameParameters;
             msg >> gameParameters;
+            std::cout << "Game Parameters: " << gameParameters.nbrOfBasicMonster << std::endl;
             _level.SetGameParameters(gameParameters);
             r_type::net::Message<TypeMessage> response;
             response.header.id = TypeMessage::PlayerInformation;
@@ -244,7 +246,9 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             }
         } break;
         default: {
-            client->Send(client->_lastMsg);
+            if (client->_lastMsg.size() > 0 &&
+                client->_lastMsg.header.id != TypeMessage::ServerAccept)
+                client->Send(client->_lastMsg);
         } break;
         }
     }

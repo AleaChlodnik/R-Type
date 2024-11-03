@@ -41,7 +41,7 @@ void AScenes::setDaltonism(DaltonismMode const mode) { _currentDaltonismMode = m
  *
  * @param mode
  */
-void AScenes::setGameMode(GameMode const mode) { _currentGameMode = mode; }
+void AScenes::setGameMode(GameParameters const mode) { _currentGameMode = mode; }
 
 void AScenes::setDisplayDaltonismChoice(bool const displayDaltonismChoice)
 {
