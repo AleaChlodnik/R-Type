@@ -387,6 +387,27 @@ template <typename T> class Level : virtual public ILevel<T> {
                         updScoreMsg);
                 }
             }
+            if (boss2) {
+                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
+                    entitiesToRemove.end()) {
+                    entitiesToRemove.push_back(entityId1);
+                }
+                if (auto bossHealth = componentManager.getComponent<HealthComponent>(entityId2)) {
+                    bossHealth.value()->lives -= 2;
+                    if (bossHealth.value()->lives <= 0) {
+                        if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                entityId2) == entitiesToRemove.end()) {
+                            entitiesToRemove.push_back(entityId2);
+                        }
+                    }
+                }
+            }
+            if (tail2) {
+                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
+                    entitiesToRemove.end()) {
+                    entitiesToRemove.push_back(entityId1);
+                }
+            }
             return true;
         } else if (forceWeapon1) {
             if (enemyMissile2) {

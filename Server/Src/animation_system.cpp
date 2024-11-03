@@ -277,8 +277,8 @@ void AnimationSystem::AnimationEntities(ComponentManager &componentManager,
             if (auto background =
                     componentManager.getComponent<BackgroundComponent>(entity.getId())) {
                 if (animation.value()->offset.x < 2770) {
-                    animation.value()->offset.x += 2;
-                    // animation.value()->offset.x += 20; ///////////////////////
+                    // animation.value()->offset.x += 2;
+                    animation.value()->offset.x += 20; ///////////////////////
                 } else {
                     if (endOfLevel == false)
                         endOfLevel = true;
