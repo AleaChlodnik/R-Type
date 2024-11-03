@@ -175,7 +175,7 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         float xPos = windowSize.x / 2;
         sf::Font &font = fontManager.getFont(FontFactory(FontPath::MAIN));
         const std::string winText = "You Win!";
-        TextComponent textComponent(font, winText, xPos, 40, 40);
+        TextComponent textComponent(font, winText, xPos, yPos, 60);
         componentManager.addComponent<TextComponent>(3, textComponent);
 
         std::vector<std::string> scores;
@@ -192,7 +192,7 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         int id = 4;
         for (const auto &score : scores) {
             yPos += 30.0f;
-            TextComponent textComponent(font, score, xPos, yPos, 30);
+            TextComponent textComponent(font, score, xPos, yPos, 40);
             componentManager.addComponent<TextComponent>(id, textComponent);
             id++;
         }
