@@ -45,6 +45,27 @@ void MoveSystem::moveEntity(ComponentManager &componentManager, int entityId)
             position.value()->x += velocity.value()->x;
             position.value()->y += velocity.value()->y;
         } break;
+        case MovementType::SWEEPING: {
+            float oscillationAmplitude = 2.8f;
+            float oscillationSpeed = 0.1f;
+            float segmentDistance = 2.4f;
+
+            auto prevSegmentId = entityId - 1;
+            if (auto prevPosition =
+                    componentManager.getComponent<PositionComponent>(prevSegmentId)) {
+                position.value()->y = prevPosition.value()->y - segmentDistance;
+            }
+
+            position.value()->y -=
+                (sin(movement.value()->index * oscillationSpeed) * oscillationAmplitude);
+
+            position.value()->x -= velocity.value()->x;
+
+            movement.value()->index += 1;
+        } break;
+        case MovementType::NONE: {
+            break;
+        } break;
         }
     }
 }

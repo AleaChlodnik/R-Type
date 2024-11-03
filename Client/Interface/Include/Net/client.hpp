@@ -92,7 +92,7 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
                 }
             }
             sf::Vector2u newWindowSize = {
-                windowSize.x, static_cast<unsigned int>(windowHeight - desiredHeight - 1)};
+                windowSize.x, static_cast<unsigned int>(windowHeight - desiredHeight)};
             return newWindowSize;
         }
         return windowSize;

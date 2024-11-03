@@ -80,10 +80,10 @@ template <typename T> class Level : virtual public ILevel<T> {
                     break;
                 }
             } else {
-                // if (server->_bossActive == false) {
-                //     SpawnEntity(server, entityManager, componentManager, 0,
-                //         EntityFactory::EnemyType::Boss);
-                // }
+                if (server->_bossActive == false) {
+                    SpawnEntity(server, entityManager, componentManager, 0,
+                        EntityFactory::EnemyType::Boss);
+                }
             }
             server->SetClock(server->GetClock() + std::chrono::milliseconds(500));
         }
@@ -198,6 +198,8 @@ template <typename T> class Level : virtual public ILevel<T> {
         auto enemy1 = componentManager.getComponent<EnemyComponent>(entityId1);
         auto forceWeapon1 = componentManager.getComponent<ForceWeaponComponent>(entityId1);
         auto forceMissile1 = componentManager.getComponent<ForceMissileComponent>(entityId1);
+        auto boss1 = componentManager.getComponent<BossComponent>(entityId1);
+        auto tail1 = componentManager.getComponent<TailComponent>(entityId1);
 
         // component of entity 2
         auto enemyMissile2 = componentManager.getComponent<EnemyMissileComponent>(entityId2);
@@ -208,6 +210,8 @@ template <typename T> class Level : virtual public ILevel<T> {
         auto enemy2 = componentManager.getComponent<EnemyComponent>(entityId2);
         auto forceWeapon2 = componentManager.getComponent<ForceWeaponComponent>(entityId2);
         auto forceMissile2 = componentManager.getComponent<ForceMissileComponent>(entityId2);
+        auto boss2 = componentManager.getComponent<BossComponent>(entityId2);
+        auto tail2 = componentManager.getComponent<TailComponent>(entityId2);
 
         // Handle collision
         if (player1) {
@@ -218,6 +222,22 @@ template <typename T> class Level : virtual public ILevel<T> {
                         entitiesToRemove.push_back(entityId2);
                         playerHealth1.value()->lives -= 1;
                     }
+                }
+                if (boss2) {
+                    playerHealth1.value()->lives -= 1;
+                    if (auto bossHealth =
+                            componentManager.getComponent<HealthComponent>(entityId2)) {
+                        bossHealth.value()->lives -= 1;
+                        if (bossHealth.value()->lives <= 0) {
+                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                    entityId2) == entitiesToRemove.end()) {
+                                entitiesToRemove.push_back(entityId2);
+                            }
+                        }
+                    }
+                }
+                if (tail2) {
+                    playerHealth1.value()->lives -= 1;
                 }
                 r_type::net::Message<TypeMessage> updLivesMsg;
                 updLivesMsg.header.id = TypeMessage::UpdateInfoBar;
@@ -307,6 +327,27 @@ template <typename T> class Level : virtual public ILevel<T> {
                                           server->GetPlayerClientId(playerId)),
                     updScoreMsg);
             }
+            if (boss2) {
+                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
+                    entitiesToRemove.end()) {
+                    entitiesToRemove.push_back(entityId1);
+                }
+                if (auto bossHealth = componentManager.getComponent<HealthComponent>(entityId2)) {
+                    bossHealth.value()->lives -= 1;
+                    if (bossHealth.value()->lives <= 0) {
+                        if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                entityId2) == entitiesToRemove.end()) {
+                            entitiesToRemove.push_back(entityId2);
+                        }
+                    }
+                }
+            }
+            if (tail2) {
+                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
+                    entitiesToRemove.end()) {
+                    entitiesToRemove.push_back(entityId1);
+                }
+            }
             return true;
         } else if (forceMissile1) {
             if (enemy2 || enemyMissile2) {
@@ -344,6 +385,27 @@ template <typename T> class Level : virtual public ILevel<T> {
                     server->MessageClient(server->getClientById(server->_deqConnections,
                                               server->GetPlayerClientId(playerId)),
                         updScoreMsg);
+                }
+            }
+            if (boss2) {
+                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
+                    entitiesToRemove.end()) {
+                    entitiesToRemove.push_back(entityId1);
+                }
+                if (auto bossHealth = componentManager.getComponent<HealthComponent>(entityId2)) {
+                    bossHealth.value()->lives -= 2;
+                    if (bossHealth.value()->lives <= 0) {
+                        if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                entityId2) == entitiesToRemove.end()) {
+                            entitiesToRemove.push_back(entityId2);
+                        }
+                    }
+                }
+            }
+            if (tail2) {
+                if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
+                    entitiesToRemove.end()) {
+                    entitiesToRemove.push_back(entityId1);
                 }
             }
             return true;
@@ -410,6 +472,9 @@ template <typename T> class Level : virtual public ILevel<T> {
             server->MessageAllClients(msg);
             if (auto playerComponent = componentManager.getComponent<PlayerComponent>(entityId)) {
                 continue;
+            }
+            if (auto bossComponent = componentManager.getComponent<BossComponent>(entityId)) {
+                server->RemoveBossTail(entityId);
             }
             componentManager.removeEntityFromAllComponents(entityId);
             entityManager.removeEntity(entityId);
@@ -590,6 +655,7 @@ template <typename T> class Level : virtual public ILevel<T> {
     void LevelTwo(r_type::net::AServer<T> *server, ComponentManager &componentManager,
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
     {
+        server->_bossActive = false;
         if (std::chrono::duration_cast<std::chrono::seconds>(
                 server->GetClock() - _basicMonsterSpawnTime)
                 .count() > _gameParameters.spawnTimeBasicMonster) {
@@ -628,6 +694,7 @@ template <typename T> class Level : virtual public ILevel<T> {
     void LevelThree(r_type::net::AServer<T> *server, ComponentManager &componentManager,
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
     {
+        server->_bossActive = false;
         if (std::chrono::duration_cast<std::chrono::seconds>(
                 server->GetClock() - _basicMonsterSpawnTime)
                 .count() > _gameParameters.spawnTimeBasicMonster) {

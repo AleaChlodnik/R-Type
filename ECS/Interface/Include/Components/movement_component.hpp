@@ -28,7 +28,9 @@ enum class MovementType
     WIGGLE,
     DIAGONAL,
     CIRCLE,
-    STRAIGHT
+    STRAIGHT,
+    SWEEPING,
+    NONE
 };
 
 /**
