@@ -158,7 +158,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             std::cout << "[" << client->GetID() << "]: Entity Created" << std::endl;
         } break;
         case TypeMessage::DestroyEntityResponse: {
-            std::cout << "[" << client->GetID() << "]: Entity Destroyed" << std::endl;
+            // std::cout << "[" << client->GetID() << "]: Entity Destroyed" << std::endl;
             client->SetStatus(ServerStatus::RUNNING);
         }
         default: {

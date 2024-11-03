@@ -330,7 +330,7 @@ Entity EntityFactory::createShooterEnemy(
     PositionComponent startPosition(posX, posY);
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    ShootComponent shoot{std::chrono::milliseconds(2000)};
+    ShootComponent shoot{std::chrono::milliseconds(3000)};
 
     componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
     componentManager.addComponent<VelocityComponent>(enemy.getId(), velocity);
@@ -635,21 +635,32 @@ Entity EntityFactory::createFilter(
 Entity EntityFactory::createBoss(
     EntityManager &entityManager, ComponentManager &componentManager, EntityFactory &entityFactory)
 {
-    int tailLength = 5;
+    int tailLength = 18;
     std::vector<int> tailIds;
     Entity boss = entityManager.createEntity();
 
     for (int i = 0; i < (tailLength - 1); i++) {
         Entity tailSegment = entityFactory.createTailSegment(entityManager, componentManager);
         tailIds.push_back(tailSegment.getId());
+        if (auto tailMovement =
+                componentManager.getComponent<MovementComponent>(tailSegment.getId())) {
+            tailMovement.value()->index = i;
+            if (i == 0) {
+                tailMovement.value()->movementType = MovementType::NONE;
+            }
+        }
     }
     Entity tailEnd = entityFactory.createTailEnd(entityManager, componentManager);
     tailIds.push_back(tailEnd.getId());
+    if (auto tailMovement =
+            componentManager.getComponent<MovementComponent>(tailEnd.getId())) {
+        tailMovement.value()->index = tailLength - 1;
+    }
 
     BossComponent bossComponent{tailIds};
-    PositionComponent position(90, 60);
-    AnimationComponent animationComponent({24, 0}, {161.25, 208});
-    SpriteDataComponent spriteData{SpritePath::Boss, {6.0f, 6.0f}, AScenes::SpriteType::ENEMY};
+    PositionComponent position(80, 50);
+    AnimationComponent animationComponent({24, 216}, {161.25, 208});
+    SpriteDataComponent spriteData{SpritePath::Boss, {5.0f, 5.0f}, AScenes::SpriteType::ENEMY};
     HealthComponent health{10};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
@@ -673,16 +684,18 @@ Entity EntityFactory::createTailSegment(
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{0.0f, 0.0f};
     AnimationComponent animationComponent({544, 2000}, {16, 15});
-    SpriteDataComponent spriteData{SpritePath::Boss, {1.0f, 1.0f}, AScenes::SpriteType::ENEMY};
+    SpriteDataComponent spriteData{SpritePath::Boss, {5.0f, 5.0f}, AScenes::SpriteType::ENEMY};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
+    MovementComponent movement{MovementType::SWEEPING, 0, true};
 
     componentManager.addComponent<TailComponent>(tailSegment.getId(), tailComponent);
     componentManager.addComponent<PositionComponent>(tailSegment.getId(), startPosition);
     componentManager.addComponent<VelocityComponent>(tailSegment.getId(), velocity);
+    componentManager.addComponent<AnimationComponent>(tailSegment.getId(), animationComponent);
     componentManager.addComponent<SpriteDataComponent>(tailSegment.getId(), spriteData);
     componentManager.addComponent<HitboxComponent>(tailSegment.getId(), hitbox);
-    componentManager.addComponent<AnimationComponent>(tailSegment.getId(), animationComponent);
+    componentManager.addComponent<MovementComponent>(tailSegment.getId(), movement);
 
     return tailSegment;
 }
@@ -696,10 +709,11 @@ Entity EntityFactory::createTailEnd(
     PositionComponent startPosition(0, 0);
     VelocityComponent velocity{0.0f, 0.0f};
     AnimationComponent animationComponent({508, 2045}, {16, 16});
-    SpriteDataComponent spriteData{SpritePath::Boss, {1.0f, 1.0f}, AScenes::SpriteType::ENEMY};
+    SpriteDataComponent spriteData{SpritePath::Boss, {5.0f, 5.0f}, AScenes::SpriteType::ENEMY};
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    ShootComponent shoot{std::chrono::milliseconds(10000)};
+    ShootComponent shoot{std::chrono::milliseconds(2000)};
+    MovementComponent movement{MovementType::SWEEPING, 0, true};
 
     componentManager.addComponent<TailComponent>(tailEnd.getId(), tailComponent);
     componentManager.addComponent<PositionComponent>(tailEnd.getId(), startPosition);
@@ -708,6 +722,7 @@ Entity EntityFactory::createTailEnd(
     componentManager.addComponent<HitboxComponent>(tailEnd.getId(), hitbox);
     componentManager.addComponent<AnimationComponent>(tailEnd.getId(), animationComponent);
     componentManager.addComponent<ShootComponent>(tailEnd.getId(), shoot);
+    componentManager.addComponent<MovementComponent>(tailEnd.getId(), movement);
 
     return tailEnd;
 }

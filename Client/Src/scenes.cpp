@@ -670,8 +670,6 @@ void Scenes::gameLoop()
         }
     };
 
-    audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
-
     sf::Event event;
     while (_window.isOpen()) {
         while (_window.pollEvent(event)) {
@@ -774,6 +772,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         _networkClient.addEntity(entity, componentManager, textureManager, ogWindowSize);
     } break;
     case TypeMessage::BackgroundInformation: {
+        audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
         std::cout << "BackgroundInformation" << std::endl;
         EntityInformation entity;
         r_type::net::Message<TypeMessage> response;
@@ -794,12 +793,6 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         r_type::net::Message<TypeMessage> response;
         response.header.id = TypeMessage::GameBarInformationResponse;
         msg >> entity;
-        std::cout << "GameBarInformation" << std::endl;
-        std::cout << "Entity ID: " << entity.uniqueID << std::endl;
-        std::cout << "Info: " << entity.lives << ", " << entity.score << std::endl;
-        std::cout << "SpriteData: " << entity.spriteData.spritePath << ", "
-                  << entity.spriteData.scale.x << ", " << entity.spriteData.scale.y << ", "
-                  << std::endl;
         sf::Vector2u windowSize = _networkClient.initInfoBar(
             entity, componentManager, textureManager, fontManager, ogWindowSize);
         _networkClient.setWindowSize(windowSize);
