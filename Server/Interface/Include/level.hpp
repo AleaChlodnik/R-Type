@@ -431,7 +431,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                         }
                         playerScore.value()->score += 200;
                     }
-                    
+
                     if (tail2) {
                         if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
                                 entityId1) == entitiesToRemove.end()) {

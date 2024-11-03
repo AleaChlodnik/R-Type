@@ -1199,7 +1199,8 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         TransitionLevel();
     } break;
     case TypeMessage::EndOfGame: {
-        _networkClient.displayEndOfGame(componentManager, textureManager, fontManager, ogWindowSize);
+        _networkClient.displayEndOfGame(
+            componentManager, textureManager, fontManager, ogWindowSize);
     } break;
     }
 }
