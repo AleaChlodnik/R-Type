@@ -330,7 +330,7 @@ Entity EntityFactory::createShooterEnemy(
     PositionComponent startPosition(posX, posY);
     HitboxComponent hitbox{static_cast<int>(animationComponent.dimension.x),
         static_cast<int>(animationComponent.dimension.y)};
-    ShootComponent shoot{std::chrono::milliseconds(2000)};
+    ShootComponent shoot(std::chrono::milliseconds(2000));
 
     componentManager.addComponent<EnemyComponent>(enemy.getId(), enemyComponent);
     componentManager.addComponent<VelocityComponent>(enemy.getId(), velocity);
