@@ -512,7 +512,6 @@ void Scenes::settingsMenu()
 
 void Scenes::TransitionLevel()
 {
-    std::cout << "TransitionLevel" << std::endl;
     EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
@@ -553,9 +552,6 @@ void Scenes::TransitionLevel()
 
     buttons.push_back(readyButton);
     bool updated = false;
-
-    std::cout << "TransitionLevel " << _playerReady << std::endl;
-    std::cout << "false " << updated << std::endl;
 
     while (_window.isOpen() && this->_currentScene == Scenes::Scene::TRANSITION_LEVEL) {
         if (_playerReady && !updated) {
@@ -930,6 +926,9 @@ void Scenes::render()
     case Scenes::Scene::IN_GAME_MENU:
         this->inGameMenu();
         break;
+    case Scenes::Scene::TRANSITION_LEVEL:
+        this->TransitionLevel();
+        break;
     default:
         break;
     }
@@ -1056,7 +1055,6 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
             response.header.id = TypeMessage::GameParametersInformation;
             response << gameParameters;
             _networkClient.Send(response);
-            std::cout << "GameParameters sent" << std::endl;
         } else {
             response.header.id = TypeMessage::GameEntityInformation;
             _networkClient.Send(response);
@@ -1075,7 +1073,6 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         std::cout << "Hello from [" << clientID << "]" << std::endl;
     } break;
     case TypeMessage::PlayerInformation: {
-        std::cout << "PlayerInformation" << std::endl;
         EntityInformation entity;
         r_type::net::Message<TypeMessage> response;
         response.header.id = TypeMessage::PlayerInformationResponse;
@@ -1093,7 +1090,6 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     } break;
     case TypeMessage::GameBarInformation: {
         UIEntityInformation entity;
-        std::cout << "GameBarInformation" << std::endl;
         r_type::net::Message<TypeMessage> response;
         response.header.id = TypeMessage::GameBarInformationResponse;
         msg >> entity;
@@ -1111,7 +1107,6 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         _networkClient.updateInfoBar(entity, componentManager);
     } break;
     case TypeMessage::CreateEntityMessage: {
-        std::cout << "CreateEntityMessage" << std::endl;
         EntityInformation entity;
         r_type::net::Message<TypeMessage> response;
         response.header.id = TypeMessage::CreateEntityResponse;
@@ -1120,7 +1115,6 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         _networkClient.addEntity(entity, componentManager, textureManager, windowSize);
     } break;
     case TypeMessage::DestroyEntityMessage: {
-        std::cout << "DestroyEntityMessage" << std::endl;
         r_type::net::Message<TypeMessage> response;
         uint32_t id;
         msg >> id;
@@ -1173,17 +1167,27 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     case TypeMessage::GameEntityInformation: {
     } break;
     case TypeMessage::GameTransition: {
+        std::cout << "GameTransition" << std::endl;
         _currentScene = Scenes::Scene::TRANSITION_LEVEL;
         r_type::net::Message<TypeMessage> response;
         response.header.id = TypeMessage::GameTransitionResponse;
         _networkClient.Send(response);
-        TransitionLevel();
     } break;
     case TypeMessage::GameTransitionResponse: {
     } break;
     case TypeMessage::IsPlayerReady: {
-        std::cout << "IsPlayerReady" << std::endl;
-
+    } break;
+    case TypeMessage::UpdateBackground: {
+        std::cout << "UpdateBackground" << std::endl;
+        EntityInformation entity;
+        uint32_t id;
+        msg >> entity >> id;
+        _networkClient.removeEntity(id, componentManager);
+        _networkClient.addEntity(entity, componentManager, textureManager, windowSize);
+        r_type::net::Message<TypeMessage> response;
+        response.header.id = TypeMessage::UpdateBackgroundResponse;
+        _networkClient.Send(response);
+        std::cout << "UpdateBackgroundResponse" << std::endl;
     } break;
     }
 }

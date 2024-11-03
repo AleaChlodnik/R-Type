@@ -164,7 +164,16 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
                 client->SetStatus(ServerStatus::TRANSITION);
             else
                 client->SetStatus(ServerStatus::RUNNING);
-        }
+        } break;
+        case TypeMessage::UpdateBackgroundResponse: {
+            std::cout << "[" << client->GetID() << "]: Update Background" << std::endl;
+            if (client->GetLastStatus() == ServerStatus::INITIALISATION)
+                client->SetStatus(ServerStatus::INITIALISATION);
+            else if (client->GetLastStatus() == ServerStatus::TRANSITION)
+                client->SetStatus(ServerStatus::TRANSITION);
+            else
+                client->SetStatus(ServerStatus::RUNNING);
+        } break;
         default: {
             if (client->_lastMsg.size() > 0)
                 client->Send(client->_lastMsg);
