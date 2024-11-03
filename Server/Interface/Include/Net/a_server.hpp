@@ -296,6 +296,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             _entityManager.removeAllEntities();
             _componentManager.removeAllComponents();
             _playerConnected = false;
+            _bossActive = false;
+            _bossDefeated = false;
+            _endOfLevel = false;
             return;
         }
         if (_nbrOfPlayers > 0 && !_playerConnected) {

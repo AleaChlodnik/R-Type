@@ -754,6 +754,9 @@ void Scenes::difficultyChoicesCustomization()
         case GameState::LevelThree: {
             level = static_cast<std::string>("Level Three");
         } break;
+        case GameState::Win: {
+            level = static_cast<std::string>("Win");
+        } break;
         case GameState::Menu: {
             level = static_cast<std::string>("Menu");
         } break;
@@ -774,6 +777,8 @@ void Scenes::difficultyChoicesCustomization()
             gameParameters.levelType = GameState::LevelOne;
         } break;
         case GameState::Menu: {
+        } break;
+        case GameState::Win: {
         } break;
         }
         currentScene->setGameMode(gameParameters);
@@ -1201,6 +1206,12 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     case TypeMessage::EndOfGame: {
         _networkClient.displayEndOfGame(
             componentManager, textureManager, fontManager, ogWindowSize);
+    } break;
+    case TypeMessage::PlayerReady: {
+    } break;
+    case TypeMessage::GameTransitionModeResponse: {
+    } break;
+    case TypeMessage::IsPlayerReady: {
     } break;
     }
 }
