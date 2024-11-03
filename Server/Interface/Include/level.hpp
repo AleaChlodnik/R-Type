@@ -788,10 +788,13 @@ template <typename T> class Level : virtual public ILevel<T> {
                         std::any_cast<BackgroundComponent>(&backgroundComponent)) {
                     componentManager.removeEntityFromAllComponents(entityId);
                     entityManager.removeEntity(entityId);
-                    msg.header.id = TypeMessage::UpdateBackground;
-                    std::cout << "Background changed" << std::endl;
-                    EntityInformation entity = InitiateBackground(server, entityManager, componentManager);
-                    msg << entity << entityId;
+                    msg.header.id = TypeMessage::CreateEntityMessage;
+                    EntityInformation entity =
+                        InitiateBackground(server, entityManager, componentManager);
+                    std::cout << "Background entity id: " << entity.uniqueID << std::endl;
+                    std::cout << "Background entity sprite: " << entity.spriteData.spritePath
+                              << std::endl;
+                    msg << entity;
                     server->MessageAllClients(msg);
                     return;
                 }
