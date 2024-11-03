@@ -41,6 +41,17 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         Send(msg);
     }
 
+    /**
+     * @brief Send a message to the server FOR CHANGE LEVEL
+     *
+     */
+    void ChangeLevel()
+    {
+        r_type::net::Message<TypeMessage> msg;
+        msg.header.id = TypeMessage::GameTransition;
+        Send(msg);
+    }
+
     sf::Vector2u initInfoBar(UIEntityInformation entity, ComponentManager &componentManager,
         TextureManager &textureManager, FontManager &fontManager, sf::Vector2u windowSize)
     {

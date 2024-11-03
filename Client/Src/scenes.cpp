@@ -512,6 +512,7 @@ void Scenes::settingsMenu()
 
 void Scenes::TransitionLevel()
 {
+    std::cout << "TransitionLevel" << std::endl;
     EntityManager entityManager;
     ComponentManager componentManager;
     TextureManager textureManager;
@@ -542,13 +543,32 @@ void Scenes::TransitionLevel()
         return currentScene;
     };
 
+    std::function<IScenes *(AScenes *)> WaitButton = [](AScenes *currentScene) {
+        return currentScene;
+    };
+
     std::shared_ptr<Entity> readyButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
-            textureManager, fontManager, "Key Binds", &ReadyButton, 960, 400));
+            textureManager, fontManager, "I'm ready !", &ReadyButton, 960, 400));
 
     buttons.push_back(readyButton);
+    bool updated = false;
+
+    std::cout << "TransitionLevel " << _playerReady << std::endl;
+    std::cout << "false " << updated << std::endl;
 
     while (_window.isOpen() && this->_currentScene == Scenes::Scene::TRANSITION_LEVEL) {
+        if (_playerReady && !updated) {
+            buttons.clear();
+            componentManager.removeEntityFromAllComponents(readyButton->getId());
+            entityManager.removeEntity(readyButton->getId());
+
+            std::shared_ptr<Entity> waitButton = std::make_shared<Entity>(
+                entityFactory.createButton(entityManager, componentManager, textureManager,
+                    fontManager, "Waiting player", &WaitButton, 960, 400));
+            buttons.push_back(waitButton);
+            updated = true;
+        }
 
         handleEvents(event, componentManager, &_window, buttons, this);
 
@@ -558,6 +578,12 @@ void Scenes::TransitionLevel()
         while (!_networkClient.Incoming().empty()) {
             auto msg = _networkClient.Incoming().pop_front().msg;
             HandleMessage(msg, componentManager, textureManager, fontManager, audioSystem);
+        }
+        if (_playerReady) {
+            std::cout << "Player is ready" << std::endl;
+            r_type::net::Message<TypeMessage> response;
+            response.header.id = TypeMessage::PlayerReady;
+            _networkClient.Send(response);
         }
     }
 }
@@ -742,7 +768,7 @@ void Scenes::difficultyChoicesCustomization()
 
     std::function<std::string(GameParameters)> nbrOfBasicMonsterText =
         [](GameParameters gameParameters) {
-            return "number monster 1: " + std::to_string(gameParameters.nbrOfBasicMonster);
+            return "monster 1: " + std::to_string(gameParameters.nbrOfBasicMonster);
         };
 
     std::shared_ptr<Entity> nbrOfBasicMonsterButton =
@@ -762,7 +788,7 @@ void Scenes::difficultyChoicesCustomization()
 
     std::function<std::string(GameParameters)> spawnTimeBasicMonsterText =
         [](GameParameters gameParameters) {
-            return "spawn time monster 1: " + std::to_string(gameParameters.spawnTimeBasicMonster);
+            return "spawn time 1: " + std::to_string(gameParameters.spawnTimeBasicMonster);
         };
 
     std::shared_ptr<Entity> spawnTimeBasicMonsterButton =
@@ -783,7 +809,7 @@ void Scenes::difficultyChoicesCustomization()
 
     std::function<std::string(GameParameters)> nbrOfShooterEnemyText =
         [](GameParameters gameParameters) {
-            return "number monster 2: " + std::to_string(gameParameters.nbrOfShooterEnemy);
+            return "monster 2: " + std::to_string(gameParameters.nbrOfShooterEnemy);
         };
 
     std::shared_ptr<Entity> nbrOfShooterEnemyButton =
@@ -803,7 +829,7 @@ void Scenes::difficultyChoicesCustomization()
 
     std::function<std::string(GameParameters)> spawnTimeShooterEnemyText =
         [](GameParameters gameParameters) {
-            return "spawn time monster 2: " + std::to_string(gameParameters.spawnTimeShooterEnemy);
+            return "spawn time 2: " + std::to_string(gameParameters.spawnTimeShooterEnemy);
         };
 
     std::shared_ptr<Entity> spawnTimeShooterEnemyButton =
@@ -823,7 +849,7 @@ void Scenes::difficultyChoicesCustomization()
     };
 
     std::function<std::string(GameParameters)> nbrOfWallText = [](GameParameters gameParameters) {
-        return "number monster 3: " + std::to_string(gameParameters.nbrOfWall);
+        return "monster 3: " + std::to_string(gameParameters.nbrOfWall);
     };
 
     std::shared_ptr<Entity> nbrOfWallButton =
@@ -843,7 +869,7 @@ void Scenes::difficultyChoicesCustomization()
 
     std::function<std::string(GameParameters)> spawnTimeWallText =
         [](GameParameters gameParameters) {
-            return "spawn time monster 3: " + std::to_string(gameParameters.spawnTimeWall);
+            return "spawn time 3: " + std::to_string(gameParameters.spawnTimeWall);
         };
 
     std::shared_ptr<Entity> spawnTimeWallButton =
@@ -968,6 +994,8 @@ void Scenes::gameLoop()
                     _networkClient.PingServer();
                 } else if (event.key.code == sf::Keyboard::V) {
                     _networkClient.MessageAll();
+                } else if (event.key.code == sf::Keyboard::C) {
+                    _networkClient.ChangeLevel();
                 } else if (event.key.code == keyBinds[Actions::FIRE]) {
                     fireMissile();
                 } else if (event.key.code == keyBinds[Actions::QUIT]) {
@@ -1092,6 +1120,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         _networkClient.addEntity(entity, componentManager, textureManager, windowSize);
     } break;
     case TypeMessage::DestroyEntityMessage: {
+        std::cout << "DestroyEntityMessage" << std::endl;
         r_type::net::Message<TypeMessage> response;
         uint32_t id;
         msg >> id;
@@ -1153,11 +1182,8 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     case TypeMessage::GameTransitionResponse: {
     } break;
     case TypeMessage::IsPlayerReady: {
-        if (GetPlayerReady()) {
-            r_type::net::Message<TypeMessage> response;
-            response.header.id = TypeMessage::PlayerReady;
-            _networkClient.Send(response);
-        }
+        std::cout << "IsPlayerReady" << std::endl;
+
     } break;
     }
 }

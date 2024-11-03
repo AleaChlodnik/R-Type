@@ -791,7 +791,11 @@ template <typename T> class Level : virtual public ILevel<T> {
                     componentManager.removeEntityFromAllComponents(entityId);
                     entityManager.removeEntity(entityId);
                     msg.header.id = TypeMessage::CreateEntityMessage;
-                    msg << InitiateBackground(server, entityManager, componentManager);
+                    EntityInformation entity = InitiateBackground(server, entityManager, componentManager);
+                    std::cout << "Background entity id: " << entity.uniqueID << std::endl;
+                    std::cout << "Background entity sprite: " << entity.spriteData.spritePath
+                              << std::endl;
+                    msg << entity;
                     server->MessageAllClients(msg);
                 }
             }
@@ -831,6 +835,32 @@ template <typename T> class Level : virtual public ILevel<T> {
             }
         }
         return entityInfo;
+    }
+
+    void ResetLevel(r_type::net::AServer<T> *server, EntityManager &entityManager,
+        ComponentManager &componentManager) override
+    {
+        auto entities = entityManager.getAllEntities();
+        for (const auto &entity : entities) {
+            int entityId = entity.getId();
+            auto enemyComponent = componentManager.getComponent<EnemyComponent>(entityId);
+            auto enemyMissileComponent =
+                componentManager.getComponent<EnemyMissileComponent>(entityId);
+            auto forceWeaponComponent =
+                componentManager.getComponent<ForceWeaponComponent>(entityId);
+            auto forceMissileComponent =
+                componentManager.getComponent<ForceMissileComponent>(entityId);
+            auto powerUpComponent = componentManager.getComponent<PowerUpComponent>(entityId);
+            if (enemyComponent || enemyMissileComponent || forceWeaponComponent ||
+                forceMissileComponent || powerUpComponent) {
+                r_type::net::Message<TypeMessage> msg;
+                msg.header.id = TypeMessage::DestroyEntityMessage;
+                msg << entityId;
+                server->MessageAllClients(msg);
+                componentManager.removeEntityFromAllComponents(entityId);
+                entityManager.removeEntity(entityId);
+            }
+        }
     }
 
     /**

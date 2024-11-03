@@ -148,6 +148,10 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             } break;
             }
         } break;
+        case TypeMessage::GameTransition: {
+            _endOfLevel = true;
+            _bossKill = true;
+        } break;
         }
     } break;
     case ServerStatus::WAITING: {
@@ -258,14 +262,13 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         case TypeMessage::PlayerReady: {
             std::cout << "[" << client->GetID() << "]: Player Ready Response Received"
                       << std::endl;
-            _level.ChangeBackground(this, _entityManager, _componentManager);
             _playerReady++;
         }
         }
         break;
     default: {
-        if (client->_lastMsg.size() > 0)
-            client->Send(client->_lastMsg);
+        client->Send(client->_lastMsg);
+        std::cout << "[" << client->GetID() << "]: Sending Last Message" << std::endl;
     } break;
     } break;
     }

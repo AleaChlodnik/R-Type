@@ -206,6 +206,16 @@ template <typename T> class ILevel {
     virtual void ChangeLevel(GameState state) = 0;
 
     /**
+     * @brief Reset the level
+     *
+     * @param server
+     * @param entityManager
+     * @param componentManager
+     */
+    virtual void ResetLevel(r_type::net::AServer<T> *server, EntityManager &entityManager,
+        ComponentManager &componentManager) = 0;
+
+    /**
      * @brief Get the level object
      *
      * @return GameState

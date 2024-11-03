@@ -231,6 +231,9 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     if (msg.header.id == TypeMessage::DestroyEntityMessage) {
                         client->_lastMsg = msg;
                         client->SetStatus(ServerStatus::WAITING);
+                    } else if (msg.header.id == TypeMessage::GameTransition) {
+                        client->_lastMsg = msg;
+                        client->SetStatus(ServerStatus::TRANSITION);
                     }
                 }
             } else {
@@ -311,45 +314,39 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             }
         };
 
-        if (_endOfLevel && _boosKill) {
+        if (_endOfLevel && _bossKill) {
             if (!_watingPlayersReady) {
                 switch (_level.GetLevel()) {
                 case GameState::LevelOne: {
                     _level.ChangeLevel(GameState::LevelTwo);
-                    setToAllClients(ServerStatus::TRANSITION);
-                    r_type::net::Message<T> msg;
-                    msg.header.id = TypeMessage::GameTransition;
-                    MessageAllClients(msg);
                 } break;
                 case GameState::LevelTwo: {
                     _level.ChangeLevel(GameState::LevelThree);
-                    setToAllClients(ServerStatus::TRANSITION);
-                    r_type::net::Message<T> msg;
-                    msg.header.id = TypeMessage::GameTransition;
-                    MessageAllClients(msg);
                 } break;
                 case GameState::LevelThree: {
                     _level.ChangeLevel(GameState::LevelOne);
-                    setToAllClients(ServerStatus::TRANSITION);
-                    r_type::net::Message<T> msg;
-                    msg.header.id = TypeMessage::GameTransition;
-                    MessageAllClients(msg);
                 } break;
 
                 default:
                     break;
                 }
+                r_type::net::Message<T> msg;
+                msg.header.id = TypeMessage::GameTransition;
+                _level.ChangeBackground(this, _entityManager, _componentManager);
+                _level.ResetLevel(this, _entityManager, _componentManager);
                 _watingPlayersReady = true;
+                MessageAllClients(msg);
             }
             if (_playerReady == _nbrOfPlayers) {
                 _endOfLevel = false;
-                _boosKill = false;
+                _bossKill = false;
                 _clock = std::chrono::system_clock::now();
                 r_type::net::Message<T> msg;
                 msg.header.id = TypeMessage::FinishInitialization;
                 MessageAllClients(msg);
                 setToAllClients(ServerStatus::RUNNING);
                 _watingPlayersReady = false;
+                _playerReady = 0;
             }
         }
         _level.SetSystem(_componentManager, _entityManager);
@@ -398,8 +395,6 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         vf2d newPos = {pos.value()->x, pos.value()->y};
         switch (direction) {
         case PlayerMovement::UP: {
-            // _endOfLevel = true;
-            // _boosKill = true;
             newPos.y -= 2;
         } break;
         case PlayerMovement::DOWN: {
@@ -1050,7 +1045,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
 
     bool _endOfLevel = false;
     bool _bossActive = false;
-    bool _boosKill = false;
+    bool _bossKill = false;
     int _playerReady = 0;
     bool _watingPlayersReady = false;
 
