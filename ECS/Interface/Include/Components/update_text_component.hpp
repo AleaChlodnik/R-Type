@@ -11,7 +11,6 @@
 #include <i_scenes.hpp>
 #include <string>
 
-
 struct UpdateTextComponent {
     std::function<std::string(GameParameters)> updateText;
 

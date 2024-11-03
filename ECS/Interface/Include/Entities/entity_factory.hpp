@@ -237,8 +237,8 @@ class EntityFactory : public IEntityFactory {
 
     Entity createUpdateButton(EntityManager &entityManager, ComponentManager &componentManager,
         TextureManager &textureManager, FontManager &fontManager, std::string text,
-        std::function<IScenes *(AScenes *)> *onClick, std::function<std::string(GameParameters)> *updateText,
-        float x, float y) override;
+        std::function<IScenes *(AScenes *)> *onClick,
+        std::function<std::string(GameParameters)> *updateText, float x, float y) override;
 
     /**
      * @brief Creates an enemy missile entity.
