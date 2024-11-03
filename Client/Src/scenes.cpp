@@ -1087,7 +1087,6 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
             response.header.id = TypeMessage::GameEntityInformation;
             _networkClient.Send(response);
         }
-        audioSystem->playSoundEffect(SoundFactory(ActionType::Background));
     } break;
     case TypeMessage::ServerPing: {
         std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
