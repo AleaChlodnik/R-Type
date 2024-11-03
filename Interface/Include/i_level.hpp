@@ -122,6 +122,28 @@ template <typename T> class ILevel {
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
 
     /**
+     * @brief Pure virtual function to handle the logic for Level Two.
+     *
+     * @param server Pointer to the server instance managing the game.
+     * @param componentManager Reference to the ComponentManager handling game components.
+     * @param entityManager Reference to the EntityManager handling game entities.
+     * @param newClock The current time point used for time-based operations.
+     */
+    virtual void LevelTwo(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
+
+    /**
+     * @brief Pure virtual function to handle the logic for Level Three.
+     *
+     * @param server Pointer to the server instance managing the game.
+     * @param componentManager Reference to the ComponentManager handling game components.
+     * @param entityManager Reference to the EntityManager handling game entities.
+     * @param newClock The current time point used for time-based operations.
+     */
+    virtual void LevelThree(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) = 0;
+
+    /**
      * @brief Spawns a specified number of enemy entities in the game.
      *
      * @param server Pointer to the server instance managing the game.
@@ -156,6 +178,17 @@ template <typename T> class ILevel {
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
     /**
+     * @brief Change the background object
+     *
+     * @param server
+     * @param entityManager
+     * @param componentManager
+     * @return EntityInformation
+     */
+    virtual void ChangeBackground(r_type::net::AServer<T> *server, EntityManager &entityManager,
+        ComponentManager &componentManager) = 0;
+
+    /**
      * @brief Initializes a background entity.
      *
      * The function creates and returns information about the background entity.
@@ -164,5 +197,19 @@ template <typename T> class ILevel {
      */
     virtual EntityInformation InitiateBackground(r_type::net::AServer<T> *server,
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
+
+    /**
+     * @brief Changes the level of the game based on the provided game state.
+     *
+     * @param state
+     */
+    virtual void ChangeLevel(GameState state) = 0;
+
+    /**
+     * @brief Get the level object
+     *
+     * @return GameState
+     */
+    virtual GameState GetLevel() = 0;
 };
 } // namespace r_type

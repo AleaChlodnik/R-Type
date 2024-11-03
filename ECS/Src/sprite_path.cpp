@@ -58,6 +58,11 @@ std::string SpriteFactory(SpritePath sprite)
     case SpritePath::Wall: {
         return "Client/Assets/Sprites/Obstacles/wall.png";
     } break;
+    case SpritePath::Boss: {
+        return "Client/Assets/Sprites/Boss/boss_sheet.gif";
+    } break;
+    default: {
+        return "";
+    } break;
     }
-    return "";
 }

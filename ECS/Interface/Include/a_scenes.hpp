@@ -9,6 +9,7 @@
 
 #include "Entities/entity.hpp"
 #include "i_scenes.hpp"
+#include <game_struct.hpp>
 #include <memory>
 
 /**
@@ -49,6 +50,8 @@ class AScenes : virtual public IScenes {
         GAME_LOOP,
         SETTINGS_MENU,
         IN_GAME_MENU,
+        CHOOSE_DIFFICULTY,
+        CUSTOM_DIFFICULTY,
         EXIT
     };
 
@@ -199,7 +202,14 @@ class AScenes : virtual public IScenes {
      *
      * @param mode
      */
-    void setGameMode(GameMode const mode);
+    void setGameMode(GameParameters const mode);
+
+    /**
+     * @brief Get the Game Mode object
+     *
+     * @return GameParameters
+     */
+    GameParameters getGameMode() const { return _currentGameMode; };
 
     /**
      * @brief Sets the display option for Daltonism mode.
@@ -313,7 +323,7 @@ class AScenes : virtual public IScenes {
      * This variable holds the current game mode of the game.
      * It is initialized to GameMode::MEDIUM by default.
      */
-    GameMode _currentGameMode = GameMode::MEDIUM;
+    GameParameters _currentGameMode;
     /**
      * @brief Enum representing different modes of Daltonism (color blindness).
      *

@@ -11,7 +11,7 @@
 #include <Components/components.hpp>
 #include <animation_system.hpp>
 #include <cmath>
-#include <game_struct.h>
+#include <game_struct.hpp>
 
 #include <i_level.hpp>
 
@@ -63,7 +63,26 @@ template <typename T> class Level : virtual public ILevel<T> {
             CollisionUpdate(server, componentManager, entityManager, newClock);
             AnimationUpdate(server, componentManager, entityManager, newClock);
             FireUpdate(server, componentManager, entityManager, newClock);
-            LevelOne(server, componentManager, entityManager, newClock);
+            if (server->_endOfLevel == false) {
+                switch (_gameParameters.levelType) {
+                case GameState::LevelOne:
+                    LevelOne(server, componentManager, entityManager, newClock);
+                    break;
+                case GameState::LevelTwo:
+                    LevelTwo(server, componentManager, entityManager, newClock);
+                    break;
+                case GameState::LevelThree:
+                    LevelThree(server, componentManager, entityManager, newClock);
+                    break;
+                default:
+                    break;
+                }
+            } else {
+                // if (server->_bossActive == false) {
+                //     SpawnEntity(server, entityManager, componentManager, 0,
+                //         EntityFactory::EnemyType::Boss);
+                // }
+            }
             server->SetClock(server->GetClock() + std::chrono::milliseconds(500));
         }
     }
@@ -149,9 +168,9 @@ template <typename T> class Level : virtual public ILevel<T> {
      * @brief Handles the collision action between two entities in the game.
      *
      * This function determines the type of collision between two entities and performs the
-     * appropriate actions based on the components of the entities involved. It updates the health,
-     * score, and other relevant components, and manages the addition and removal of entities from
-     * the game.
+     * appropriate actions based on the components of the entities involved. It updates the
+     * health, score, and other relevant components, and manages the addition and removal of
+     * entities from the game.
      *
      * @tparam T The type of the server.
      * @param server Pointer to the server instance.
@@ -195,7 +214,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                     if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
                         entitiesToRemove.end()) {
                         entitiesToRemove.push_back(entityId2);
-                        playerHealth1.value()->health -= 1;
+                        playerHealth1.value()->lives -= 1;
                     }
                 }
                 r_type::net::Message<TypeMessage> updLivesMsg;
@@ -204,7 +223,7 @@ template <typename T> class Level : virtual public ILevel<T> {
                 server->MessageClient(server->getClientById(server->_deqConnections,
                                           server->GetPlayerClientId(entityId1)),
                     updLivesMsg);
-                if (playerHealth1.value()->health <= 0) {
+                if (playerHealth1.value()->lives <= 0) {
                     if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId1) ==
                         entitiesToRemove.end()) {
                         entitiesToRemove.push_back(entityId1);
@@ -320,8 +339,8 @@ template <typename T> class Level : virtual public ILevel<T> {
      * @brief Updates the collision status of entities in the game.
      *
      * This function checks for collisions between entities and handles the consequences
-     * of those collisions, such as updating health, removing entities, and adding new entities.
-     * It also handles entities that go off-screen.
+     * of those collisions, such as updating health, removing entities, and adding new
+     * entities. It also handles entities that go off-screen.
      *
      * @param server Pointer to the server instance.
      * @param componentManager Reference to the component manager.
@@ -386,8 +405,8 @@ template <typename T> class Level : virtual public ILevel<T> {
     }
 
     /**
-     * @brief Updates the animations of entities and sends messages to clients if animations have
-     * changed.
+     * @brief Updates the animations of entities and sends messages to clients if animations
+     * have changed.
      *
      * This function performs the following steps:
      * 1. Retrieves the current animation components from the component manager.
@@ -417,7 +436,8 @@ template <typename T> class Level : virtual public ILevel<T> {
                     previousAnimations.insert({entityId, *animation});
                 }
             }
-            _animationSystem->AnimationEntities(componentManager, entityManager, 0.2);
+            _animationSystem->AnimationEntities(
+                componentManager, entityManager, 0.2, server->_endOfLevel);
             // Compare new Animations
             if (auto animationsAfter = componentManager.getComponentMap<AnimationComponent>()) {
                 for (const auto &pair : **animationsAfter) {
@@ -445,9 +465,9 @@ template <typename T> class Level : virtual public ILevel<T> {
      * @brief Updates the firing mechanism of entities in the game.
      *
      * This function handles the automatic firing system and processes the firing logic for
-     * entities. It retrieves all entities and checks if they can shoot. If an entity can shoot, it
-     * sends a message to all clients to create an enemy missile and sets the entity's canShoot
-     * flag to false.
+     * entities. It retrieves all entities and checks if they can shoot. If an entity can
+     * shoot, it sends a message to all clients to create an enemy missile and sets the
+     * entity's canShoot flag to false.
      *
      * @param server Pointer to the server instance.
      * @param componentManager Reference to the ComponentManager handling components.
@@ -505,6 +525,82 @@ template <typename T> class Level : virtual public ILevel<T> {
      * @param newClock The current time point used for timing calculations.
      */
     void LevelOne(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
+    {
+        if (std::chrono::duration_cast<std::chrono::seconds>(
+                server->GetClock() - _basicMonsterSpawnTime)
+                .count() > _gameParameters.spawnTimeBasicMonster) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfBasicMonster,
+                EntityFactory::EnemyType::BasicMonster);
+            _basicMonsterSpawnTime = server->GetClock();
+        }
+        if (std::chrono::duration_cast<std::chrono::seconds>(
+                server->GetClock() - _shooterEnemySpawnTime)
+                .count() > _gameParameters.spawnTimeShooterEnemy) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfShooterEnemy,
+                EntityFactory::EnemyType::ShooterEnemy);
+            _shooterEnemySpawnTime = server->GetClock();
+        }
+        if (std::chrono::duration_cast<std::chrono::seconds>(server->GetClock() - _WallSpawnTime)
+                .count() > _gameParameters.spawnTimeWall) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfWall,
+                EntityFactory::EnemyType::Wall);
+            _WallSpawnTime = server->GetClock();
+        }
+    }
+
+    /**
+     * @brief Handles the spawning of entities for Level Two.
+     *
+     * This function is responsible for spawning basic monsters and shooter enemies
+     * at specific intervals defined by the game parameters. It checks the elapsed
+     * time since the last spawn of each entity type and spawns new entities if the
+     * required time has passed.
+     *
+     * @param server Pointer to the server instance.
+     * @param componentManager Reference to the ComponentManager instance.
+     * @param entityManager Reference to the EntityManager instance.
+     * @param newClock The current time point used for timing calculations.
+     */
+    void LevelTwo(r_type::net::AServer<T> *server, ComponentManager &componentManager,
+        EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
+    {
+        if (std::chrono::duration_cast<std::chrono::seconds>(
+                server->GetClock() - _basicMonsterSpawnTime)
+                .count() > _gameParameters.spawnTimeBasicMonster) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfBasicMonster,
+                EntityFactory::EnemyType::BasicMonster);
+            _basicMonsterSpawnTime = server->GetClock();
+        }
+        if (std::chrono::duration_cast<std::chrono::seconds>(
+                server->GetClock() - _shooterEnemySpawnTime)
+                .count() > _gameParameters.spawnTimeShooterEnemy) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfShooterEnemy,
+                EntityFactory::EnemyType::ShooterEnemy);
+            _shooterEnemySpawnTime = server->GetClock();
+        }
+        if (std::chrono::duration_cast<std::chrono::seconds>(server->GetClock() - _WallSpawnTime)
+                .count() > _gameParameters.spawnTimeWall) {
+            SpawnEntity(server, entityManager, componentManager, _gameParameters.nbrOfWall,
+                EntityFactory::EnemyType::Wall);
+            _WallSpawnTime = server->GetClock();
+        }
+    }
+
+    /**
+     * @brief Handles the spawning of entities for Level Three.
+     *
+     * This function is responsible for spawning basic monsters and shooter enemies
+     * at specific intervals defined by the game parameters. It checks the elapsed
+     * time since the last spawn of each entity type and spawns new entities if the
+     * required time has passed.
+     *
+     * @param server Pointer to the server instance.
+     * @param componentManager Reference to the ComponentManager instance.
+     * @param entityManager Reference to the EntityManager instance.
+     * @param newClock The current time point used for timing calculations.
+     */
+    void LevelThree(r_type::net::AServer<T> *server, ComponentManager &componentManager,
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock) override
     {
         if (std::chrono::duration_cast<std::chrono::seconds>(
@@ -605,6 +701,9 @@ template <typename T> class Level : virtual public ILevel<T> {
             //     i++;
             // }
         } break;
+        case EntityFactory::EnemyType::Boss: {
+            server->InitBoss(server);
+        } break;
         default:
             break;
         }
@@ -637,6 +736,44 @@ template <typename T> class Level : virtual public ILevel<T> {
         }
         return entityInfo;
     }
+
+    /**
+     * @brief Changes the background in the game by removing the current background entity and
+     * creating a new one.
+     *
+     * This function sends messages to all clients to destroy the current background entity and
+     * create a new one.
+     *
+     * @tparam T The type of the server.
+     * @param server Pointer to the server instance.
+     * @param entityManager Reference to the EntityManager instance.
+     * @param componentManager Reference to the ComponentManager instance.
+     */
+    void ChangeBackground(r_type::net::AServer<T> *server, EntityManager &entityManager,
+        ComponentManager &componentManager) override
+    {
+        r_type::net::Message<TypeMessage> msg;
+        msg.header.id = TypeMessage::DestroyEntityMessage;
+        auto background = componentManager.getComponentMap<BackgroundComponent>();
+        if (background) {
+            for (auto &pair : **background) {
+                int entityId = pair.first;
+                auto &backgroundComponent = pair.second;
+                if (auto backgroundInfo =
+                        std::any_cast<BackgroundComponent>(&backgroundComponent)) {
+                    msg << background;
+                    server->MessageAllClients(msg);
+                    componentManager.removeEntityFromAllComponents(entityId);
+                    entityManager.removeEntity(entityId);
+                    msg.header.id = TypeMessage::CreateEntityMessage;
+                    msg << InitiateBackground(server, entityManager, componentManager);
+                    server->MessageAllClients(msg);
+                }
+            }
+        }
+    }
+
+    GameState GetLevel() override { return _gameParameters.levelType; }
 
     /**
      * @brief Initializes a background entity.
@@ -679,6 +816,15 @@ template <typename T> class Level : virtual public ILevel<T> {
      * @param gameParameters The game parameters to set the difficulty.
      */
     void SetGameParameters(GameParameters gameParameters) { _gameParameters = gameParameters; }
+
+    /**
+     * @brief Changes the level of the game based on the provided game state.
+     *
+     * This function changes the level of the game based on the provided game state.
+     *
+     * @param state The game state to change the level to.
+     */
+    void ChangeLevel(GameState state) override { _gameParameters.levelType = state; }
 
   protected:
     /**

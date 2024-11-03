@@ -98,8 +98,7 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
         return windowSize;
     }
 
-    void updateInfoBar(UIEntityInformation entity, ComponentManager &componentManager,
-        TextureManager &textureManager)
+    void updateInfoBar(UIEntityInformation entity, ComponentManager &componentManager)
     {
         for (size_t i = 0; i < entity.textData.categorySize; i++) {
             if (auto textComponent =

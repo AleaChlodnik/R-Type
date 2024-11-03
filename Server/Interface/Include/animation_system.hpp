@@ -101,6 +101,14 @@ enum class AnimationForceMissile3 : uint32_t
     FORCE_MISSILE_7
 };
 
+enum class AnimationBoss : uint32_t
+{
+    BOSS_DEFAULT,
+    BOSS_1,
+    BOSS_2,
+    BOSS_3
+};
+
 /**
  * @brief get if two animations are different.
  *
@@ -164,8 +172,8 @@ class AnimationSystem : public ISystem {
      * @param entityManager The entity manager used to access entities.
      * @param deltaTime The time elapsed since the last update, used to update animations.
      */
-    void AnimationEntities(
-        ComponentManager &componentManager, EntityManager &entityManager, float deltaTime);
+    void AnimationEntities(ComponentManager &componentManager, EntityManager &entityManager,
+        float deltaTime, bool &endOfLevel);
 
     /**
      * @brief Animates the player based on their velocity.
@@ -223,6 +231,9 @@ class AnimationSystem : public ISystem {
      */
     void animateForceMissile(std::optional<ForceWeaponComponent *> &forceWeapon,
         std::optional<AnimationComponent *> &animation);
+
+    void animateBoss(
+        std::optional<BossComponent *> &boss, std::optional<AnimationComponent *> &animation);
 
   private:
     /**

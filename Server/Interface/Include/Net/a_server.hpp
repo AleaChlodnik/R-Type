@@ -18,7 +18,7 @@
 #include <error_handling.hpp>
 #include <filesystem>
 #include <fstream>
-#include <game_struct.h>
+#include <game_struct.hpp>
 #include <iostream>
 #include <level.hpp>
 #include <macros.hpp>
@@ -265,7 +265,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entity.uniqueID = infoBarId;
             entity.spriteData = *(barSpriteData.value());
             entity.textData = *(barTextData.value());
-            entity.lives = playerHealth.value()->health;
+            entity.lives = playerHealth.value()->lives;
             entity.score = playerScore.value()->score;
         }
         return entity;
@@ -306,6 +306,27 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
         std::thread t_level([this, newClock, &bUpdateEntities]() {
             _level.Update(this, _componentManager, _entityManager, newClock, &bUpdateEntities);
         });
+
+        if (_endOfLevel) {
+            switch (_level.GetLevel()) {
+            case GameState::LevelOne: {
+                _level.ChangeLevel(GameState::LevelTwo);
+                _level.ChangeBackground(this, _entityManager, _componentManager);
+            } break;
+            case GameState::LevelTwo: {
+                _level.ChangeLevel(GameState::LevelThree);
+                _level.ChangeBackground(this, _entityManager, _componentManager);
+            } break;
+            case GameState::LevelThree: {
+                _level.ChangeLevel(GameState::LevelOne);
+                _level.ChangeBackground(this, _entityManager, _componentManager);
+            } break;
+
+            default:
+                break;
+            }
+            _endOfLevel = false;
+        }
 
         size_t nMessageCount = 0;
         while (nMessageCount < nMaxMessages && !_qMessagesIn.empty()) {
@@ -593,7 +614,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             entityInfo.spriteData = *(spriteData.value());
             entityInfo.textData = *(textData.value());
             entityInfo.textData.categorySize = textData.value()->categorySize;
-            entityInfo.lives = health.value()->health;
+            entityInfo.lives = health.value()->lives;
         }
         _clientInfoBarID.insert_or_assign(clientId, entityInfo.uniqueID);
         return entityInfo;
@@ -712,6 +733,99 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             }
         }
         return entityInfo;
+    }
+
+    void InitBoss(r_type::net::AServer<T> *server)
+    {
+        server->_bossActive = true;
+        // r_type::net::Message<TypeMessage> msg;
+        // msg.header.id = TypeMessage::ChangeBackgroundMusic;
+        // msg << 1;
+        // server->MessageAllClients(msg);
+        Entity boss = _entityFactory.createBoss(_entityManager, _componentManager, _entityFactory);
+        int bossId = boss.getId();
+        // float segmentOffsetX = -10.0f;
+        // float segmentOffsetY = 0.0f;
+        auto bossComp = _componentManager.getComponent<BossComponent>(bossId);
+        auto bossPos = _componentManager.getComponent<PositionComponent>(bossId);
+        if (bossComp && bossPos) {
+            //     for (size_t i = 0; i < bossComp.value()->tailSegmentIds.size(); i++) {
+            //         int tailSegId = bossComp.value()->tailSegmentIds[i];
+            //         if (auto tailSegPos =
+            //         _componentManager.getComponent<PositionComponent>(tailSegId)) {
+            //             tailSegPos.value()->x = bossPos.value()->x + i * segmentOffsetX;
+            //             tailSegPos.value()->y = bossPos.value()->y + i * segmentOffsetY;
+            //         }
+            //     }
+            //     for (size_t i = bossComp.value()->tailSegmentIds.size() - 1; i > 0; --i) {
+            //         int currentSegmentId = bossComp.value()->tailSegmentIds[i];
+            //         int precedingSegmentId = bossComp.value()->tailSegmentIds[i - 1];
+
+            //         if (auto currentPos =
+            //                 _componentManager.getComponent<PositionComponent>(currentSegmentId))
+            //                 {
+            //             if (auto precedingPos =
+            //             _componentManager.getComponent<PositionComponent>(
+            //                     precedingSegmentId)) {
+            //                 currentPos.value()->x = precedingPos.value()->x;
+            //                 currentPos.value()->y = precedingPos.value()->y;
+            //             }
+            //         }
+            //     }
+            //     if (auto firstSegmentPos = _componentManager.getComponent<PositionComponent>(
+            //             bossComp.value()->tailSegmentIds[0])) {
+            //             firstSegmentPos.value()->x = bossPos.value()->x;
+            //             firstSegmentPos.value()->y = bossPos.value()->y;
+
+            //     }
+
+            EntityInformation bossEntityInfo;
+            bossEntityInfo.uniqueID = bossId;
+            auto bossSpriteData =
+                _componentManager.getComponent<SpriteDataComponent>(bossEntityInfo.uniqueID);
+            auto bossAnimation =
+                _componentManager.getComponent<AnimationComponent>(bossEntityInfo.uniqueID);
+            if (bossSpriteData && bossAnimation) {
+                bossEntityInfo.vPos.x = bossPos.value()->x;
+                bossEntityInfo.vPos.y = bossPos.value()->y;
+                bossEntityInfo.spriteData = *(bossSpriteData.value());
+                bossEntityInfo.ratio.x =
+                    (bossAnimation.value()->dimension.x * bossSpriteData.value()->scale.x) /
+                    SCREEN_WIDTH;
+                bossEntityInfo.ratio.y =
+                    (bossAnimation.value()->dimension.y * bossSpriteData.value()->scale.y) /
+                    SCREEN_HEIGHT;
+                bossEntityInfo.animationComponent.dimension = bossAnimation.value()->dimension;
+                bossEntityInfo.animationComponent.offset = bossAnimation.value()->offset;
+            }
+            r_type::net::Message<TypeMessage> bossMsg;
+            bossMsg.header.id = TypeMessage::CreateEntityMessage;
+            bossMsg << bossEntityInfo;
+            server->MessageAllClients(bossMsg);
+
+            // for (int i = 0; i < bossComp.value()->tailSegmentIds.size(); i++) {
+            //     EntityInformation tailSegEntityInfo;
+            //     tailSegEntityInfo.uniqueID = bossComp.value()->tailSegmentIds[i];
+            //     auto tailSpriteData =
+            //     _componentManager.getComponent<SpriteDataComponent>(tailSegEntityInfo.uniqueID);
+            //     auto tailPos =
+            //     _componentManager.getComponent<PositionComponent>(tailSegEntityInfo.uniqueID);
+            //     auto tailAnimation =
+            //     _componentManager.getComponent<AnimationComponent>(tailSegEntityInfo.uniqueID);
+            //     if (tailSpriteData && tailPos && tailAnimation) {
+            //         tailSegEntityInfo.vPos.x = tailPos.value()->x;
+            //         tailSegEntityInfo.vPos.y = tailPos.value()->y;
+            //         tailSegEntityInfo.spriteData = *(tailSpriteData.value());
+            //         tailSegEntityInfo.animationComponent.dimension =
+            //         tailAnimation.value()->dimension;
+            //         tailSegEntityInfo.animationComponent.offset = tailAnimation.value()->offset;
+            //     }
+            //     r_type::net::Message<TypeMessage> tailMsg;
+            //     tailMsg.header.id = TypeMessage::CreateEntityMessage;
+            //     tailMsg << tailSegEntityInfo;
+            //     server->MessageAllClients(tailMsg);
+            // }
+        }
     }
 
     std::shared_ptr<Connection<T>> getClientById(
@@ -905,7 +1019,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
      */
     EntityFactory _entityFactory;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    bool _endOfLevel = false;
+    bool _bossActive = false;
 
     /**
      * @brief A container that maps client IDs to player IDs.

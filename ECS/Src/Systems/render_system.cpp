@@ -11,7 +11,7 @@ void RenderSystem::render(ComponentManager &componentManager)
 {
     _window.clear();
 
-    // Draw all sprites
+    // Draw sprites
     const auto sprites = componentManager.getComponentMap<SpriteComponent>();
     if (sprites) {
         // Draw background first
@@ -60,7 +60,7 @@ void RenderSystem::render(ComponentManager &componentManager)
         }
     }
 
-    // Draw all rectanglesShapes
+    // Draw all rectangleShapes
     const auto rectangles = componentManager.getComponentMap<RectangleShapeComponent>();
     if (rectangles) {
         for (const auto &pair : **rectangles) {

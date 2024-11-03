@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <string>
+
 /**
  * @brief GameState enum.
  *
@@ -19,7 +21,6 @@ enum class GameState
     LevelOne,
     LevelTwo,
     LevelThree,
-    LevelFour,
 };
 
 /**

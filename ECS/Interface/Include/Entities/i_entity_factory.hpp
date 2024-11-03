@@ -67,16 +67,6 @@ class IEntityFactory {
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
     /**
-     * @brief Create a Background Level Four object
-     *
-     * @param entityManager
-     * @param componentManager
-     * @return Entity
-     */
-    virtual Entity createBackgroundLevelFour(
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
-
-    /**
      * @brief Create a Background Menu object
      *
      * @param entityManager
@@ -265,6 +255,17 @@ class IEntityFactory {
         FontManager &fontManager, std::string text,
         std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
         float y = 0) = 0;
+
+    virtual Entity createUpdateButton(EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &textureManager,
+        FontManager &fontManager, std::string text, std::function<IScenes *(AScenes *)> *onClick,
+        std::function<std::string(GameParameters)> *updateText, float x, float y) = 0;
+
+    virtual Entity createTailSegment(
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+
+    virtual Entity createTailEnd(
+        EntityManager &entityManager, ComponentManager &componentManager) = 0;
 
     /**
      * @enum EnemyType

@@ -11,7 +11,7 @@
 #include "i_entity_factory.hpp"
 #include "i_scenes.hpp"
 #include <functional>
-#include <game_struct.h>
+#include <game_struct.hpp>
 
 /**
  * @class EntityFactory
@@ -52,16 +52,6 @@ class EntityFactory : public IEntityFactory {
      * @return Entity
      */
     Entity createBackgroundLevelThree(
-        EntityManager &entityManager, ComponentManager &componentManager) override;
-
-    /**
-     * @brief Create a Background Level Four object
-     *
-     * @param entityManager
-     * @param componentManager
-     * @return Entity
-     */
-    Entity createBackgroundLevelFour(
         EntityManager &entityManager, ComponentManager &componentManager) override;
 
     /**
@@ -245,6 +235,11 @@ class EntityFactory : public IEntityFactory {
         std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
         float y = 0) override;
 
+    Entity createUpdateButton(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &textureManager, FontManager &fontManager, std::string text,
+        std::function<IScenes *(AScenes *)> *onClick,
+        std::function<std::string(GameParameters)> *updateText, float x, float y) override;
+
     /**
      * @brief Creates an enemy missile entity.
      *
@@ -276,4 +271,22 @@ class EntityFactory : public IEntityFactory {
 
     Entity backgroundFactory(
         EntityManager &entityManager, ComponentManager &componentManager, GameState type);
+
+    /**
+     * @brief Creates a boss entity.
+     *
+     * This function creates a boss entity using the provided entity manager and component manager.
+     *
+     * @param entityManager The entity manager used to create the entity.
+     * @param componentManager The component manager used to add components to the entity.
+     * @return The created boss entity.
+     */
+    Entity createBoss(EntityManager &entityManager, ComponentManager &componentManager,
+        EntityFactory &entityFactory);
+
+    Entity createTailSegment(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
+
+    Entity createTailEnd(
+        EntityManager &entityManager, ComponentManager &componentManager) override;
 };

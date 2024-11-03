@@ -86,9 +86,18 @@ void handleEvents(sf::Event event, ComponentManager &componentManager, sf::Rende
                             pos.y <= posComp.value()->y + spriteSize.y / 2) {
                             auto onClick =
                                 componentManager.getComponent<OnClickComponent>(button->getId());
-                            if (onClick)
+                            if (onClick) {
                                 onClick.value()->onClick(scenes);
-                            else {
+                                auto textUpdate =
+                                    componentManager.getComponent<UpdateTextComponent>(
+                                        button->getId());
+                                auto text =
+                                    componentManager.getComponent<TextComponent>(button->getId());
+                                if (textUpdate && text) {
+                                    text.value()->text.setString(
+                                        textUpdate.value()->updateText(scenes->getGameMode()));
+                                }
+                            } else {
                                 auto bind =
                                     componentManager.getComponent<BindComponent>(button->getId());
                                 if (bind) {
@@ -291,7 +300,7 @@ void Scenes::inGameMenu()
 
 void createDaltonismChoiceButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
-    TextureManager &textureManager, FontManager fontManager, EntityFactory &entityFactory)
+    TextureManager &textureManager, FontManager &fontManager, EntityFactory &entityFactory)
 {
     std::function<IScenes *(AScenes *)> onNormalButtonClicked = [&](AScenes *currentScene) {
         currentScene->setDaltonism(Scenes::DaltonismMode::NORMAL);
@@ -358,7 +367,7 @@ sf::Keyboard::Key waitForKey(sf::RenderWindow *_window)
 
 void createKeyBindingButtons(std::vector<std::shared_ptr<Entity>> &buttons,
     ComponentManager &componentManager, EntityManager &entityManager,
-    TextureManager &textureManager, FontManager fontManager, EntityFactory &entityFactory,
+    TextureManager &textureManager, FontManager &fontManager, EntityFactory &entityFactory,
     std::map<Scenes::Actions, sf::Keyboard::Key> &keyBinds)
 {
     std::function<IScenes *(AScenes *, AScenes::Actions)> bindKey = [](AScenes *currentScene,
@@ -509,6 +518,36 @@ void Scenes::difficultyChoices()
     FontManager fontManager;
     EntityFactory entityFactory;
 
+    GameParameters EASY = {
+        3,
+        2,
+        1,
+        3,
+        1,
+        4,
+        GameState::LevelOne,
+    };
+
+    GameParameters MEDIUM = {
+        5,
+        2,
+        2,
+        2,
+        4,
+        3,
+        GameState::LevelOne,
+    };
+
+    GameParameters HARD = {
+        6,
+        1,
+        3,
+        1,
+        4,
+        2,
+        GameState::LevelOne,
+    };
+
     std::shared_ptr<UpdateSystem> updateSystem =
         std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
     std::shared_ptr<RenderSystem> renderSystem =
@@ -527,24 +566,27 @@ void Scenes::difficultyChoices()
     this->filter = std::make_shared<Entity>(
         entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
 
-    std::function<IScenes *(AScenes *)> easyButtonClicked = [](AScenes *currentScene) {
-        currentScene->setGameMode(Scenes::GameMode::EASY);
+    std::function<IScenes *(AScenes *)> easyButtonClicked = [EASY](AScenes *currentScene) {
+        currentScene->setGameMode(EASY);
+        currentScene->setScene(Scenes::Scene::CUSTOM_DIFFICULTY);
         return currentScene;
     };
     std::shared_ptr<Entity> easyButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, fontManager, "Easy", &easyButtonClicked, 1460, 250));
 
-    std::function<IScenes *(AScenes *)> mediumButtonClicked = [](AScenes *currentScene) {
-        currentScene->setGameMode(Scenes::GameMode::MEDIUM);
+    std::function<IScenes *(AScenes *)> mediumButtonClicked = [MEDIUM](AScenes *currentScene) {
+        currentScene->setGameMode(MEDIUM);
+        currentScene->setScene(Scenes::Scene::CUSTOM_DIFFICULTY);
         return currentScene;
     };
     std::shared_ptr<Entity> mediumButton =
         std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
             textureManager, fontManager, "Medium", &mediumButtonClicked, 1460, 400));
 
-    std::function<IScenes *(AScenes *)> hardButtonClicked = [](AScenes *currentScene) {
-        currentScene->setGameMode(Scenes::GameMode::HARD);
+    std::function<IScenes *(AScenes *)> hardButtonClicked = [HARD](AScenes *currentScene) {
+        currentScene->setGameMode(HARD);
+        currentScene->setScene(Scenes::Scene::CUSTOM_DIFFICULTY);
         return currentScene;
     };
     std::shared_ptr<Entity> hardButton =
@@ -554,6 +596,237 @@ void Scenes::difficultyChoices()
     buttons.push_back(easyButton);
     buttons.push_back(mediumButton);
     buttons.push_back(hardButton);
+
+    sf::Clock clock;
+    sf::Event event;
+
+    while (_window.isOpen() && this->_currentScene == Scenes::Scene::CHOOSE_DIFFICULTY) {
+
+        handleEvents(event, componentManager, &_window, buttons, this);
+
+        updateSystem->updateSpritePositions(componentManager, entityManager);
+        renderSystem->render(componentManager);
+    }
+}
+
+void Scenes::difficultyChoicesCustomization()
+{
+    EntityManager entityManager;
+    ComponentManager componentManager;
+    TextureManager textureManager;
+    FontManager fontManager;
+    EntityFactory entityFactory;
+
+    std::shared_ptr<UpdateSystem> updateSystem =
+        std::make_shared<UpdateSystem>(_window, componentManager, entityManager);
+    std::shared_ptr<RenderSystem> renderSystem =
+        std::make_shared<RenderSystem>(_window, componentManager);
+
+    // systemManager.addSystem(updateSystem);
+    // systemManager.addSystem(renderSystem);
+
+    buttons = {};
+
+    // Create background
+    std::shared_ptr<Entity> background = std::make_shared<Entity>(
+        entityFactory.createBackgroundMenu(entityManager, componentManager, textureManager));
+
+    // Create filter
+    this->filter = std::make_shared<Entity>(
+        entityFactory.createFilter(entityManager, componentManager, _currentDaltonismMode));
+
+    std::function<std::string(GameParameters)> levelText = [](GameParameters gameParameters) {
+        std::string level = "";
+        switch (gameParameters.levelType) {
+        case GameState::LevelOne: {
+            level = static_cast<std::string>("Level One");
+        } break;
+        case GameState::LevelTwo: {
+            level = static_cast<std::string>("Level Two");
+        } break;
+        case GameState::LevelThree: {
+            level = static_cast<std::string>("Level Three");
+        } break;
+        case GameState::Menu: {
+            level = static_cast<std::string>("Menu");
+        } break;
+        }
+        return level;
+    };
+
+    std::function<IScenes *(AScenes *)> levelClicked = [](AScenes *currentScene) {
+        GameParameters gameParameters = currentScene->getGameMode();
+        switch (gameParameters.levelType) {
+        case GameState::LevelOne: {
+            gameParameters.levelType = GameState::LevelTwo;
+        } break;
+        case GameState::LevelTwo: {
+            gameParameters.levelType = GameState::LevelThree;
+        } break;
+        case GameState::LevelThree: {
+            gameParameters.levelType = GameState::LevelOne;
+        } break;
+        case GameState::Menu: {
+        } break;
+        }
+        currentScene->setGameMode(gameParameters);
+        return currentScene;
+    };
+
+    std::shared_ptr<Entity> levelButton = std::make_shared<Entity>(
+        entityFactory.createUpdateButton(entityManager, componentManager, textureManager,
+            fontManager, levelText(getGameMode()), &levelClicked, &levelText, 200, 250));
+
+    // BasicMonster
+    std::function<IScenes *(AScenes *)> nbrOfBasicMonsterClicked = [](AScenes *currentScene) {
+        GameParameters gameParameters = currentScene->getGameMode();
+        gameParameters.nbrOfBasicMonster += 1;
+        if (gameParameters.nbrOfBasicMonster > 10) {
+            gameParameters.nbrOfBasicMonster = 1;
+        }
+        currentScene->setGameMode(gameParameters);
+        return currentScene;
+    };
+
+    std::function<std::string(GameParameters)> nbrOfBasicMonsterText =
+        [](GameParameters gameParameters) {
+            return "number monster 1: " + std::to_string(gameParameters.nbrOfBasicMonster);
+        };
+
+    std::shared_ptr<Entity> nbrOfBasicMonsterButton =
+        std::make_shared<Entity>(entityFactory.createUpdateButton(entityManager, componentManager,
+            textureManager, fontManager, nbrOfBasicMonsterText(getGameMode()),
+            &nbrOfBasicMonsterClicked, &nbrOfBasicMonsterText, 600, 250));
+
+    std::function<IScenes *(AScenes *)> spawnTimeBasicMonsterClicked = [](AScenes *currentScene) {
+        GameParameters gameParameters = currentScene->getGameMode();
+        gameParameters.spawnTimeBasicMonster += 1;
+        if (gameParameters.spawnTimeBasicMonster > 10) {
+            gameParameters.spawnTimeBasicMonster = 1;
+        }
+        currentScene->setGameMode(gameParameters);
+        return currentScene;
+    };
+
+    std::function<std::string(GameParameters)> spawnTimeBasicMonsterText =
+        [](GameParameters gameParameters) {
+            return "spawn time monster 1: " + std::to_string(gameParameters.spawnTimeBasicMonster);
+        };
+
+    std::shared_ptr<Entity> spawnTimeBasicMonsterButton =
+        std::make_shared<Entity>(entityFactory.createUpdateButton(entityManager, componentManager,
+            textureManager, fontManager, spawnTimeBasicMonsterText(getGameMode()),
+            &spawnTimeBasicMonsterClicked, &spawnTimeBasicMonsterText, 600, 500));
+
+    // ShooterEnemy
+    std::function<IScenes *(AScenes *)> nbrOfShooterEnemyClicked = [](AScenes *currentScene) {
+        GameParameters gameParameters = currentScene->getGameMode();
+        gameParameters.nbrOfShooterEnemy += 1;
+        if (gameParameters.nbrOfShooterEnemy > 10) {
+            gameParameters.nbrOfShooterEnemy = 1;
+        }
+        currentScene->setGameMode(gameParameters);
+        return currentScene;
+    };
+
+    std::function<std::string(GameParameters)> nbrOfShooterEnemyText =
+        [](GameParameters gameParameters) {
+            return "number monster 2: " + std::to_string(gameParameters.nbrOfShooterEnemy);
+        };
+
+    std::shared_ptr<Entity> nbrOfShooterEnemyButton =
+        std::make_shared<Entity>(entityFactory.createUpdateButton(entityManager, componentManager,
+            textureManager, fontManager, nbrOfShooterEnemyText(getGameMode()),
+            &nbrOfShooterEnemyClicked, &nbrOfShooterEnemyText, 1000, 250));
+
+    std::function<IScenes *(AScenes *)> spawnTimeShooterEnemyClicked = [](AScenes *currentScene) {
+        GameParameters gameParameters = currentScene->getGameMode();
+        gameParameters.spawnTimeShooterEnemy += 1;
+        if (gameParameters.spawnTimeShooterEnemy > 10) {
+            gameParameters.spawnTimeShooterEnemy = 1;
+        }
+        currentScene->setGameMode(gameParameters);
+        return currentScene;
+    };
+
+    std::function<std::string(GameParameters)> spawnTimeShooterEnemyText =
+        [](GameParameters gameParameters) {
+            return "spawn time monster 2: " + std::to_string(gameParameters.spawnTimeShooterEnemy);
+        };
+
+    std::shared_ptr<Entity> spawnTimeShooterEnemyButton =
+        std::make_shared<Entity>(entityFactory.createUpdateButton(entityManager, componentManager,
+            textureManager, fontManager, spawnTimeShooterEnemyText(getGameMode()),
+            &spawnTimeShooterEnemyClicked, &spawnTimeShooterEnemyText, 1000, 500));
+
+    // Wall
+    std::function<IScenes *(AScenes *)> nbrOfWallClicked = [](AScenes *currentScene) {
+        GameParameters gameParameters = currentScene->getGameMode();
+        gameParameters.nbrOfWall += 1;
+        if (gameParameters.nbrOfWall > 10) {
+            gameParameters.nbrOfWall = 1;
+        }
+        currentScene->setGameMode(gameParameters);
+        return currentScene;
+    };
+
+    std::function<std::string(GameParameters)> nbrOfWallText = [](GameParameters gameParameters) {
+        return "number monster 3: " + std::to_string(gameParameters.nbrOfWall);
+    };
+
+    std::shared_ptr<Entity> nbrOfWallButton =
+        std::make_shared<Entity>(entityFactory.createUpdateButton(entityManager, componentManager,
+            textureManager, fontManager, nbrOfWallText(getGameMode()), &nbrOfWallClicked,
+            &nbrOfWallText, 1400, 250));
+
+    std::function<IScenes *(AScenes *)> spawnTimeWallClicked = [](AScenes *currentScene) {
+        GameParameters gameParameters = currentScene->getGameMode();
+        gameParameters.spawnTimeWall += 1;
+        if (gameParameters.spawnTimeWall > 10) {
+            gameParameters.spawnTimeWall = 1;
+        }
+        currentScene->setGameMode(gameParameters);
+        return currentScene;
+    };
+
+    std::function<std::string(GameParameters)> spawnTimeWallText =
+        [](GameParameters gameParameters) {
+            return "spawn time monster 3: " + std::to_string(gameParameters.spawnTimeWall);
+        };
+
+    std::shared_ptr<Entity> spawnTimeWallButton =
+        std::make_shared<Entity>(entityFactory.createUpdateButton(entityManager, componentManager,
+            textureManager, fontManager, spawnTimeWallText(getGameMode()), &spawnTimeWallClicked,
+            &spawnTimeWallText, 1400, 500));
+
+    // Save
+    std::function<IScenes *(AScenes *)> saveButtonClicked = [](AScenes *currentScene) {
+        currentScene->setScene(Scenes::Scene::GAME_LOOP);
+        return currentScene;
+    };
+    std::shared_ptr<Entity> saveButton =
+        std::make_shared<Entity>(entityFactory.createButton(entityManager, componentManager,
+            textureManager, fontManager, "Save", &saveButtonClicked, 1460, 800));
+
+    buttons.push_back(levelButton);
+    buttons.push_back(nbrOfBasicMonsterButton);
+    buttons.push_back(spawnTimeBasicMonsterButton);
+    buttons.push_back(nbrOfShooterEnemyButton);
+    buttons.push_back(spawnTimeShooterEnemyButton);
+    buttons.push_back(nbrOfWallButton);
+    buttons.push_back(spawnTimeWallButton);
+    buttons.push_back(saveButton);
+
+    sf::Clock clock;
+    sf::Event event;
+
+    while (_window.isOpen() && this->_currentScene == Scenes::Scene::CUSTOM_DIFFICULTY) {
+
+        handleEvents(event, componentManager, &_window, buttons, this);
+
+        updateSystem->updateSpritePositions(componentManager, entityManager);
+        renderSystem->render(componentManager);
+    }
 }
 
 /**
@@ -600,10 +873,7 @@ void Scenes::gameLoop()
     std::shared_ptr<RenderSystem> renderSystem =
         std::make_shared<RenderSystem>(_window, componentManager);
 
-    sf::Event event;
-    sf::Clock clock;
-
-    const int FIRE_COOLDOWN_MS = 500;
+    const int FIRE_COOLDOWN_MS = 300;
     std::chrono::steady_clock::time_point lastFireTime = std::chrono::steady_clock::now();
 
     auto movePlayer = [this](PlayerMovement playerMovement) {
@@ -631,6 +901,7 @@ void Scenes::gameLoop()
 
     audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
 
+    sf::Event event;
     while (_window.isOpen()) {
         while (_window.pollEvent(event)) {
 
@@ -698,15 +969,14 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         msg >> nbPlayers;
         r_type::net::Message<TypeMessage> response;
         if (nbPlayers == 0) {
-            GameParameters gameParameters;
-            gameParameters.levelType = GameState::LevelOne;
-            gameParameters.nbrOfBasicMonster = 5;
-            gameParameters.spawnTimeBasicMonster = 2;
-            gameParameters.nbrOfShooterEnemy = 1;
-            gameParameters.spawnTimeShooterEnemy = 2;
+            _currentScene = Scenes::Scene::CHOOSE_DIFFICULTY;
+            difficultyChoices();
+            difficultyChoicesCustomization();
+            GameParameters gameParameters = getGameMode();
             response.header.id = TypeMessage::GameParametersInformation;
             response << gameParameters;
             _networkClient.Send(response);
+            std::cout << "GameParameters sent" << std::endl;
         } else {
             response.header.id = TypeMessage::GameEntityInformation;
             _networkClient.Send(response);
@@ -771,7 +1041,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         response.header.id = TypeMessage::UpdateInfoBar;
         _networkClient.Send(response);
         msg >> entity;
-        _networkClient.updateInfoBar(entity, componentManager, textureManager);
+        _networkClient.updateInfoBar(entity, componentManager);
     } break;
     case TypeMessage::CreateEntityMessage: {
         EntityInformation entity;
@@ -820,6 +1090,16 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         _networkClient.animateEntity(id, rect, componentManager);
     } break;
     case TypeMessage::CreateEntityResponse: {
+    } break;
+    case TypeMessage::PlayerInformationResponse: {
+    } break;
+    case TypeMessage::GameBarInformationResponse: {
+    } break;
+    case TypeMessage::GameParametersInformation: {
+    } break;
+    case TypeMessage::GameEntityInformation: {
+    } break;
+    case TypeMessage::BackgroundInformationResponse: {
     } break;
     }
 }
