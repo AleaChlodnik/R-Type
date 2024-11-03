@@ -446,13 +446,13 @@ Entity EntityFactory::createForceMissile(
 }
 
 Entity EntityFactory::createPowerUpBlueLaserCrystal(
-    EntityManager &entityManager, ComponentManager &componentManager)
+    EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY)
 {
     Entity powerUpBlueLaserCrystal = entityManager.createEntity();
 
     MovementComponent movement;
     PowerUpComponent powerUpComponent;
-    PositionComponent startPosition(50, 50);
+    PositionComponent startPosition(posX, posY);
     VelocityComponent velocity{-0.2f, 0.0f};
     AnimationComponent animationComponent({0, 0}, {40, 36});
     SpriteDataComponent spriteData{
@@ -471,15 +471,6 @@ Entity EntityFactory::createPowerUpBlueLaserCrystal(
     componentManager.addComponent<MovementComponent>(powerUpBlueLaserCrystal.getId(), movement);
     componentManager.addComponent<AnimationComponent>(
         powerUpBlueLaserCrystal.getId(), animationComponent);
-
-    while (CheckEntityPosition(powerUpBlueLaserCrystal.getId(), componentManager, entityManager) !=
-        -1) {
-        auto powerUpBlueLaserCrystalPos =
-            componentManager.getComponent<PositionComponent>(powerUpBlueLaserCrystal.getId());
-        if (powerUpBlueLaserCrystalPos) {
-            powerUpBlueLaserCrystalPos.value()->y = static_cast<float>(rand() % 100);
-        }
-    }
 
     return powerUpBlueLaserCrystal;
 }
@@ -540,12 +531,12 @@ Entity EntityFactory::createWall(
     componentManager.addComponent<MovementComponent>(wall.getId(), movement);
     componentManager.addComponent<AnimationComponent>(wall.getId(), animationComponent);
 
-    // while (CheckEntityPosition(wall.getId(), componentManager, entityManager) != -1) {
-    //     auto wallPos = componentManager.getComponent<PositionComponent>(wall.getId());
-    //     if (wallPos) {
-    //         wallPos.value()->y = static_cast<float>(rand() % 100);
-    //     }
-    // }
+    while (CheckEntityPosition(wall.getId(), componentManager, entityManager) != -1) {
+        auto wallPos = componentManager.getComponent<PositionComponent>(wall.getId());
+        if (wallPos) {
+            wallPos.value()->y = static_cast<float>(rand() % 100);
+        }
+    }
 
     return wall;
 }

@@ -179,8 +179,8 @@ class EntityFactory : public IEntityFactory {
      * @param componentManager The component manager to use for adding components to the entity.
      * @return The created power-up blue laser crystal entity.
      */
-    Entity createPowerUpBlueLaserCrystal(
-        EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createPowerUpBlueLaserCrystal(EntityManager &entityManager,
+        ComponentManager &componentManager, int posX, int posY) override;
 
     /**
      * @brief Creates a wall entity.
