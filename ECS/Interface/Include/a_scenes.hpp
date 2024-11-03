@@ -9,7 +9,7 @@
 
 #include "Entities/entity.hpp"
 #include "i_scenes.hpp"
-#include <game_struct.h>
+#include <game_struct.hpp>
 #include <memory>
 
 /**
@@ -51,6 +51,7 @@ class AScenes : virtual public IScenes {
         SETTINGS_MENU,
         IN_GAME_MENU,
         CHOOSE_DIFFICULTY,
+        CUSTOM_DIFFICULTY,
         EXIT
     };
 

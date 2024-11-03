@@ -256,6 +256,11 @@ class IEntityFactory {
         std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
         float y = 0) = 0;
 
+    virtual Entity createUpdateButton(EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &textureManager,
+        FontManager &fontManager, std::string text, std::function<IScenes *(AScenes *)> *onClick,
+        std::function<std::string(GameParameters)> *updateText, float x, float y) = 0;
+
     virtual Entity createTailSegment(
         EntityManager &entityManager, ComponentManager &componentManager) = 0;
 

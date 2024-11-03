@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <string>
+
 /**
  * @brief GameState enum.
  *

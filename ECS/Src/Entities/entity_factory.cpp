@@ -562,11 +562,11 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
 
     PositionComponent pos(x, y);
     TextComponent textComponent(font, text, pos.x, pos.y);
-    OnClickComponent onClickfunction(*onClick);
+    OnClickComponent onClickFunction(*onClick);
     SpriteComponent sprite(texture, pos.x, pos.y, dimension, AScenes::SpriteType::OTHER);
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
-    componentManager.addComponent<OnClickComponent>(button.getId(), onClickfunction);
+    componentManager.addComponent<OnClickComponent>(button.getId(), onClickFunction);
     componentManager.addComponent<TextComponent>(button.getId(), textComponent);
     componentManager.addComponent<SpriteComponent>(button.getId(), sprite);
 
@@ -592,6 +592,33 @@ Entity EntityFactory::createSmallButton(EntityManager &entityManager,
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
     componentManager.addComponent<BindComponent>(button.getId(), bindComponent);
+    componentManager.addComponent<TextComponent>(button.getId(), textComponent);
+    componentManager.addComponent<SpriteComponent>(button.getId(), sprite);
+
+    return button;
+}
+
+Entity EntityFactory::createUpdateButton(EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager, FontManager &fontManager,
+    std::string text, std::function<IScenes *(AScenes *)> *onClick, std::function<std::string(GameParameters)> *updateTextFunction,float x,
+    float y)
+{
+    Entity button = entityManager.createEntity();
+
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Menus/small_button.png");
+    sf::Font &font = fontManager.getFont(FontFactory(FontPath::MAIN));
+    sf::Vector2f scale(1.0f, 1.0f);
+
+    PositionComponent pos(x, y);
+    TextComponent textComponent(font, text, pos.x, pos.y);
+    OnClickComponent onClickFunction(*onClick);
+    UpdateTextComponent updateText(*updateTextFunction);
+    SpriteComponent sprite(texture, pos.x, pos.y, scale, AScenes::SpriteType::OTHER);
+
+    componentManager.addComponent<PositionComponent>(button.getId(), pos);
+    componentManager.addComponent<UpdateTextComponent>(button.getId(), updateText);
+    componentManager.addComponent<OnClickComponent>(button.getId(), onClickFunction);
     componentManager.addComponent<TextComponent>(button.getId(), textComponent);
     componentManager.addComponent<SpriteComponent>(button.getId(), sprite);
 

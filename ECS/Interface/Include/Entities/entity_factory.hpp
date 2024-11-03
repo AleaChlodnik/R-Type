@@ -11,7 +11,7 @@
 #include "i_entity_factory.hpp"
 #include "i_scenes.hpp"
 #include <functional>
-#include <game_struct.h>
+#include <game_struct.hpp>
 
 /**
  * @class EntityFactory
@@ -234,6 +234,11 @@ class EntityFactory : public IEntityFactory {
         TextureManager &textureManager, FontManager &fontManager, std::string text,
         std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
         float y = 0) override;
+
+    Entity createUpdateButton(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &textureManager, FontManager &fontManager, std::string text,
+        std::function<IScenes *(AScenes *)> *onClick, std::function<std::string(GameParameters)> *updateText,
+        float x, float y) override;
 
     /**
      * @brief Creates an enemy missile entity.

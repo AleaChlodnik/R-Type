@@ -11,7 +11,7 @@
 #include <Components/components.hpp>
 #include <animation_system.hpp>
 #include <cmath>
-#include <game_struct.h>
+#include <game_struct.hpp>
 
 #include <i_level.hpp>
 

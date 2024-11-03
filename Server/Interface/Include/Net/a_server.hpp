@@ -18,7 +18,7 @@
 #include <error_handling.hpp>
 #include <filesystem>
 #include <fstream>
-#include <game_struct.h>
+#include <game_struct.hpp>
 #include <iostream>
 #include <level.hpp>
 #include <macros.hpp>
