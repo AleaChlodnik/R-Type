@@ -33,12 +33,12 @@ bool r_type::net::Server::OnClientConnect(
     msg.header.id = TypeMessage::ServerAccept;
     msg << _nbrOfPlayers;
     MessageClient(client, msg);
-    _nbrOfPlayers++;
     client->SetStatus(ServerStatus::INITIALISATION);
     client->_lastMsg = msg;
     client->_initEntities = _entityManager.getAllEntities();
     if (_nbrOfPlayers == 0)
         _watingPlayersReady = true;
+    _nbrOfPlayers++;
     return true;
 }
 
@@ -158,10 +158,8 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
                 client->SetStatus(ServerStatus::INITIALISATION);
             else if (client->GetLastStatus() == ServerStatus::TRANSITION)
                 client->SetStatus(ServerStatus::TRANSITION);
-            else {
+            else
                 client->SetStatus(ServerStatus::RUNNING);
-                std::cout << "[" << client->GetID() << "]: Sending Last Message" << std::endl;
-            }
         }
         default: {
             if (client->_lastMsg.size() > 0)
@@ -218,8 +216,10 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         } break;
         case TypeMessage::CreateEntityResponse: {
             if (client->_lastMsg.size() > 0 &&
-                client->_lastMsg.header.id != TypeMessage::CreateEntityMessage)
+                client->_lastMsg.header.id != TypeMessage::CreateEntityMessage) {
+                client->Send(client->_lastMsg);
                 return;
+            }
             std::cout << "[" << client->GetID() << "]: Entity Created" << std::endl;
             if (!client->_initEntities.empty()) {
                 std::cout << "[" << client->GetID() << "]: Sending Entity Information"
@@ -233,6 +233,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             } else {
                 std::cout << "[" << client->GetID() << "]: Finished Initialization" << std::endl;
                 client->SetStatus(ServerStatus::RUNNING);
+                _watingPlayersReady = false;
             }
         } break;
         default: {

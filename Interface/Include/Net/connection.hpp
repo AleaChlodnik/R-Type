@@ -188,9 +188,9 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
     r_type::net::Message<TypeMessage> _lastMsg;
     std::vector<Entity> _initEntities;
 
+    ServerStatus GetLastStatus() { return _lastStatus; }
     ServerStatus GetStatus() { return _status; }
 
-    ServerStatus GetLastStatus() { return _lastStatus; }
     void SetStatus(ServerStatus status)
     {
         _lastStatus = _status;

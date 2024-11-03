@@ -189,7 +189,7 @@ class IEntityFactory {
      * @return Entity The created Power-Up Blue Laser Crystal entity.
      */
     virtual Entity createPowerUpBlueLaserCrystal(
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+        EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY) = 0;
 
     /**
      * @brief Creates a wall entity with the specified position.
@@ -255,6 +255,11 @@ class IEntityFactory {
         FontManager &fontManager, std::string text,
         std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
         float y = 0) = 0;
+
+    virtual Entity createUpdateButton(EntityManager &entityManager,
+        ComponentManager &componentManager, TextureManager &textureManager,
+        FontManager &fontManager, std::string text, std::function<IScenes *(AScenes *)> *onClick,
+        std::function<std::string(GameParameters)> *updateText, float x, float y) = 0;
 
     virtual Entity createTailSegment(
         EntityManager &entityManager, ComponentManager &componentManager) = 0;

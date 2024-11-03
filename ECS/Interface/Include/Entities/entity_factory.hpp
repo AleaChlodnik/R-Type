@@ -11,7 +11,7 @@
 #include "i_entity_factory.hpp"
 #include "i_scenes.hpp"
 #include <functional>
-#include <game_struct.h>
+#include <game_struct.hpp>
 
 /**
  * @class EntityFactory
@@ -179,8 +179,8 @@ class EntityFactory : public IEntityFactory {
      * @param componentManager The component manager to use for adding components to the entity.
      * @return The created power-up blue laser crystal entity.
      */
-    Entity createPowerUpBlueLaserCrystal(
-        EntityManager &entityManager, ComponentManager &componentManager) override;
+    Entity createPowerUpBlueLaserCrystal(EntityManager &entityManager,
+        ComponentManager &componentManager, int posX, int posY) override;
 
     /**
      * @brief Creates a wall entity.
@@ -234,6 +234,11 @@ class EntityFactory : public IEntityFactory {
         TextureManager &textureManager, FontManager &fontManager, std::string text,
         std::function<IScenes *(AScenes *, AScenes::Actions)> *onClick, float x = 0,
         float y = 0) override;
+
+    Entity createUpdateButton(EntityManager &entityManager, ComponentManager &componentManager,
+        TextureManager &textureManager, FontManager &fontManager, std::string text,
+        std::function<IScenes *(AScenes *)> *onClick,
+        std::function<std::string(GameParameters)> *updateText, float x, float y) override;
 
     /**
      * @brief Creates an enemy missile entity.

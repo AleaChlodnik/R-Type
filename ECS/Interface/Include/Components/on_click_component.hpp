@@ -29,15 +29,15 @@
  * A function that is executed when the entity is clicked. The function takes a pointer to an
  * AScenes object and returns a pointer to an IScenes object.
  *
- * @fn OnClickComponent::OnClickComponent(std::function<IScenes *(AScenes *)> onClickfunction)
+ * @fn OnClickComponent::OnClickComponent(std::function<IScenes *(AScenes *)> onClickFunction)
  * @brief Constructs an OnClickComponent with the specified click handler function.
  *
- * @param onClickfunction The function to be executed when the entity is clicked.
+ * @param onClickFunction The function to be executed when the entity is clicked.
  */
 struct OnClickComponent {
     bool isClicked = false;
     std::function<IScenes *(AScenes *)> onClick;
 
-    OnClickComponent(std::function<IScenes *(AScenes *)> onClickfunction)
-        : onClick(onClickfunction){};
+    OnClickComponent(std::function<IScenes *(AScenes *)> onClickFunction)
+        : onClick(onClickFunction){};
 };

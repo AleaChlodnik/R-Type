@@ -76,6 +76,8 @@ class Scenes : virtual public AScenes {
      */
     void difficultyChoices();
 
+    void difficultyChoicesCustomization();
+
     /**
      * @brief Make the transition between levels
      *
