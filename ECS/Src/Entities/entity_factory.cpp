@@ -600,8 +600,8 @@ Entity EntityFactory::createSmallButton(EntityManager &entityManager,
 
 Entity EntityFactory::createUpdateButton(EntityManager &entityManager,
     ComponentManager &componentManager, TextureManager &textureManager, FontManager &fontManager,
-    std::string text, std::function<IScenes *(AScenes *)> *onClick, std::function<std::string(GameParameters)> *updateTextFunction,float x,
-    float y)
+    std::string text, std::function<IScenes *(AScenes *)> *onClick,
+    std::function<std::string(GameParameters)> *updateTextFunction, float x, float y)
 {
     Entity button = entityManager.createEntity();
 
