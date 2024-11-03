@@ -33,10 +33,13 @@ bool r_type::net::Server::OnClientConnect(
     msg.header.id = TypeMessage::ServerAccept;
     msg << _nbrOfPlayers;
     MessageClient(client, msg);
-    _nbrOfPlayers++;
     client->SetStatus(ServerStatus::INITIALISATION);
     client->_lastMsg = msg;
     client->_initEntities = _entityManager.getAllEntities();
+    std::cout << "Client connected" << _nbrOfPlayers << std::endl;
+    if (_nbrOfPlayers == 0)
+        _watingPlayersReady = true;
+    _nbrOfPlayers++;
     return true;
 }
 
@@ -154,12 +157,12 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
     } break;
     case ServerStatus::WAITING: {
         switch (msg.header.id) {
-        case TypeMessage::CreateEntityResponse: {
-            std::cout << "[" << client->GetID() << "]: Entity Created" << std::endl;
-        } break;
         case TypeMessage::DestroyEntityResponse: {
             std::cout << "[" << client->GetID() << "]: Entity Destroyed" << std::endl;
-            client->SetStatus(ServerStatus::RUNNING);
+            if (client->GetLastStatus() == ServerStatus::INITIALISATION)
+                client->SetStatus(ServerStatus::INITIALISATION);
+            else
+                client->SetStatus(ServerStatus::RUNNING);
         }
         default: {
             if (client->_lastMsg.size() > 0)
@@ -198,27 +201,10 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
         case TypeMessage::GameBarInformationResponse: {
             std::cout << "[" << client->GetID() << "]: Game Bar Information Received" << std::endl;
             r_type::net::Message<TypeMessage> response;
-            response.header.id = TypeMessage::BackgroundInformation;
+            response.header.id = TypeMessage::CreateEntityMessage;
             response << _level.GetEntityBackGround(this, _entityManager, _componentManager);
             MessageClient(client, response);
             client->_lastMsg = response;
-        } break;
-        case TypeMessage::BackgroundInformationResponse: {
-            std::cout << "[" << client->GetID() << "]: Background Information Received"
-                      << std::endl;
-            if (!client->_initEntities.empty()) {
-                std::cout << "[" << client->GetID() << "]: Sending Entity Information"
-                          << std::endl;
-                r_type::net::Message<TypeMessage> response;
-                response.header.id = TypeMessage::CreateEntityMessage;
-                response << FormatEntityInformation(client->_initEntities.front().getId());
-                client->_lastMsg = response;
-                client->Send(response);
-                client->_initEntities.erase(client->_initEntities.begin());
-            } else {
-                std::cout << "[" << client->GetID() << "]: Finished Initialization" << std::endl;
-                client->SetStatus(ServerStatus::RUNNING);
-            }
         } break;
         case TypeMessage::PlayerInformationResponse: {
             std::cout << "[" << client->GetID() << "]: Player Information Received" << std::endl;
@@ -230,6 +216,11 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             client->_lastMsg = response;
         } break;
         case TypeMessage::CreateEntityResponse: {
+            if (client->_lastMsg.size() > 0 &&
+                client->_lastMsg.header.id != TypeMessage::CreateEntityMessage) {
+                client->Send(client->_lastMsg);
+                return;
+            }
             std::cout << "[" << client->GetID() << "]: Entity Created" << std::endl;
             if (!client->_initEntities.empty()) {
                 std::cout << "[" << client->GetID() << "]: Sending Entity Information"
@@ -243,6 +234,7 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             } else {
                 std::cout << "[" << client->GetID() << "]: Finished Initialization" << std::endl;
                 client->SetStatus(ServerStatus::RUNNING);
+                _watingPlayersReady = false;
             }
         } break;
         default: {
