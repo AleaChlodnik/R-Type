@@ -283,6 +283,17 @@ template <typename T> class Level : virtual public ILevel<T> {
                 }
                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
                     entitiesToRemove.end()) {
+                    if (rand() % 10 == 0) {
+                        auto posEnemy =
+                            componentManager.getComponent<PositionComponent>(entityId2);
+                        if (posEnemy) {
+                            Entity weapon =
+                                server->GetEntityFactory().createPowerUpBlueLaserCrystal(
+                                    entityManager, componentManager, posEnemy.value()->x,
+                                    posEnemy.value()->y);
+                            entitiesToAdd.push_back(weapon.getId());
+                        }
+                    }
                     entitiesToRemove.push_back(entityId2);
                 }
                 int playerId = playerMissile1.value()->playerId;
@@ -305,6 +316,18 @@ template <typename T> class Level : virtual public ILevel<T> {
                 }
                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
                     entitiesToRemove.end()) {
+                    auto posEnemy = componentManager.getComponent<PositionComponent>(entityId2);
+                    if (rand() % 10 == 0) {
+                        auto posEnemy =
+                            componentManager.getComponent<PositionComponent>(entityId2);
+                        if (posEnemy) {
+                            Entity weapon =
+                                server->GetEntityFactory().createPowerUpBlueLaserCrystal(
+                                    entityManager, componentManager, posEnemy.value()->x,
+                                    posEnemy.value()->y);
+                            entitiesToAdd.push_back(weapon.getId());
+                        }
+                    }
                     entitiesToRemove.push_back(entityId2);
                 }
                 auto weapon = componentManager.getComponent<ForceWeaponComponent>(
