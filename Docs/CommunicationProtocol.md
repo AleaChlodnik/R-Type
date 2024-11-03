@@ -70,6 +70,97 @@ Each message consists of the following parts:
 1. **Message ID** (uint32): Identifies the type of message.
 2. **Payload**: Contains specific data fields based on the message type. Fields are detailed below for each message.
 
+## Message Types
+
+Each message begins with a `TypeMessage` field, which is an `enum` represented as a `uint32_t` (4 bytes). This field identifies the message's purpose within the communication system.
+
+### Server to Client Messages
+
+#### ServerAccept
+
+- **TypeMessage**: `ServerAccept` (4 bytes)
+- **Purpose**: Sent by the server to accept a client connection request.
+- **Data**: No additional data.
+
+#### ServerDeny
+
+- **TypeMessage**: `ServerDeny` (4 bytes)
+- **Purpose**: Denies a client connection attempt.
+- **Data**: No additional data.
+
+#### ServerPing
+
+- **TypeMessage**: `ServerPing` (4 bytes)
+- **Purpose**: Sent periodically to check client connectivity.
+- **Data**: No additional data.
+
+#### MessageAll
+
+- **TypeMessage**: `MessageAll` (4 bytes)
+- **Purpose**: Sends a broadcast message to all connected clients.
+- **Data**:
+  - **message**: String message (variable length, depending on message length)
+
+#### UpdateEntity
+
+- **TypeMessage**: `UpdateEntity` (4 bytes)
+- **Purpose**: Informs clients of entity updates within the game.
+- **Data**:
+  - **entityID**: Unique identifier of the entity (4 bytes, `int`)
+  - **positionX**: X-coordinate (4 bytes, `float`)
+  - **positionY**: Y-coordinate (4 bytes, `float`)
+  - **velocityX**: X-velocity (4 bytes, `float`)
+  - **velocityY**: Y-velocity (4 bytes, `float`)
+
+#### GameBarInformation
+
+- **TypeMessage**: `GameBarInformation` (4 bytes)
+- **Purpose**: Updates clients with information for the in-game bar (e.g., score, health).
+- **Data**:
+  - **score**: Current player score (4 bytes, `int`)
+  - **health**: Player's health (4 bytes, `int`)
+
+### Client to Server Messages
+
+#### ClientConnect
+
+- **TypeMessage**: `ClientConnect` (4 bytes)
+- **Purpose**: Requests connection to the server.
+- **Data**:
+  - **playerName**: Player’s username (variable length, string)
+
+#### CreateEntityMessage
+
+- **TypeMessage**: `CreateEntityMessage` (4 bytes)
+- **Purpose**: Requests the server to create a new entity.
+- **Data**:
+  - **entityType**: Type of entity (4 bytes, `enum`)
+
+#### MoveEntityMessage
+
+- **TypeMessage**: `MoveEntityMessage` (4 bytes)
+- **Purpose**: Notifies the server of an entity's movement.
+- **Data**:
+  - **entityID**: Unique identifier of the entity (4 bytes, `int`)
+  - **direction**: Movement direction (4 bytes, PlayerMovement `enum`)
+
+### DestroyEntityMessage
+
+- **TypeMessage**: DestroyEntityMessage (4 bytes)
+- **Purpose**: Requests the server to destroy an entity.
+- **Data**:
+  - **entityID**: Unique identifier of the entity to be destroyed (4 bytes, int)
+
+## Bidirectional Messages
+
+### AnimateEntityMessage
+
+- **TypeMessage**: `AnimateEntityMessage` (4 bytes)
+- **Purpose**: Controls entity animation state.
+- **Data**:
+  - **entityID**: Unique identifier of the entity (4 bytes, `int`)
+  - **animationState**: Desired animation state (4 bytes, `int`)
+
 ## Client-Server Protocol Overview
 
 ### 1. Introduction
@@ -162,23 +253,3 @@ This table outlines the communication flow for moving an entity:
 
 **Transmission**: The Client sends a `MoveEntityMessage` to the Server, containing data (in `vf2d` format) about an entity that needs to be moved.
 **Response**: The server processes the request and returns an `UpdateEntity` message containing the entity's information (in `EntityInformation` format), provided that no collision error is detected.
-
----
-
-<!-- ### Fire Bullet Message Exchange -->
-
-<!-- This table represents the process for handling bullet firing events between the client and server: -->
-
-<!-- |         Client            | Transmission     |          Server           | -->
-<!-- |---------------------------|------------------|---------------------------| -->
-<!-- |                           |       Send       |                           | -->
-<!-- | header: `FireBulletMessage` | ---------------> |  process message          | -->
-<!-- | body: `entityInfo_t`        |                  |                           | -->
-<!-- |                           |     Response     |                           | -->
-<!-- |                           | <--------------- | header: `FireBulletResponse` | -->
-<!-- |                           |                  | body: `entityInfo_t`        | -->
-
-<!-- **Transmission**: The client sends a `FireBulletMessage` with data about a bullet (in `entityInfo_t` format) to the server. -->
-<!-- **Response**: The server processes the message and responds with a confirmation `FireBulletResponse`, which the client then receives. -->
-
----
