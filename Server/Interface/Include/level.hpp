@@ -832,16 +832,19 @@ template <typename T> class Level : virtual public ILevel<T> {
                 auto &backgroundComponent = pair.second;
                 if (auto backgroundInfo =
                         std::any_cast<BackgroundComponent>(&backgroundComponent)) {
-                    msg << background;
+                    msg << entityId;
                     server->MessageAllClients(msg);
                     componentManager.removeEntityFromAllComponents(entityId);
                     entityManager.removeEntity(entityId);
-                    msg.header.id = TypeMessage::CreateEntityMessage;
-                    msg << InitiateBackground(server, entityManager, componentManager);
-                    server->MessageAllClients(msg);
+                    break;
                 }
             }
         }
+        r_type::net::Message<TypeMessage> newMsg;
+        newMsg.header.id = TypeMessage::CreateEntityMessage;
+        EntityInformation entityInfo = InitiateBackground(server, entityManager, componentManager);
+        newMsg << entityInfo;
+        server->MessageAllClients(newMsg);
     }
 
     GameState GetLevel() override { return _gameParameters.levelType; }

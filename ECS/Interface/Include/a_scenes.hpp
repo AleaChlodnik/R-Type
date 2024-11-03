@@ -52,6 +52,7 @@ class AScenes : virtual public IScenes {
         IN_GAME_MENU,
         CHOOSE_DIFFICULTY,
         CUSTOM_DIFFICULTY,
+        TRANSITION_LEVEL,
         EXIT
     };
 
@@ -316,6 +317,24 @@ class AScenes : virtual public IScenes {
      */
     int getPort() const;
 
+    /**
+     * @brief Sets the player ready status.
+     *
+     * This function sets the player ready status to the specified value.
+     *
+     * @param ready The player ready status to set.
+     */
+    void SetPlayerReady(bool ready) { _playerReady = ready; };
+
+    /**
+     * @brief Retrieves the player ready status.
+     *
+     * This function returns the player ready status.
+     *
+     * @return bool The player ready status.
+     */
+    bool GetPlayerReady() const { return _playerReady; };
+
   protected:
     /**
      * @brief Represents the current game mode.
@@ -380,4 +399,6 @@ class AScenes : virtual public IScenes {
      * number on which the server is listening for incoming connections.
      */
     int _port;
+
+    bool _playerReady = false;
 };
