@@ -228,6 +228,10 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                         client->_lastMsg = msg;
                         client->SetStatus(ServerStatus::WAITING);
                     }
+                    if (msg.header.id == TypeMessage::GameTransitionMode) {
+                        client->_lastMsg = msg;
+                        client->SetStatus(ServerStatus::TRANSITION);
+                    }
                 }
             } else {
                 OnClientDisconnect(client);
@@ -307,26 +311,47 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
             _level.Update(this, _componentManager, _entityManager, newClock, &bUpdateEntities);
         });
 
-        if (_bossDefeated) {
-            switch (_level.GetLevel()) {
-            case GameState::LevelOne: {
-                _level.ChangeLevel(GameState::LevelTwo);
-                _level.ChangeBackground(this, _entityManager, _componentManager);
-            } break;
-            case GameState::LevelTwo: {
-                _level.ChangeLevel(GameState::LevelThree);
-                _level.ChangeBackground(this, _entityManager, _componentManager);
-            } break;
-            case GameState::LevelThree: {
-                _level.ChangeLevel(GameState::LevelOne);
-                _level.ChangeBackground(this, _entityManager, _componentManager);
-            } break;
-
-            default:
-                break;
+        auto setToAllClients = [this](ServerStatus type) {
+            for (auto &client : _deqConnections) {
+                if (client && client->IsConnected()) {
+                    client->SetStatus(type);
+                }
             }
-            _bossDefeated = false;
-            _endOfLevel = false;
+        };
+
+        if (_bossDefeated) {
+            if (!_watingPlayersReady) {
+                switch (_level.GetLevel()) {
+                case GameState::LevelOne: {
+                    _level.ChangeLevel(GameState::LevelTwo);
+                } break;
+                case GameState::LevelTwo: {
+                    _level.ChangeLevel(GameState::LevelThree);
+                } break;
+                case GameState::LevelThree: {
+                    _level.ChangeLevel(GameState::LevelOne);
+                } break;
+
+                default:
+                    break;
+                }
+                r_type::net::Message<T> msg;
+                _watingPlayersReady = true;
+                msg.header.id = TypeMessage::GameTransitionMode;
+                MessageAllClients(msg);
+            }
+            if (_playerReady == _nbrOfPlayers) {
+                _endOfLevel = false;
+                _bossDefeated = false;
+                _clock = std::chrono::system_clock::now();
+                r_type::net::Message<T> msg;
+                msg.header.id = TypeMessage::FinishInitialization;
+                MessageAllClients(msg);
+                setToAllClients(ServerStatus::RUNNING);
+                _watingPlayersReady = false;
+                _playerReady = 0;
+                _level.ChangeBackground(this, _entityManager, _componentManager);
+            }
         }
 
         size_t nMessageCount = 0;
@@ -1085,6 +1110,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     int _port;
 
     r_type::Level<T> _level;
+
+    int _playerReady = 0;
 };
 } // namespace net
 } // namespace r_type

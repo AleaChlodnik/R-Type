@@ -161,6 +161,8 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             std::cout << "[" << client->GetID() << "]: Entity Destroyed" << std::endl;
             if (client->GetLastStatus() == ServerStatus::INITIALISATION)
                 client->SetStatus(ServerStatus::INITIALISATION);
+            else if (client->GetLastStatus() == ServerStatus::TRANSITION)
+                client->SetStatus(ServerStatus::TRANSITION);
             else
                 client->SetStatus(ServerStatus::RUNNING);
         }
@@ -243,6 +245,29 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
                 client->Send(client->_lastMsg);
         } break;
         }
-    }
+    } break;
+    case ServerStatus::TRANSITION: {
+        std::cout << "[" << client->GetID() << "]: Transition Mode" << std::endl;
+        switch (msg.header.id) {
+        case TypeMessage::GameTransitionModeResponse: {
+            std::cout << "[" << client->GetID() << "]: Game Transition Response Received"
+                      << std::endl;
+            r_type::net::Message<TypeMessage> response;
+            response.header.id = TypeMessage::IsPlayerReady;
+            MessageClient(client, response);
+            client->_lastMsg = response;
+        } break;
+        case TypeMessage::PlayerReady: {
+            std::cout << "[" << client->GetID() << "]: Player Ready Response Received"
+                      << std::endl;
+            _playerReady++;
+        }
+        default: {
+            client->Send(client->_lastMsg);
+            std::cout << "[" << client->GetID() << "]: Sending Last Message" << std::endl;
+        } break;
+        }
+        break;
+    } break;
     }
 }
