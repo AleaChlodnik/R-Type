@@ -189,7 +189,7 @@ class IEntityFactory {
      * @return Entity The created Power-Up Blue Laser Crystal entity.
      */
     virtual Entity createPowerUpBlueLaserCrystal(
-        EntityManager &entityManager, ComponentManager &componentManager) = 0;
+        EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY) = 0;
 
     /**
      * @brief Creates a wall entity with the specified position.
