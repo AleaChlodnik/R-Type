@@ -791,7 +791,8 @@ template <typename T> class Level : virtual public ILevel<T> {
                     componentManager.removeEntityFromAllComponents(entityId);
                     entityManager.removeEntity(entityId);
                     msg.header.id = TypeMessage::CreateEntityMessage;
-                    EntityInformation entity = InitiateBackground(server, entityManager, componentManager);
+                    EntityInformation entity =
+                        InitiateBackground(server, entityManager, componentManager);
                     std::cout << "Background entity id: " << entity.uniqueID << std::endl;
                     std::cout << "Background entity sprite: " << entity.spriteData.spritePath
                               << std::endl;
