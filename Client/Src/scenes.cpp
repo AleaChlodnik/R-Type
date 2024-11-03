@@ -817,7 +817,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
         std::cout << "Hello from [" << clientID << "]" << std::endl;
     } break;
     case TypeMessage::PlayerInformation: {
-        std::cout <<  "PlayerInformation" << std::endl;
+        std::cout << "PlayerInformation" << std::endl;
         EntityInformation entity;
         r_type::net::Message<TypeMessage> response;
         response.header.id = TypeMessage::PlayerInformationResponse;

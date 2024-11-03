@@ -62,7 +62,7 @@ class IScenes {
      */
     virtual void TransitionLevel() = 0;
 
-        /**
+    /**
      * @brief Sets the player ready status.
      *
      * This function sets the player ready status to the specified value.
