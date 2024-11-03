@@ -1064,6 +1064,7 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     ComponentManager &componentManager, TextureManager &textureManager, FontManager &fontManager,
     std::shared_ptr<AudioSystem> &audioSystem)
 {
+    audioSystem->playBackgroundMusic(SoundFactory(ActionType::Background));
     sf::Vector2u ogWindowSize = _window.getSize();
     sf::Vector2u windowSize = _networkClient.getWindowSize();
 
