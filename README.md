@@ -84,7 +84,7 @@ cmake --build build -- /maxcpucount:4
 
 [Developer Documentation](./Docs/DeveloperDocumentation.md)
 
-[Protocol Documentation](./Docs/CumunicationProtocol.md)
+[Protocol Documentation](./Docs/CommunicationProtocol.md)
 
 [Comparative Study Documentation](./Docs/ComparativeStudy.md)
 
@@ -120,4 +120,4 @@ Please adhere to this project's `code of conduct`.
 
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![App Screenshot](./Docs/Screenshot_2024-11-03_22-19-22.png)
