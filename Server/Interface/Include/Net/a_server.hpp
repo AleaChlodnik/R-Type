@@ -329,7 +329,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     _level.ChangeLevel(GameState::LevelThree);
                 } break;
                 case GameState::LevelThree: {
-                    _level.ChangeLevel(GameState::LevelOne);
+                    _level.ChangeLevel(GameState::Win);
                 } break;
 
                 default:

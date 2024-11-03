@@ -9,6 +9,7 @@
 
 #include <Net/a_client.hpp>
 #include <SFML/Graphics.hpp>
+#include <fstream>
 #include <iostream>
 
 namespace r_type {
@@ -164,6 +165,36 @@ class Client : virtual public r_type::net::AClient<TypeMessage> {
                     entitySprite->sprite.setTextureRect(newRect);
                 }
             }
+        }
+    }
+
+    void displayEndOfGame(ComponentManager &componentManager, TextureManager &textureManager,
+        FontManager &fontManager, sf::Vector2u windowSize)
+    {
+        float yPos = 50;
+        float xPos = windowSize.x / 2;
+        sf::Font &font = fontManager.getFont(FontFactory(FontPath::MAIN));
+        const std::string winText = "You Win!";
+        TextComponent textComponent(font, winText, xPos, 40, 40);
+        componentManager.addComponent<TextComponent>(3, textComponent);
+
+        std::vector<std::string> scores;
+        std::ifstream file("GameScores/scores.txt");
+        if (file.is_open()) {
+            std::string line;
+            while (std::getline(file, line)) {
+                scores.push_back(line);
+            }
+            file.close();
+        } else {
+            throw failedToOpenFile();
+        }
+        int id = 4;
+        for (const auto &score : scores) {
+            TextComponent textComponent(font, score, xPos, yPos, 30);
+            componentManager.addComponent<TextComponent>(id, textComponent);
+            yPos += 30.0f;
+            id++;
         }
     }
 };
