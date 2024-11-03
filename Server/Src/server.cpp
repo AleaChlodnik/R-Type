@@ -246,7 +246,8 @@ void r_type::net::Server::OnMessage(std::shared_ptr<r_type::net::Connection<Type
             }
         } break;
         default: {
-            if (client->_lastMsg.size() > 0 && client->_lastMsg.header.id != TypeMessage::ServerAccept)
+            if (client->_lastMsg.size() > 0 &&
+                client->_lastMsg.header.id != TypeMessage::ServerAccept)
                 client->Send(client->_lastMsg);
         } break;
         }

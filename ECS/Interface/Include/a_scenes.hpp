@@ -9,8 +9,8 @@
 
 #include "Entities/entity.hpp"
 #include "i_scenes.hpp"
-#include <memory>
 #include <game_struct.h>
+#include <memory>
 
 /**
  * @class AbstractScenes
