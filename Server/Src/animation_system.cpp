@@ -264,6 +264,11 @@ void AnimationSystem::AnimationEntities(ComponentManager &componentManager,
                 }
             }
 
+            auto boss = componentManager.getComponent<BossComponent>(entity.getId());
+            if (boss) {
+                animateBoss(boss, animation);
+            }
+
             // animate system for background
             if (auto background =
                     componentManager.getComponent<BackgroundComponent>(entity.getId())) {
@@ -508,7 +513,6 @@ static void animateForceMissileLevel3(std::optional<AnimationComponent *> &anima
 void AnimationSystem::animateForceMissile(std::optional<ForceWeaponComponent *> &forceWeapon,
     std::optional<AnimationComponent *> &animation)
 {
-    std::cout << "forceWeapon->level: " << forceWeapon.value()->level << std::endl;
     switch (forceWeapon.value()->level) {
     case 1:
         animation.value()->dimension = {16, 4};
@@ -525,5 +529,40 @@ void AnimationSystem::animateForceMissile(std::optional<ForceWeaponComponent *> 
     default:
         animateForceMissileLevel1(animation);
         break;
+    }
+}
+
+vf2d animationBossFactory(AnimationBoss animation)
+{
+    switch (animation) {
+    case AnimationBoss::BOSS_DEFAULT: {
+        return {24 + 161.25 * 0, 0};
+    } break;
+    case AnimationBoss::BOSS_1: {
+        return {24 + 161.25 * 1, 0};
+    } break;
+    case AnimationBoss::BOSS_2: {
+        return {24 + 161.25 * 2, 0};
+    } break;
+    case AnimationBoss::BOSS_3: {
+        return {24 + 161.25 * 3, 0};
+    } break;
+    }
+    return {0, 0};
+}
+
+void AnimationSystem::animateBoss(
+    std::optional<BossComponent *> &boss, std::optional<AnimationComponent *> &animation)
+{
+    if (animation.value()->offset == animationBossFactory(AnimationBoss::BOSS_DEFAULT)) {
+        animation.value()->offset = animationBossFactory(AnimationBoss::BOSS_1);
+    } else if (animation.value()->offset == animationBossFactory(AnimationBoss::BOSS_1)) {
+        animation.value()->offset = animationBossFactory(AnimationBoss::BOSS_2);
+    } else if (animation.value()->offset == animationBossFactory(AnimationBoss::BOSS_2)) {
+        animation.value()->offset = animationBossFactory(AnimationBoss::BOSS_3);
+    } else if (animation.value()->offset == animationBossFactory(AnimationBoss::BOSS_3)) {
+        animation.value()->offset = animationBossFactory(AnimationBoss::BOSS_DEFAULT);
+    } else {
+        animation.value()->offset = animationBossFactory(AnimationBoss::BOSS_DEFAULT);
     }
 }

@@ -861,6 +861,16 @@ void Scenes::HandleMessage(r_type::net::Message<TypeMessage> &msg,
     } break;
     case TypeMessage::CreateEntityResponse: {
     } break;
+    case TypeMessage::PlayerInformationResponse: {
+    } break;
+    case TypeMessage::GameBarInformationResponse: {
+    } break;
+    case TypeMessage::GameParametersInformation: {
+    } break;
+    case TypeMessage::GameEntityInformation: {
+    } break;
+    case TypeMessage::BackgroundInformationResponse: {
+    } break;
     }
 }
 

@@ -101,6 +101,14 @@ enum class AnimationForceMissile3 : uint32_t
     FORCE_MISSILE_7
 };
 
+enum class AnimationBoss : uint32_t
+{
+    BOSS_DEFAULT,
+    BOSS_1,
+    BOSS_2,
+    BOSS_3
+};
+
 /**
  * @brief get if two animations are different.
  *
@@ -223,6 +231,9 @@ class AnimationSystem : public ISystem {
      */
     void animateForceMissile(std::optional<ForceWeaponComponent *> &forceWeapon,
         std::optional<AnimationComponent *> &animation);
+
+    void animateBoss(
+        std::optional<BossComponent *> &boss, std::optional<AnimationComponent *> &animation);
 
   private:
     /**
