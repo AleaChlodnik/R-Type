@@ -34,7 +34,8 @@ void RenderSystem::render(ComponentManager &componentManager)
                     continue;
                 }
 
-                ///////////////////////////////////////////////////////////////////////////// Dont forget to remove
+                ///////////////////////////////////////////////////////////////////////////// Dont
+                ///forget to remove
                 sf::RectangleShape square(sf::Vector2f(sprite->hitboxX, sprite->hitboxY));
                 square.setPosition(sprite->sprite.getPosition());
                 square.setOrigin(sf::Vector2f(sprite->hitboxX / 2, sprite->hitboxY / 2));

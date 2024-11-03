@@ -577,7 +577,8 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
                     msg << tailSegId;
                     MessageAllClients(msg);
                     RemoveEntity(tailSegId);
-                    // std::cout << "Tail segment removed" << std::endl; //////////////////////////////////////
+                    // std::cout << "Tail segment removed" << std::endl;
+                    // //////////////////////////////////////
                 }
             }
         }
