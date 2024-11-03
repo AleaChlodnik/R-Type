@@ -54,7 +54,7 @@ void RenderSystem::render(ComponentManager &componentManager)
             auto &textComponentData = pair.second;
             if (auto *textComponent = std::any_cast<TextComponent>(&textComponentData)) {
                 textComponent->text.setOrigin(textComponent->text.getLocalBounds().width / 2.0f,
-                    textComponent->text.getLocalBounds().height / 2.0f);
+                    textComponent->text.getLocalBounds().height);
                 _window.draw(textComponent->text);
             }
         }
