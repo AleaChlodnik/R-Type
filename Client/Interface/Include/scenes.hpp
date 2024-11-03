@@ -100,6 +100,11 @@ class Scenes : virtual public AScenes {
      */
     sf::RenderWindow *getRenderWindow() { return &_window; }
 
+    void TransitionLevel();
+
+    void HandleTransitionLevelMessage(r_type::net::Message<TypeMessage> &msg,
+        ComponentManager &componentManager, TextureManager &textureManager);
+
     void run();
 
     sf::RenderWindow _window;
