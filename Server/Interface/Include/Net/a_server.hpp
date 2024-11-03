@@ -18,7 +18,7 @@
 #include <error_handling.hpp>
 #include <filesystem>
 #include <fstream>
-#include <game_struct.h>
+#include <game_struct.hpp>
 #include <iostream>
 #include <level.hpp>
 #include <macros.hpp>
@@ -1041,6 +1041,7 @@ template <typename T> class AServer : virtual public r_type::net::IServer<T> {
     bool _endOfLevel = false;
     bool _bossActive = false;
     bool _bossDefeated = false;
+    bool _watingPlayersReady = false;
 
     /**
      * @brief A container that maps client IDs to player IDs.

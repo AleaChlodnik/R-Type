@@ -188,8 +188,13 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
     r_type::net::Message<TypeMessage> _lastMsg;
     std::vector<Entity> _initEntities;
 
+    ServerStatus GetLastStatus() { return _lastStatus; }
     ServerStatus GetStatus() { return _status; }
-    void SetStatus(ServerStatus status) { _status = status; }
+    void SetStatus(ServerStatus status)
+    {
+        _lastStatus = _status;
+        _status = status;
+    }
 
   private:
     /**
@@ -372,7 +377,8 @@ template <typename T> class Connection : public std::enable_shared_from_this<Con
     uint64_t m_nHandshakeOut = 0;
     uint64_t m_nHandshakeIn = 0;
     uint64_t m_nHandshakeCheck = 0;
-    ServerStatus _status;
+    ServerStatus _status = ServerStatus::INITIALISATION;
+    ServerStatus _lastStatus;
 };
 } // namespace net
 } // namespace r_type

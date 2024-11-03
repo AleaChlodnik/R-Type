@@ -11,7 +11,7 @@
 #include <Components/components.hpp>
 #include <animation_system.hpp>
 #include <cmath>
-#include <game_struct.h>
+#include <game_struct.hpp>
 
 #include <i_level.hpp>
 
@@ -55,6 +55,8 @@ template <typename T> class Level : virtual public ILevel<T> {
         EntityManager &entityManager, std::chrono::system_clock::time_point newClock,
         bool *bUpdateEntities) override
     {
+        if (server->_watingPlayersReady)
+            return;
         while (std::chrono::duration_cast<std::chrono::milliseconds>(newClock - server->GetClock())
                    .count() > 100) {
             *bUpdateEntities = true;
@@ -300,6 +302,17 @@ template <typename T> class Level : virtual public ILevel<T> {
                 }
                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
                     entitiesToRemove.end()) {
+                    if (rand() % 10 == 0) {
+                        auto posEnemy =
+                            componentManager.getComponent<PositionComponent>(entityId2);
+                        if (posEnemy) {
+                            Entity weapon =
+                                server->GetEntityFactory().createPowerUpBlueLaserCrystal(
+                                    entityManager, componentManager, posEnemy.value()->x,
+                                    posEnemy.value()->y);
+                            entitiesToAdd.push_back(weapon.getId());
+                        }
+                    }
                     entitiesToRemove.push_back(entityId2);
                 }
                 int playerId = playerMissile1.value()->playerId;
@@ -343,6 +356,18 @@ template <typename T> class Level : virtual public ILevel<T> {
                 }
                 if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
                     entitiesToRemove.end()) {
+                    auto posEnemy = componentManager.getComponent<PositionComponent>(entityId2);
+                    if (rand() % 10 == 0) {
+                        auto posEnemy =
+                            componentManager.getComponent<PositionComponent>(entityId2);
+                        if (posEnemy) {
+                            Entity weapon =
+                                server->GetEntityFactory().createPowerUpBlueLaserCrystal(
+                                    entityManager, componentManager, posEnemy.value()->x,
+                                    posEnemy.value()->y);
+                            entitiesToAdd.push_back(weapon.getId());
+                        }
+                    }
                     entitiesToRemove.push_back(entityId2);
                 }
                 auto weapon = componentManager.getComponent<ForceWeaponComponent>(
@@ -728,23 +753,23 @@ template <typename T> class Level : virtual public ILevel<T> {
         } break;
         case EntityFactory::EnemyType::Wall: {
             int i = 0;
-            int posX = 1;
+            int posX = 99;
             int posY = static_cast<int>((rand() % 70) + 10);
 
-            // while (i < nbrOfEnemy) {
-            //     Entity wall = server->GetEntityFactory().createWall(
-            //         entityManager, componentManager, posX, posY);
-            //     posX += 5;
-            //     posY += (static_cast<int>(rand() % 20) - static_cast<int>(rand() % 10));
+            while (i < nbrOfEnemy) {
+                Entity wall = server->GetEntityFactory().createWall(
+                    entityManager, componentManager, posX, posY);
+                posX += 5;
+                posY += (static_cast<int>(rand() % 20) - static_cast<int>(rand() % 10));
 
-            //     if (posY > 90)
-            //         posY = static_cast<int>((rand() % 70) + 10);
-            //     r_type::net::Message<TypeMessage> msg;
-            //     msg.header.id = TypeMessage::CreateEntityMessage;
-            //     msg << server->FormatEntityInformation(wall.getId());
-            //     server->MessageAllClients(msg);
-            //     i++;
-            // }
+                if (posY > 90)
+                    posY = static_cast<int>((rand() % 70) + 10);
+                r_type::net::Message<TypeMessage> msg;
+                msg.header.id = TypeMessage::CreateEntityMessage;
+                msg << server->FormatEntityInformation(wall.getId());
+                server->MessageAllClients(msg);
+                i++;
+            }
         } break;
         case EntityFactory::EnemyType::Boss: {
             server->InitBoss(server);

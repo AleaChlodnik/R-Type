@@ -101,6 +101,14 @@ enum class AnimationForceMissile3 : uint32_t
     FORCE_MISSILE_7
 };
 
+enum class AnimationBoss : uint32_t
+{
+    BOSS_DEFAULT,
+    BOSS_1,
+    BOSS_2,
+    BOSS_3
+};
+
 /**
  * @brief get if two animations are different.
  *
@@ -110,17 +118,6 @@ enum class AnimationForceMissile3 : uint32_t
  * @return  bool true if the animations are different, false otherwise.
  */
 bool operator!=(AnimationComponent animation, AnimationComponent other);
-
-/**
- * @brief Factory function to create a ship animation.
- *
- * This function takes an AnimationShip object and generates a corresponding
- * vf2d object that represents the animation of the ship.
- *
- * @param animation The AnimationShip object containing the animation details.
- * @return vf2d The generated animation for the ship.
- */
-vf2d animationShipFactory(AnimationShip animation);
 
 /**
  * @class AnimationSystem
@@ -205,7 +202,7 @@ class AnimationSystem : public ISystem {
      * @param animation An optional reference to the AnimationComponent.
      */
     void animateForceWeapon(std::optional<ForceWeaponComponent *> &forceWeapon,
-        std::optional<AnimationComponent *> &animation);
+        std::optional<AnimationComponent *> &animation, std::optional<HitboxComponent *> &hitbox);
 
     /**
      * @brief Animates the force missile based on the provided components.
@@ -222,7 +219,10 @@ class AnimationSystem : public ISystem {
      *                  for the force missile.
      */
     void animateForceMissile(std::optional<ForceWeaponComponent *> &forceWeapon,
-        std::optional<AnimationComponent *> &animation);
+        std::optional<AnimationComponent *> &animation, std::optional<HitboxComponent *> &hitbox);
+
+    void animateBoss(
+        std::optional<BossComponent *> &boss, std::optional<AnimationComponent *> &animation);
 
   private:
     /**

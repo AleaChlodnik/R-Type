@@ -446,13 +446,13 @@ Entity EntityFactory::createForceMissile(
 }
 
 Entity EntityFactory::createPowerUpBlueLaserCrystal(
-    EntityManager &entityManager, ComponentManager &componentManager)
+    EntityManager &entityManager, ComponentManager &componentManager, int posX, int posY)
 {
     Entity powerUpBlueLaserCrystal = entityManager.createEntity();
 
     MovementComponent movement;
     PowerUpComponent powerUpComponent;
-    PositionComponent startPosition(50, 50);
+    PositionComponent startPosition(posX, posY);
     VelocityComponent velocity{-0.2f, 0.0f};
     AnimationComponent animationComponent({0, 0}, {40, 36});
     SpriteDataComponent spriteData{
@@ -471,15 +471,6 @@ Entity EntityFactory::createPowerUpBlueLaserCrystal(
     componentManager.addComponent<MovementComponent>(powerUpBlueLaserCrystal.getId(), movement);
     componentManager.addComponent<AnimationComponent>(
         powerUpBlueLaserCrystal.getId(), animationComponent);
-
-    while (CheckEntityPosition(powerUpBlueLaserCrystal.getId(), componentManager, entityManager) !=
-        -1) {
-        auto powerUpBlueLaserCrystalPos =
-            componentManager.getComponent<PositionComponent>(powerUpBlueLaserCrystal.getId());
-        if (powerUpBlueLaserCrystalPos) {
-            powerUpBlueLaserCrystalPos.value()->y = static_cast<float>(rand() % 100);
-        }
-    }
 
     return powerUpBlueLaserCrystal;
 }
@@ -540,12 +531,12 @@ Entity EntityFactory::createWall(
     componentManager.addComponent<MovementComponent>(wall.getId(), movement);
     componentManager.addComponent<AnimationComponent>(wall.getId(), animationComponent);
 
-    // while (CheckEntityPosition(wall.getId(), componentManager, entityManager) != -1) {
-    //     auto wallPos = componentManager.getComponent<PositionComponent>(wall.getId());
-    //     if (wallPos) {
-    //         wallPos.value()->y = static_cast<float>(rand() % 100);
-    //     }
-    // }
+    while (CheckEntityPosition(wall.getId(), componentManager, entityManager) != -1) {
+        auto wallPos = componentManager.getComponent<PositionComponent>(wall.getId());
+        if (wallPos) {
+            wallPos.value()->y = static_cast<float>(rand() % 100);
+        }
+    }
 
     return wall;
 }
@@ -562,11 +553,11 @@ Entity EntityFactory::createButton(EntityManager &entityManager,
 
     PositionComponent pos(x, y);
     TextComponent textComponent(font, text, pos.x, pos.y);
-    OnClickComponent onClickfunction(*onClick);
+    OnClickComponent onClickFunction(*onClick);
     SpriteComponent sprite(texture, pos.x, pos.y, dimension, AScenes::SpriteType::OTHER);
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
-    componentManager.addComponent<OnClickComponent>(button.getId(), onClickfunction);
+    componentManager.addComponent<OnClickComponent>(button.getId(), onClickFunction);
     componentManager.addComponent<TextComponent>(button.getId(), textComponent);
     componentManager.addComponent<SpriteComponent>(button.getId(), sprite);
 
@@ -592,6 +583,33 @@ Entity EntityFactory::createSmallButton(EntityManager &entityManager,
 
     componentManager.addComponent<PositionComponent>(button.getId(), pos);
     componentManager.addComponent<BindComponent>(button.getId(), bindComponent);
+    componentManager.addComponent<TextComponent>(button.getId(), textComponent);
+    componentManager.addComponent<SpriteComponent>(button.getId(), sprite);
+
+    return button;
+}
+
+Entity EntityFactory::createUpdateButton(EntityManager &entityManager,
+    ComponentManager &componentManager, TextureManager &textureManager, FontManager &fontManager,
+    std::string text, std::function<IScenes *(AScenes *)> *onClick,
+    std::function<std::string(GameParameters)> *updateTextFunction, float x, float y)
+{
+    Entity button = entityManager.createEntity();
+
+    sf::Texture &texture =
+        textureManager.getTexture("Client/Assets/Sprites/Menus/small_button.png");
+    sf::Font &font = fontManager.getFont(FontFactory(FontPath::MAIN));
+    sf::Vector2f scale(1.0f, 1.0f);
+
+    PositionComponent pos(x, y);
+    TextComponent textComponent(font, text, pos.x, pos.y);
+    OnClickComponent onClickFunction(*onClick);
+    UpdateTextComponent updateText(*updateTextFunction);
+    SpriteComponent sprite(texture, pos.x, pos.y, scale, AScenes::SpriteType::OTHER);
+
+    componentManager.addComponent<PositionComponent>(button.getId(), pos);
+    componentManager.addComponent<UpdateTextComponent>(button.getId(), updateText);
+    componentManager.addComponent<OnClickComponent>(button.getId(), onClickFunction);
     componentManager.addComponent<TextComponent>(button.getId(), textComponent);
     componentManager.addComponent<SpriteComponent>(button.getId(), sprite);
 

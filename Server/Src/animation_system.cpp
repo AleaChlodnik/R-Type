@@ -25,7 +25,7 @@ bool operator==(const vf2d &lhs, const vf2d &rhs) { return lhs.x == rhs.x && lhs
  * and the y-coordinate is always -1 for valid states. If the animation
  * state is not recognized, the function returns {0, 0}.
  */
-vf2d animationShipFactory(AnimationShip animation)
+static vf2d animationShipFactory(AnimationShip animation)
 {
     switch (animation) {
     case AnimationShip::SHIP_DOWN: {
@@ -47,7 +47,7 @@ vf2d animationShipFactory(AnimationShip animation)
     return {0, 0};
 }
 
-vf2d animationBasicMonsterFactory(AnimationBasicMonster animation)
+static vf2d animationBasicMonsterFactory(AnimationBasicMonster animation)
 {
     switch (animation) {
     case AnimationBasicMonster::BASIC_MONSTER_DEFAULT: {
@@ -232,6 +232,7 @@ void AnimationSystem::AnimationEntities(ComponentManager &componentManager,
     for (auto entity : entityManager.getAllEntities()) {
 
         auto animation = componentManager.getComponent<AnimationComponent>(entity.getId());
+        auto hitbox = componentManager.getComponent<HitboxComponent>(entity.getId());
         if (animation) {
             // animate system for ship
             auto player = componentManager.getComponent<PlayerComponent>(entity.getId());
@@ -250,7 +251,7 @@ void AnimationSystem::AnimationEntities(ComponentManager &componentManager,
             // animate system for force weapon
             auto forceWeapon = componentManager.getComponent<ForceWeaponComponent>(entity.getId());
             if (forceWeapon) {
-                animateForceWeapon(forceWeapon, animation);
+                animateForceWeapon(forceWeapon, animation, hitbox);
             }
             // animate system for force missile
             auto forceMissile =
@@ -259,9 +260,17 @@ void AnimationSystem::AnimationEntities(ComponentManager &componentManager,
                 auto forceWeaponOfForceMissile =
                     componentManager.getComponent<ForceWeaponComponent>(
                         forceMissile.value()->forceId);
-                if (forceWeaponOfForceMissile) {
-                    animateForceMissile(forceWeaponOfForceMissile, animation);
+                auto hitboxOfForceMissile =
+                    componentManager.getComponent<HitboxComponent>(entity.getId());
+                if (forceWeaponOfForceMissile && hitboxOfForceMissile) {
+                    animateForceMissile(
+                        forceWeaponOfForceMissile, animation, hitboxOfForceMissile);
                 }
+            }
+
+            auto boss = componentManager.getComponent<BossComponent>(entity.getId());
+            if (boss) {
+                animateBoss(boss, animation);
             }
 
             // animate system for background
@@ -430,22 +439,35 @@ static void animateForceWeaponLevel3(std::optional<AnimationComponent *> &animat
 }
 
 void AnimationSystem::animateForceWeapon(std::optional<ForceWeaponComponent *> &forceWeapon,
-    std::optional<AnimationComponent *> &animation)
+    std::optional<AnimationComponent *> &animation, std::optional<HitboxComponent *> &hitbox)
 {
     switch (forceWeapon.value()->level) {
     case 1:
         animation.value()->dimension = {24, 16};
+        hitbox.value()->w = animation.value()->dimension.x;
+        hitbox.value()->h = animation.value()->dimension.y;
+
         animateForceWeaponLevel1(animation);
         break;
     case 2:
         animation.value()->dimension = {30, 24};
+        hitbox.value()->w = animation.value()->dimension.x;
+        hitbox.value()->h = animation.value()->dimension.y;
+
         animateForceWeaponLevel2(animation);
         break;
     case 3:
         animation.value()->dimension = {31.5, 33};
+        hitbox.value()->w = animation.value()->dimension.x;
+        hitbox.value()->h = animation.value()->dimension.y;
+
         animateForceWeaponLevel3(animation);
         break;
     default:
+        animation.value()->dimension = {24, 16};
+        hitbox.value()->w = animation.value()->dimension.x;
+        hitbox.value()->h = animation.value()->dimension.y;
+
         animateForceWeaponLevel1(animation);
         break;
     }
@@ -507,24 +529,71 @@ static void animateForceMissileLevel3(std::optional<AnimationComponent *> &anima
 }
 
 void AnimationSystem::animateForceMissile(std::optional<ForceWeaponComponent *> &forceWeapon,
-    std::optional<AnimationComponent *> &animation)
+    std::optional<AnimationComponent *> &animation, std::optional<HitboxComponent *> &hitbox)
 {
-    std::cout << "forceWeapon->level: " << forceWeapon.value()->level << std::endl;
     switch (forceWeapon.value()->level) {
     case 1:
         animation.value()->dimension = {16, 4};
+        hitbox.value()->w = animation.value()->dimension.x;
+        hitbox.value()->h = animation.value()->dimension.y;
+
         animateForceMissileLevel1(animation);
         break;
     case 2:
         animation.value()->dimension = {13, 3};
+        hitbox.value()->w = animation.value()->dimension.x;
+        hitbox.value()->h = animation.value()->dimension.y;
+
         animateForceMissileLevel2(animation);
         break;
     case 3:
         animation.value()->dimension = {68.75, 32};
+        hitbox.value()->w = animation.value()->dimension.x;
+        hitbox.value()->h = animation.value()->dimension.y;
+
         animateForceMissileLevel3(animation);
         break;
     default:
+        animation.value()->dimension = {16, 4};
+        hitbox.value()->w = animation.value()->dimension.x;
+        hitbox.value()->h = animation.value()->dimension.y;
+
         animateForceMissileLevel1(animation);
         break;
+    }
+}
+
+vf2d animationBossFactory(AnimationBoss animation)
+{
+    switch (animation) {
+    case AnimationBoss::BOSS_DEFAULT: {
+        return {24 + 161.25 * 0, 0};
+    } break;
+    case AnimationBoss::BOSS_1: {
+        return {24 + 161.25 * 1, 0};
+    } break;
+    case AnimationBoss::BOSS_2: {
+        return {24 + 161.25 * 2, 0};
+    } break;
+    case AnimationBoss::BOSS_3: {
+        return {24 + 161.25 * 3, 0};
+    } break;
+    }
+    return {0, 0};
+}
+
+void AnimationSystem::animateBoss(
+    std::optional<BossComponent *> &boss, std::optional<AnimationComponent *> &animation)
+{
+    if (animation.value()->offset == animationBossFactory(AnimationBoss::BOSS_DEFAULT)) {
+        animation.value()->offset = animationBossFactory(AnimationBoss::BOSS_1);
+    } else if (animation.value()->offset == animationBossFactory(AnimationBoss::BOSS_1)) {
+        animation.value()->offset = animationBossFactory(AnimationBoss::BOSS_2);
+    } else if (animation.value()->offset == animationBossFactory(AnimationBoss::BOSS_2)) {
+        animation.value()->offset = animationBossFactory(AnimationBoss::BOSS_3);
+    } else if (animation.value()->offset == animationBossFactory(AnimationBoss::BOSS_3)) {
+        animation.value()->offset = animationBossFactory(AnimationBoss::BOSS_DEFAULT);
+    } else {
+        animation.value()->offset = animationBossFactory(AnimationBoss::BOSS_DEFAULT);
     }
 }
