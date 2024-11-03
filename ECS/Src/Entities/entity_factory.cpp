@@ -670,8 +670,7 @@ Entity EntityFactory::createBoss(
     }
     Entity tailEnd = entityFactory.createTailEnd(entityManager, componentManager);
     tailIds.push_back(tailEnd.getId());
-    if (auto tailMovement =
-            componentManager.getComponent<MovementComponent>(tailEnd.getId())) {
+    if (auto tailMovement = componentManager.getComponent<MovementComponent>(tailEnd.getId())) {
         tailMovement.value()->index = tailLength - 1;
     }
 

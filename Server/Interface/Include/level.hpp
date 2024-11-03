@@ -225,11 +225,12 @@ template <typename T> class Level : virtual public ILevel<T> {
                 }
                 if (boss2) {
                     playerHealth1.value()->lives -= 1;
-                    if (auto bossHealth = componentManager.getComponent<HealthComponent>(entityId2)) {
+                    if (auto bossHealth =
+                            componentManager.getComponent<HealthComponent>(entityId2)) {
                         bossHealth.value()->lives -= 1;
                         if (bossHealth.value()->lives <= 0) {
-                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
-                                entitiesToRemove.end()) {
+                            if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                    entityId2) == entitiesToRemove.end()) {
                                 entitiesToRemove.push_back(entityId2);
                             }
                         }
@@ -334,8 +335,8 @@ template <typename T> class Level : virtual public ILevel<T> {
                 if (auto bossHealth = componentManager.getComponent<HealthComponent>(entityId2)) {
                     bossHealth.value()->lives -= 1;
                     if (bossHealth.value()->lives <= 0) {
-                        if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(), entityId2) ==
-                            entitiesToRemove.end()) {
+                        if (std::find(entitiesToRemove.begin(), entitiesToRemove.end(),
+                                entityId2) == entitiesToRemove.end()) {
                             entitiesToRemove.push_back(entityId2);
                         }
                     }
