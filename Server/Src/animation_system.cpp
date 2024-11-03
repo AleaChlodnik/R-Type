@@ -276,9 +276,9 @@ void AnimationSystem::AnimationEntities(ComponentManager &componentManager,
             // animate system for background
             if (auto background =
                     componentManager.getComponent<BackgroundComponent>(entity.getId())) {
-                if (animation.value()->offset.x < 2700) {
-                    animation.value()->offset.x += 1;
-                    // animation.value()->offset.x += 5; //////////////////////// temp
+                if (animation.value()->offset.x < 2770) {
+                    animation.value()->offset.x += 2;
+                    // animation.value()->offset.x += 20; ///////////////////////
                 } else {
                     if (endOfLevel == false)
                         endOfLevel = true;
@@ -566,16 +566,16 @@ vf2d animationBossFactory(AnimationBoss animation)
 {
     switch (animation) {
     case AnimationBoss::BOSS_DEFAULT: {
-        return {24 + 161.25 * 0, 0};
+        return {24 + 161.25 * 0, 216};
     } break;
     case AnimationBoss::BOSS_1: {
-        return {24 + 161.25 * 1, 0};
+        return {24 + 161.25 * 1, 216};
     } break;
     case AnimationBoss::BOSS_2: {
-        return {24 + 161.25 * 2, 0};
+        return {24 + 161.25 * 2, 216};
     } break;
     case AnimationBoss::BOSS_3: {
-        return {24 + 161.25 * 3, 0};
+        return {24 + 161.25 * 3, 216};
     } break;
     }
     return {0, 0};
