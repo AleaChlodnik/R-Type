@@ -1,4 +1,4 @@
-# R-Type
+# 🎮 • R-Type
 
 ## Authors
 
